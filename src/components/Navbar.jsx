@@ -15,7 +15,7 @@ const Navbar = () => {
 
   return (
     <header className="header-wrapper">
-      {/* Top Bar */}
+      {/* Top Barnknkjn */}
       <div className="top-bar desktop-only">
         <div className="top-bar-container">
           <div className="top-bar-left">
