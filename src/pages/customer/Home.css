@@ -1,0 +1,719 @@
+.home-container {
+  width: 100%;
+}
+
+.offer-carousel-container {
+  width: 100%;
+  padding-top: 80px;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  padding: 2rem 4rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.category-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  display: block;
+  text-decoration: none;
+  aspect-ratio: 3 / 4;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.category-card:hover {
+  transform: translateY(-5px);
+}
+
+.category-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.category-card:hover .category-image {
+  transform: scale(1.05);
+}
+
+.category-card-title {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 1.5rem;
+  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+  color: white;
+  font-size: 1.5rem;
+  font-family: 'Playfair Display', serif;
+  font-weight: 600;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.category-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2.5rem;
+  padding: 0.85rem 2rem;
+  background-color: rgba(190, 110, 110, 0.8); /* A dark teal to match the brand */
+  color: white;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.category-bar a {
+  color: white;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.category-bar a:hover {
+  opacity: 0.8;
+  transform: translateY(-1px);
+}
+
+.hero-banner-section {
+  width: 100%;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  background-color: #f5f2ed;
+  overflow: hidden;
+  margin-top: 0;
+}
+
+.carousel-close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #000;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.3s ease;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.carousel-close-btn:hover {
+  background: #000;
+  color: #fff;
+  border-color: #000;
+}
+
+.carousel-control {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 18px;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s ease;
+}
+
+.carousel-control:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.carousel-control.prev {
+  left: 20px;
+}
+
+.carousel-control.next {
+  right: 20px;
+}
+
+.carousel-images {
+  width: 100%;
+  flex: 1;
+  position: relative;
+  display: flex;
+  margin: 0;
+  padding: 0;
+}
+
+.carousel-images .slide {
+  width: 100%;
+  flex: 1;
+  display: none;
+  position: relative;
+  margin: 0;
+  padding: 0;
+}
+
+.carousel-images .slide-image {
+  width: 100%;
+  aspect-ratio: 3 / 1;
+  object-fit: cover;
+  display: block;
+}
+
+.carousel-images .slide.active {
+  display: block;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.banner-content {
+  position: absolute;
+  top: 50%;
+  left: 62%; 
+  transform: translate(-50%, -50%);
+  color: #000;
+  z-index: 5;
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.banner-subtitle {
+  font-size: 1.2rem;
+  font-family: 'Inter', sans-serif;
+  margin-bottom: 0.5rem;
+  color: #666;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.banner-title {
+  display: flex;
+  flex-direction: column;
+  font-family: 'Playfair Display', serif;
+  line-height: 1;
+  margin-bottom: 1.5rem;
+  color: #1a1a1a;
+  font-size: 4rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+}
+
+.banner-title .mega,
+.banner-title .sale {
+  font-size: 5.5rem;
+  display: block;
+}
+
+.banner-text {
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 1.5rem;
+  font-family: 'Inter', sans-serif;
+}
+
+.banner-content .shop-now-btn {
+  display: inline-block;
+  background-color: #000;
+  color: #fff;
+  padding: 0.8rem 2.5rem;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.banner-content .shop-now-btn:hover {
+  background-color: #333;
+}
+
+/* Full Image Banner Styles (First Slide) */
+.full-image-banner {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2.1 / 1;
+}
+
+.full-slide-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.full-banner-text-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 8%;
+}
+
+.full-banner-text-overlay .banner-content {
+  text-align: left;
+  max-width: 500px;
+}
+
+/* Handbags Banner Specific Styles */
+.split-banner {
+  display: flex;
+  width: 100%;
+  background-color: #fafafa; /* Matches image background */
+  aspect-ratio: 3 / 1; /* Match exactly the 3:1 aspect ratio of the first image (M.png) */
+}
+
+.split-image-half {
+  flex: 7; /* 70% of the width */
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  overflow: hidden;
+}
+
+.split-slide-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Changed to cover so it touches the top/bottom */
+  object-position: left center;
+}
+
+.split-text-half {
+  flex: 3; /* 30% of the width (adjusts text size as requested) */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding-left: 5%; /* Adjust spacing from the image */
+}
+
+
+.full-image-slide-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.full-image-slide {
+  width: 100%;
+  aspect-ratio: 3 / 1;
+  object-fit: cover;
+  display: block;
+}
+
+.banner-content-handbags {
+  color: #000;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 400px;
+}
+
+.handbags-title {
+  font-family: 'Playfair Display', serif; /* Elegant serif font */
+  font-size: 3.5rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  letter-spacing: 2px;
+  color: #1a1a1a;
+}
+
+.handbags-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 2rem;
+  letter-spacing: 0.5px;
+}
+
+.handbags-divider {
+  width: 100%;
+  height: 1px;
+  background-color: #e0e0e0;
+  margin-bottom: 1.5rem;
+}
+
+.handbags-explore-btn {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: #888;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s ease;
+  display: inline-block;
+  position: relative;
+  z-index: 10;
+  cursor: pointer;
+}
+
+.handbags-explore-btn:hover {
+  color: #1a1a1a;
+}
+
+.banner-tag-wrapper {
+  position: absolute;
+  top: 48%;
+   left: 62%;
+  transform: translate(50%, -50%) rotate(-4deg) scale(0.75);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.banner-tag-swing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform-origin: top center;
+  animation: tagSwing 3s ease-in-out infinite;
+  cursor: pointer;
+}
+
+.banner-tag-swing:hover {
+  animation-play-state: paused;
+}
+
+@keyframes tagSwing {
+  0% { transform: rotate(-8deg); }
+  50% { transform: rotate(5deg); }
+  100% { transform: rotate(-8deg); }
+}
+
+.tag-string {
+  width: 8px;
+  height: 100px;
+  background-color: #b89c7c;
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 3px, #937657 3px, #937657 6px);
+  margin-bottom: -15px;
+  z-index: 1;
+}
+
+.banner-tag-body {
+  position: relative;
+  width: 200px;
+  height: 280px;
+  background-color: #e2d0b7; /* Beige tag color */
+  box-shadow: -5px 10px 25px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #000;
+  clip-path: polygon(
+    25% 0%, 
+    75% 0%, 
+    100% 20%, 
+    100% 100%, 
+    0% 100%, 
+    0% 20%
+  );
+  padding: 1.5rem;
+}
+
+.tag-hole {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 20px;
+  background-color: #333; /* Dark background to look like a hole */
+  border: 4px solid #de9849; /* Brass/cardboard ring color */
+  border-radius: 50%;
+  box-shadow: inset 2px 2px 5px rgba(0,0,0,0.8);
+}
+
+.tag-upto {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-top: 30px;
+  margin-bottom: 0px;
+}
+
+.tag-percent {
+  font-size: 3.5rem;
+  font-weight: 700;
+  font-family: 'Playfair Display', serif;
+  line-height: 1;
+  margin: 5px 0;
+}
+
+.tag-off {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.tag-limited {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin-top: 5px;
+}
+
+.carousel-indicators {
+  position: absolute;
+  bottom: 20px;
+  display: flex;
+  gap: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+.carousel-indicators .dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.carousel-indicators .dot.active {
+  background-color: white;
+}
+
+/* Trending Now Section */
+.trending-section {
+  padding: 6rem 2rem;
+  background-color: #faf8f5; /* Cream background like the image */
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.trending-watermark {
+  position: absolute;
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: 35rem;
+  color: #e8e2d5;
+  opacity: 0.35;
+  line-height: 1;
+  top: 50%;
+  left: 55%;
+  transform: translate(-50%, -50%);
+  user-select: none;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.trending-title {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+}
+
+.trending-now,
+.trending-modest {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  color: #000;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -1px;
+}
+
+.trending-now {
+  font-size: 5rem;
+  margin-right: 2rem; /* Slight offset for style */
+}
+
+.trending-modest {
+  font-size: 5rem;
+  margin-left: 2rem; /* Slight offset for style */
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 992px) {
+  .banner-title .mega,
+  .banner-title .sale {
+    font-size: 4rem;
+  }
+  .banner-tag-wrapper {
+    transform: translate(50%, -50%) rotate(-4deg) scale(0.6);
+  }
+  .trending-now,
+  .trending-modest {
+    font-size: 3.5rem;
+  }
+  .handbags-title {
+    font-size: 2.8rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .offer-carousel-container {
+    padding-top: 60px;
+  }
+
+  .category-grid {
+    grid-template-columns: 1fr;
+    padding: 1.5rem;
+  }
+
+  .category-bar {
+    gap: 1.2rem;
+    padding: 0.5rem 1rem;
+  }
+  
+  .category-bar a {
+    font-size: 0.85rem;
+  }
+
+  .banner-content {
+    left: 50%;
+    width: 90%;
+  }
+
+  .banner-title .mega,
+  .banner-title .sale {
+    font-size: 2.8rem;
+    letter-spacing: 1px;
+  }
+
+  .banner-text {
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+
+  .banner-content .shop-now-btn {
+    padding: 0.6rem 1.5rem;
+    font-size: 0.8rem;
+  }
+
+  .split-banner {
+    flex-direction: column;
+    aspect-ratio: auto;
+  }
+
+  .split-image-half,
+  .split-text-half {
+    width: 100%;
+    padding: 0;
+  }
+
+  .split-slide-image {
+    max-height: 250px;
+    object-fit: contain;
+  }
+
+  .banner-content-handbags {
+    align-items: center;
+    text-align: center;
+    padding: 2rem 1rem;
+    width: 100%;
+    max-width: none;
+  }
+  
+  .handbags-title {
+    font-size: 2.2rem;
+  }
+
+
+
+  .carousel-control {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+  
+  .carousel-control.prev {
+    left: 10px;
+  }
+  
+  .carousel-control.next {
+    right: 10px;
+  }
+}
+
+@media (max-width: 576px) {
+  .banner-title .mega,
+  .banner-title .sale {
+    font-size: 2rem;
+  }
+  
+  .banner-tag-wrapper {
+    transform: translate(50%, -50%) rotate(-4deg) scale(0.35);
+    top: 20%;
+  }
+
+  .trending-section {
+    padding: 3rem 1rem;
+  }
+  
+  .trending-now,
+  .trending-modest {
+    font-size: 2.2rem;
+    margin: 0; /* Remove offset on small screens */
+  }
+  
+  .trending-watermark {
+    font-size: 15rem;
+  }
+}
+
+/* Offer Bar Styles */
+.offer-bar-container {
+  /* width: 100%; */
+  background-color: #6a3541; /* Maroon color from the reference image */
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 20px;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  overflow: hidden;
+  position: relative;
+  z-index: 10;
+  margin: 0;
+  line-height: 2;
+}
+
+.offer-bar-text {
+  margin: 0;
+  animation: fadeSlideUp 0.5s ease-out;
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
