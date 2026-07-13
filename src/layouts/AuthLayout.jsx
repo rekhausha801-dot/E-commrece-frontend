@@ -5,6 +5,7 @@ const AuthLayout = ({ children }) => {
     <div>
       {/* Auth Layout Wrapper could go here */}
       <main>{children}</main>
+  
     </div>
   );
 };
