@@ -26,7 +26,7 @@ export default function Cards() {
     <div className="collection-section">
       <div className="collection-header">
         <p className="subtitle">Shop by Category</p>
-        <h2 className="title">DISCOVER YOUR STYLE. EXPLORE OUR PREMIUM COLLECTIONS</h2>
+        <h2 className="title">DISCOVER YOUR . EXPLORE OUR PREMIUM COLLECTIONS</h2>
       </div>
 
       <div className="collection-tabs">
