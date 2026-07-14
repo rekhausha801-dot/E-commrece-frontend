@@ -10,53 +10,8 @@ import { FaPinterestP, FaGooglePlay, FaApple, FaCcVisa, FaCcMastercard, FaAmazon
 const Footer = () => {
   return (
     <footer className="footer-container">
-      {/* Features Top Bar */}
-      <div className="footer-features">
-        <div className="feature-item">
-          <FiTruck className="feature-icon" />
-          <div className="feature-text">
-            <h4>Free Shipping</h4>
-            <p>On orders over ₹499</p>
-          </div>
-        </div>
-        <div className="feature-item">
-          <FiShield className="feature-icon" />
-          <div className="feature-text">
-            <h4>Secure Payment</h4>
-            <p>100% secure payments</p>
-          </div>
-        </div>
-        <div className="feature-item">
-          <FiRefreshCw className="feature-icon" />
-          <div className="feature-text">
-            <h4>Easy Returns</h4>
-            <p>30 days return policy</p>
-          </div>
-        </div>
-        <div className="feature-item">
-          <FiHeadphones className="feature-icon" />
-          <div className="feature-text">
-            <h4>24/7 Support</h4>
-            <p>We're here to help</p>
-          </div>
-        </div>
-        <div className="feature-item">
-          <FiAward className="feature-icon" />
-          <div className="feature-text">
-            <h4>Best Quality</h4>
-            <p>Satisfaction guaranteed</p>
-          </div>
-        </div>
-        <div className="feature-item">
-          <FiTag className="feature-icon" />
-          <div className="feature-text">
-            <h4>Best Prices</h4>
-            <p>Guaranteed value</p>
-          </div>
-        </div>
-      </div>
 
-      {/* Main Footer Links */}
+      
       <div className="footer-main">
         <div className="footer-col-brand">
           <div className="footer-logo">

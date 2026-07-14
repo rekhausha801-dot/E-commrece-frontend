@@ -410,53 +410,117 @@
 
 
 
-.trendy-features {
-  margin: 40px auto 0;
-  max-width: 100%;
-  background: #f4f1ea;
-  border-radius: 12px;
-  padding: 24px 32px;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+.brands-section {
+  margin: 80px auto 40px;
+  text-align: center;
 }
 
-@media (max-width: 800px) {
-  .trendy-features {
-    grid-template-columns: repeat(2, 1fr);
-  }
+.brands-header {
+  margin-bottom: 40px;
 }
 
-.feature-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.feature-icon {
-  width: 34px;
-  height: 34px;
-  min-width: 34px;
-  border-radius: 50%;
-  background: #fff;
+.brands-eyebrow {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 12px;
+}
+
+.brands-line {
+  width: 50px;
+  height: 1px;
+  background: #cba876;
+}
+
+.brands-star {
+  color: #cba876;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.brands-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 36px;
+  font-weight: 500;
   color: #9c7b45;
+  margin: 12px 0;
+  letter-spacing: 2px;
 }
 
-.feature-icon svg {
-  width: 16px;
-  height: 16px;
+.brands-subtitle {
+  font-size: 14px;
+  color: #777;
+  margin: 0;
 }
 
-.feature-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: #4a3f30;
+.brands-marquee-container {
+  width: 100%;
+  overflow: hidden;
+  padding: 10px 0 30px;
+  position: relative;
 }
 
-.feature-desc {
-  font-size: 11.5px;
-  color: #9a948a;
+.brands-marquee {
+  display: flex;
+  gap: 24px;
+  width: max-content;
+  animation: scrollMarquee 25s linear infinite;
+}
+
+.brands-marquee:hover {
+  animation-play-state: paused;
+}
+
+@keyframes scrollMarquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.brand-card {
+  width: 170px;
+  height: 100px;
+  background: #fdfbf7;
+  border: 1px solid #e8dcc6;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.brand-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(156, 123, 69, 0.12);
+}
+
+.brand-logo-text {
+  font-family: 'Inter', system-ui, sans-serif;
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Styled text approximations of the logos */
+.brand-zara { font-family: 'Playfair Display', serif; font-size: 38px; font-weight: 400; letter-spacing: -3px; }
+.brand-hm { font-family: 'Caveat', 'Brush Script MT', cursive; font-size: 42px; font-weight: 700; letter-spacing: -2px; }
+.brand-levis { 
+  background: #111; 
+  color: #fff; 
+  padding: 6px 14px; 
+  font-size: 18px; 
+  font-weight: 900; 
+  border-radius: 6px 6px 14px 14px; 
+  letter-spacing: 1px; 
+}
+.brand-puma { font-size: 30px; font-weight: 900; letter-spacing: -1.5px; }
+.brand-adidas { font-size: 28px; font-weight: 800; text-transform: lowercase; letter-spacing: -1.5px; }
+
+@media (max-width: 576px) {
+  .brands-title { font-size: 28px; }
+  .brand-card {
+    width: 140px;
+    height: 80px;
+  }
 }
