@@ -105,7 +105,7 @@ body {
 }
 
 .category-new-card {
-  flex: 0 0 240px; /* Fixed width for each card */
+  flex: 0 0 calc((100% - 60px) / 4); /* Exactly 4 cards visible per view */
   height: 290px;
   background: #fff;
   border-radius: 16px;
@@ -219,7 +219,7 @@ body {
 
 @media (max-width: 768px) {
   .category-new-card {
-    flex: 0 0 220px;
+    flex: 0 0 calc((100% - 20px) / 2); /* 2 cards visible on smaller screens */
     height: 280px;
   }
   

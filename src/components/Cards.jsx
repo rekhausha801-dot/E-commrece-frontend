@@ -8,6 +8,7 @@ import shoeImg from '../assets/images/shoe.png';
 import watchImg from '../assets/images/watch.png';
 import homeImg from '../assets/images/home.png';
 import beautyImg from '../assets/images/beauty.png';
+import kidsImg from '../assets/images/t-shirt.png';
 
 const categories = [
   { name: 'Ethnic Wear', image: topImg, icon: <FiStar /> },
@@ -16,7 +17,8 @@ const categories = [
   { name: 'Footwear', image: shoeImg, icon: <FiShoppingBag /> },
   { name: 'Home Decor', image: homeImg, icon: <FiHome /> },
   { name: 'Beauty', image: beautyImg, icon: <FiSmile /> },
-  { name: 'Accessories', image: watchImg, icon: <FiWatch /> }
+  { name: 'Accessories', image: watchImg, icon: <FiWatch /> },
+  { name: 'Kids Fashion', image: kidsImg, icon: <FiSmile /> }
 ];
 
 export default function Cards() {
@@ -25,7 +27,8 @@ export default function Cards() {
   const scroll = (direction) => {
     if (scrollRef.current) {
       const { scrollLeft, clientWidth } = scrollRef.current;
-      const scrollTo = direction === 'left' ? scrollLeft - clientWidth / 2 : scrollLeft + clientWidth / 2;
+      // Scroll by exactly one full view (4 cards)
+      const scrollTo = direction === 'left' ? scrollLeft - clientWidth : scrollLeft + clientWidth;
       scrollRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
     }
   };
