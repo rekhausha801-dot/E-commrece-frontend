@@ -33,8 +33,8 @@ export default function Cards() {
   return (
     <div className="collection-section">
       <div className="collection-header">
-        <h1 className="subtitle">SHOP BY CATEGORY</h1>
-       
+        {/* <p className="subtitle">Shop by Category</p> */}
+        <h2 className="title">Shop by Category</h2>
       </div>
 
       <div className="category-carousel-wrapper">
