@@ -6,6 +6,7 @@ import j1 from '../../assets/banners/j1.jpeg';
 import b1 from '../../assets/banners/b1.jpeg';
 import OfferCarousel from '../../components/OfferCarousel';
 import Cards from '../../components/Cards';
+import TrendyCollection from '../../components/TrendyCollection';
 
 const Home = () => {
 
@@ -24,7 +25,7 @@ const Home = () => {
     <div className="home-container">
       <OfferCarousel />
       <Cards />
-      
+      <TrendyCollection />
     
 
 
