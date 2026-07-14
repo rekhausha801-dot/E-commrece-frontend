@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import './Cards.css';
-import { FiArrowRight, FiStar, FiUser, FiShoppingBag, FiHome, FiSmile, FiWatch, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { FiArrowRight, FiStar, FiUser, FiShoppingBag, FiHome, FiSmile, FiWatch, FiChevronLeft, FiChevronRight, FiGrid } from 'react-icons/fi';
 import kurthiImg from '../assets/images/kurthi3.png';
 import topImg from '../assets/images/top2.jpeg';
 import manImg from '../assets/images/man.png';
@@ -35,9 +35,16 @@ export default function Cards() {
 
   return (
     <div className="collection-section">
-      <div className="collection-header">
-        {/* <p className="subtitle">Shop by Category</p> */}
-        <h2 className="title">Shop by Category</h2>
+      <div className="trendy-header" style={{ marginBottom: '16px' }}>
+        <div className="trendy-eyebrow">
+          <span className="eyebrow-line" />
+          <span className="eyebrow-icon"><FiGrid /></span>
+          <span>EXPLORE NOW</span>
+          <span className="eyebrow-line" />
+        </div>
+        <h2 className="trendy-title">
+          Shop by <span className="trendy-title-accent">Category</span>
+        </h2>
       </div>
 
       <div className="category-carousel-wrapper">

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FaFire, FaStar, FaRegStar, FaStarHalfAlt, FaRegHeart, FaHeart, FaTag, FaMagic, FaShoppingBag } from 'react-icons/fa';
 import './TrendyCollection.css';
 
@@ -79,11 +80,12 @@ const ALL_PRODUCTS = [
   },
 ];
 
-const FEATURES = [
-  { icon: 'truck', title: 'Free Shipping', desc: 'On orders over $100' },
-  { icon: 'shield', title: 'Secure Payment', desc: '100% secure payment' },
-  { icon: 'refresh', title: 'Easy Returns', desc: '30-day return policy' },
-  { icon: 'headset', title: '24/7 Support', desc: 'Dedicated support' },
+const BRANDS = [
+  { name: 'ZARA', class: 'brand-zara' },
+  { name: 'H&M', class: 'brand-hm' },
+  { name: 'Levi\'s', class: 'brand-levis' },
+  { name: 'PUMA', class: 'brand-puma' },
+  { name: 'adidas', class: 'brand-adidas' }
 ];
 
 function StarRating({ rating, reviews }) {
@@ -150,7 +152,10 @@ const TrendyCollection = () => {
   const [activeTab, setActiveTab] = useState('trending');
   const [likedIds, setLikedIds] = useState([]);
 
-  const toggleLike = (id) => {
+  const navigate = useNavigate();
+
+  const toggleLike = (e, id) => {
+    e.stopPropagation();
     setLikedIds((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
     );
@@ -185,12 +190,10 @@ const TrendyCollection = () => {
         <h2 className="trendy-title">
           Trending <span className="trendy-title-accent">Collections</span>
         </h2>
-        {/* <p className="trendy-subtitle">
-          Stay ahead with our most loved styles, handpicked just for you <span className="subtitle-heart"><FaHeart /></span>
-        </p> */}
+        
       </div>
 
-      <div className="trendy-tabs">
+      {/* <div className="trendy-tabs">
         {TABS.map((tab) => (
           <button
             key={tab.id}
@@ -201,16 +204,21 @@ const TrendyCollection = () => {
             {tab.label}
           </button>
         ))}
-      </div>
+      </div> */}
 
       <div className="trendy-grid">
         {displayedProducts.map((product) => (
-          <div className="trendy-card" key={product.id}>
+          <div 
+            className="trendy-card" 
+            key={product.id}
+            onClick={() => navigate(`/product/${product.id}`)}
+            style={{ cursor: 'pointer' }}
+          >
             <div className="trendy-image-wrapper">
               <span className={`trendy-badge ${product.badgeClass}`}>{product.badge}</span>
               <button
                 className={`like-btn ${likedIds.includes(product.id) ? 'liked' : ''}`}
-                onClick={() => toggleLike(product.id)}
+                onClick={(e) => toggleLike(e, product.id)}
                 aria-label="Add to wishlist"
               >
                 {likedIds.includes(product.id) ? <FaHeart /> : <FaRegHeart />}
@@ -228,7 +236,10 @@ const TrendyCollection = () => {
                 {product.oldPrice && <span className="old-price">{product.oldPrice}</span>}
               </div>
 
-              <button className={`add-to-cart ${product.cartClass}`}>
+              <button 
+                className={`add-to-cart ${product.cartClass}`}
+                onClick={(e) => e.stopPropagation()}
+              >
                 <span className="cart-icon"><FaShoppingBag /></span>
                 <span>Add to Cart</span>
               </button>
@@ -237,18 +248,31 @@ const TrendyCollection = () => {
         ))}
       </div>
 
-      <div className="trendy-features">
-        {FEATURES.map((feature) => (
-          <div className="feature-item" key={feature.title}>
-            <span className="feature-icon">
-              <FeatureIcon name={feature.icon} />
-            </span>
-            <div>
-              <div className="feature-title">{feature.title}</div>
-              <div className="feature-desc">{feature.desc}</div>
-            </div>
+      <div className="brands-section">
+        <div className="brands-header">
+          <div className="brands-eyebrow">
+            <span className="brands-line" />
+            <span className="brands-star">✦</span>
+            <span className="brands-line" />
           </div>
-        ))}
+          <h2 className="brands-title">TOP BRANDS</h2>
+          <div className="brands-eyebrow" style={{ marginBottom: '12px' }}>
+            <span className="brands-line" />
+            <span className="brands-star">✦</span>
+            <span className="brands-line" />
+          </div>
+          <p className="brands-subtitle">Discover 100+ premium brands and love your style</p>
+        </div>
+
+        <div className="brands-marquee-container">
+          <div className="brands-marquee">
+            {[...BRANDS, ...BRANDS, ...BRANDS].map((brand, index) => (
+              <div className="brand-card" key={index}>
+                <span className={`brand-logo-text ${brand.class}`}>{brand.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   );
