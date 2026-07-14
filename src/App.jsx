@@ -1,9 +1,8 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Cards from "./components/Cards";
 import Navbar from "./components/Navbar";
 import Home from "./pages/customer/Home";
-
+ 
 export default function App() {
   return (
     <BrowserRouter>

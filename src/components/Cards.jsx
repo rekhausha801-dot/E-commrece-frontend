@@ -25,8 +25,8 @@ export default function Cards() {
   return (
     <div className="collection-section">
       <div className="collection-header">
-        <p className="subtitle">Shop by Fabric</p>
-        <h2 className="title">A CENTURY OF CRAFT. A NEW WAY TO WEAR TRADITION</h2>
+        <p className="subtitle">Shop by Category</p>
+        <h2 className="title">DISCOVER YOUR STYLE. EXPLORE OUR PREMIUM COLLECTIONS</h2>
       </div>
 
       <div className="collection-tabs">
