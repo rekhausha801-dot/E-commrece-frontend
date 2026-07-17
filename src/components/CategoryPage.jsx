@@ -55,8 +55,13 @@ import newFootwear1 from '../assets/images/new_footwear_1.png';
 
 
 const CATEGORY_DATA = {
+  'womenswear': {
+    title: "Womenswear Collection",
+    banner: banner2Img,
+    images: [beautyImg, bannerImg, imgImg, manImg]
+  },
   'menswear': {
-    title: "",
+    title: "Menswear Collection",
     banner: banner6Img,
     images: [mens1, mens2, mens3, mens4, mens5,mens]
   },

@@ -178,7 +178,13 @@ const TrendyCollection = () => {
           <div 
             className="trendy-card" 
             key={product.id}
-            onClick={() => navigate(`/product/${product.id}`)}
+            onClick={() => {
+              if (product.title.includes('Dress')) {
+                navigate('/category/womenswear');
+              } else {
+                navigate('/category/menswear');
+              }
+            }}
             style={{ cursor: 'pointer' }}
           >
             <div className="trendy-image-wrapper">
@@ -212,17 +218,16 @@ const TrendyCollection = () => {
                 {product.stats && product.stats.map((stat, idx) => (
                   <React.Fragment key={idx}>
                     <div className="trendy-stat-item">
-                      <div className="stat-icon-wrapper">{stat.icon}</div>
+                      {/* <div className="stat-icon-wrapper">{stat.icon}</div>
                       <div className="stat-text">
                         <strong>{stat.text.split(' ')[0]}</strong>
                         <span>{stat.text.split(' ').slice(1).join(' ')}</span>
-                      </div>
+                      </div> */}
                     </div>
-                    {idx < product.stats.length - 1 && <div className="stat-divider"></div>}
+                    {/* {idx < product.stats.length - 1 && <div className="stat-divider"></div>} */}
                   </React.Fragment>
                 ))}
               </div>
-
               {/* <p className="trendy-product-desc">{product.description}</p> */}
 
               <button className="trendy-explore-btn">
@@ -253,7 +258,12 @@ const TrendyCollection = () => {
           <div className="brands-marquee">
             {[...BRANDS, ...BRANDS, ...BRANDS].map((brand, index) => (
               <div className="brand-card" key={index}>
+                <span className="brand-label">OFFICIAL BRAND</span>
                 <span className={`brand-logo-text ${brand.class}`}>{brand.name}</span>
+                <div className="brand-divider">
+                  <span className="brand-diamond">✦</span>
+                </div>
+                <span className="brand-bottom-text">Premium Collection</span>
               </div>
             ))}
           </div>
