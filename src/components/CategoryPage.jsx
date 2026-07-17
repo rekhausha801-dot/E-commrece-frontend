@@ -1,145 +1,112 @@
 import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import './Collection.css';
 import { 
-  Filter, Minus, Heart, ShoppingBag, Eye, LayoutGrid, Menu, ChevronDown, ChevronUp, X, SlidersHorizontal, Check, Star, Shirt
+  Filter, Heart, ShoppingBag, Eye, LayoutGrid, Menu, ChevronDown, ChevronUp, X, SlidersHorizontal, Check, Star
 } from 'lucide-react';
 
-import kurthi5Img from '../assets/images/kurthi5.png';
-import top3Img from '../assets/images/top3.png';
-import topImg from '../assets/images/top.png';
-import kurthi2Img from '../assets/images/kurthi2.png';
-import croptopImg from '../assets/images/croptop.png';
-import kurthi4Img from '../assets/images/kurthi4.png';
-import bannerImg from '../assets/images/banner2.png';
-import kurtiImg from '../assets/images/kurti.png';
-import kurthi3Img from '../assets/images/kurthi3.png';
+// Import images
+import bannerImg from '../assets/images/banner.png';
+import banner2Img from '../assets/images/banner2.png';
+import banner6Img from '../assets/images/banner6.png';
+import dffImg from '../assets/images/dff.png';
 
-const products = [
-  {
-    id: 1,
-    title: 'Embroidered Anarkali Kurti',
-    price: '₹899',
-    originalPrice: '₹1299',
-    rating: 5,
-    reviews: 24,
-    badge: 'NEW',
-    badgeClass: 'new',
-    image: top3Img,
-    colors: ['#9f3653', '#6d4c41', '#212121']
+
+import manImg from '../assets/images/man.png';
+import shirtImg from '../assets/images/shirt.jpeg';
+import shoeImg from '../assets/images/shoe.png';
+import homeImg from '../assets/images/home.png';
+import beautyImg from '../assets/images/beauty.png';
+import watchImg from '../assets/images/watch.png';
+import kidsImg from '../assets/images/kids.jpeg';
+import mens1 from '../assets/images/mens1.png';
+import mens2 from '../assets/images/mens2.png';
+import mens3 from '../assets/images/mens3.png';
+import mens4 from '../assets/images/mens4.png';
+import mens5 from '../assets/images/mens5.png';
+import mens from '../assets/images/man.png';
+import footwear2Img from '../assets/images/footwear2.png';
+import footwear3Img from '../assets/images/footwear3.png';
+import footwear4Img from '../assets/images/footwear4.png';
+
+
+
+
+import imgImg from '../assets/images/img.jpeg';
+import watchBannerImg from '../assets/images/img2.jpeg';
+
+// New images
+import newHome1 from '../assets/images/new_home_decor_1.png';
+import newHome2 from '../assets/images/new_home_decor_2.png';
+import newHome3 from '../assets/images/new_home_decor_3.png';
+import newHome4 from '../assets/images/new_home_decor_4.png';
+
+import newBeauty1 from '../assets/images/new_beauty_1.png';
+import newBeauty2 from '../assets/images/new_beauty_2.png';
+import newBeauty3 from '../assets/images/new_beauty_3.png';
+import newBeauty4 from '../assets/images/new_beauty_4.png';
+
+import newKids1 from '../assets/images/new_kids_1.png';
+import newKids2 from '../assets/images/new_kids_2.png';
+import newKids3 from '../assets/images/new_kids_3.png';
+import newKids4 from '../assets/images/new_kids_4.png';
+
+import newFootwear1 from '../assets/images/new_footwear_1.png';
+
+
+const CATEGORY_DATA = {
+  'menswear': {
+    title: "",
+    banner: banner6Img,
+    images: [mens1, mens2, mens3, mens4, mens5,mens]
   },
-  {
-    id: 2,
-    title: 'Printed Straight Kurti',
-    price: '₹699',
-    originalPrice: '₹999',
-    rating: 4,
-    reviews: 18,
-    badge: 'BESTSELLER',
-    badgeClass: 'bestseller',
-    image: kurthi5Img,
-    colors: ['#c62828', '#b71c1c', '#2e7d32']
+  'footwear': {
+    title: "Footwear Collection",
+    banner: bannerImg,
+    images: [newFootwear1, footwear2Img, footwear3Img, footwear4Img]
   },
-  {
-    id: 3,
-    title: 'Floral A-Line Kurti',
-    price: '₹799',
-    originalPrice: '₹999',
-    rating: 4,
-    reviews: 31,
-    badge: '20% OFF',
-    badgeClass: 'discount',
-    image: kurthi2Img,
-    colors: ['#00838f', '#f06292', '#ffb300']
+  'home-decor': {
+    title: "Home Decor",
+    banner: imgImg,
+    images: [newHome1, newHome2, newHome3, newHome4]
   },
-  {
-    id: 4,
-    title: 'Cotton Daily Wear Kurti',
-    price: '₹649',
-    originalPrice: '₹899',
-    rating: 4,
-    reviews: 26,
-    badge: null,
-    image: kurthi4Img,
-    colors: ['#9f3653', '#37474f', '#283593']
+  'beauty': {
+    title: "Beauty & Personal Care",
+    banner: banner2Img,
+    images: [newBeauty1, newBeauty2, newBeauty3, newBeauty4]
   },
-  {
-    id: 5,
-    title: 'Rayon Printed Kurti',
-    price: '₹749',
-    originalPrice: '₹999',
-    rating: 4,
-    reviews: 17,
-    badge: '15% OFF',
-    badgeClass: 'discount',
-    image: croptopImg,
-    colors: ['#00838f', '#37474f']
+  'accessories': {
+    title: "Accessories",
+    banner: watchBannerImg,
+    images: [watchImg, watchImg, watchImg, watchImg]
   },
-  {
-    id: 6,
-    title: 'Chikankari Kurti',
-    price: '₹1299',
-    originalPrice: '₹1599',
-    rating: 5,
-    reviews: 23,
-    badge: null,
-    image: topImg,
-    colors: ['#ffb703', '#fb8500']
-  },
-  {
-    id: 7,
-    title: 'Indo Western Kurti',
-    price: '₹899',
-    originalPrice: '₹1199',
-    rating: 4,
-    reviews: 15,
-    badge: null,
-    image: kurtiImg,
-    colors: ['#111111', '#d32f2f']
-  },
-  {
-    id: 8,
-    title: 'Embroidered Kurti',
-    price: '₹999',
-    originalPrice: '₹1499',
-    rating: 5,
-    reviews: 19,
-    badge: null,
-    image: kurthi3Img,
-    colors: ['#827717', '#e6c200']
+  'kids-fashion': {
+    title: "Kids Fashion",
+    banner: dffImg,
+    images: [newKids1, newKids2, newKids3, newKids4]
   }
-];
+};
 
 const CATEGORIES = [
-  { label: "Anarkali Kurtis", count: 32 },
-  { label: "Straight Kurtis", count: 48 },
-  { label: "A-Line Kurtis", count: 26 },
-  { label: "Co-Ord Sets", count: 18 },
-  { label: "Short Kurtis", count: 22 },
+  { label: "New Arrivals", count: 56 },
+  { label: "Bestsellers", count: 24 },
+  { label: "Trending", count: 18 },
+  { label: "Discounted", count: 16 }
 ];
 
 const FABRICS = [
   { label: "Cotton", count: 56 },
-  { label: "Rayon", count: 34 },
-  { label: "Georgette", count: 28 },
-  { label: "Silk", count: 16 },
-  { label: "Linen", count: 12 },
+  { label: "Premium", count: 34 },
+  { label: "Synthetic", count: 28 },
 ];
 
-const SIZES = ["XS", "S", "M", "L", "XL", "XXL", "3XL"];
+const SIZES = ["S", "M", "L", "XL", "XXL"];
 
 const COLORS = [
-  { name: "Maroon", hex: "#7C2D3B" },
-  { name: "Rose", hex: "#D8607A" },
-  { name: "Blush", hex: "#E8B7C4" },
-  { name: "Coral", hex: "#E86A4E" },
-  { name: "Mustard", hex: "#E3A62B" },
-  { name: "Forest", hex: "#3B6B4A" },
-  { name: "Olive", hex: "#6B7A3A" },
-  { name: "Navy", hex: "#2A3A5C" },
-  { name: "Camel", hex: "#B4855A" },
-  { name: "Rust", hex: "#B45535" },
-  { name: "Ivory", hex: "#F1EAE0" },
-  { name: "Charcoal", hex: "#2B2B2E" },
+  { name: "Blue", hex: "#798cb3" },
+  { name: "Black", hex: "#222222" },
+  { name: "White", hex: "#ffffff" },
+  { name: "Red", hex: "#cfb489" },
 ];
 
 const RATINGS = [5, 4, 3];
@@ -148,7 +115,6 @@ const DISCOUNTS = [
   { label: "10% and above", value: 10, count: 64 },
   { label: "20% and above", value: 20, count: 47 },
   { label: "30% and above", value: 30, count: 29 },
-  { label: "40% and above", value: 40, count: 15 },
   { label: "50% and above", value: 50, count: 8 },
 ];
 
@@ -172,8 +138,36 @@ function Section({ title, children, defaultOpen = true }) {
   );
 }
 
-export default function Collection() {
+export default function CategoryPage() {
+  const { categoryId } = useParams();
+  const currentCategory = CATEGORY_DATA[categoryId] || {
+    title: "Exclusive Collection",
+    banner: bannerImg,
+    images: [manImg, shoeImg, watchImg, beautyImg]
+  };
+
+  // Generate 8 mock products based on the category images (useMemo prevents them from shuffling when clicking like)
+  const products = React.useMemo(() => Array.from({ length: 8 }).map((_, index) => ({
+    id: index + 1,
+    title: `${currentCategory.title} Item ${index + 1}`,
+    price: `₹${Math.floor(Math.random() * 1000) + 499}`,
+    originalPrice: `₹${Math.floor(Math.random() * 1000) + 1499}`,
+    rating: Math.floor(Math.random() * 2) + 4,
+    reviews: Math.floor(Math.random() * 50) + 10,
+    badge: index === 0 ? 'NEW' : index === 1 ? 'BESTSELLER' : null,
+    badgeClass: index === 0 ? 'new' : index === 1 ? 'bestseller' : '',
+    image: currentCategory.images[index % currentCategory.images.length]
+  })), [currentCategory]);
   
+  const [wishlist, setWishlist] = useState([]);
+
+  const toggleWishlist = (productId) => {
+    if (wishlist.includes(productId)) {
+      setWishlist(wishlist.filter(id => id !== productId));
+    } else {
+      setWishlist([...wishlist, productId]);
+    }
+  };
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedFabrics, setSelectedFabrics] = useState([]);
   const [selectedSizes, setSelectedSizes] = useState([]);
@@ -185,17 +179,6 @@ export default function Collection() {
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [sortBy, setSortBy] = useState('Popularity');
   const [isSortOpen, setIsSortOpen] = useState(false);
-
-  const [wishlist, setWishlist] = useState([]);
-
-  const toggleWishlist = (productId) => {
-    if (wishlist.includes(productId)) {
-      setWishlist(wishlist.filter(id => id !== productId));
-    } else {
-      setWishlist([...wishlist, productId]);
-    }
-  };
-
   const totalFilters = selectedCategories.length + selectedFabrics.length + selectedSizes.length + selectedColors.length + (selectedRating ? 1 : 0) + (selectedDiscount ? 1 : 0);
 
   const resetFilters = () => {
@@ -239,7 +222,8 @@ export default function Collection() {
     <div className="collection-page">
       {/* Banner */}
       <div className="collection-banner">
-        <img src={bannerImg} alt="Kurti Banner" className="banner-image" />
+        <img src={currentCategory.banner} alt={currentCategory.title} className="banner-image" />
+
       </div>
 
       <div className="collection-main">
@@ -406,8 +390,6 @@ export default function Collection() {
                   })}
                 </div>
               </Section>
-
-
 
               {/* Size */}
               <Section title="SIZE">
@@ -582,7 +564,6 @@ export default function Collection() {
                     )}
                   </div>
                   
-
                   <div className="card-actions">
                     <button className="add-cart">
                       <ShoppingBag size={14} />

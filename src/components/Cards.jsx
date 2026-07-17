@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { Link } from 'react-router-dom';
 import './Cards.css';
 import { FiArrowRight, FiStar, FiUser, FiShoppingBag, FiHome, FiSmile, FiWatch, FiChevronLeft, FiChevronRight, FiGrid } from 'react-icons/fi';
 import kurthiImg from '../assets/images/kurthi3.png';
@@ -8,7 +9,7 @@ import shoeImg from '../assets/images/shoe.png';
 import watchImg from '../assets/images/watch.png';
 import homeImg from '../assets/images/home.png';
 import beautyImg from '../assets/images/beauty.png';
-import kidsImg from '../assets/images/t-shirt.png';
+import kidsImg from '../assets/images/kids.jpeg';
 
 const categories = [
   { name: 'Ethnic Wear', image: topImg, icon: <FiStar /> },
@@ -64,9 +65,9 @@ export default function Cards() {
               </div>
               <div className="category-text-wrapper">
                 <h3>{cat.name}</h3>
-                <a href={`/category/${cat.name.toLowerCase().replace(' ', '-')}`} className="shop-now-link">
+                <Link to={cat.name === 'Ethnic Wear' ? '/collection' : cat.name === 'Western Dresses' ? '/western' : `/category/${cat.name.toLowerCase().replace(' ', '-')}`} className="shop-now-link">
                   Shop Now <FiArrowRight />
-                </a>
+                </Link>
               </div>
             </div>
           </div>

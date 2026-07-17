@@ -1,7 +1,9 @@
 .footer-container {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
   background-color: #8f7a5b;
   color: #fcf7f7;
+
   width: 100%;
 }
 
@@ -12,7 +14,7 @@
   align-items: center;
   flex-wrap: wrap;
   padding: 30px 5%;
-  background-color: #faf9f7;
+  background-color: transparent;
   border-bottom: 1px solid #eaeaea;
   gap: 20px;
 }
@@ -25,6 +27,7 @@
 
 .feature-icon {
   font-size: 28px;
+
   color: #eae7e3;
 }
 
@@ -32,13 +35,14 @@
   margin: 0 0 4px 0;
   font-size: 14px;
   font-weight: 700;
+
   color: #e7e5e1;
 }
 
 .feature-text p {
   margin: 0;
   font-size: 12px;
-  color: #666;
+  color: black;
 }
 
 /* --- Main Footer Links --- */
@@ -63,6 +67,7 @@
   align-items: center;
   gap: 10px;
   margin-bottom: 20px;
+
   color: #f5f1eb;
   letter-spacing: -0.5px;
 }
@@ -90,17 +95,18 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
+  border: 1px solid white;
+  color: black;
   border: 1px solid #ddd;
-  color: #ece2e2;
   text-decoration: none;
   font-size: 16px;
   transition: all 0.3s ease;
 }
 
 .social-links a:hover {
-  background-color: #8f7a5b;
-  color: #fff;
-  border-color: #8f7a5b;
+  background-color: black;
+  color: white;
+  border-color: black;
 }
 
 .footer-col {
@@ -135,7 +141,7 @@
 }
 
 .footer-col ul li a:hover {
-  color: #ff6b6b;
+  color: white;
 }
 
 .footer-col-newsletter {
@@ -165,7 +171,7 @@
 }
 
 .newsletter-form button {
-  background-color:#8f7a5b;
+  background-color: #111;
   color: #fff;
   border: none;
   padding: 12px 20px;
@@ -177,7 +183,7 @@
 }
 
 .newsletter-form button:hover {
-  background-color: #8f7a5b;
+  background-color: #333;
 }
 
 .app-download-title {
@@ -197,7 +203,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background-color: #8f7a5b;
+  background-color: #111;
   color: #fff;
   border: none;
   padding: 8px 15px;
@@ -207,7 +213,7 @@
 }
 
 .app-btn:hover {
-  background-color: #8f7a5b;
+  background-color: #333;
 }
 
 .app-icon {
@@ -239,7 +245,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 40px 5%;
-  background-color: #f8f9fa;
+  background-color: transparent;
   border-top: 1px solid #eaeaea;
   flex-wrap: wrap;
   gap: 30px;
@@ -255,7 +261,7 @@
   align-items: center;
   gap: 15px;
   margin-bottom: 20px;
-  color: #555;
+  color: black;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 1px;
@@ -264,7 +270,7 @@
 .we-accept-title .line {
   flex: 1;
   height: 1px;
-  background-color: #ddd;
+  background-color: black;
   max-width: 150px;
 }
 
@@ -294,15 +300,15 @@
 .mc-circle-red { width: 16px; height: 16px; border-radius: 50%; background-color: #eb001b; position: relative; z-index: 2; margin-right: -6px; }
 .mc-circle-orange { width: 16px; height: 16px; border-radius: 50%; background-color: #f79e1b; position: relative; z-index: 1; }
 .payment-icon.rupay { color: #0088cc; font-style: italic; }
-.payment-icon.upi { color: #000; letter-spacing: -1px; }
+.payment-icon.upi { color: black; letter-spacing: -1px; }
 .payment-icon.paytm { color: #00b9f5; font-style: italic; }
-.payment-icon.amazonpay { color: #000; font-size: 14px; display: flex; align-items: baseline; }
+.payment-icon.amazonpay { color: black; font-size: 14px; display: flex; align-items: baseline; }
 .payment-icon.amazonpay span { color: #f99f1b; font-weight: 500; font-style: italic; }
 
 .divider-vertical {
   width: 1px;
   height: 60px;
-  background-color: #ddd;
+  background-color: black;
   display: none;
 }
 @media (min-width: 1024px) {
@@ -327,7 +333,7 @@
 
 .stat-icon-box {
   font-size: 24px;
-  color: #333;
+  color: black;
 }
 
 .stat-text {
@@ -337,19 +343,19 @@
 
 .stat-text strong {
   font-size: 16px;
-  color: #111;
+  color: black;
   line-height: 1.2;
 }
 
 .stat-text span {
   font-size: 12px;
-  color: #666;
+  color: black;
 }
 
 /* --- Bottom Dark Bar --- */
 .footer-bottom {
-  background-color: #1c1c1c;
-  color: #fff;
+  background-color: transparent;
+  color: black;
   padding: 30px 5%;
 }
 
@@ -392,7 +398,7 @@
 
 .secure-text span {
   font-size: 12px;
-  color: #aaa;
+  color: black;
   line-height: 1.4;
 }
 
@@ -412,24 +418,24 @@
 }
 
 .bottom-links a {
-  color: #ddd;
+  color: black;
   text-decoration: none;
   font-size: 13px;
   transition: color 0.3s ease;
 }
 
 .bottom-links a:hover {
-  color: #fff;
+  color: black;
 }
 
 .separator {
-  color: #555;
+  color: black;
   font-size: 12px;
 }
 
 .copyright {
   font-size: 13px;
-  color: #aaa;
+  color: black;
 }
 
 .language-selector {
@@ -440,7 +446,7 @@
 .lang-btn {
   background: transparent;
   border: 1px solid rgba(255,255,255,0.2);
-  color: #ddd;
+  color: black;
   padding: 10px 15px;
   border-radius: 6px;
   display: flex;
@@ -453,11 +459,30 @@
 
 .lang-btn:hover {
   border-color: rgba(255,255,255,0.5);
-  color: #fff;
+  color: black;
 }
 
 .dropdown-arrow {
   margin-bottom: 4px;
+}
+
+.contact-icon-wrapper {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: black;
+  background-color: transparent;
+  transition: all 0.3s ease;
+}
+
+.contact-icon-wrapper:hover {
+  background-color: black;
+  color: white;
 }
 
 /* Responsive */
