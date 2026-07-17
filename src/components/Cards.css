@@ -4,8 +4,8 @@ body {
 }
 
 .collection-section {
-  padding: 60px 5vw;
-  margin-bottom: 20px;
+  padding: 60px 5vw 10px 5vw;
+  margin-bottom: 0;
   background: #faf8f4;
   font-family: 'Inter', system-ui, sans-serif;
 }
