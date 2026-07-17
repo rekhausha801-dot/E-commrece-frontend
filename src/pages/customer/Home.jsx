@@ -26,14 +26,6 @@ const Home = () => {
       <OfferCarousel />
       <Cards />
       <TrendyCollection />
-    
-
-
-      
-
-    
-      
-     
     </div>
   );
 };

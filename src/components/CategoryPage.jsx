@@ -7,8 +7,12 @@ import {
 
 // Import images
 import bannerImg from '../assets/images/banner.png';
-import banner2Img from '../assets/images/banner2.png';
-import banner6Img from '../assets/images/banner6.png';
+import banner0Img from '../assets/images/banner0.png';
+import banner7Img from '../assets/images/banner7.png';
+import banner12Img from '../assets/images/banner12.png';
+import banner13Img from '../assets/images/banner13.png';
+import banner15Img from '../assets/images/baner15.png';
+import banner16Img from '../assets/images/banner16.png';
 import dffImg from '../assets/images/dff.png';
 
 
@@ -67,27 +71,42 @@ const CATEGORY_DATA = {
   },
   'footwear': {
     title: "Footwear Collection",
-    banner: bannerImg,
+    banner: banner7Img,
     images: [newFootwear1, footwear2Img, footwear3Img, footwear4Img]
+  },
+  'westernwear': {
+    title: "Western Wear",
+    banner: banner12Img,
+    images: [shirtImg, manImg, kidsImg, beautyImg]
+  },
+  'western-dresses': {
+    title: "Western Dresses",
+    banner: banner12Img,
+    images: [shirtImg, manImg, kidsImg, beautyImg]
+  },
+  'western': {
+    title: "Western Wear",
+    banner: banner12Img,
+    images: [shirtImg, manImg, kidsImg, beautyImg]
   },
   'home-decor': {
     title: "Home Decor",
-    banner: imgImg,
+    banner: banner13Img,
     images: [newHome1, newHome2, newHome3, newHome4]
   },
   'beauty': {
     title: "Beauty & Personal Care",
-    banner: banner2Img,
+    banner: banner13Img,
     images: [newBeauty1, newBeauty2, newBeauty3, newBeauty4]
   },
   'accessories': {
     title: "Accessories",
-    banner: watchBannerImg,
+    banner: banner16Img,
     images: [watchImg, watchImg, watchImg, watchImg]
   },
   'kids-fashion': {
     title: "Kids Fashion",
-    banner: dffImg,
+    banner: banner15Img,
     images: [newKids1, newKids2, newKids3, newKids4]
   }
 };
@@ -226,9 +245,36 @@ export default function CategoryPage() {
   return (
     <div className="collection-page">
       {/* Banner */}
-      <div className="collection-banner">
-        <img src={currentCategory.banner} alt={currentCategory.title} className="banner-image" />
-
+      <div className="collection-banner" style={{ position: 'relative' }}>
+        <img src={currentCategory.banner} alt={currentCategory.title} className="banner-image" style={{ objectPosition: 'top center' }} />
+        {currentCategory.title && (
+          <div className="banner-text-overlay" style={{
+            position: 'absolute',
+            left: '8%',
+            top: '54%',
+            transform: 'translateY(-50%)',
+            color: '#2b2b2b',
+            maxWidth: '450px'
+          }}>
+            <h1 style={{ 
+              fontSize: '48px', 
+              fontFamily: '"Playfair Display", Georgia, serif', 
+              fontWeight: '700',
+              marginBottom: '15px',
+              lineHeight: '1.1'
+            }}>
+              {currentCategory.title}
+            </h1>
+            <p style={{ 
+              fontSize: '16px', 
+              color: '#444', 
+              marginBottom: '0',
+              lineHeight: '1.6'
+            }}>
+              Discover our latest collection. Crafted for comfort, designed for elegance to elevate your everyday style.
+            </p>
+          </div>
+        )}
       </div>
 
       <div className="collection-main">
