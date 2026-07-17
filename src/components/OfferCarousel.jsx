@@ -12,7 +12,7 @@ const OfferCarousel = () => {
 
   const offers = [
     "20% off on your first order - code FIRST20",
-    "Free Shipping on all orders over ₹100999",
+    "Free Shipping on all orders over ₹10",
     "Buy 1 Get 2 Free on selected accessories"
   ];
 
