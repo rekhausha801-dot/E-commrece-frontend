@@ -35,7 +35,7 @@ export default function Cards() {
 
   return (
     <div className="collection-section">
-      <div className="trendy-header" style={{ marginBottom: '16px' }}>
+      <div className="trendy-header">
         <div className="trendy-eyebrow">
           <span className="eyebrow-line" />
           <span className="eyebrow-icon"><FiGrid /></span>
