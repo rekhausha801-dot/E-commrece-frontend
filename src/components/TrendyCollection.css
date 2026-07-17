@@ -112,11 +112,12 @@
 
 .trendy-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
   justify-content: center;
-  gap: 24px;
-  max-width: 100%;
+  gap: 28px;
+  max-width: 1560px;
   margin: 0 auto;
+  padding: 0 20px;
 }
 
 @media (max-width: 1100px) {
@@ -145,28 +146,34 @@
 
 
 
+/* ---------- Card Structure ---------- */
+
 .trendy-card {
-  background: #fff;
-  border-radius: 12px;
+  background: #f8f6f0;
+  border-radius: 24px;
   overflow: hidden;
   border: none;
-  /* box-shadow: 0 4px 20px rgba(10, 10, 10, 0.04); */
-  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  height: 100%;
+  max-width: 360px;
+  width: 100%;
+  margin: 0 auto;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+  position: relative;
 }
 
 .trendy-card:hover {
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
-  transform: translateY(-4px);
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
 }
 
 .trendy-image-wrapper {
   position: relative;
-  aspect-ratio: 10 / 8;
-  overflow: hidden;
-  background: #f4f1ea;
+  width: 100%;
+  aspect-ratio: 5 / 4;
+  flex-shrink: 0;
 }
 
 .trendy-image {
@@ -174,238 +181,205 @@
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.trendy-card:hover .trendy-image {
-  transform: scale(1.03);
+.wave-overlay {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 40px;
+  z-index: 1;
 }
 
+/* ---------- Badges and Icons ---------- */
 
 .trendy-badge {
   position: absolute;
-  top: 12px;
-  left: 12px;
-  padding: 5px 12px;
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 1.5px;
- 
+  top: 20px;
+  left: 20px;
+  background: #24362b;
   color: #fff;
-  text-transform: uppercase;
-  background: #9c7b45;
-  border-radius: 8px;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
   z-index: 2;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-
-
-.badge-new, .badge-sale, .badge-bestseller, .badge-new-pink, .badge-hot {
-  background: #204f27;
-  color: #f4f1f1; /* Subtle gold text */
-}
-
-.like-btn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(255, 255, 255, 0.92);
-  color: #0c0c0b;
-  font-size: 12px;
   display: flex;
   align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.badge-icon {
+  margin-right: 4px;
+  font-size: 10px;
+}
+
+.trendy-wishlist-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #ffffff;
+  border: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
   justify-content: center;
+  align-items: center;
+  color: #111;
+  font-size: 18px;
   cursor: pointer;
   z-index: 2;
-  transition: color 0.2s ease, transform 0.15s ease;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
 }
 
-.like-btn:hover {
-  transform: scale(1.08);
+.trendy-wishlist-btn:hover {
+  transform: scale(1.05);
+  color: #a67c52;
 }
 
-.like-btn.liked {
-  color: #9c7b45;
-}
-.like-btn:hover{
-  background-color:#9c7b45;
+.trendy-wishlist-btn.active {
+  color: #e74c3c;
 }
 
 /* ---------- Info ---------- */
 
 .trendy-info {
-  padding: 12px 12px 14px;
+  padding: 0 20px 20px 20px;
+  background: #f8f6f0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  flex-grow: 1;
+}
+
+.trendy-category-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: #7a6552;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: block;
 }
 
 .trendy-product-title {
-  font-size: 12.5px;
-  font-weight: 600;
-  line-height: 1.35;
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  font-weight: 800;
+  color: #111;
   margin: 0;
-  color: #4a3f30;
-  min-height: 34px;
-}
-
-.rating-row {
   display: flex;
-  align-items: center;
-  gap: 5px;
+  flex-direction: column;
+  line-height: 1.1;
+  letter-spacing: -0.5px;
 }
 
-.stars {
-  display: flex;
-  font-size: 11px;
-  gap: 1px;
+.cursive-text {
+  font-family: 'Caveat', 'Brush Script MT', cursive;
+  font-size: 32px;
+  font-weight: 400;
+  color: #a67c52;
+  margin-top: -8px;
 }
 
-.star-full {
-  color: #9c7b45;
-}
-
-.star-half {
-  color: #9c7b45;
-  opacity: 0.5;
-}
-
-.star-empty {
-  color: #e3ddd0;
-}
-
-.review-count {
-  font-size: 11px;
-  color: #a29c8f;
-}
-
-.trendy-price {
-  display: flex;
-  align-items: baseline;
-  gap: 7px;
-}
-
-.new-price {
-  font-size: 15px;
-  font-weight: 700;
-  color: #4a3f30;
-}
-
-.old-price {
-  font-size: 12px;
-  color: #b2ab9d;
-  text-decoration: line-through;
-}
-
-
-.add-to-cart {
-  position: relative;
-  margin-top: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
+.divider-line {
   width: 100%;
-  padding: 9px 0;
-  border-radius: 6px;
-  border: 1px solid transparent;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  cursor: pointer;
-  overflow: hidden;
-  transition: box-shadow 0.25s ease, transform 0.15s ease;
+  height: 1px;
+  background-color: rgba(0, 0, 0, 0.08);
+  margin: 16px 0;
 }
 
-.add-to-cart::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.3s ease;
-  z-index: 0;
-}
-
-.add-to-cart:hover::after {
-  transform: scaleX(1);
-}
-
-.add-to-cart:hover {
-  box-shadow: 0 6px 14px rgba(32, 28, 23, 0.14);
-}
-
-.add-to-cart:active {
-  transform: scale(0.98);
-}
-
-.cart-icon,
-.add-to-cart span {
-  position: relative;
-  z-index: 1;
-}
-
-.cart-icon {
-  font-size: 10.5px;
+.trendy-stats {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
 }
 
-.cart-tan {
-  background: #c9a06b;
-  color: #fff;
-  border-color: #c9a06b;
-}
-.cart-tan::after {
-  background: #a9834f;
+.trendy-stat-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.cart-outline {
-  background: #c9a06b;
-  color: #fff;
-  border-color: #c9a06b;
-}
-.cart-outline::after {
- background: #a9834f;
-}
-.cart-outline:hover {
-  color: #fff;
-}
-
-.cart-green {
-   background: #c9a06b;
-  color: #fff;
-  border-color: #c9a06b;
- 
-}
-.cart-green::after {
-  background: #a9834f;
+.stat-icon-wrapper {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #eae3d9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #4a3623;
+  font-size: 14px;
 }
 
-.cart-pink {
-  background: #c9a06b;
-  color: #fff;
-  border-color: #c9a06b;
- 
-}
-.cart-pink::after {
-  background: #a9834f;
+.stat-text {
+  display: flex;
+  flex-direction: column;
+  font-size: 11px;
+  color: #555;
+  line-height: 1.3;
 }
 
-.cart-orange {
-  background: #c9a06b;
-  color: #fff;
-  border-color: #c9a06b;
- 
- 
+.stat-text strong {
+  font-weight: 700;
+  font-size: 13px;
+  color: #111;
 }
-.cart-orange::after {
-   background: #a9834f;
- 
+
+.stat-divider {
+  width: 1px;
+  height: 24px;
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+.trendy-product-desc {
+  font-size: 13px;
+  color: #444;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+/* ---------- Button ---------- */
+
+.trendy-explore-btn {
+  margin-top: auto;
+  width: 100%;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, #4a3623, #2d1c10);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(45, 28, 16, 0.2);
+}
+
+.trendy-explore-btn:hover {
+  background: linear-gradient(135deg, #5c432d, #3e2617);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(45, 28, 16, 0.3);
+}
+
+.explore-icon {
+  font-size: 14px;
+  transition: transform 0.3s ease;
+}
+
+.trendy-explore-btn:hover .explore-icon {
+  transform: translateX(4px);
 }
 
 
