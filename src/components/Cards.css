@@ -1,13 +1,12 @@
-/* Ensure body takes the beige background */
 body {
   margin: 0;
   background-color: #FAF8F5; /* Matches the soft beige from the screenshot */
 }
 
 .collection-section {
-  padding: 50px 20px;
-  max-width: 1300px;
-  margin: 0 auto;
+  padding: 60px 5vw;
+  margin-bottom: 20px;
+  background: #faf8f4;
   font-family: 'Inter', system-ui, sans-serif;
 }
 
@@ -231,3 +230,32 @@ body {
   }
 }
 
+@media (max-width: 576px) {
+  .category-new-card {
+    flex: 0 0 180px;
+    height: 240px;
+  }
+  
+  .category-new-card-image {
+    height: 130px;
+  }
+
+  .scroll-button {
+    display: none; /* Hide scroll buttons on mobile, rely on native swipe */
+  }
+
+  .category-icon-wrapper {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+    margin-right: 10px;
+  }
+
+  .category-text-wrapper h3 {
+    font-size: 13px;
+  }
+  
+  .shop-now-link {
+    font-size: 11px;
+  }
+}

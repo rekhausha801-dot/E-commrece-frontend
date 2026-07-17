@@ -95,28 +95,23 @@
   position: absolute;
   top: 20px;
   right: 20px;
-  background: rgba(255, 255, 255, 0.9);
-  color: #000;
-  border: 1px solid #ddd;
-  border-radius: 20px;
-  padding: 8px 16px;
-  font-size: 13px;
-  font-weight: 500;
+  background: #ffffff;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   z-index: 10;
   transition: all 0.3s ease;
-  font-family: 'Inter', sans-serif;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
+  box-shadow: 0 0 10px rgba(244, 127, 32, 0.4);
 }
 
 .carousel-close-btn:hover {
-  background: #000;
-  color: #fff;
-  border-color: #000;
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(244, 127, 32, 0.6);
 }
 
 .carousel-control {
@@ -474,10 +469,11 @@
 }
 
 .tag-limited {
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 1px;
-  margin-top: 5px;
+  margin-top:5px;
+ 
 }
 
 .carousel-indicators {
