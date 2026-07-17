@@ -7,6 +7,7 @@ import dressImg from '../assets/images/dress.jpg';
 import poloImg from '../assets/images/polo.jpg';
 import cargoImg from '../assets/images/cargo.jpg';
 import sneakerImg from '../assets/images/sneaker.jpg';
+import jordanImg from '../assets/images/shoe-jordan.jpg';
 
 const TABS = [
   { id: 'trending', label: 'Trending Now', icon: <FaFire /> },
@@ -45,15 +46,15 @@ const ALL_PRODUCTS = [
   },
   {
     id: 3,
-    image: cargoImg,
+    image: jordanImg,
     badge: 'BESTSELLER',
     badgeClass: 'badge-bestseller',
-    title: 'Cargo Pants Collection',
-    description: 'Utility-inspired designs with multiple pockets and premium fabrics.',
+    title: 'Air Jordan 1 High',
+    description: 'Iconic high-top sneakers in a premium grey and white colorway.',
     stats: [
-      { icon: <FaTshirt />, text: '95+ Styles' },
-      { icon: <FaPalette />, text: 'Regular Fit' },
-      { icon: <FaMagic />, text: 'New Season' }
+      { icon: <FaShoePrints />, text: 'Limited Edition' },
+      { icon: <FaPalette />, text: 'Leather' },
+      { icon: <FaStar />, text: 'Top Rated' }
     ]
   }
 ];
@@ -181,6 +182,8 @@ const TrendyCollection = () => {
             onClick={() => {
               if (product.title.includes('Dress')) {
                 navigate('/category/womenswear');
+              } else if (product.title.includes('Jordan')) {
+                navigate('/category/footwear');
               } else {
                 navigate('/category/menswear');
               }
