@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaFire, FaStar, FaRegStar, FaStarHalfAlt, FaRegHeart, FaHeart, FaTag, FaMagic, FaShoppingBag } from 'react-icons/fa';
+import { FaFire, FaStar, FaRegStar, FaStarHalfAlt, FaRegHeart, FaHeart, FaTag, FaMagic, FaShoppingBag, FaTshirt, FaPalette, FaArrowRight, FaLeaf, FaShoePrints } from 'react-icons/fa';
 import './TrendyCollection.css';
 
-const coatImg = 'https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=500&q=80&auto=format&fit=crop';
-const vestImg = 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=500&q=80&auto=format&fit=crop';
-const beanieImg = 'https://images.unsplash.com/photo-1576871337622-98d48d1cf531?w=500&q=80&auto=format&fit=crop';
-const braletteImg = 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&q=80&auto=format&fit=crop';
-const slippersImg = 'https://images.unsplash.com/photo-1560343090-f0409e92791a?w=500&q=80&auto=format&fit=crop';
+import dressImg from '../assets/images/dress.jpg';
+import poloImg from '../assets/images/polo.jpg';
+import cargoImg from '../assets/images/cargo.jpg';
+import sneakerImg from '../assets/images/sneaker.jpg';
 
 const TABS = [
   { id: 'trending', label: 'Trending Now', icon: <FaFire /> },
@@ -20,64 +19,43 @@ const TABS = [
 const ALL_PRODUCTS = [
   {
     id: 1,
-    image: coatImg,
-    badge: 'NEW',
-    badgeClass: 'badge-new',
-    title: 'Chalier Warm Winter Headband for Women',
-    rating: 4,
-    reviews: 128,
-    price: '$119.00',
-    oldPrice: '$200.00',
-    cartClass: 'cart-tan',
+    image: dressImg,
+    badge: 'TRENDING',
+    badgeClass: 'badge-trending',
+    title: 'Elegant Midi Dress',
+    description: 'Flowy brown midi dress with a tied waist for a perfect silhouette.',
+    stats: [
+      { icon: <FaTshirt />, text: '50+ Designs' },
+      { icon: <FaPalette />, text: 'Premium Silk' },
+      { icon: <FaStar />, text: 'Best Sellers' }
+    ]
   },
   {
     id: 2,
-    image: vestImg,
-    badge: '-20%',
-    badgeClass: 'badge-sale',
-    title: "Lailezou Women's V Neck Knit Sweater Vest",
-    rating: 4.5,
-    reviews: 86,
-    price: '$39.00',
-    oldPrice: '$49.00',
-    cartClass: 'cart-outline',
+    image: poloImg,
+    badge: 'NEW',
+    badgeClass: 'badge-new',
+    title: 'Classic Polo Shirt',
+    description: 'Classic fit polo shirt in premium brown cotton.',
+    stats: [
+      { icon: <FaTshirt />, text: '100+ Styles' },
+      { icon: <FaPalette />, text: '10+ Colors' },
+      { icon: <FaMagic />, text: 'New Arrivals' }
+    ]
   },
   {
     id: 3,
-    image: beanieImg,
+    image: cargoImg,
     badge: 'BESTSELLER',
     badgeClass: 'badge-bestseller',
-    title: 'Men Letter Label Decor woolen Beanie hat',
-    rating: 4,
-    reviews: 64,
-    price: '$24.99',
-    oldPrice: null,
-    cartClass: 'cart-green',
-  },
-  {
-    id: 4,
-    image: braletteImg,
-    badge: 'NEW',
-    badgeClass: 'badge-new-pink',
-    title: 'Maidenform Pure Comfort Lace Bralette',
-    rating: 4.5,
-    reviews: 102,
-    price: '$40.00',
-    oldPrice: null,
-    cartClass: 'cart-pink',
-  },
-  {
-    id: 5,
-    image: slippersImg,
-    badge: 'HOT',
-    badgeClass: 'badge-hot',
-    title: 'Mahza Woman Sweater Autumn And Winter',
-    rating: 4.5,
-    reviews: 74,
-    price: '$50.00',
-    oldPrice: null,
-    cartClass: 'cart-orange',
-  },
+    title: 'Cargo Pants Collection',
+    description: 'Utility-inspired designs with multiple pockets and premium fabrics.',
+    stats: [
+      { icon: <FaTshirt />, text: '95+ Styles' },
+      { icon: <FaPalette />, text: 'Regular Fit' },
+      { icon: <FaMagic />, text: 'New Season' }
+    ]
+  }
 ];
 
 const BRANDS = [
@@ -162,18 +140,7 @@ const TrendyCollection = () => {
   };
 
   const getDisplayedProducts = () => {
-    switch (activeTab) {
-      case 'trending':
-        return [ALL_PRODUCTS[0], ALL_PRODUCTS[1], ALL_PRODUCTS[2], ALL_PRODUCTS[3]];
-      case 'bestsellers':
-        return [ALL_PRODUCTS[2], ALL_PRODUCTS[4], ALL_PRODUCTS[0], ALL_PRODUCTS[1]];
-      case 'new':
-        return [ALL_PRODUCTS[3], ALL_PRODUCTS[0], ALL_PRODUCTS[4], ALL_PRODUCTS[2]];
-      case 'limited':
-        return [ALL_PRODUCTS[1], ALL_PRODUCTS[3], ALL_PRODUCTS[2], ALL_PRODUCTS[4]];
-      default:
-        return [ALL_PRODUCTS[0], ALL_PRODUCTS[1], ALL_PRODUCTS[2], ALL_PRODUCTS[3]];
-    }
+    return ALL_PRODUCTS;
   };
 
   const displayedProducts = getDisplayedProducts();
@@ -215,33 +182,51 @@ const TrendyCollection = () => {
             style={{ cursor: 'pointer' }}
           >
             <div className="trendy-image-wrapper">
-              <span className={`trendy-badge ${product.badgeClass}`}>{product.badge}</span>
+              <span className={`trendy-badge ${product.badgeClass}`}>
+                {product.badge === 'NEW' && <FaLeaf className="badge-icon" />} {product.badge}
+              </span>
               <button
-                className={`like-btn ${likedIds.includes(product.id) ? 'liked' : ''}`}
+                className={`trendy-wishlist-btn ${likedIds.includes(product.id) ? 'active' : ''}`}
                 onClick={(e) => toggleLike(e, product.id)}
                 aria-label="Add to wishlist"
               >
                 {likedIds.includes(product.id) ? <FaHeart /> : <FaRegHeart />}
               </button>
               <img src={product.image} alt={product.title} className="trendy-image" />
+              <svg className="wave-overlay" viewBox="0 0 100 24" preserveAspectRatio="none">
+                <path d="M0,0 L60,16 Q85,26 100,14 L100,24 L0,24 Z" fill="#f8f6f0" />
+              </svg>
             </div>
 
             <div className="trendy-info">
-              <h3 className="trendy-product-title">{product.title}</h3>
-
-              <StarRating rating={product.rating} reviews={product.reviews} />
-
-              <div className="trendy-price">
-                <span className="new-price">{product.price}</span>
-                {product.oldPrice && <span className="old-price">{product.oldPrice}</span>}
+              <span className="trendy-category-eyebrow">TRENDING</span>
+              
+              <h3 className="trendy-product-title">
+                {product.title.replace(' Collection', '')}
+                <span className="cursive-text">Collection</span>
+              </h3>
+              
+              <div className="divider-line"></div>
+              
+              <div className="trendy-stats">
+                {product.stats && product.stats.map((stat, idx) => (
+                  <React.Fragment key={idx}>
+                    <div className="trendy-stat-item">
+                      <div className="stat-icon-wrapper">{stat.icon}</div>
+                      <div className="stat-text">
+                        <strong>{stat.text.split(' ')[0]}</strong>
+                        <span>{stat.text.split(' ').slice(1).join(' ')}</span>
+                      </div>
+                    </div>
+                    {idx < product.stats.length - 1 && <div className="stat-divider"></div>}
+                  </React.Fragment>
+                ))}
               </div>
 
-              <button 
-                className={`add-to-cart ${product.cartClass}`}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <span className="cart-icon"><FaShoppingBag /></span>
-                <span>Add to Cart</span>
+              {/* <p className="trendy-product-desc">{product.description}</p> */}
+
+              <button className="trendy-explore-btn">
+                Explore Collection <FaArrowRight className="explore-icon" />
               </button>
             </div>
           </div>
