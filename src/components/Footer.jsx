@@ -2,7 +2,8 @@ import React from 'react';
 import './Footer.css';
 import { 
   FiTruck, FiShield, FiRefreshCw, FiHeadphones, FiAward, FiTag,
-  FiFacebook, FiInstagram, FiTwitter, FiYoutube, FiLock, FiGlobe
+  FiFacebook, FiInstagram, FiTwitter, FiYoutube, FiLock, FiGlobe,
+  FiMapPin, FiPhone, FiVideo, FiMail
 } from 'react-icons/fi';
 import { FaPinterestP, FaGooglePlay, FaApple, FaCcVisa, FaCcMastercard, FaAmazonPay } from 'react-icons/fa';
 
@@ -71,14 +72,34 @@ const Footer = () => {
           </ul>
         </div>
 
-        <div className="footer-col-newsletter">
-          <h4>NEWSLETTER</h4>
-          <p>Subscribe to get updates on new arrivals, exclusive offers and more.</p>
-          <form className="newsletter-form">
-            <input type="email" placeholder="Enter your email" />
-            <button type="submit">Subscribe</button>
-          </form>
+        <div className="footer-col">
+          <h4>CONTACT US</h4>
+          <ul>
+            <li style={{ display: 'flex', alignItems: 'flex-start', gap: '15px', color: 'black', fontSize: '14px', marginBottom: '16px', lineHeight: '1.6' }}>
+              <div className="contact-icon-wrapper">
+                <FiMapPin size={16} />
+              </div>
+              <span style={{ marginTop: '4px' }}>
+                No 15, Shopping Street, <br />
+                T.Nagar, Chennai - 600017
+              </span>
+            </li>
+            <li style={{ display: 'flex', alignItems: 'center', gap: '15px', color: 'black', fontSize: '14px', marginBottom: '16px' }}>
+              <div className="contact-icon-wrapper">
+                <FiPhone size={16} />
+              </div>
+              <span>+91 9344567889</span>
+            </li>
+            <li style={{ display: 'flex', alignItems: 'center', gap: '15px', color: 'black', fontSize: '14px', marginBottom: '16px' }}>
+              <div className="contact-icon-wrapper">
+                <FiMail size={16} />
+              </div>
+              <a href="mailto:relietech@gmail.com" style={{ textDecoration: 'none', color: 'black' }}>relietech@gmail.com</a>
+            </li>
+          </ul>
         </div>
+
+
       </div>
     </footer>
   );

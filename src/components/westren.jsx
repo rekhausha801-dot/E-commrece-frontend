@@ -1,120 +1,121 @@
 import React, { useState } from 'react';
 import './Collection.css';
 import { 
-  Filter, Minus, Heart, ShoppingBag, Eye, LayoutGrid, Menu, ChevronDown, ChevronUp, X, SlidersHorizontal, Check, Star, Shirt
+  Filter, Heart, ShoppingBag, Eye, LayoutGrid, Menu, ChevronDown, ChevronUp, X, SlidersHorizontal, Check, Star
 } from 'lucide-react';
 
-import kurthi5Img from '../assets/images/kurthi5.png';
-import top3Img from '../assets/images/top3.png';
-import topImg from '../assets/images/top.png';
-import kurthi2Img from '../assets/images/kurthi2.png';
-import croptopImg from '../assets/images/croptop.png';
-import kurthi4Img from '../assets/images/kurthi4.png';
-import bannerImg from '../assets/images/banner2.png';
-import kurtiImg from '../assets/images/kurti.png';
-import kurthi3Img from '../assets/images/kurthi3.png';
+import bannerImg from '../assets/images/dff.png';
+import westren2Img from '../assets/images/westren2.png';
+import westren3Img from '../assets/images/westren3.png';
+import westren4Img from '../assets/images/westren4.png';
+import westren5Img from '../assets/images/westren5.png';
+import westren6Img from '../assets/images/westren6.png';
+import westren7Img from '../assets/images/westren7.png';
+import westren8Img from '../assets/images/westren8.png';
 
 const products = [
   {
     id: 1,
-    title: 'Embroidered Anarkali Kurti',
-    price: '₹899',
-    originalPrice: '₹1299',
+    title: 'Floral Maxi Dress',
+    price: '₹999',
+    originalPrice: '₹1399',
     rating: 5,
-    reviews: 24,
+    reviews: 26,
     badge: 'NEW',
     badgeClass: 'new',
-    image: top3Img,
-    colors: ['#9f3653', '#6d4c41', '#212121']
+    image: westren4Img,
+    colors: ['#e1b6bd', '#93adc6', '#cfb489']
   },
   {
     id: 2,
-    title: 'Printed Straight Kurti',
-    price: '₹699',
-    originalPrice: '₹999',
+    title: 'Black Bodycon Dress',
+    price: '₹899',
+    originalPrice: '₹1299',
     rating: 4,
-    reviews: 18,
+    reviews: 31,
     badge: 'BESTSELLER',
     badgeClass: 'bestseller',
-    image: kurthi5Img,
-    colors: ['#c62828', '#b71c1c', '#2e7d32']
+    image: westren3Img,
+    colors: ['#222222', '#8c1616', '#e0dfdf']
   },
   {
     id: 3,
-    title: 'Floral A-Line Kurti',
-    price: '₹799',
-    originalPrice: '₹999',
+    title: 'Blue Floral Midi Dress',
+    price: '₹879',
+    originalPrice: '₹1099',
     rating: 4,
-    reviews: 31,
+    reviews: 19,
     badge: '20% OFF',
     badgeClass: 'discount',
-    image: kurthi2Img,
-    colors: ['#00838f', '#f06292', '#ffb300']
+    image: westren4Img,
+    colors: ['#798cb3', '#e2a3b7', '#a1c29b']
   },
   {
     id: 4,
-    title: 'Cotton Daily Wear Kurti',
-    price: '₹649',
-    originalPrice: '₹899',
-    rating: 4,
-    reviews: 26,
+    title: 'Off-Shoulder Dress',
+    price: '₹949',
+    originalPrice: '₹1299',
+    rating: 5,
+    reviews: 22,
     badge: null,
-    image: kurthi4Img,
-    colors: ['#9f3653', '#37474f', '#283593']
+    image: westren5Img,
+    colors: ['#e4cdb5', '#c39580', '#2a2a2a']
   },
   {
     id: 5,
-    title: 'Rayon Printed Kurti',
-    price: '₹749',
+    title: 'Puff Sleeve Dress',
+    price: '₹849',
     originalPrice: '₹999',
-    rating: 4,
+    rating: 5,
     reviews: 17,
     badge: '15% OFF',
     badgeClass: 'discount',
-    image: croptopImg,
-    colors: ['#00838f', '#37474f']
+    image: westren6Img,
+    colors: ['#7f9e8a', '#c1c1c1', '#a38d7c']
   },
   {
     id: 6,
-    title: 'Chikankari Kurti',
-    price: '₹1299',
-    originalPrice: '₹1599',
-    rating: 5,
-    reviews: 23,
+    title: 'Shirt Dress',
+    price: '₹799',
+    originalPrice: '₹999',
+    rating: 4,
+    reviews: 14,
     badge: null,
-    image: topImg,
-    colors: ['#ffb703', '#fb8500']
+    image: westren7Img,
+    colors: ['#8f402c', '#1a1a1a', '#e8d4b8']
   },
   {
     id: 7,
-    title: 'Indo Western Kurti',
-    price: '₹899',
-    originalPrice: '₹1199',
-    rating: 4,
-    reviews: 15,
+    title: 'Lavender Tier Dress',
+    price: '₹999',
+    originalPrice: '₹1399',
+    rating: 5,
+    reviews: 23,
     badge: null,
-    image: kurtiImg,
-    colors: ['#111111', '#d32f2f']
+    image: westren8Img,
+    colors: ['#a69cc4', '#cfba99', '#c1897c']
   },
   {
     id: 8,
-    title: 'Embroidered Kurti',
-    price: '₹999',
-    originalPrice: '₹1499',
-    rating: 5,
-    reviews: 19,
+    title: 'Stripes Jumpsuit',
+    price: '₹949',
+    originalPrice: '₹1199',
+    rating: 4,
+    reviews: 18,
     badge: null,
-    image: kurthi3Img,
-    colors: ['#827717', '#e6c200']
+    image: westren3Img,
+    colors: ['#222222', '#ffffff', '#ba9375']
   }
 ];
 
 const CATEGORIES = [
-  { label: "Anarkali Kurtis", count: 32 },
-  { label: "Straight Kurtis", count: 48 },
-  { label: "A-Line Kurtis", count: 26 },
-  { label: "Co-Ord Sets", count: 18 },
-  { label: "Short Kurtis", count: 22 },
+  { label: "Dresses", count: 56 },
+  { label: "Maxi Dresses", count: 24 },
+  { label: "Midi Dresses", count: 18 },
+  { label: "Bodycon Dresses", count: 16 },
+  { label: "Skater Dresses", count: 20 },
+  { label: "Off-Shoulder", count: 14 },
+  { label: "Jumpsuits", count: 10 },
 ];
 
 const FABRICS = [
@@ -128,18 +129,12 @@ const FABRICS = [
 const SIZES = ["XS", "S", "M", "L", "XL", "XXL", "3XL"];
 
 const COLORS = [
-  { name: "Maroon", hex: "#7C2D3B" },
-  { name: "Rose", hex: "#D8607A" },
-  { name: "Blush", hex: "#E8B7C4" },
-  { name: "Coral", hex: "#E86A4E" },
-  { name: "Mustard", hex: "#E3A62B" },
-  { name: "Forest", hex: "#3B6B4A" },
-  { name: "Olive", hex: "#6B7A3A" },
-  { name: "Navy", hex: "#2A3A5C" },
-  { name: "Camel", hex: "#B4855A" },
-  { name: "Rust", hex: "#B45535" },
-  { name: "Ivory", hex: "#F1EAE0" },
-  { name: "Charcoal", hex: "#2B2B2E" },
+  { name: "Pink", hex: "#e1b6bd" },
+  { name: "Purple", hex: "#a69cc4" },
+  { name: "Blue", hex: "#798cb3" },
+  { name: "Green", hex: "#7f9e8a" },
+  { name: "Beige", hex: "#e4cdb5" },
+  { name: "Black", hex: "#222222" },
 ];
 
 const RATINGS = [5, 4, 3];
@@ -172,7 +167,7 @@ function Section({ title, children, defaultOpen = true }) {
   );
 }
 
-export default function Collection() {
+export default function WesternCollection() {
   
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedFabrics, setSelectedFabrics] = useState([]);
@@ -239,7 +234,12 @@ export default function Collection() {
     <div className="collection-page">
       {/* Banner */}
       <div className="collection-banner">
-        <img src={bannerImg} alt="Kurti Banner" className="banner-image" />
+        <img 
+          src={bannerImg} 
+          alt="Western Banner" 
+          className="banner-image" 
+          style={{ width: '100%', height: '350px', objectFit: 'cover', objectPosition: 'center top' }}
+        />
       </div>
 
       <div className="collection-main">
@@ -406,8 +406,6 @@ export default function Collection() {
                   })}
                 </div>
               </Section>
-
-
 
               {/* Size */}
               <Section title="SIZE">
@@ -582,7 +580,6 @@ export default function Collection() {
                     )}
                   </div>
                   
-
                   <div className="card-actions">
                     <button className="add-cart">
                       <ShoppingBag size={14} />
