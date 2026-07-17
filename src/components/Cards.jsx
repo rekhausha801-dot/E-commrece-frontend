@@ -1,7 +1,8 @@
 import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import './Cards.css';
-import { FiArrowRight, FiStar, FiUser, FiShoppingBag, FiHome, FiSmile, FiWatch, FiChevronLeft, FiChevronRight, FiGrid } from 'react-icons/fi';
+import { FiArrowRight, FiWatch, FiChevronLeft, FiChevronRight, FiGrid } from 'react-icons/fi';
+import { FaTshirt, FaFemale, FaUserTie, FaShoePrints, FaHome, FaMagic, FaChild, FaGem } from 'react-icons/fa';
 import kurthiImg from '../assets/images/kurthi3.png';
 import topImg from '../assets/images/top2.jpeg';
 import manImg from '../assets/images/man.png';
@@ -12,14 +13,14 @@ import beautyImg from '../assets/images/beauty.png';
 import kidsImg from '../assets/images/kids.jpeg';
 
 const categories = [
-  { name: 'Ethnic Wear', image: topImg, icon: <FiStar /> },
-  { name: 'Western Dresses', image: kurthiImg, icon: <FiStar /> },
-  { name: 'Menswear', image: manImg, icon: <FiUser /> },
-  { name: 'Footwear', image: shoeImg, icon: <FiShoppingBag /> },
-  { name: 'Home Decor', image: homeImg, icon: <FiHome /> },
-  { name: 'Beauty', image: beautyImg, icon: <FiSmile /> },
-  { name: 'Accessories', image: watchImg, icon: <FiWatch /> },
-  { name: 'Kids Fashion', image: kidsImg, icon: <FiSmile /> }
+  { name: 'Ethnic Wear', image: topImg, icon: <FaTshirt /> },
+  { name: 'Western Dresses', image: kurthiImg, icon: <FaFemale /> },
+  { name: 'Menswear', image: manImg, icon: <FaUserTie /> },
+  { name: 'Footwear', image: shoeImg, icon: <FaShoePrints /> },
+  { name: 'Home Decor', image: homeImg, icon: <FaHome /> },
+  { name: 'Beauty', image: beautyImg, icon: <FaMagic /> },
+  { name: 'Accessories', image: watchImg, icon: <FaGem /> },
+  { name: 'Kids Fashion', image: kidsImg, icon: <FaChild /> }
 ];
 
 export default function Cards() {
@@ -56,17 +57,16 @@ export default function Cards() {
         <div className="category-cards-container" ref={scrollRef}>
         {categories.map((cat, index) => (
           <div key={`${cat.name}-${index}`} className="category-new-card">
-            <div className="category-new-card-image">
+            <Link to={cat.name === 'Ethnic Wear' ? '/collection' : cat.name === 'Western Dresses' ? '/western' : `/category/${cat.name.toLowerCase().replace(' ', '-')}`} className="category-new-card-image" style={{ display: 'block' }}>
               <img src={cat.image} alt={cat.name} />
-            </div>
+            </Link>
             <div className="category-new-card-content">
               <div className="category-icon-wrapper">
                 {cat.icon}
               </div>
               <div className="category-text-wrapper">
-                <h3>{cat.name}</h3>
-                <Link to={cat.name === 'Ethnic Wear' ? '/collection' : cat.name === 'Western Dresses' ? '/western' : `/category/${cat.name.toLowerCase().replace(' ', '-')}`} className="shop-now-link">
-                  Shop Now <FiArrowRight />
+                <Link to={cat.name === 'Ethnic Wear' ? '/collection' : cat.name === 'Western Dresses' ? '/western' : `/category/${cat.name.toLowerCase().replace(' ', '-')}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                  <h3>{cat.name}</h3>
                 </Link>
               </div>
             </div>

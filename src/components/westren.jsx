@@ -4,7 +4,7 @@ import {
   Filter, Heart, ShoppingBag, Eye, LayoutGrid, Menu, ChevronDown, ChevronUp, X, SlidersHorizontal, Check, Star
 } from 'lucide-react';
 
-import bannerImg from '../assets/images/dff.png';
+import bannerImg from '../assets/images/banner12.png';
 import westren2Img from '../assets/images/westren2.png';
 import westren3Img from '../assets/images/westren3.png';
 import westren4Img from '../assets/images/westren4.png';
@@ -233,13 +233,41 @@ export default function WesternCollection() {
   return (
     <div className="collection-page">
       {/* Banner */}
-      <div className="collection-banner">
+      <div className="collection-banner" style={{ position: 'relative' }}>
         <img 
           src={bannerImg} 
           alt="Western Banner" 
           className="banner-image" 
-          style={{ width: '100%', height: '350px', objectFit: 'cover', objectPosition: 'center top' }}
+          style={{ width: '100%', height: '380px', objectFit: 'cover', objectPosition: 'top center' }}
         />
+        <div className="banner-text-overlay" style={{
+          position: 'absolute',
+          left: '8%',
+          top: '55%',
+          transform: 'translateY(-50%)',
+          color: '#2b2b2b',
+          maxWidth: '800px',
+          textAlign: 'left'
+        }}>
+          <h1 style={{ 
+            fontSize: '52px', 
+            fontFamily: '"Playfair Display", Georgia, serif', 
+            fontWeight: '600',
+            marginBottom: '15px',
+            lineHeight: '1.2',
+            whiteSpace: 'nowrap'
+          }}>
+            Western Dress Collection
+          </h1>
+          <p style={{ 
+            fontSize: '18px', 
+            color: '#444', 
+            marginBottom: '0',
+            fontFamily: 'Inter, sans-serif'
+          }}>
+            Trendy styles for every you
+          </p>
+        </div>
       </div>
 
       <div className="collection-main">
