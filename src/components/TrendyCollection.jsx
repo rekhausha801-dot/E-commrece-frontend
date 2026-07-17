@@ -23,7 +23,7 @@ const ALL_PRODUCTS = [
     badge: 'TRENDING',
     badgeClass: 'badge-trending',
     title: 'Elegant Midi Dress',
-    description: 'Flowy brown midi dress with a tied waist for a perfect silhouette.',
+    description: 'Flowy brown midi dress with an tied waist for a perfect silhouette.',
     stats: [
       { icon: <FaTshirt />, text: '50+ Designs' },
       { icon: <FaPalette />, text: 'Premium Silk' },
