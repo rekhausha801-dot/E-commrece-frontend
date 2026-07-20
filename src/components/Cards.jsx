@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import './Cards.css';
 import { FiArrowRight, FiWatch, FiChevronLeft, FiChevronRight, FiGrid } from 'react-icons/fi';
 import { FaTshirt, FaFemale, FaUserTie, FaShoePrints, FaHome, FaMagic, FaChild, FaGem } from 'react-icons/fa';
+import { GiRunningShoe } from 'react-icons/gi';
 import kurthiImg from '../assets/images/kurthi3.png';
 import topImg from '../assets/images/top2.jpeg';
 import manImg from '../assets/images/man.png';
@@ -16,7 +17,7 @@ const categories = [
   { name: 'Ethnic Wear', image: topImg, icon: <FaTshirt /> },
   { name: 'Western Dresses', image: kurthiImg, icon: <FaFemale /> },
   { name: 'Menswear', image: manImg, icon: <FaUserTie /> },
-  { name: 'Footwear', image: shoeImg, icon: <FaShoePrints /> },
+  { name: 'Footwear', image: shoeImg, icon: <GiRunningShoe /> },
   { name: 'Home Decor', image: homeImg, icon: <FaHome /> },
   { name: 'Beauty', image: beautyImg, icon: <FaMagic /> },
   { name: 'Accessories', image: watchImg, icon: <FaGem /> },
@@ -28,9 +29,10 @@ export default function Cards() {
 
   const scroll = (direction) => {
     if (scrollRef.current) {
-      const { scrollLeft, clientWidth } = scrollRef.current;
-      // Scroll by exactly one full view (4 cards)
-      const scrollTo = direction === 'left' ? scrollLeft - clientWidth : scrollLeft + clientWidth;
+      const { scrollLeft } = scrollRef.current;
+      // Scroll by one card step (approx 300px) instead of the full page width
+      const step = 300; 
+      const scrollTo = direction === 'left' ? scrollLeft - step : scrollLeft + step;
       scrollRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
     }
   };

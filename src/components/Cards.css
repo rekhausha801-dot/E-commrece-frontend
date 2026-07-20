@@ -104,11 +104,11 @@ body {
 }
 
 .category-new-card {
-  flex: 0 0 calc((100% - 60px) / 4); /* Exactly 4 cards visible per view */
+  flex: 0 0 calc((100% - 60px) / 4);
   height: 290px;
   background: #fff;
   border-radius: 16px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
   display: flex;
   flex-direction: column;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
