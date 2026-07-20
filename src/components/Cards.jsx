@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import './Cards.css';
 import { FiArrowRight, FiWatch, FiChevronLeft, FiChevronRight, FiGrid } from 'react-icons/fi';
 import { FaTshirt, FaFemale, FaUserTie, FaShoePrints, FaHome, FaMagic, FaChild, FaGem } from 'react-icons/fa';
+import { GiRunningShoe } from 'react-icons/gi';
 import kurthiImg from '../assets/images/kurthi3.png';
 import topImg from '../assets/images/top2.jpeg';
 import manImg from '../assets/images/man.png';
@@ -13,14 +14,14 @@ import beautyImg from '../assets/images/beauty.png';
 import kidsImg from '../assets/images/kids.jpeg';
 
 const categories = [
-  { name: 'Ethnic Wear', image: topImg, icon: <FaTshirt />, overlayTop: {text: 'Tradition', type: 'script'}, overlayBottom: {text: 'Meets Style', type: 'serif'}, subtitle: 'Timeless Beauty' },
-  { name: 'Western Dresses', image: kurthiImg, icon: <FaFemale />, overlayTop: {text: 'Style', type: 'script'}, overlayBottom: {text: 'Your Way', type: 'serif'}, subtitle: 'Effortless Elegance' },
-  { name: 'Menswear', image: manImg, icon: <FaUserTie />, overlayTop: {text: 'Dress', type: 'script'}, overlayBottom: {text: 'Like a Man', type: 'serif'}, subtitle: 'Sharp. Modern. You.' },
-  { name: 'Footwear', image: shoeImg, icon: <FaShoePrints />, overlayTop: {text: 'Step into', type: 'serif'}, overlayBottom: {text: 'Comfort', type: 'script'}, subtitle: 'For Every Move' },
-  { name: 'Home Decor', image: homeImg, icon: <FaHome />, overlayTop: {text: 'Make Home', type: 'serif'}, overlayBottom: {text: 'More Beautiful', type: 'script'}, subtitle: 'Live in Style' },
-  { name: 'Beauty', image: beautyImg, icon: <FaMagic />, overlayTop: {text: 'Discover', type: 'serif'}, overlayBottom: {text: 'Your Glow', type: 'script'}, subtitle: 'Radiant Beauty' },
-  { name: 'Accessories', image: watchImg, icon: <FaGem />, overlayTop: {text: 'The Perfect', type: 'serif'}, overlayBottom: {text: 'Details', type: 'script'}, subtitle: 'Elevate Your Look' },
-  { name: 'Kids Fashion', image: kidsImg, icon: <FaChild />, overlayTop: {text: 'Cute &', type: 'serif'}, overlayBottom: {text: 'Comfortable', type: 'script'}, subtitle: 'For Little Ones' }
+  { name: 'Ethnic Wear', image: topImg, icon: <FaTshirt /> },
+  { name: 'Western Dresses', image: kurthiImg, icon: <FaFemale /> },
+  { name: 'Menswear', image: manImg, icon: <FaUserTie /> },
+  { name: 'Footwear', image: shoeImg, icon: <GiRunningShoe /> },
+  { name: 'Home Decor', image: homeImg, icon: <FaHome /> },
+  { name: 'Beauty', image: beautyImg, icon: <FaMagic /> },
+  { name: 'Accessories', image: watchImg, icon: <FaGem /> },
+  { name: 'Kids Fashion', image: kidsImg, icon: <FaChild /> }
 ];
 
 export default function Cards() {
@@ -28,9 +29,10 @@ export default function Cards() {
 
   const scroll = (direction) => {
     if (scrollRef.current) {
-      const { scrollLeft, clientWidth } = scrollRef.current;
-      // Scroll by exactly one full view (4 cards)
-      const scrollTo = direction === 'left' ? scrollLeft - clientWidth : scrollLeft + clientWidth;
+      const { scrollLeft } = scrollRef.current;
+      // Scroll by one card step (approx 300px) instead of the full page width
+      const step = 300; 
+      const scrollTo = direction === 'left' ? scrollLeft - step : scrollLeft + step;
       scrollRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
     }
   };

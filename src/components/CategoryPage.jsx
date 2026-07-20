@@ -225,7 +225,7 @@ export default function CategoryPage() {
 
   const renderStars = (rating) => {
     return Array.from({ length: 5 }).map((_, idx) => (
-      <Star key={idx} size={12} fill={idx < rating ? "#fabb05" : "#e0e0e0"} color={idx < rating ? "#fabb05" : "#e0e0e0"} />
+      <Star key={idx} size={12} fill={idx < rating ? "#8f7a5b" : "#e0e0e0"} color={idx < rating ? "#8f7a5b" : "#e0e0e0"} />
     ));
   };
 
@@ -497,8 +497,8 @@ export default function CategoryPage() {
                           <Star 
                             key={idx} 
                             size={14} 
-                            fill={idx < r ? "#111" : "#e0e0e0"} 
-                            color={idx < r ? "#111" : "#e0e0e0"} 
+                            fill={idx < r ? "#8f7a5b" : "#e0e0e0"} 
+                            color={idx < r ? "#8f7a5b" : "#e0e0e0"} 
                           />
                         ))}
                       </div>
