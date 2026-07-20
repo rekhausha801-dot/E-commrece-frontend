@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import './Collection.css';
 import { 
   Filter, Heart, ShoppingBag, Eye, LayoutGrid, Menu, ChevronDown, ChevronUp, X, SlidersHorizontal, Check, Star
@@ -39,7 +39,7 @@ import footwear4Img from '../assets/images/footwear4.png';
 import imgImg from '../assets/images/img.jpeg';
 import watchBannerImg from '../assets/images/img2.jpeg';
 
-// New images
+
 import newHome1 from '../assets/images/new_home_decor_1.png';
 import newHome2 from '../assets/images/new_home_decor_2.png';
 import newHome3 from '../assets/images/new_home_decor_3.png';
@@ -61,12 +61,12 @@ import newFootwear1 from '../assets/images/new_footwear_1.png';
 const CATEGORY_DATA = {
   'womenswear': {
     title: "Womenswear Collection",
-    banner: banner2Img,
+    banner: banner0Img,
     images: [beautyImg, bannerImg, imgImg, manImg]
   },
   'menswear': {
     title: "Menswear Collection",
-    banner: banner6Img,
+    banner: banner15Img,
     images: [mens1, mens2, mens3, mens4, mens5,mens]
   },
   'footwear': {
@@ -164,6 +164,7 @@ function Section({ title, children, defaultOpen = true }) {
 
 export default function CategoryPage() {
   const { categoryId } = useParams();
+  const navigate = useNavigate();
   const currentCategory = CATEGORY_DATA[categoryId] || {
     title: "Exclusive Collection",
     banner: bannerImg,
@@ -581,7 +582,12 @@ export default function CategoryPage() {
 
           <div className={`products-grid ${isMobileFilterOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
             {sortedProducts.map(product => (
-              <div key={product.id} className="product-card">
+              <div 
+                key={product.id} 
+                className="product-card"
+                onClick={() => navigate(`/product/${product.id}`, { state: { product } })}
+                style={{ cursor: 'pointer' }}
+              >
                 <div className="card-image-wrap">
                   {product.badge && (
                     <span className={`badge ${product.badgeClass}`}>{product.badge}</span>

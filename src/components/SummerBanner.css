@@ -1,0 +1,172 @@
+.summer-banner-wrapper {
+  padding: 0 5vw 60px 5vw;
+  background-color: #FAF8F5; /* Matches overall theme */
+}
+
+.summer-banner {
+  position: relative;
+  display: flex;
+  height: 340px;
+  max-width: 1300px;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+
+/* Right Side Image */
+.summer-banner-image {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: calc(70% + 70px);
+  height: 100%;
+  z-index: 1;
+}
+
+.summer-banner-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Left Side Content */
+.summer-banner-content {
+  position: relative;
+  width: 30%;
+  height: 100%;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.summer-banner-inner {
+  text-align: center;
+  padding: 10px 20px;
+}
+
+.summer-eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.summer-line {
+  width: 50px;
+  height: 1px;
+  background-color: rgba(166, 124, 82, 0.4);
+}
+
+.summer-season {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  color: #a67c52;
+  text-transform: uppercase;
+}
+
+.summer-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 52px;
+  font-weight: 400;
+  letter-spacing: 2px;
+  color: #3b2b23;
+  margin: 0;
+  line-height: 1;
+}
+
+.summer-subtitle {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 26px;
+  font-weight: 400;
+  letter-spacing: 7px;
+  color: #b08d5b;
+  margin: 8px 0 24px 0;
+}
+
+.summer-desc {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 11px;
+  color: #7a6e67;
+  line-height: 1.6;
+  margin: 0 0 32px 0;
+  font-weight: 500;
+}
+
+.summer-shop-btn {
+  background-color: #a87f4c;
+  color: #fff;
+  border: none;
+  border-radius: 2px;
+  padding: 12px 28px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  margin: 0 auto;
+}
+
+.summer-shop-btn:hover {
+  background-color: #8c683c;
+}
+
+.summer-btn-icon {
+  font-size: 10px;
+  transition: transform 0.3s ease;
+}
+
+.summer-shop-btn:hover .summer-btn-icon {
+  transform: translateX(4px);
+}
+
+/* SVG Curve */
+.summer-banner-curve-container {
+  position: absolute;
+  top: 0;
+  left: 30%;
+  width: 140px;
+  height: 100%;
+  z-index: 2;
+  /* Precisely center the SVG width across the 30/70 boundary */
+  transform: translateX(-50%); 
+}
+
+.summer-curve-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+@media (max-width: 992px) {
+  .summer-banner {
+    flex-direction: column;
+    height: auto;
+  }
+  
+  .summer-banner-image {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    order: 2;
+  }
+  
+  .summer-banner-content {
+    width: 100%;
+    order: 1;
+    padding: 60px 20px;
+  }
+  
+  .summer-banner-curve-container {
+    display: none; /* Hide curve on mobile stacking */
+  }
+}

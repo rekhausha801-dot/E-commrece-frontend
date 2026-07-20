@@ -56,15 +56,48 @@ const ALL_PRODUCTS = [
       { icon: <FaPalette />, text: 'Leather' },
       { icon: <FaStar />, text: 'Top Rated' }
     ]
+  },
+  {
+    id: 4,
+    image: cargoImg,
+    badge: 'TRENDING',
+    badgeClass: 'badge-trending',
+    title: 'Cargo Pants Collection',
+    description: 'Utility-inspired designs with multiple pockets and premium fabrics.',
+    stats: [
+      { icon: <FaTshirt />, text: '95+ Styles' },
+      { icon: <FaPalette />, text: 'Regular Fit' },
+      { icon: <FaMagic />, text: 'New Season' }
+    ]
   }
 ];
 
 const BRANDS = [
-  { name: 'ZARA', class: 'brand-zara' },
-  { name: 'H&M', class: 'brand-hm' },
-  { name: 'Levi\'s', class: 'brand-levis' },
-  { name: 'PUMA', class: 'brand-puma' },
-  { name: 'adidas', class: 'brand-adidas' }
+  { 
+    name: 'zudio', 
+    class: 'brand-zudio',
+    bgClass: 'bg-glass-wave'
+  },
+  { 
+    name: 'ZARA', 
+    class: 'brand-zara',
+    bgClass: 'bg-glass-wave'
+  },
+  { 
+    name: 'H&M', 
+    class: 'brand-hm',
+    bgClass: 'bg-glass-wave'
+  },
+  { 
+    name: 'Levi\'s', 
+    class: 'brand-levis',
+    bgClass: 'bg-glass-wave'
+  },
+  { 
+    name: 'PUMA', 
+    class: 'brand-puma',
+    bgClass: 'bg-glass-wave'
+  }
 ];
 
 function StarRating({ rating, reviews }) {
@@ -148,6 +181,41 @@ const TrendyCollection = () => {
 
   return (
     <section className="trendy-section">
+      <div className="brands-section">
+        <div className="brands-header">
+          <div className="brands-eyebrow">
+            <span className="brands-line" />
+            <span className="brands-star">✦</span>
+            <span className="brands-line" />
+          </div>
+          <h2 className="brands-title">
+            <span className="brands-title-top">Top</span> BRANDS
+          </h2>
+          <div className="brands-eyebrow" style={{ marginBottom: '12px' }}>
+          </div>
+        </div>
+
+        <div className="brands-marquee-container">
+          <div className="brands-marquee">
+            {[...BRANDS, ...BRANDS, ...BRANDS].map((brand, index) => (
+              <div className={`brand-card ${brand.bgClass}`} key={index}>
+                <div className="brand-content-centered">
+                  <div className="brand-logo-elegant">
+                    {brand.name === 'zudio' ? 'ZUDIO' : brand.name}
+                  </div>
+                  
+                  <div className="brand-floral-divider">
+                    <span className="floral-line"></span>
+                    <span className="floral-icon-small">✦</span>
+                    <span className="floral-line"></span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
       <div className="trendy-header">
         <div className="trendy-eyebrow">
           <span className="eyebrow-line" />
@@ -161,33 +229,12 @@ const TrendyCollection = () => {
         
       </div>
 
-      {/* <div className="trendy-tabs">
-        {TABS.map((tab) => (
-          <button
-            key={tab.id}
-            className={`trendy-tab ${activeTab === tab.id ? 'active' : ''}`}
-            onClick={() => setActiveTab(tab.id)}
-          >
-            <span className="tab-icon">{tab.icon}</span>
-            {tab.label}
-          </button>
-        ))}
-      </div> */}
-
       <div className="trendy-grid">
         {displayedProducts.map((product) => (
           <div 
             className="trendy-card" 
             key={product.id}
-            onClick={() => {
-              if (product.title.includes('Dress')) {
-                navigate('/category/womenswear');
-              } else if (product.title.includes('Jordan')) {
-                navigate('/category/footwear');
-              } else {
-                navigate('/category/menswear');
-              }
-            }}
+            onClick={() => navigate(`/product/${product.id}`, { state: { product } })}
             style={{ cursor: 'pointer' }}
           >
             <div className="trendy-image-wrapper">
@@ -208,30 +255,18 @@ const TrendyCollection = () => {
             </div>
 
             <div className="trendy-info">
-              <span className="trendy-category-eyebrow">TRENDING</span>
               
               <h3 className="trendy-product-title">
                 {product.title.replace(' Collection', '')}
-                <span className="cursive-text">Collection</span>
               </h3>
               
-              <div className="divider-line"></div>
+              <p className="trendy-subtitle">
+                {product.title.includes('Dress') ? 'Premium Silhouette' : product.title.includes('Jordan') ? 'Streetwear Essentials' : product.title.includes('Polo') ? 'Classic Wardrobe' : 'Modern Utility'}
+              </p>
               
-              <div className="trendy-stats">
-                {product.stats && product.stats.map((stat, idx) => (
-                  <React.Fragment key={idx}>
-                    <div className="trendy-stat-item">
-                      {/* <div className="stat-icon-wrapper">{stat.icon}</div>
-                      <div className="stat-text">
-                        <strong>{stat.text.split(' ')[0]}</strong>
-                        <span>{stat.text.split(' ').slice(1).join(' ')}</span>
-                      </div> */}
-                    </div>
-                    {/* {idx < product.stats.length - 1 && <div className="stat-divider"></div>} */}
-                  </React.Fragment>
-                ))}
+              <div className="trendy-divider">
+                <span className="diamond">✦</span>
               </div>
-              {/* <p className="trendy-product-desc">{product.description}</p> */}
 
               <button className="trendy-explore-btn">
                 Explore Collection <FaArrowRight className="explore-icon" />
@@ -239,38 +274,6 @@ const TrendyCollection = () => {
             </div>
           </div>
         ))}
-      </div>
-
-      <div className="brands-section">
-        <div className="brands-header">
-          <div className="brands-eyebrow">
-            <span className="brands-line" />
-            <span className="brands-star">✦</span>
-            <span className="brands-line" />
-          </div>
-          <h2 className="brands-title">TOP BRANDS</h2>
-          <div className="brands-eyebrow" style={{ marginBottom: '12px' }}>
-            <span className="brands-line" />
-            <span className="brands-star">✦</span>
-            <span className="brands-line" />
-          </div>
-          <p className="brands-subtitle">Discover 100+ premium brands and love your style</p>
-        </div>
-
-        <div className="brands-marquee-container">
-          <div className="brands-marquee">
-            {[...BRANDS, ...BRANDS, ...BRANDS].map((brand, index) => (
-              <div className="brand-card" key={index}>
-                <span className="brand-label">OFFICIAL BRAND</span>
-                <span className={`brand-logo-text ${brand.class}`}>{brand.name}</span>
-                <div className="brand-divider">
-                  <span className="brand-diamond">✦</span>
-                </div>
-                <span className="brand-bottom-text">Premium Collection</span>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
     </section>
   );

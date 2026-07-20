@@ -7,6 +7,7 @@ import b1 from '../../assets/banners/b1.jpeg';
 import OfferCarousel from '../../components/OfferCarousel';
 import Cards from '../../components/Cards';
 import TrendyCollection from '../../components/TrendyCollection';
+import SummerBanner from '../../components/SummerBanner';
 
 const Home = () => {
 
@@ -26,6 +27,7 @@ const Home = () => {
       <OfferCarousel />
       <Cards />
       <TrendyCollection />
+      <SummerBanner />
     </div>
   );
 };

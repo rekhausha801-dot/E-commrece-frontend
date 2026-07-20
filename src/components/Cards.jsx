@@ -13,14 +13,14 @@ import beautyImg from '../assets/images/beauty.png';
 import kidsImg from '../assets/images/kids.jpeg';
 
 const categories = [
-  { name: 'Ethnic Wear', image: topImg, icon: <FaTshirt /> },
-  { name: 'Western Dresses', image: kurthiImg, icon: <FaFemale /> },
-  { name: 'Menswear', image: manImg, icon: <FaUserTie /> },
-  { name: 'Footwear', image: shoeImg, icon: <FaShoePrints /> },
-  { name: 'Home Decor', image: homeImg, icon: <FaHome /> },
-  { name: 'Beauty', image: beautyImg, icon: <FaMagic /> },
-  { name: 'Accessories', image: watchImg, icon: <FaGem /> },
-  { name: 'Kids Fashion', image: kidsImg, icon: <FaChild /> }
+  { name: 'Ethnic Wear', image: topImg, icon: <FaTshirt />, overlayTop: {text: 'Tradition', type: 'script'}, overlayBottom: {text: 'Meets Style', type: 'serif'}, subtitle: 'Timeless Beauty' },
+  { name: 'Western Dresses', image: kurthiImg, icon: <FaFemale />, overlayTop: {text: 'Style', type: 'script'}, overlayBottom: {text: 'Your Way', type: 'serif'}, subtitle: 'Effortless Elegance' },
+  { name: 'Menswear', image: manImg, icon: <FaUserTie />, overlayTop: {text: 'Dress', type: 'script'}, overlayBottom: {text: 'Like a Man', type: 'serif'}, subtitle: 'Sharp. Modern. You.' },
+  { name: 'Footwear', image: shoeImg, icon: <FaShoePrints />, overlayTop: {text: 'Step into', type: 'serif'}, overlayBottom: {text: 'Comfort', type: 'script'}, subtitle: 'For Every Move' },
+  { name: 'Home Decor', image: homeImg, icon: <FaHome />, overlayTop: {text: 'Make Home', type: 'serif'}, overlayBottom: {text: 'More Beautiful', type: 'script'}, subtitle: 'Live in Style' },
+  { name: 'Beauty', image: beautyImg, icon: <FaMagic />, overlayTop: {text: 'Discover', type: 'serif'}, overlayBottom: {text: 'Your Glow', type: 'script'}, subtitle: 'Radiant Beauty' },
+  { name: 'Accessories', image: watchImg, icon: <FaGem />, overlayTop: {text: 'The Perfect', type: 'serif'}, overlayBottom: {text: 'Details', type: 'script'}, subtitle: 'Elevate Your Look' },
+  { name: 'Kids Fashion', image: kidsImg, icon: <FaChild />, overlayTop: {text: 'Cute &', type: 'serif'}, overlayBottom: {text: 'Comfortable', type: 'script'}, subtitle: 'For Little Ones' }
 ];
 
 export default function Cards() {
@@ -55,9 +55,11 @@ export default function Cards() {
         </button>
 
         <div className="category-cards-container" ref={scrollRef}>
-        {categories.map((cat, index) => (
+        {categories.map((cat, index) => {
+          const targetLink = cat.name === 'Ethnic Wear' ? '/collection' : cat.name === 'Western Dresses' ? '/western' : `/category/${cat.name.toLowerCase().replace(' ', '-')}`;
+          return (
           <div key={`${cat.name}-${index}`} className="category-new-card">
-            <Link to={cat.name === 'Ethnic Wear' ? '/collection' : cat.name === 'Western Dresses' ? '/western' : `/category/${cat.name.toLowerCase().replace(' ', '-')}`} className="category-new-card-image" style={{ display: 'block' }}>
+            <Link to={targetLink} className="category-new-card-image" style={{ display: 'block' }}>
               <img src={cat.image} alt={cat.name} />
             </Link>
             <div className="category-new-card-content">
@@ -65,13 +67,17 @@ export default function Cards() {
                 {cat.icon}
               </div>
               <div className="category-text-wrapper">
-                <Link to={cat.name === 'Ethnic Wear' ? '/collection' : cat.name === 'Western Dresses' ? '/western' : `/category/${cat.name.toLowerCase().replace(' ', '-')}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <Link to={targetLink} style={{ textDecoration: 'none', color: 'inherit' }}>
                   <h3>{cat.name}</h3>
+                  <span className="category-subtitle">{cat.subtitle}</span>
                 </Link>
               </div>
+              <Link to={targetLink} className="category-arrow-btn">
+                <FiArrowRight />
+              </Link>
             </div>
           </div>
-        ))}
+        )})}
         </div>
 
         <button className="scroll-button right" onClick={() => scroll('right')} aria-label="Scroll right">
