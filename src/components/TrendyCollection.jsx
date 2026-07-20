@@ -272,6 +272,7 @@ const TrendyCollection = () => {
           </div>
         </div>
       </div>
+
     </section>
   );
 };

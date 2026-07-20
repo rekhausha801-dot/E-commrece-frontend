@@ -1,6 +1,6 @@
 .trendy-section {
   background: #faf8f4;
-  padding: 10px 5vw 60px 5vw;
+  padding: 10px 5vw 0px 5vw;
   font-family: 'Poppins', 'Segoe UI', sans-serif;
   color: #4a3f30;
 }
@@ -385,7 +385,7 @@
 
 
 .brands-section {
-  margin: 80px auto 40px;
+  margin: 80px auto 0px;
   text-align: center;
 }
 
