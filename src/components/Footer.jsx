@@ -17,7 +17,7 @@ const Footer = () => {
       <div className="footer-main">
         <div className="footer-col-brand">
           <div className="footer-logo">
-            JR Shopper.
+            {/* JR Shopper. */}
           </div>
           <p className="brand-desc">
             Your one-stop destination for trendy products, best deals and an exceptional shopping experience.

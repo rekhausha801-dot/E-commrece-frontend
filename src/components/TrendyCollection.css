@@ -10,25 +10,25 @@
 .trendy-header {
   text-align: center;
   max-width: 640px;
-  margin: 0 auto 32px;
+  margin: 0 auto 50px;
 }
 
 .trendy-eyebrow {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 12px;
   font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 2px;
-  color: #9c7b45;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: #b58d4e; /* Brighter gold to match image */
   margin-bottom: 12px;
 }
 
 .eyebrow-line {
   width: 24px;
   height: 1px;
-  background: #d8cfbd;
+  background: #e3d3bd; /* Lighter gold/beige line */
 }
 
 .eyebrow-icon {
@@ -38,15 +38,15 @@
 
 .trendy-title {
   font-family: 'Playfair Display', Georgia, serif;
-  font-size: 38px;
-  font-weight: 700;
+  font-size: 44px; /* Larger font size */
+  font-weight: 800; /* Extra bold matching the image */
   margin: 0 0 10px;
-  color: #4a3f30;
-  letter-spacing: 0.2px;
+  color: #4a3f35;
+  letter-spacing: -0.5px; /* Tighter letter spacing */
 }
 
 .trendy-title-accent {
-  color: #9c7b45;
+  color: #b58d4e; /* Brighter gold matching the image */
 }
 
 .trendy-subtitle {
@@ -112,9 +112,9 @@
 
 .trendy-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   justify-content: center;
-  gap: 28px;
+  gap: 16px;
   max-width: 1560px;
   margin: 0 auto;
   padding: 0 20px;
@@ -132,6 +132,7 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
+
   .trendy-title {
     font-size: 28px;
   }
@@ -150,14 +151,14 @@
 
 .trendy-card {
   background: #f8f6f0;
-  border-radius: 24px;
+  border-radius: 12px;
   overflow: hidden;
   border: none;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   display: flex;
   flex-direction: column;
   height: 100%;
-  max-width: 320px;
+  max-width: 280px;
   width: 100%;
   margin: 0 auto;
   transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
@@ -172,7 +173,7 @@
 .trendy-image-wrapper {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 10;
+  height: 250px;
   flex-shrink: 0;
 }
 
@@ -209,7 +210,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .badge-icon {
@@ -219,21 +220,22 @@
 
 .trendy-wishlist-btn {
   position: absolute;
-  top: 20px;
-  right: 20px;
-  background: #ffffff;
-  border: none;
-  width: 44px;
-  height: 44px;
+  top: 16px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #111;
-  font-size: 18px;
+  color: #333;
+  font-size: 15px;
   cursor: pointer;
   z-index: 2;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
   transition: all 0.3s ease;
 }
 
@@ -257,92 +259,86 @@
 }
 
 .trendy-category-eyebrow {
-  font-size: 11px;
-  font-weight: 600;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
   letter-spacing: 1.5px;
-  color: #7a6552;
+  color: #a67c52;
   text-transform: uppercase;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   display: block;
 }
 
 .trendy-product-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 28px;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 24px;
   font-weight: 800;
   color: #111;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
+  margin: 0 0 4px 0;
   line-height: 1.1;
   letter-spacing: -0.5px;
 }
 
-.cursive-text {
-  font-family: 'Caveat', 'Brush Script MT', cursive;
-  font-size: 32px;
-  font-weight: 400;
-  color: #a67c52;
-  margin-top: -8px;
-}
-
-.divider-line {
-  width: 100%;
-  height: 1px;
-  background-color: rgba(0, 0, 0, 0.08);
-  margin: 12px 0;
-}
-
-.trendy-stats {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.trendy-stat-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.stat-icon-wrapper {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: #eae3d9;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #4a3623;
+.trendy-subtitle {
+  font-family: system-ui, -apple-system, sans-serif;
   font-size: 14px;
+  font-weight: 600;
+  color: #a67c52;
+  margin: 0;
 }
 
-.stat-text {
+.trendy-divider {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: #a67c52;
+  margin: 14px 0;
+  font-size: 8px;
+}
+
+.trendy-divider::before,
+.trendy-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid rgba(166, 124, 82, 0.3);
+}
+
+.trendy-divider::before {
+  margin-right: 12px;
+}
+
+.trendy-divider::after {
+  margin-left: 12px;
+}
+
+.trendy-desc {
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 12px;
+  color: #666;
+  line-height: 1.4;
+  margin: 0 0 12px 0;
+}
+
+.trendy-stats-pill {
+  font-family: system-ui, -apple-system, sans-serif;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(166, 124, 82, 0.6);
+  border-radius: 20px;
+  padding: 4px 12px;
   font-size: 11px;
-  color: #555;
-  line-height: 1.3;
-}
-
-.stat-text strong {
-  font-weight: 700;
-  font-size: 13px;
-  color: #111;
-}
-
-.stat-divider {
-  width: 1px;
-  height: 24px;
-  background-color: rgba(0, 0, 0, 0.08);
-}
-
-.trendy-product-desc {
-  font-size: 13px;
   color: #444;
-  line-height: 1.5;
-  margin-bottom: 20px;
+  font-weight: 500;
+  margin-bottom: 16px;
+  width: fit-content;
+}
+
+.trendy-stats-pill .dot {
+  width: 6px;
+  height: 6px;
+  background-color: #a67c52;
+  border-radius: 50%;
+  margin-right: 6px;
 }
 
 /* ---------- Button ---------- */
@@ -350,13 +346,13 @@
 .trendy-explore-btn {
   margin-top: auto;
   width: 100%;
-  padding: 14px 20px;
-  background: linear-gradient(135deg, #4a3623, #2d1c10);
-  color: #fff;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #e8d0a5, #cba876);
+  color: #4a3623;
   border: none;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 600;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
   letter-spacing: 0.5px;
   display: flex;
   justify-content: center;
@@ -364,17 +360,18 @@
   gap: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 8px 20px rgba(45, 28, 16, 0.2);
+  box-shadow: 0 4px 10px rgba(203, 168, 118, 0.2);
 }
 
 .trendy-explore-btn:hover {
-  background: linear-gradient(135deg, #5c432d, #3e2617);
+  background: linear-gradient(135deg, #f5dfb8, #d8b47e);
   transform: translateY(-2px);
-  box-shadow: 0 12px 24px rgba(45, 28, 16, 0.3);
+  box-shadow: 0 6px 15px rgba(203, 168, 118, 0.4);
+  color: #2d1c10;
 }
 
 .explore-icon {
-  font-size: 14px;
+  font-size: 12px;
   transition: transform 0.3s ease;
 }
 
@@ -385,12 +382,12 @@
 
 
 .brands-section {
-  margin: 80px auto 0px;
+  margin: 0 auto 80px;
   text-align: center;
 }
 
 .brands-header {
-  margin-bottom: 40px;
+  margin-bottom: 16px;
 }
 
 .brands-eyebrow {
@@ -421,6 +418,12 @@
   letter-spacing: 2px;
 }
 
+.brands-title-top {
+  font-weight: 800; /* Extra bold */
+  color: #4a3f35; /* Dark brown */
+  letter-spacing: -0.5px; /* Tighter letter spacing */
+}
+
 .brands-subtitle {
   font-size: 14px;
   color: #777;
@@ -430,7 +433,7 @@
 .brands-marquee-container {
   width: 100%;
   overflow: hidden;
-  padding: 10px 0 30px;
+  padding: 10px 0 10px;
   position: relative;
 }
 
@@ -451,95 +454,84 @@
 }
 
 .brand-card {
-  width: 220px;
+  width: 280px;
   height: 120px;
-  background: linear-gradient(135deg, #FFFFFF, #FBF8F4);
-  border: 1px solid rgba(166, 124, 82, 0.15);
-  border-radius: 22px;
+  border: 1px solid rgba(157, 122, 54, 0.5); /* Brand gold color */
+  border-radius: 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   padding: 16px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
 }
 
 .brand-card:hover {
   transform: translateY(-8px) scale(1.02);
   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.08);
-  border-color: rgba(166, 124, 82, 0.4);
+  border-color: rgba(212, 175, 55, 0.8);
 }
 
-.brand-label {
-  font-size: 8px;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  color: #888;
-  text-transform: uppercase;
-  margin-bottom: auto;
-}
-
-.brand-logo-text {
-  font-family: 'Inter', system-ui, sans-serif;
-  color: #111;
+.brand-content-centered {
+  flex: 1;
+  width: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: 12px 0;
+  z-index: 2;
 }
 
-.brand-divider {
+.brand-logo-elegant {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 34px;
+  font-weight: 800; /* Bold, thick serif matching the image */
+  letter-spacing: 1px; /* Tighter letter spacing for this font */
+  color: #4a3f35; /* Dark brown from the "Trending" text */
+  text-shadow: none;
+}
+
+.brand-floral-divider {
   display: flex;
   align-items: center;
-  width: 100%;
-  margin-top: auto;
-  margin-bottom: 8px;
+  gap: 16px;
+  color: #a67c46; /* Lighter golden brown from "Collections" text */
+  margin-top: 10px;
 }
 
-.brand-divider::before,
-.brand-divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background-color: rgba(166, 124, 82, 0.2);
+.floral-line {
+  width: 80px;
+  height: 1.5px;
+  background-color: #a67c46;
 }
 
-.brand-diamond {
-  color: #a67c52;
-  font-size: 8px;
-  padding: 0 10px;
+.floral-icon-small {
+  font-size: 14px;
+  line-height: 1;
 }
 
-.brand-bottom-text {
-  font-size: 9px;
-  font-weight: 500;
-  letter-spacing: 1px;
-  color: #888;
-  text-transform: uppercase;
+/* Backgrounds matching the image */
+.bg-glass-wave {
+  background: #fdfaf4;
+  position: relative;
+  z-index: 1;
 }
-
-/* Styled text approximations of the logos */
-.brand-zara { font-family: 'Playfair Display', serif; font-size: 38px; font-weight: 400; letter-spacing: -3px; }
-.brand-hm { font-family: 'Caveat', 'Brush Script MT', cursive; font-size: 42px; font-weight: 700; letter-spacing: -2px; }
-.brand-levis { 
-  background: #111; 
-  color: #fff; 
-  padding: 6px 14px; 
-  font-size: 18px; 
-  font-weight: 900; 
-  border-radius: 6px 6px 14px 14px; 
-  letter-spacing: 1px; 
-}
-.brand-puma { font-size: 30px; font-weight: 900; letter-spacing: -1.5px; }
-.brand-adidas { font-size: 28px; font-weight: 800; text-transform: lowercase; letter-spacing: -1.5px; }
 
 @media (max-width: 576px) {
-  .brands-title { font-size: 28px; }
-  .brand-card {
-    width: 140px;
-    height: 80px;
+  .brands-title {
+    font-size: 28px;
   }
+
+  .brand-card {
+    width: 240px;
+    height: 100px;
+    padding: 12px;
+  }
+  
+  .brand-logo-elegant { font-size: 24px; letter-spacing: 1px; }
 }
