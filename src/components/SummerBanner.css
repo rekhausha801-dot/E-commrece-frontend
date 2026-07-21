@@ -7,7 +7,7 @@
   position: relative;
   display: flex;
   height: 340px;
-  max-width: 1300px;
+  max-width: 100%;
   margin: 0 auto;
   overflow: hidden;
   border-radius: 12px;
@@ -137,7 +137,6 @@
   width: 140px;
   height: 100%;
   z-index: 2;
-  /* Precisely center the SVG width across the 30/70 boundary */
   transform: translateX(-50%); 
 }
 

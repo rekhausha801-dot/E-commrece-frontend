@@ -23,82 +23,51 @@ const ALL_PRODUCTS = [
     image: dressImg,
     badge: 'TRENDING',
     badgeClass: 'badge-trending',
+    color: '#c0a07c',
     title: 'Elegant Midi Dress',
-    description: 'Flowy brown midi dress with an tied waist for a perfect silhouette.',
-    stats: [
-      { icon: <FaTshirt />, text: '50+ Designs' },
-      { icon: <FaPalette />, text: 'Premium Silk' },
-      { icon: <FaStar />, text: 'Best Sellers' }
-    ]
+    price: '₹2,999',
+    originalPrice: '₹4,999',
+    rating: 5,
+    reviews: 342,
   },
   {
     id: 2,
     image: poloImg,
     badge: 'NEW',
     badgeClass: 'badge-new',
+    color: '#1a1d20',
     title: 'Classic Polo Shirt',
-    description: 'Classic fit polo shirt in premium brown cotton.',
-    stats: [
-      { icon: <FaTshirt />, text: '100+ Styles' },
-      { icon: <FaPalette />, text: '10+ Colors' },
-      { icon: <FaMagic />, text: 'New Arrivals' }
-    ]
+    price: '₹1,499',
+    originalPrice: '₹2,499',
+    rating: 4,
+    reviews: 128,
   },
   {
     id: 3,
     image: jordanImg,
     badge: 'BESTSELLER',
     badgeClass: 'badge-bestseller',
+    color: '#d4af37',
     title: 'Air Jordan 1 High',
-    description: 'Iconic high-top sneakers in a premium grey and white colorway.',
-    stats: [
-      { icon: <FaShoePrints />, text: 'Limited Edition' },
-      { icon: <FaPalette />, text: 'Leather' },
-      { icon: <FaStar />, text: 'Top Rated' }
-    ]
+    price: '₹12,999',
+    originalPrice: '',
+    rating: 5,
+    reviews: 89,
   },
   {
     id: 4,
     image: cargoImg,
     badge: 'TRENDING',
     badgeClass: 'badge-trending',
+    color: '#5a774c',
     title: 'Cargo Pants Collection',
-    description: 'Utility-inspired designs with multiple pockets and premium fabrics.',
-    stats: [
-      { icon: <FaTshirt />, text: '95+ Styles' },
-      { icon: <FaPalette />, text: 'Regular Fit' },
-      { icon: <FaMagic />, text: 'New Season' }
-    ]
+    price: '₹1,899',
+    originalPrice: '₹2,999',
+    rating: 4,
+    reviews: 215,
   }
 ];
 
-const BRANDS = [
-  { 
-    name: 'zudio', 
-    class: 'brand-zudio',
-    bgClass: 'bg-glass-wave'
-  },
-  { 
-    name: 'ZARA', 
-    class: 'brand-zara',
-    bgClass: 'bg-glass-wave'
-  },
-  { 
-    name: 'H&M', 
-    class: 'brand-hm',
-    bgClass: 'bg-glass-wave'
-  },
-  { 
-    name: 'Levi\'s', 
-    class: 'brand-levis',
-    bgClass: 'bg-glass-wave'
-  },
-  { 
-    name: 'PUMA', 
-    class: 'brand-puma',
-    bgClass: 'bg-glass-wave'
-  }
-];
 
 function StarRating({ rating, reviews }) {
   const stars = [];
@@ -196,53 +165,54 @@ const TrendyCollection = () => {
         
       </div>
 
-      <div className="trendy-grid">
+      <div className="unified-products-grid" style={{ marginTop: '30px', marginBottom: '10px' }}>
         {displayedProducts.map((product) => (
           <div 
-            className="trendy-card" 
+            className="unified-product-card" 
             key={product.id}
             onClick={() => navigate(`/product/${product.id}`, { state: { product } })}
-            style={{ cursor: 'pointer' }}
           >
-            <div className="trendy-image-wrapper">
-              <span className={`trendy-badge ${product.badgeClass}`}>
-                {product.badge === 'NEW' && <FaLeaf className="badge-icon" />} {product.badge}
-              </span>
+            <div className="unified-card-image-wrap">
+              <div className="unified-badge" style={{ background: product.color }}>
+                {product.badge === 'NEW' && <FaLeaf style={{ marginRight: '4px' }} />} {product.badge}
+              </div>
               <button
-                className={`trendy-wishlist-btn ${likedIds.includes(product.id) ? 'active' : ''}`}
+                className="unified-wishlist-btn"
                 onClick={(e) => toggleLike(e, product.id)}
                 aria-label="Add to wishlist"
               >
-                {likedIds.includes(product.id) ? <FaHeart /> : <FaRegHeart />}
+                {likedIds.includes(product.id) ? <FaHeart color="#ff4d4f" /> : <FaRegHeart color="#555" />}
               </button>
-              <img src={product.image} alt={product.title} className="trendy-image" />
-              <svg className="wave-overlay" viewBox="0 0 100 24" preserveAspectRatio="none">
-                <path d="M0,0 L60,16 Q85,26 100,14 L100,24 L0,24 Z" fill="#f8f6f0" />
-              </svg>
+              <img src={product.image} alt={product.title} />
             </div>
 
-            <div className="trendy-info">
-              
-              <h3 className="trendy-product-title">
+            <div className="unified-card-info">
+              <h3 className="unified-card-title">
                 {product.title.replace(' Collection', '')}
               </h3>
               
-              <p className="trendy-subtitle">
-                {product.title.includes('Dress') ? 'Premium Silhouette' : product.title.includes('Jordan') ? 'Streetwear Essentials' : product.title.includes('Polo') ? 'Classic Wardrobe' : 'Modern Utility'}
-              </p>
-              
-              <div className="trendy-divider">
-                <span className="diamond">✦</span>
+              <div className="unified-card-rating">
+                <div className="unified-stars">
+                  {[1, 2, 3, 4, 5].map((_, i) => (
+                    <FaStar key={i} size={14} color={i < product.rating ? "#8f7a5b" : "#e0e0e0"} />
+                  ))}
+                </div>
+                <span className="unified-reviews">({product.reviews})</span>
+              </div>
+
+              <div className="unified-card-price">
+                <span className="unified-price-new">{product.price}</span>
+                {product.originalPrice && <span className="unified-price-old">{product.originalPrice}</span>}
               </div>
 
               <button 
-                className="trendy-explore-btn"
+                className="unified-explore-btn"
                 onClick={(e) => {
                   e.stopPropagation();
                   navigate('/collection');
                 }}
               >
-                Explore Collection <FaArrowRight className="explore-icon" />
+                Explore Collection <FaArrowRight style={{ marginLeft: '8px' }} />
               </button>
             </div>
           </div>

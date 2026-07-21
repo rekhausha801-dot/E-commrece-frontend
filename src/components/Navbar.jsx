@@ -1,172 +1,211 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Badge, Dropdown, Drawer, Input, Menu } from 'antd';
-import { 
-  FiSearch, FiShoppingCart, FiUser, FiHeart, FiMenu, FiBell, FiChevronDown 
-} from 'react-icons/fi';
+import { FiSearch, FiShoppingCart, FiUser, FiHeart, FiMenu, FiBell, FiChevronDown, FiX } from 'react-icons/fi';
+import { HiOutlineShoppingBag } from 'react-icons/hi2';
 import './Navbar.css';
 
-const megaMenuItems = [
-  {
-    key: '1',
-    label: (
-      <div className="mega-menu-content">
-        <div className="mega-menu-column">
-          <h4>Clothing</h4>
-          <Link to="/category/dresses">Dresses</Link>
-          <Link to="/category/tops">Tops</Link>
-          <Link to="/category/bottoms">Bottoms</Link>
-          <Link to="/category/outerwear">Outerwear</Link>
-        </div>
-        <div className="mega-menu-column">
-          <h4>Accessories</h4>
-          <Link to="/category/bags">Bags</Link>
-          <Link to="/category/shoes">Shoes</Link>
-          <Link to="/category/jewelry">Jewelry</Link>
-          <Link to="/category/sunglasses">Sunglasses</Link>
-        </div>
-      </div>
-    ),
+const menuItems = [
+  { title: "HOME", path: "/" },
+  { 
+    title: "CATEGORIES", 
+    children: ["Women", "Men", "Kids", "Footwear", "Accessories", "Beauty"] 
   },
+  { title: "BLOG", path: "/blog" },
+  { title: "ABOUT", path: "/about" },
+  { title: "CONTACT", path: "/contact" }
 ];
 
-const profileItems = [
-  { key: '1', label: <Link to="/profile">My Profile</Link> },
-  { key: '2', label: <Link to="/orders">Orders</Link> },
-  { key: '3', label: <Link to="/settings">Settings</Link> },
-  { type: 'divider' },
-  { key: '4', label: <Link to="/login">Login / Register</Link> },
-];
-
-const notificationItems = [
-  { key: '1', label: <div className="notification-item">Your order #1234 has shipped!</div> },
-  { key: '2', label: <div className="notification-item">Flash sale starts in 1 hour!</div> },
+const accountItems = [
+  "My Profile", "Orders", "Wishlist", "Addresses", "Logout"
 ];
 
 const Navbar = () => {
-  const [drawerVisible, setDrawerVisible] = useState(false);
-  const [searchActive, setSearchActive] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [expandedMenus, setExpandedMenus] = useState({});
   const location = useLocation();
 
-  const toggleDrawer = () => setDrawerVisible(!drawerVisible);
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
 
-  // Close drawer on route change
+  const toggleExpand = (title) => {
+    setExpandedMenus(prev => ({
+      ...prev,
+      [title]: !prev[title]
+    }));
+  };
+
   useEffect(() => {
-    setDrawerVisible(false);
+    setIsMobileMenuOpen(false);
   }, [location.pathname]);
 
   return (
-    <div className="navbar-container">
-      <header className="navbar-content">
-        {/* Left: Logo */}
+    <div className="premium-navbar-wrapper">
+      <header className="premium-navbar">
         <div className="navbar-left">
+          {/* Mobile Menu Button */}
+          <button className="mobile-menu-toggle" onClick={toggleMobileMenu}>
+            <FiMenu size={24} />
+          </button>
+          
           <Link to="/" className="navbar-brand">
             <div className="brand-icon">
-              <FiShoppingCart size={24} color="#f47f20" />
+              <HiOutlineShoppingBag size={28} color="#b28146" />
             </div>
             <div className="brand-text-container">
                <span className="brand-text">JR SHOP</span>
-               <span className="brand-subtext">Enjoy your shopping</span>
             </div>
           </Link>
         </div>
 
-       
-                <div className="navbar-center desktop-only">
-          <Link to="/" className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}>HOME</Link>
-          
-          <Dropdown menu={{ items: megaMenuItems }} trigger={['hover']} overlayClassName="mega-menu-dropdown">
-            <a className={`nav-link ${location.pathname.includes('/category') ? 'active' : ''}`} onClick={(e) => e.preventDefault()}>
-              SHOP <FiChevronDown className="nav-arrow" />
-            </a>
-          </Dropdown>
-          
-          <Link to="/blog" className={`nav-link ${location.pathname === '/blog' ? 'active' : ''}`}>BLOG <FiChevronDown className="nav-arrow" /></Link>
-          
-          <Dropdown menu={{ items: [{ key: '1', label: <Link to="/faq">FAQ</Link> }, { key: '2', label: <Link to="/terms">Terms</Link> }] }} trigger={['hover']}>
-            <a className="nav-link" onClick={(e) => e.preventDefault()}>
-              PAGES <FiChevronDown className="nav-arrow" />
-            </a>
-          </Dropdown>
-          
-          <Link to="/about" className={`nav-link ${location.pathname === '/about' ? 'active' : ''}`}>ABOUT US</Link>
-        </div>
+        {/* Desktop Navigation */}
+        <nav className="navbar-center desktop-only">
+          <ul className="nav-menu">
+            {menuItems.map((item, index) => (
+              <li key={index} className={`nav-item ${item.children ? 'has-dropdown' : ''}`}>
+                {item.path ? (
+                  <Link 
+                    to={item.path} 
+                    className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
+                  >
+                    {item.title}
+                  </Link>
+                ) : (
+                  <span className="nav-link">
+                    {item.title} <FiChevronDown size={14} className="nav-arrow" />
+                  </span>
+                )}
+                
+                {item.children && (
+                  <div className="dropdown-menu">
+                    <div className="dropdown-header">
+                       {/* Icon based on title */}
+                       {item.title === 'CATEGORIES' && <span>Categories</span>}
+                       {item.title === 'OFFERS' && <span>Offers</span>}
+                       {item.title === 'BRANDS' && <span>Brands</span>}
+                    </div>
+                    <ul className="dropdown-list">
+                      {item.children.map((child, idx) => (
+                        <li key={idx}>
+                          <Link to={`/category/${child.toLowerCase().replace(/\s+/g, '-')}`}>{child}</Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        </nav>
 
-        {/* Right: Search & Icons */}
+        {/* Right Section: Search & Icons */}
         <div className="navbar-right">
+          <div className="search-bar desktop-only">
+            <input type="text" placeholder="Search products..." />
+            <button className="search-btn"><FiSearch size={18} /></button>
+          </div>
+          
           <div className="action-icons">
-            <Link to="/wishlist" className="icon-btn desktop-only">
-              <FiHeart size={20} />
-            </Link>
-
-            <Link to="/cart" className="icon-btn desktop-only">
-              <Badge count={0} size="small" showZero color="#000" offset={[0, 0]}>
-                <FiShoppingCart size={20} />
-              </Badge>
-            </Link>
-
-            {searchActive ? (
-              <div className="search-wrapper active desktop-only">
-                <Input 
-                  placeholder="Search..." 
-                  prefix={<FiSearch />} 
-                  autoFocus
-                  onBlur={() => setSearchActive(false)}
-                />
-              </div>
-            ) : (
-              <button className="icon-btn desktop-only" onClick={() => setSearchActive(true)}>
-                <FiSearch size={20} />
-              </button>
-            )}
-
-            <button className="icon-btn mobile-menu-btn" onClick={toggleDrawer}>
-              <FiMenu size={24} />
+            {/* Mobile Search Icon */}
+            <button className="icon-btn mobile-only">
+              <FiSearch size={22} />
             </button>
+
+            <Link to="/wishlist" className="icon-btn action-item desktop-only">
+              <div className="icon-badge-wrapper">
+                <FiHeart size={22} />
+              </div>
+              <span className="icon-label">Wishlist</span>
+            </Link>
+
+            <div className="icon-btn action-item desktop-only">
+              <div className="icon-badge-wrapper">
+                <FiBell size={22} />
+                <span className="nav-alert-badge">2</span>
+              </div>
+              <span className="icon-label">Alerts</span>
+            </div>
+
+            <div className="icon-btn action-item has-dropdown">
+              <div className="icon-badge-wrapper">
+                <FiShoppingCart size={22} />
+              </div>
+              <span className="icon-label desktop-only">Cart</span>
+              <div className="dropdown-menu cart-dropdown desktop-only">
+                <div className="dropdown-header">Cart (2)</div>
+                <div className="cart-preview">
+                  <div className="cart-subtotal">
+                    <span>Subtotal</span>
+                    <span className="amount">₹2,499</span>
+                  </div>
+                  <Link to="/cart" className="cart-btn view-cart">VIEW CART</Link>
+                  <Link to="/checkout" className="cart-btn checkout">CHECKOUT</Link>
+                </div>
+              </div>
+            </div>
+
+            <div className="icon-btn action-item has-dropdown desktop-only">
+              <div className="icon-badge-wrapper">
+                <FiUser size={22} />
+              </div>
+              <span className="icon-label">Account</span>
+              <div className="dropdown-menu account-dropdown">
+                <div className="dropdown-header">Account</div>
+                <ul className="dropdown-list">
+                  {accountItems.map((item, idx) => (
+                    <li key={idx}>
+                      <Link to={`/${item.toLowerCase().replace(/\s+/g, '-')}`}>{item}</Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </header>
 
-      {/* Mobile Drawer */}
-      <Drawer
-        title="Menu"
-        placement="right"
-        onClose={toggleDrawer}
-        open={drawerVisible}
-        width={280}
-        className="mobile-drawer"
-      >
-        <div className="mobile-search">
-          <Input placeholder="Search..." prefix={<FiSearch />} size="large" />
-        </div>
-        
-        <Menu mode="inline" defaultSelectedKeys={['home']} className="mobile-menu">
-          <Menu.Item key="home"><Link to="/">Home</Link></Menu.Item>
-          <Menu.SubMenu key="shop" title="Shop">
-            <Menu.Item key="dresses"><Link to="/category/dresses">Dresses</Link></Menu.Item>
-            <Menu.Item key="tops"><Link to="/category/tops">Tops</Link></Menu.Item>
-            <Menu.Item key="bags"><Link to="/category/bags">Bags</Link></Menu.Item>
-          </Menu.SubMenu>
-          <Menu.Item key="about"><Link to="/about">About us</Link></Menu.Item>
-          <Menu.SubMenu key="pages" title="Pages">
-            <Menu.Item key="faq"><Link to="/faq">FAQ</Link></Menu.Item>
-            <Menu.Item key="terms"><Link to="/terms">Terms</Link></Menu.Item>
-          </Menu.SubMenu>
-          <Menu.Item key="contact"><Link to="/contact">Contact us</Link></Menu.Item>
-        </Menu>
-
-        <div className="mobile-drawer-footer">
-          <Link to="/profile"><FiUser size={18} /> Profile</Link>
-          <Link to="/wishlist"><FiHeart size={18} /> Wishlist</Link>
-          <Link to="/notifications">
-            <Badge count={2} size="small" offset={[10, 0]} color="#d88f6b">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'var(--text-main)' }}>
-                 <FiBell size={18} /> Notifications
-              </div>
-            </Badge>
+      {/* Mobile Sidebar */}
+      <div className={`mobile-sidebar-overlay ${isMobileMenuOpen ? 'open' : ''}`} onClick={toggleMobileMenu}></div>
+      <aside className={`mobile-sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
+        <div className="sidebar-header">
+          <Link to="/" className="navbar-brand">
+            <div className="brand-icon">
+              <HiOutlineShoppingBag size={24} color="#b28146" />
+            </div>
+            <span className="brand-text">JR SHOP</span>
           </Link>
+          <button className="close-sidebar" onClick={toggleMobileMenu}>
+            <FiX size={24} />
+          </button>
         </div>
-      </Drawer>
+        <div className="sidebar-content">
+          <ul className="sidebar-menu">
+            {menuItems.map((item, index) => (
+              <li key={index} className="sidebar-item">
+                <div className="sidebar-item-header" onClick={() => item.children ? toggleExpand(item.title) : null}>
+                  {item.path ? (
+                    <Link to={item.path}>{item.title}</Link>
+                  ) : (
+                    <span>{item.title}</span>
+                  )}
+                  {item.children && (
+                    <FiChevronDown className={`expand-icon ${expandedMenus[item.title] ? 'rotated' : ''}`} />
+                  )}
+                </div>
+                {item.children && (
+                  <ul className={`sidebar-sub-menu ${expandedMenus[item.title] ? 'expanded' : ''}`}>
+                    {item.children.map((child, idx) => (
+                      <li key={idx}>
+                        <Link to={`/category/${child.toLowerCase().replace(/\s+/g, '-')}`}>{child}</Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </aside>
     </div>
   );
 };

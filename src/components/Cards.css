@@ -106,7 +106,7 @@ body {
 
 .category-new-card {
   flex: 0 0 calc((100% - 60px) / 4);
-  height: 320px;
+  height: 260px;
   background: #fbf9f6;
   border-radius: 20px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
@@ -136,7 +136,7 @@ body {
 }
 
 .category-new-card-image {
-  height: 220px;
+  height: 180px;
   width: 100%;
   overflow: hidden;
   border-radius: 14px;
