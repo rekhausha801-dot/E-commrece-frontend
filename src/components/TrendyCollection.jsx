@@ -181,40 +181,7 @@ const TrendyCollection = () => {
 
   return (
     <section className="trendy-section">
-      <div className="brands-section">
-        <div className="brands-header">
-          <div className="brands-eyebrow">
-            <span className="brands-line" />
-            <span className="brands-star">✦</span>
-            <span className="brands-line" />
-          </div>
-          <h2 className="brands-title">
-            <span className="brands-title-top">Top</span> BRANDS
-          </h2>
-          <div className="brands-eyebrow" style={{ marginBottom: '12px' }}>
-          </div>
-        </div>
 
-        <div className="brands-marquee-container">
-          <div className="brands-marquee">
-            {[...BRANDS, ...BRANDS, ...BRANDS].map((brand, index) => (
-              <div className={`brand-card ${brand.bgClass}`} key={index}>
-                <div className="brand-content-centered">
-                  <div className="brand-logo-elegant">
-                    {brand.name === 'zudio' ? 'ZUDIO' : brand.name}
-                  </div>
-                  
-                  <div className="brand-floral-divider">
-                    <span className="floral-line"></span>
-                    <span className="floral-icon-small">✦</span>
-                    <span className="floral-line"></span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
 
       <div className="trendy-header">
         <div className="trendy-eyebrow">
