@@ -1,105 +1,140 @@
 import React from 'react';
 import './Footer.css';
 import { 
-  FiTruck, FiShield, FiRefreshCw, FiHeadphones, FiAward, FiTag,
-  FiFacebook, FiInstagram, FiTwitter, FiYoutube, FiLock, FiGlobe,
-  FiMapPin, FiPhone, FiVideo, FiMail
+  FiHeadphones, FiTruck, FiShield,
+  FiFacebook, FiInstagram, FiTwitter, FiYoutube, FiLinkedin, FiMail
 } from 'react-icons/fi';
-import { FaPinterestP, FaGooglePlay, FaApple, FaCcVisa, FaCcMastercard, FaAmazonPay } from 'react-icons/fa';
-
-
+import { FaPinterestP } from 'react-icons/fa';
+import { BsBagFill } from 'react-icons/bs';
 const Footer = () => {
   return (
     <footer className="footer-container">
-      {/* Features Top Bar */}
-    
-      {/* Main Footer Links */}
+      {/* Decorative SVG Waves */}
+      <div className="footer-waves">
+        <svg viewBox="0 0 500 500" preserveAspectRatio="none" className="wave-svg left-wave">
+          <path d="M0,0 C150,150 200,350 400,500 L0,500 Z" fill="rgba(218, 176, 137, 0.15)" />
+          <path d="M0,200 C150,300 250,450 500,500 L0,500 Z" fill="rgba(218, 176, 137, 0.25)" />
+        </svg>
+        <svg viewBox="0 0 500 500" preserveAspectRatio="none" className="wave-svg right-wave">
+          <path d="M500,100 C350,200 300,350 100,500 L500,500 Z" fill="rgba(218, 176, 137, 0.15)" />
+          <path d="M500,300 C350,400 250,450 0,500 L500,500 Z" fill="rgba(218, 176, 137, 0.25)" />
+        </svg>
+      </div>
+
       <div className="footer-main">
+        {/* Brand Column */}
         <div className="footer-col-brand">
           <div className="footer-logo">
-            {/* JR Shopper. */}
+            <div className="logo-icon-container">
+              <span className="logo-text-jr">JR</span>
+              <BsBagFill className="logo-icon" />
+            </div>
+            ShopEase
           </div>
           <p className="brand-desc">
-            Your one-stop destination for trendy products, best deals and an exceptional shopping experience.
+            Your trusted store for quality products and a better shopping experience.
           </p>
           <div className="social-links">
             <a href="#"><FiFacebook /></a>
             <a href="#"><FiInstagram /></a>
-            <a href="#"><FiTwitter /></a>
-            <a href="#"><FaPinterestP /></a>
             <a href="#"><FiYoutube /></a>
           </div>
         </div>
 
+        {/* Shop Column */}
         <div className="footer-col">
           <h4>SHOP</h4>
           <ul>
             <li><a href="#">All Products</a></li>
             <li><a href="#">New Arrivals</a></li>
             <li><a href="#">Best Sellers</a></li>
-            <li><a href="#">Offers & Discounts</a></li>
+            <li><a href="#">Deals & Discounts</a></li>
             <li><a href="#">Top Brands</a></li>
+            <li><a href="#">Categories</a></li>
             <li><a href="#">Gift Cards</a></li>
             <li><a href="#">Clearance Sale</a></li>
           </ul>
         </div>
 
+        {/* Customer Care Column */}
         <div className="footer-col">
-          <h4>CATEGORIES</h4>
+          <h4>CUSTOMER CARE</h4>
           <ul>
-            <li><a href="#">Men</a></li>
-            <li><a href="#">Women</a></li>
-            <li><a href="#">Kids</a></li>
-            <li><a href="#">Footwear</a></li>
-            <li><a href="#">Bags & Accessories</a></li>
-            <li><a href="#">Home & Living</a></li>
-            <li><a href="#">Beauty & Personal Care</a></li>
-            
-          </ul>
-        </div>
-
-        <div className="footer-col">
-          <h4>CUSTOMER SERVICE</h4>
-          <ul>
-            <li><a href="#">Contact Us</a></li>
-            <li><a href="#">FAQs</a></li>
-            <li><a href="#">Shipping Policy</a></li>
+            <li><a href="#">Help Center</a></li>
+            <li><a href="#">Track Order</a></li>
             <li><a href="#">Returns & Refunds</a></li>
-            
-            <li><a href="#">Size Guide</a></li>
+            <li><a href="#">Shipping Policy</a></li>
+            <li><a href="#">Payment Methods</a></li>
+            <li><a href="#">FAQ</a></li>
             <li><a href="#">Terms & Conditions</a></li>
             <li><a href="#">Privacy Policy</a></li>
           </ul>
         </div>
 
+        {/* Company Column */}
         <div className="footer-col">
-          <h4>CONTACT US</h4>
+          <h4>COMPANY</h4>
           <ul>
-            <li style={{ display: 'flex', alignItems: 'flex-start', gap: '15px', color: 'black', fontSize: '14px', marginBottom: '16px', lineHeight: '1.6' }}>
-              <div className="contact-icon-wrapper">
-                <FiMapPin size={16} />
-              </div>
-              <span style={{ marginTop: '4px' }}>
-                No 15, Shopping Street, <br />
-                T.Nagar, Chennai - 600017
-              </span>
-            </li>
-            <li style={{ display: 'flex', alignItems: 'center', gap: '15px', color: 'black', fontSize: '14px', marginBottom: '16px' }}>
-              <div className="contact-icon-wrapper">
-                <FiPhone size={16} />
-              </div>
-              <span>+91 9344567889</span>
-            </li>
-            <li style={{ display: 'flex', alignItems: 'center', gap: '15px', color: 'black', fontSize: '14px', marginBottom: '16px' }}>
-              <div className="contact-icon-wrapper">
-                <FiMail size={16} />
-              </div>
-              <a href="mailto:relietech@gmail.com" style={{ textDecoration: 'none', color: 'black' }}>relietech@gmail.com</a>
-            </li>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Our Blog</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Press & Media</a></li>
+            <li><a href="#">Become a Seller</a></li>
+            <li><a href="#">Affiliate Program</a></li>
+            <li><a href="#">Contact Us</a></li>
           </ul>
         </div>
 
-
+        {/* Support Info Box */}
+        <div className="footer-support-box">
+          <div className="support-item">
+            <div className="support-icon"><FiHeadphones /></div>
+            <div className="support-text">
+              <h5>CUSTOMER SUPPORT</h5>
+              <p>+91 98765 43210</p>
+              <p>support@shopease.com</p>
+            </div>
+          </div>
+          
+          <div className="support-divider"></div>
+          
+          <div className="support-item">
+            <div className="support-icon"><FiTruck /></div>
+            <div className="support-text">
+              <h5>FREE SHIPPING</h5>
+              <p>On orders over ₹999</p>
+              <p>Across India</p>
+            </div>
+          </div>
+          
+          <div className="support-divider"></div>
+          
+          <div className="support-item">
+            <div className="support-icon"><FiShield /></div>
+            <div className="support-text">
+              <h5>SECURE PAYMENT</h5>
+              <p>100% secure payments</p>
+              <p>Multiple payment options</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Large Bottom Bar */}
+      <div className="footer-bottom-bar-large">
+        <div className="bottom-bar-content">
+          <div className="bottom-copyright">
+            <p>&copy; 2026 RelieTech.</p>
+          </div>
+          
+          <div className="bottom-links">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms</a>
+            <a href="#">Cookies</a>
+            <a href="#">Careers</a>
+            <a href="#">Sitemap</a>
+          </div>
+        </div>
       </div>
     </footer>
   );
