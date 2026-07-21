@@ -36,7 +36,7 @@ const SummerBanner = () => {
             
 
             <h2 className="summer-title">SUMMER</h2>
-            <h3 className="summer-subtitle">COLLECTION</h3>
+            <h3 className="summer-subtitle">COLLECTIONS</h3>
             
             <p className="summer-desc">
               Breezy fabrics. Sun-kissed colors.<br />

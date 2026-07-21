@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { 
-  Star, ShoppingCart, Search, Info, ChevronRight, 
-  Store, CheckCircle2, Package, RefreshCcw, 
-  ChevronDown, Heart, Shield, PlayCircle, MoreHorizontal
+  Star, ShoppingCart, ShoppingBag, Search, ChevronRight, 
+  MapPin, CheckCircle2, ShieldCheck, RefreshCcw, Heart, Share2, Tag
 } from 'lucide-react';
 import './ProductDetail.css';
 
-// Import mock images
-import dressMain from '../assets/images/banner0.png'; // fallback image
+import dressMain from '../assets/images/banner0.png';
 import dressThumb1 from '../assets/images/beauty.png';
 import dressThumb2 from '../assets/images/shirt.jpeg';
 
@@ -19,329 +17,298 @@ export default function ProductDetail() {
   const product = location.state?.product;
   
   const [activeImage, setActiveImage] = useState(0);
-  const [activeSize, setActiveSize] = useState('S');
-  const [pincode, setPincode] = useState('635812');
+  const [activeSize, setActiveSize] = useState('M');
+  const [activeColor, setActiveColor] = useState('Navy Blue');
+  const [quantity, setQuantity] = useState(1);
+  const [pincode, setPincode] = useState('');
+  const [isWishlisted, setIsWishlisted] = useState(false);
 
   const images = product?.image 
-    ? [product.image, product.image, product.image, product.image, product.image] 
-    : [dressMain, dressThumb1, dressThumb2, dressMain, dressThumb1];
+    ? [product.image, product.image, product.image, product.image] 
+    : [dressMain, dressThumb1, dressThumb2, dressMain];
 
-  const sizes = [
-    { label: 'S', price: '308' },
-    { label: 'M', price: '297' },
-    { label: 'L', price: '308' },
-    { label: 'XL', price: '308' },
-    { label: 'XXL', price: '308' },
+  const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+  const colors = [
+    { name: 'Navy Blue', hex: '#1a237e' },
+    { name: 'Maroon', hex: '#800000' },
+    { name: 'Emerald', hex: '#047857' },
+    { name: 'Dusty Rose', hex: '#b48c95' }
   ];
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [productId]);
 
+  const handleQtyChange = (type) => {
+    if (type === 'inc' && quantity < 10) setQuantity(q => q + 1);
+    if (type === 'dec' && quantity > 1) setQuantity(q => q - 1);
+  };
+
   return (
-    <div className="zentro-pdp-wrapper">
+    <div className="pdp-page-wrapper">
       
       {/* Breadcrumbs */}
-      <div className="zentro-breadcrumbs">
+      <div className="pdp-breadcrumbs">
         <span>Home</span> <ChevronRight size={14} />
         <span>Women</span> <ChevronRight size={14} />
-        <span>Clothing</span> <ChevronRight size={14} />
+        <span>Western Wear</span> <ChevronRight size={14} />
         <span>Dresses</span> <ChevronRight size={14} />
-        <span className="current">Solene Blazer</span>
+        <span className="current">{product?.title || 'Premium Floral Print Dress'}</span>
       </div>
 
-      <div className="zentro-pdp-layout">
-        
-        {/* LEFT COLUMN: Gallery */}
-        <div className="zentro-gallery-col">
-          <div className="zentro-thumbnails">
+      <div className="pdp-main-container">
+        {/* Left Column: Image Gallery (40%) */}
+        <div className="pdp-gallery-section">
+          <div className="pdp-thumbnails">
             {images.map((img, idx) => (
               <div 
                 key={idx} 
-                className={`zentro-thumb ${activeImage === idx ? 'active' : ''}`}
-                onClick={() => setActiveImage(idx)}
+                className={`pdp-thumb ${activeImage === idx ? 'active' : ''}`}
+                onMouseEnter={() => setActiveImage(idx)}
               >
-                <img src={img} alt={`Thumb ${idx}`} />
-                {idx === 5 && <div className="video-icon-overlay"><PlayCircle size={20} fill="#000" color="#fff" /></div>}
+                <img src={img} alt={`Thumbnail ${idx}`} />
               </div>
             ))}
           </div>
-          <div className="zentro-main-image-wrap">
-            <img src={product?.image || images[activeImage]} alt="Main Product" className="zentro-main-img" />
-            <button className="zentro-zoom-btn"><Search size={18} /></button>
+          <div className="pdp-main-image-container">
+            <img src={images[activeImage]} alt="Main Product" className="pdp-main-image" />
+            <button 
+              className={`pdp-wishlist-btn ${isWishlisted ? 'active' : ''}`}
+              onClick={() => setIsWishlisted(!isWishlisted)}
+            >
+              <Heart size={20} fill={isWishlisted ? '#f43f5e' : 'none'} color={isWishlisted ? '#f43f5e' : '#4b5563'} />
+            </button>
+            <button className="pdp-share-btn">
+              <Share2 size={20} color="#4b5563" />
+            </button>
           </div>
         </div>
 
-       
-        <div className="zentro-text-content-col">
+        {/* Right Column: Product Info (60%) */}
+        <div className="pdp-info-section">
+          <h1 className="pdp-product-title">{product?.title || 'Premium Floral Print A-Line Maxi Dress'}</h1>
           
-          <div className="zentro-info-section">
-            <h1 className="zentro-title">{product?.title || 'Solene Blazer'}</h1>
-            <p className="zentro-subtitle">{product?.description || 'Stylish Women Fancy Dresses | Casual & Party Wear'}</p>
+          <div className="pdp-rating-summary">
+            <div className="pdp-rating-badge">
+              4.6 <Star size={12} fill="#fff" />
+            </div>
+            <span className="pdp-rating-count">12,548 Ratings</span>
+          </div>
 
-            <div className="zentro-price-section">
-              <span className="zentro-price">{product?.price || '₹297'}</span>
-              <span className="zentro-price-suffix">onwards <Info size={14} color="#888" /></span>
+          <div className="pdp-price-block">
+            <span className="pdp-current-price">₹999</span>
+            <span className="pdp-original-price">₹1,999</span>
+            <span className="pdp-discount">50% OFF</span>
+            <div className="pdp-tax-info">Inclusive of all taxes</div>
+          </div>
+
+          <div className="pdp-variants-section">
+            <div className="pdp-variant-title">
+              Select Color: <strong>{activeColor}</strong>
+            </div>
+            <div className="pdp-color-swatches">
+              {colors.map(color => (
+                <button 
+                  key={color.name}
+                  className={`pdp-color-swatch ${activeColor === color.name ? 'active' : ''}`}
+                  style={{ backgroundColor: color.hex }}
+                  onClick={() => setActiveColor(color.name)}
+                  title={color.name}
+                />
+              ))}
             </div>
 
-            <div className="zentro-rating-badge-row">
-              <div className="zentro-rating-badge">
-                {product?.rating || '4.2'} <Star size={12} fill="#fff" />
+            <div className="pdp-variant-title" style={{ marginTop: '24px' }}>Select Size</div>
+            <div className="pdp-size-selector">
+              {sizes.map(s => (
+                <button 
+                  key={s} 
+                  className={`pdp-size-btn ${activeSize === s ? 'active' : ''}`}
+                  onClick={() => setActiveSize(s)}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="pdp-quantity-section">
+            <div className="pdp-variant-title">Quantity</div>
+            <div className="pdp-qty-controls">
+              <button onClick={() => handleQtyChange('dec')}>-</button>
+              <span>{quantity}</span>
+              <button onClick={() => handleQtyChange('inc')}>+</button>
+            </div>
+          </div>
+
+          <div className="pdp-delivery-section">
+            <div className="pdp-variant-title">Check Delivery</div>
+            <div className="pdp-pincode-input">
+              <MapPin size={18} color="#6b7280" />
+              <input 
+                type="text" 
+                placeholder="Enter Pincode" 
+                value={pincode}
+                onChange={(e) => setPincode(e.target.value)}
+                maxLength="6"
+              />
+              <button>Check</button>
+            </div>
+            <ul className="pdp-delivery-promises">
+              <li><CheckCircle2 size={16} color="#10b981" /> Delivery by Tomorrow</li>
+              <li><CheckCircle2 size={16} color="#10b981" /> Free Delivery</li>
+              <li><CheckCircle2 size={16} color="#10b981" /> Cash on Delivery Available</li>
+            </ul>
+          </div>
+
+          <div className="pdp-action-buttons">
+            <button className="pdp-btn-add-cart">
+              <ShoppingCart size={20} /> Add to Cart
+            </button>
+            <button className="pdp-btn-buy-now">
+              <ShoppingBag size={20} /> Buy Now
+            </button>
+          </div>
+          
+        </div>
+      </div>
+
+      {/* Structured Sections Below Main Fold */}
+      <div className="pdp-details-wrapper">
+        <div className="pdp-details-grid">
+          
+          <div className="pdp-section-card">
+            <h2 className="pdp-section-title">Product Details</h2>
+            <div className="pdp-attributes-grid">
+              <div className="pdp-attr">
+                <span className="pdp-attr-label">Fabric</span>
+                <span className="pdp-attr-value">Premium Cotton Blend</span>
               </div>
-              <span className="zentro-rating-count">{product?.reviews || '30561'} Ratings, 10263 Reviews <ChevronRight size={14} /></span>
+              <div className="pdp-attr">
+                <span className="pdp-attr-label">Pattern</span>
+                <span className="pdp-attr-value">Printed</span>
+              </div>
+              <div className="pdp-attr">
+                <span className="pdp-attr-label">Fit</span>
+                <span className="pdp-attr-value">Regular Fit</span>
+              </div>
+              <div className="pdp-attr">
+                <span className="pdp-attr-label">Neck</span>
+                <span className="pdp-attr-value">Round Neck</span>
+              </div>
+              <div className="pdp-attr">
+                <span className="pdp-attr-label">Sleeve</span>
+                <span className="pdp-attr-value">Half Sleeve</span>
+              </div>
+              <div className="pdp-attr">
+                <span className="pdp-attr-label">Occasion</span>
+                <span className="pdp-attr-value">Casual</span>
+              </div>
+              <div className="pdp-attr">
+                <span className="pdp-attr-label">Wash Care</span>
+                <span className="pdp-attr-value">Machine Wash</span>
+              </div>
+              <div className="pdp-attr">
+                <span className="pdp-attr-label">Country of Origin</span>
+                <span className="pdp-attr-value">India</span>
+              </div>
             </div>
+          </div>
 
-            <div className="zentro-size-section">
-              <div className="zentro-section-title">Select Size</div>
-              <div className="zentro-size-grid">
-                {sizes.map((s) => (
-                  <div key={s.label} className="zentro-size-item">
-                    <button 
-                      className={`zentro-size-btn ${activeSize === s.label ? 'active' : ''}`}
-                      onClick={() => setActiveSize(s.label)}
-                    >
-                      {s.label}
-                    </button>
-                    <span className="zentro-size-price">₹{s.price}</span>
+          <div className="pdp-section-card">
+            <h2 className="pdp-section-title">Product Description</h2>
+            <ul className="pdp-description-list">
+              <li>Premium quality cotton fabric with a soft finish.</li>
+              <li>Comfortable for everyday wear.</li>
+              <li>Perfect for casual outings, office wear and travel.</li>
+              <li>Breathable material suitable for all seasons.</li>
+              <li>Skin-friendly fabric with long-lasting color.</li>
+            </ul>
+          </div>
+
+          <div className="pdp-section-card">
+            <h2 className="pdp-section-title">Product Specifications</h2>
+            <table className="pdp-spec-table">
+              <tbody>
+                <tr><td>Brand</td><td>Zentro Style</td></tr>
+                <tr><td>Material</td><td>Cotton</td></tr>
+                <tr><td>Color</td><td>Navy Blue</td></tr>
+                <tr><td>Fabric Type</td><td>Cotton Blend</td></tr>
+                <tr><td>Sleeve Type</td><td>Half Sleeve</td></tr>
+                <tr><td>Pattern</td><td>Floral Print</td></tr>
+                <tr><td>Fit</td><td>Regular Fit</td></tr>
+                <tr><td>Weight</td><td>350g</td></tr>
+                <tr><td>Package Contains</td><td>1 Dress</td></tr>
+                <tr><td>Manufactured By</td><td>Fashion Hub India</td></tr>
+                <tr><td>Country of Origin</td><td>India</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="pdp-section-card">
+            <h2 className="pdp-section-title">Offers</h2>
+            <ul className="pdp-offers-list">
+              <li><Tag size={16} color="#d97706" /> Flat ₹200 OFF on orders above ₹1499</li>
+              <li><Tag size={16} color="#d97706" /> Buy 2 Get 1 Free</li>
+              <li><Tag size={16} color="#d97706" /> 10% Instant Discount on HDFC Bank Cards</li>
+              <li><Tag size={16} color="#d97706" /> Festival Special Offer applied in cart</li>
+              <li><Tag size={16} color="#d97706" /> Free Shipping on all prepaid orders</li>
+            </ul>
+          </div>
+
+          <div className="pdp-section-card pdp-reviews-card">
+            <h2 className="pdp-section-title">Customer Reviews</h2>
+            <div className="pdp-review-overview">
+              <div className="pdp-review-score">
+                <span className="pdp-big-rating">4.6 <Star size={24} fill="#fff" /></span>
+                <span className="pdp-review-counts">12,548 Ratings<br/>2,143 Reviews</span>
+              </div>
+              <div className="pdp-review-bars">
+                {[
+                  { star: 5, pct: '78%' },
+                  { star: 4, pct: '14%' },
+                  { star: 3, pct: '5%' },
+                  { star: 2, pct: '2%' },
+                  { star: 1, pct: '1%' },
+                ].map(bar => (
+                  <div className="pdp-bar-row" key={bar.star}>
+                    <span className="pdp-star-label">{bar.star} ★</span>
+                    <div className="pdp-progress-bg">
+                      <div className="pdp-progress-fill" style={{ width: bar.pct }}></div>
+                    </div>
+                    <span className="pdp-pct-label">{bar.pct}</span>
                   </div>
                 ))}
               </div>
             </div>
-
-            <div className="zentro-highlights-section">
-              <div className="zentro-highlights-header">
-                <span className="zentro-section-title">Product Highlights</span>
-                <button className="zentro-copy-btn">COPY</button>
-              </div>
-              <div className="zentro-highlights-grid">
-                <div className="highlight-item">
-                  <span className="hl-label">Color</span>
-                  <span className="hl-value">Black</span>
-                </div>
-                <div className="highlight-item">
-                  <span className="hl-label">Fabric</span>
-                  <span className="hl-value">Cotton Blend</span>
-                </div>
-                <div className="highlight-item">
-                  <span className="hl-label">Fit / Shape</span>
-                  <span className="hl-value">Fit and Flare</span>
-                </div>
-                <div className="highlight-item">
-                  <span className="hl-label">Length</span>
-                  <span className="hl-value">Maxi</span>
-                </div>
-              </div>
-              
-              <div className="zentro-additional-details">
-                <span>Additional Details</span>
-                <ChevronDown size={16} />
-              </div>
-            </div>
           </div>
 
-          <div className="zentro-actions-row">
-            <button className="zentro-btn zentro-btn-buy">
-              <ChevronRight size={18} /> Buy Now
-            </button>
-            <button className="zentro-btn zentro-btn-cart">
-              <ShoppingCart size={18} /> Add to Cart
-            </button>
-          </div>
-
-          <div className="zentro-sidebar-section">
-            <div className="zentro-sidebar-card">
-              <div className="zentro-section-title">Sold By</div>
-              <div className="zentro-seller-header">
-                <div className="seller-icon-wrap"><Store size={20} color="#8A2BE2" /></div>
-                <div className="seller-name">DULHAN SAREE</div>
-                <button className="seller-view-btn">View Shop</button>
-              </div>
-              <div className="seller-stats">
-                <div className="stat-item">
-                  <span className="stat-value">4.2 <Star size={10} fill="#8A2BE2" color="#8A2BE2" /></span>
-                  <span className="stat-label">102,722 Ratings</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-value">417</span>
-                  <span className="stat-label">Followers</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-value">94</span>
-                  <span className="stat-label">Products</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="zentro-sidebar-card">
-              <div className="zentro-section-title">Check Delivery Date</div>
-              <p className="delivery-subtitle">Enter Delivery Pincode</p>
-              <div className="delivery-input-row">
-                <input 
-                  type="text" 
-                  value={pincode}
-                  onChange={(e) => setPincode(e.target.value)}
-                />
-                <button className="check-btn">CHECK</button>
-              </div>
-              <ul className="delivery-perks">
-                <li><CheckCircle2 size={16} color="#555" /> Enter Pincode for Estimated Delivery Date</li>
-                <li><Package size={16} color="#555" /> Dispatch in 2 day</li>
-              </ul>
-            </div>
-
-            <div className="zentro-trust-row">
-              <div className="trust-badge">
-                <div className="trust-icon"><Shield size={18} color="#16a34a" /></div>
-                <span>Lowest Price</span>
-              </div>
-              <div className="trust-badge">
-                <div className="trust-icon"><RefreshCcw size={18} color="#eab308" /></div>
-                <span>Cash on Delivery</span>
-              </div>
-              <div className="trust-badge">
-                <div className="trust-icon"><RefreshCcw size={18} color="#ef4444" /></div>
-                <span>7-day Returns</span>
-              </div>
-            </div>
+          <div className="pdp-section-card">
+            <h2 className="pdp-section-title">Delivery Information</h2>
+            <ul className="pdp-delivery-details-list">
+              <li><MapPin size={18} /> Enter Pincode for exact dates</li>
+              <li><CheckCircle2 size={18} /> Delivery in 2–4 Days</li>
+              <li><CheckCircle2 size={18} /> Free Delivery</li>
+              <li><RefreshCcw size={18} /> Cash on Delivery Available</li>
+              <li><ShieldCheck size={18} /> Easy 7-Day Returns</li>
+              <li><ShieldCheck size={18} /> Secure Packaging</li>
+            </ul>
           </div>
 
         </div>
       </div>
 
-      
-      <div className="zentro-lower-section">
-        
-        {/* Left: Similar Products */}
-        <div className="zentro-similar-col">
-          <div className="section-header">
-            <h3>Similar Products</h3>
-            <button className="view-all-link">View All <ChevronRight size={14} /></button>
-          </div>
-          <div className="similar-grid">
-            {[
-              { price: 359, origPrice: 599, discount: '40% OFF', rating: 4.0 }, 
-              { price: 282, origPrice: 499, discount: '43% OFF', rating: 4.1 }, 
-              { price: 236, origPrice: 399, discount: '40% OFF', rating: 3.2 }, 
-              { price: 220, origPrice: 450, discount: '51% OFF', rating: 5.0 },
-              { price: 319, origPrice: 600, discount: '46% OFF', rating: 4.3 }
-            ].map((item, i) => (
-              <div className="similar-card" key={i}>
-                <div className="similar-img-wrap">
-                  <img src={dressMain} alt="Similar product" />
-                  <Heart size={14} className="heart-icon" />
-                </div>
-                <div className="similar-info">
-                  <span className="product-card-title">Elegant Floral Dress</span>
-                  <div className="price-row">
-                    <span className="price">₹{item.price}</span>
-                    <span className="orig-price">₹{item.origPrice}</span>
-                    <span className="discount">{item.discount}</span>
-                  </div>
-                  <span className="rating">{item.rating} <Star size={10} fill="#fbbf24" color="#fbbf24" /></span>
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* Sticky Bottom Bar for Mobile */}
+      <div className="pdp-mobile-sticky-bar">
+        <div className="pdp-mobile-price">
+          <span className="pdp-m-price">₹999</span>
+          <span className="pdp-m-off">50% OFF</span>
         </div>
-
-        {/* Right: Reviews */}
-        <div className="zentro-reviews-col">
-          <div className="section-header">
-            <h3>Customer Reviews (10263)</h3>
-          </div>
-          
-          <div className="review-summary-box">
-            <div className="review-left">
-              <div className="big-rating">4.2</div>
-              <div className="stars-row">
-                {[1,2,3,4,5].map(x => <Star key={x} size={14} fill="#16a34a" color="#16a34a" />)}
-              </div>
-              <div className="based-on">Based on 10,263 reviews</div>
-            </div>
-            <div className="review-bars">
-              {[
-                { s: 5, w: '70%', c: 6144, clr: '#16a34a' },
-                { s: 4, w: '40%', c: 2819, clr: '#16a34a' },
-                { s: 3, w: '15%', c: 824, clr: '#16a34a' },
-                { s: 2, w: '5%', c: 276, clr: '#16a34a' },
-                { s: 1, w: '5%', c: 200, clr: '#16a34a' },
-              ].map(bar => (
-                <div className="bar-row" key={bar.s}>
-                  <span className="star-label">{bar.s} ★</span>
-                  <div className="bar-bg"><div className="bar-fill" style={{width: bar.w, backgroundColor: bar.clr}}></div></div>
-                  <span className="count-label">{bar.c}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          <div className="write-review-row">
-            <button className="write-review-btn">Write a Review</button>
-          </div>
-
-          <div className="review-list">
-            <div className="review-item">
-              <div className="review-header">
-                <div className="reviewer-info">
-                  <div className="avatar">
-                    <img src={dressThumb1} alt="User" />
-                  </div>
-                  <span className="name">Priya S.</span>
-                  <span className="verified">Verified Buyer</span>
-                </div>
-                <span className="date">12 May 2024</span>
-              </div>
-              <div className="review-stars">
-                {[1,2,3,4,5].map(x => <Star key={x} size={12} fill="#16a34a" color="#16a34a" />)}
-              </div>
-              <p className="review-text">Superb quality and perfect fitting! Looks exactly like the picture.</p>
-              <div className="review-images">
-                <img src={dressMain} alt="Review pic" />
-                <img src={dressMain} alt="Review pic" />
-                <img src={dressMain} alt="Review pic" />
-              </div>
-            </div>
-          </div>
-
+        <div className="pdp-mobile-actions">
+          <button className="pdp-btn-add-cart">Add to Cart</button>
+          <button className="pdp-btn-buy-now">Buy Now</button>
         </div>
       </div>
-
-      {/* HORIZONTAL SLIDER: People Also Viewed */}
-      <div className="zentro-bottom-slider-section">
-        <div className="section-header">
-          <h3>People Also Viewed</h3>
-        </div>
-        <div className="horizontal-slider">
-          {[
-            { price: 359, origPrice: 599, discount: '40% OFF', rating: 4.0 }, 
-            { price: 282, origPrice: 499, discount: '43% OFF', rating: 4.1 }, 
-            { price: 236, origPrice: 399, discount: '40% OFF', rating: 3.2 }, 
-            { price: 220, origPrice: 450, discount: '51% OFF', rating: 5.0 },
-            { price: 319, origPrice: 600, discount: '46% OFF', rating: 4.3 },
-            { price: 499, origPrice: 999, discount: '50% OFF', rating: 4.8 }
-          ].map((item, i) => (
-            <div className="slider-card" key={i}>
-              <div className="slider-img-wrap">
-                <img src={dressMain} alt="Viewed product" />
-                <Heart size={14} className="heart-icon" />
-              </div>
-              <div className="slider-info">
-                <span className="product-card-title">Chic Summer Dress</span>
-                <div className="price-row">
-                  <span className="price">₹{item.price}</span>
-                  <span className="orig-price">₹{item.origPrice}</span>
-                  <span className="discount">{item.discount}</span>
-                </div>
-                <div className="rating-row">
-                  <span className="rating-badge">{item.rating} <Star size={10} fill="#fff" color="#fff" /></span>
-                  <span className="review-count">(124)</span>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
     </div>
   );
 }

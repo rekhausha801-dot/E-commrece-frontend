@@ -579,49 +579,50 @@ export default function Collection() {
             </div>
           </div>
 
-          <div className={`products-grid ${isMobileFilterOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
+          <div className={`unified-products-grid ${isMobileFilterOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
             {sortedProducts.map(product => (
-              <div key={product.id} className="product-card">
-                <div className="card-image-wrap">
+              <div key={product.id} className="unified-product-card">
+                <div className="unified-card-image-wrap">
                   {product.badge && (
-                    <span className={`badge ${product.badgeClass}`}>{product.badge}</span>
+                    <div className="unified-badge" style={{ background: product.badgeClass === 'badge-new' ? '#1a1d20' : '#c0a07c' }}>{product.badge}</div>
                   )}
-                  <button className="wishlist-btn" onClick={() => toggleWishlist(product.id)}>
+                  <button className="unified-wishlist-btn" onClick={() => toggleWishlist(product.id)}>
                     <Heart 
                       size={16} 
                       fill={wishlist.includes(product.id) ? "#ff4d4f" : "none"} 
-                      color={wishlist.includes(product.id) ? "#ff4d4f" : "currentColor"} 
+                      color={wishlist.includes(product.id) ? "#ff4d4f" : "#555"} 
                       style={{ transition: 'all 0.3s ease' }}
                     />
                   </button>
                   <img src={product.image} alt={product.title} />
                 </div>
                 
-                <div className="card-info">
-                  <h3 className="card-title">{product.title}</h3>
+                <div className="unified-card-info">
+                  <h3 className="unified-card-title">{product.title}</h3>
                   
-                  <div className="card-rating">
-                    <div className="stars">{renderStars(product.rating)}</div>
-                    <span className="reviews">({product.reviews})</span>
+                  <div className="unified-card-rating">
+                    <div className="unified-stars">
+                      {[1, 2, 3, 4, 5].map((_, i) => (
+                        <FaStar key={i} size={14} color={i < product.rating ? "#8f7a5b" : "#e0e0e0"} />
+                      ))}
+                    </div>
+                    <span className="unified-reviews">({product.reviews})</span>
                   </div>
                   
-                  <div className="card-price">
-                    <span className="price-new">{product.price}</span>
-                    <span className="price-old">{product.originalPrice}</span>
+                  <div className="unified-card-price">
+                    <span className="unified-price-new">{product.price}</span>
+                    {product.originalPrice && <span className="unified-price-old">{product.originalPrice}</span>}
                     {product.originalPrice && product.price && (
-                      <span className="price-discount" style={{ color: '#00a388', fontWeight: 'bold', fontSize: '14px', marginLeft: '8px' }}>
+                      <span className="unified-price-discount">
                         {Math.round(((parseInt(product.originalPrice.replace('₹', '')) - parseInt(product.price.replace('₹', ''))) / parseInt(product.originalPrice.replace('₹', ''))) * 100)}% off
                       </span>
                     )}
                   </div>
                   
-
-                  <div className="card-actions">
-                    <button className="add-cart">
-                      <ShoppingBag size={14} />
-                      ADD TO CART
-                    </button>
-                  </div>
+                  <button className="unified-explore-btn">
+                    <ShoppingBag size={16} />
+                    ADD TO CART
+                  </button>
                 </div>
               </div>
             ))}

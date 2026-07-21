@@ -1,7 +1,7 @@
-.trendy-section {
+﻿.trendy-section {
   background: #faf8f4;
   padding: 10px 5vw 0px 5vw;
-  font-family: 'Poppins', 'Segoe UI', sans-serif;
+
   color: #4a3f30;
 }
 
@@ -37,7 +37,7 @@
 }
 
 .trendy-title {
-  font-family: 'Playfair Display', Georgia, serif;
+
   font-size: 44px; /* Larger font size */
   font-weight: 800; /* Extra bold matching the image */
   margin: 0 0 10px;
@@ -259,7 +259,7 @@
 }
 
 .trendy-category-eyebrow {
-  font-family: system-ui, -apple-system, sans-serif;
+
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 1.5px;
@@ -270,7 +270,7 @@
 }
 
 .trendy-product-title {
-  font-family: 'Playfair Display', Georgia, serif;
+
   font-size: 24px;
   font-weight: 800;
   color: #111;
@@ -280,7 +280,7 @@
 }
 
 .trendy-subtitle {
-  font-family: system-ui, -apple-system, sans-serif;
+
   font-size: 14px;
   font-weight: 600;
   color: #a67c52;
@@ -312,7 +312,7 @@
 }
 
 .trendy-desc {
-  font-family: system-ui, -apple-system, sans-serif;
+
   font-size: 12px;
   color: #666;
   line-height: 1.4;
@@ -320,7 +320,7 @@
 }
 
 .trendy-stats-pill {
-  font-family: system-ui, -apple-system, sans-serif;
+
   display: inline-flex;
   align-items: center;
   border: 1px solid rgba(166, 124, 82, 0.6);
@@ -397,141 +397,3 @@
   gap: 12px;
 }
 
-.brands-line {
-  width: 50px;
-  height: 1px;
-  background: #cba876;
-}
-
-.brands-star {
-  color: #cba876;
-  font-size: 14px;
-  line-height: 1;
-}
-
-.brands-title {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 36px;
-  font-weight: 500;
-  color: #9c7b45;
-  margin: 12px 0;
-  letter-spacing: 2px;
-}
-
-.brands-title-top {
-  font-weight: 800; /* Extra bold */
-  color: #4a3f35; /* Dark brown */
-  letter-spacing: -0.5px; /* Tighter letter spacing */
-}
-
-.brands-subtitle {
-  font-size: 14px;
-  color: #777;
-  margin: 0;
-}
-
-.brands-marquee-container {
-  width: 100%;
-  overflow: hidden;
-  padding: 10px 0 10px;
-  position: relative;
-}
-
-.brands-marquee {
-  display: flex;
-  gap: 24px;
-  width: max-content;
-  animation: scrollMarquee 25s linear infinite;
-}
-
-.brands-marquee:hover {
-  animation-play-state: paused;
-}
-
-@keyframes scrollMarquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-.brand-card {
-  width: 280px;
-  height: 120px;
-  border: 1px solid rgba(157, 122, 54, 0.5); /* Brand gold color */
-  border-radius: 16px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  padding: 16px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-
-.brand-card:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.08);
-  border-color: rgba(212, 175, 55, 0.8);
-}
-
-.brand-content-centered {
-  flex: 1;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 2;
-}
-
-.brand-logo-elegant {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 34px;
-  font-weight: 800; /* Bold, thick serif matching the image */
-  letter-spacing: 1px; /* Tighter letter spacing for this font */
-  color: #4a3f35; /* Dark brown from the "Trending" text */
-  text-shadow: none;
-}
-
-.brand-floral-divider {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  color: #a67c46; /* Lighter golden brown from "Collections" text */
-  margin-top: 10px;
-}
-
-.floral-line {
-  width: 80px;
-  height: 1.5px;
-  background-color: #a67c46;
-}
-
-.floral-icon-small {
-  font-size: 14px;
-  line-height: 1;
-}
-
-/* Backgrounds matching the image */
-.bg-glass-wave {
-  background: #fdfaf4;
-  position: relative;
-  z-index: 1;
-}
-
-@media (max-width: 576px) {
-  .brands-title {
-    font-size: 28px;
-  }
-
-  .brand-card {
-    width: 240px;
-    height: 100px;
-    padding: 12px;
-  }
-  
-  .brand-logo-elegant { font-size: 24px; letter-spacing: 1px; }
-}

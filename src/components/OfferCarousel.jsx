@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import bannerImage1 from '../assets/banners/M.png';
+import bannerImage1 from '../assets/banners/legha.png';
 import imgNew from '../assets/banners/image.png';
+import girlsImg from '../assets/banners/girls.png';
+import wearImg from '../assets/banners/wear.png';
+import musuImg from '../assets/banners/musu.png';
 import '../pages/customer/Home.css';
 
 const OfferCarousel = () => {
@@ -37,7 +40,7 @@ const OfferCarousel = () => {
     if (showCarousel && !isPaused) {
       interval = setInterval(() => {
         setCurrentSlide((prevSlide) => (prevSlide + 1) % carouselData.length);
-      }, 3000); 
+      }, 3000);
     }
     return () => clearInterval(interval);
   }, [showCarousel, isPaused, carouselData.length]);
@@ -58,15 +61,18 @@ const OfferCarousel = () => {
       </div>
 
       {showCarousel && (
-        <section 
+        <section
           className="hero-banner-section"
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
           <button className="carousel-close-btn" onClick={() => setShowCarousel(false)}>
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M1 1L13 13M1 13L13 1" stroke="#f47f20" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+            <div className="spinning-diamond-bg"></div>
+            <div className="close-x-icon">
+              <svg width="18" height="18" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1 1L13 13M1 13L13 1" stroke="#b28146" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
           </button>
 
           <div className="carousel-images">
@@ -76,43 +82,56 @@ const OfferCarousel = () => {
                 className={idx === currentSlide ? 'slide active' : 'slide'}
               >
                 {idx === 0 ? (
-                  <>
-                    <img
-                      src={banner.img}
-                      alt={`Special Offer Banner ${idx + 1}`}
-                      className="slide-image"
-                    />
-                    <div className="banner-content">
-                      <p className="banner-subtitle">{banner.subtitle}</p>
-                      <h2 className="banner-title">
-                        <span className="mega">{banner.title1}</span>
-                        <span className="sale">{banner.title2}</span>
-                      </h2>
-                      <p className="banner-text">{banner.text}</p>
-                      <Link to={banner.link} className="shop-now-btn">SHOP NOW</Link>
-                    </div>
-                    
-                    <div className="banner-tag-wrapper">
-                      <div className="banner-tag-swing">
-                        <div className="tag-string"></div>
-                        <div className="banner-tag-body">
-                          <div className="tag-hole"></div>
-                          <span className="tag-upto">UP TO</span>
-                          <span className="tag-percent">{banner.percent}</span>
-                          <span className="tag-off">OFF</span>
-                          <span className="tag-limited">LIMITED TIME ONLY</span>
-                        </div>
-                      </div>
-                    </div>
-                  </>
-                ) : (
                   <Link to="/shop" className="full-image-slide-wrapper" style={{ display: 'block' }}>
                     <img
-                      src={imgNew}
-                      alt="New Arrivals Banner"
-                      className="full-image-slide"
+                      src={musuImg}
+                      alt="Festive Banner"
+                      className="slide-image"
+                      style={{ objectPosition: 'center top' }}
                     />
                   </Link>
+                ) : (
+                  <div className="mega-sale-banner-wrapper" style={{ position: 'relative', width: '100%', height: '100%', display: 'block' }}>
+                    <img
+                      src={bannerImage1}
+                      alt={`Special Offer Banner ${idx + 1}`}
+                      className="slide-image"
+                      style={{ objectPosition: 'center top' }}
+                    />
+                    <div style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      backgroundColor: 'rgba(0,0,0,0.15)',
+                      zIndex: 1
+                    }}></div>
+                    <div className="mega-banner-content" style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '8%',
+                      transform: 'translateY(-50%)',
+                      textAlign: 'left',
+                      padding: '20px',
+                      maxWidth: '500px',
+                      zIndex: 2,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'flex-start',
+                      color: '#ffffff'
+                    }}>
+                      <h4 style={{ fontSize: '16px', letterSpacing: '4px', marginBottom: '10px', fontWeight: '500', textTransform: 'uppercase' }}>LIMITED TIME OFFER</h4>
+                      <h2 style={{ fontFamily: '"Playfair Display", serif', fontSize: '72px', margin: '0 0 15px 0', fontWeight: 'normal', lineHeight: '1.1' }}>MEGA SALE</h2>
+                      <p style={{ fontSize: '20px', lineHeight: '1.4', marginBottom: '20px', fontWeight: '400' }}>
+                        Big Offers on Your<br />Favourite Styles
+                      </p>
+                      <h3 style={{ fontSize: '24px', fontWeight: '500', marginBottom: '30px', letterSpacing: '1px' }}>UP TO <span style={{ fontSize: '32px', fontWeight: '600' }}>50%</span> OFF</h3>
+                      <Link to="/shop" className="shop-now-btn" style={{ backgroundColor: '#5c101c', color: '#fff', border: 'none' }}>
+                        SHOP NOW
+                      </Link>
+                    </div>
+                  </div>
                 )}
               </div>
             ))}

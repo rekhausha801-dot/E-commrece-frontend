@@ -1,5 +1,5 @@
 .summer-banner-wrapper {
-  padding: 60px 5vw 60px 5vw;
+  padding: 10px 5vw 10px 5vw;
   background-color: #FAF8F5; /* Matches overall theme */
 }
 
@@ -7,7 +7,7 @@
   position: relative;
   display: flex;
   height: 340px;
-  max-width: 1300px;
+  max-width: 100%;
   margin: 0 auto;
   overflow: hidden;
   border-radius: 12px;
@@ -62,7 +62,7 @@
 }
 
 .summer-season {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+
   font-size: 9px;
   font-weight: 600;
   letter-spacing: 3px;
@@ -71,7 +71,7 @@
 }
 
 .summer-title {
-  font-family: 'Playfair Display', Georgia, serif;
+
   font-size: 52px;
   font-weight: 400;
   letter-spacing: 2px;
@@ -81,7 +81,7 @@
 }
 
 .summer-subtitle {
-  font-family: 'Playfair Display', Georgia, serif;
+
   font-size: 26px;
   font-weight: 400;
   letter-spacing: 7px;
@@ -90,7 +90,7 @@
 }
 
 .summer-desc {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+
   font-size: 11px;
   color: #7a6e67;
   line-height: 1.6;
@@ -137,7 +137,6 @@
   width: 140px;
   height: 100%;
   z-index: 2;
-  /* Precisely center the SVG width across the 30/70 boundary */
   transform: translateX(-50%); 
 }
 
