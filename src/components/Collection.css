@@ -1,6 +1,6 @@
 /* Reset and Base Styles */
 .collection-page {
-  font-family: 'Inter', system-ui, sans-serif;
+
   color: #333;
   background-color: #fcfcfc;
   min-height: 100vh;
@@ -482,7 +482,7 @@
 /* Sidebar Filter Custom Styles */
 .filter-sidebar-container {
   background: white;
-  font-family: 'Inter', sans-serif;
+
   border: 1px solid #eaeaea;
   border-radius: 4px;
 }

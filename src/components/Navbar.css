@@ -12,7 +12,7 @@
 /* Ensure the body or parent layout matches the elegant background if desired */
 body {
   margin: 0;
-  font-family: 'Inter', 'Segoe UI', sans-serif;
+
   /* background-color: var(--nav-bg); */ /* Optional, let the layout handle it */
 }
 
