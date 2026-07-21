@@ -14,14 +14,14 @@ import beautyImg from '../assets/images/beauty.png';
 import kidsImg from '../assets/images/kids.jpeg';
 
 const categories = [
-  { name: 'Ethnic Wear', image: topImg, icon: <FaTshirt /> },
-  { name: 'Western Dresses', image: kurthiImg, icon: <FaFemale /> },
-  { name: 'Menswear', image: manImg, icon: <FaUserTie /> },
-  { name: 'Footwear', image: shoeImg, icon: <GiRunningShoe /> },
-  { name: 'Home Decor', image: homeImg, icon: <FaHome /> },
-  { name: 'Beauty', image: beautyImg, icon: <FaMagic /> },
-  { name: 'Accessories', image: watchImg, icon: <FaGem /> },
-  { name: 'Kids Fashion', image: kidsImg, icon: <FaChild /> }
+  { name: 'Ethnic Wear', subtitle: 'Traditional elegance', image: topImg, icon: <FaTshirt />, iconColor: '#b38e69', iconBg: '#f2ebe1' },
+  { name: 'Western Dresses', subtitle: 'Modern & stylish', image: kurthiImg, icon: <FaFemale />, iconColor: '#b38e69', iconBg: '#f2ebe1' },
+  { name: 'Menswear', subtitle: 'Sharp & casual', image: manImg, icon: <FaUserTie />, iconColor: '#b38e69', iconBg: '#f2ebe1' },
+  { name: 'Footwear', subtitle: 'Step out in style', image: shoeImg, icon: <GiRunningShoe />, iconColor: '#b38e69', iconBg: '#f2ebe1' },
+  { name: 'Home Decor', subtitle: 'Style your space', image: homeImg, icon: <FaHome />, iconColor: '#b38e69', iconBg: '#f2ebe1' },
+  { name: 'Beauty', subtitle: 'Natural beauty', image: beautyImg, icon: <FaMagic />, iconColor: '#b38e69', iconBg: '#f2ebe1' },
+  { name: 'Accessories', subtitle: 'Details that define you', image: watchImg, icon: <FaGem />, iconColor: '#b38e69', iconBg: '#f2ebe1' },
+  { name: 'Kids Fashion', subtitle: 'Trendy looks for little ones', image: kidsImg, icon: <FaChild />, iconColor: '#b38e69', iconBg: '#f2ebe1' }
 ];
 
 export default function Cards() {
@@ -30,8 +30,8 @@ export default function Cards() {
   const scroll = (direction) => {
     if (scrollRef.current) {
       const { scrollLeft } = scrollRef.current;
-      // Scroll by one card step (approx 300px) instead of the full page width
-      const step = 300; 
+      // Scroll by roughly the container width; CSS scroll snapping will ensure perfect alignment
+      const step = scrollRef.current.clientWidth;
       const scrollTo = direction === 'left' ? scrollLeft - step : scrollLeft + step;
       scrollRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
     }
@@ -65,7 +65,7 @@ export default function Cards() {
               <img src={cat.image} alt={cat.name} />
             </Link>
             <div className="category-new-card-content">
-              <div className="category-icon-wrapper">
+              <div className="category-icon-wrapper" style={{ color: cat.iconColor, backgroundColor: cat.iconBg }}>
                 {cat.icon}
               </div>
               <div className="category-text-wrapper">

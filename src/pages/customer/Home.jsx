@@ -103,7 +103,7 @@ const Home = () => {
       <TrendyCollection />
       <div style={{ marginTop: '50px' }}></div>
       <SummerBanner />
-      <div className="new-arrival-section" style={{ padding: '60px 0 80px', background: '#faf9f6', textAlign: 'center' }}>
+      <div className="new-arrival-section" style={{ padding: '20px 0 20px', background: '#faf9f6', textAlign: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px', marginBottom: '10px' }}>
           <span style={{ width: '30px', height: '1px', background: '#d4af37' }}></span>
           <span style={{ width: '4px', height: '4px', background: '#d4af37', borderRadius: '50%' }}></span>
@@ -131,7 +131,7 @@ const Home = () => {
             { id: 7, title: 'Men Casual Shirt', image: menCasualShirtImg, price: '₹1,299', rating: 4, reviews: 213, badge: 'NEW', color: '#4b7b9d' },
             { id: 8, title: 'Trendy Sneakers', image: trendySneakersImg, price: '₹2,199', rating: 4, reviews: 176, badge: 'NEW', color: '#5a774c' }
           ].map(product => (
-            <div key={product.id} className="product-card" style={{ border: '1px solid #e6e6e6', borderRadius: '6px', background: '#fff', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            <div key={product.id} className="product-card" style={{ border: 'none', boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px', borderRadius: '12px', background: '#fff', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                 <div className="card-image-wrap" style={{ position: 'relative' }}>
                   {product.badge && (
                     <div style={{ position: 'absolute', top: '12px', left: '12px', background: product.color, color: 'white', padding: '4px 10px', fontSize: '11px', fontWeight: 'bold', borderRadius: '4px', zIndex: 2 }}>{product.badge}</div>
@@ -144,7 +144,7 @@ const Home = () => {
                       className="heart-icon-anim"
                     />
                   </button>
-                  <img src={product.image} alt={product.title} style={{ width: '100%', aspectRatio: '1/1.1', objectFit: 'cover' }} />
+                  <img src={product.image} alt={product.title} style={{ width: '100%', aspectRatio: '1/1', objectFit: 'cover' }} />
                 </div>
                 
                 <div className="card-info" style={{ padding: '16px', textAlign: 'left', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
@@ -176,7 +176,7 @@ const Home = () => {
       </div>
 
       {/* New Arrival Section */}
-      <div className="brands-section" style={{ marginTop: '60px', marginBottom: '20px' }}>
+      <div className="brands-section" style={{ marginTop: '20px', marginBottom: '20px' }}>
         <div className="brands-header" style={{ textAlign: 'center' }}>
           <div className="brands-eyebrow" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px', marginBottom: '15px' }}>
             <span className="brands-line" style={{ height: '1px', background: '#d4af37', width: '40px' }} />
@@ -199,7 +199,7 @@ const Home = () => {
             { id: 3, title: 'Cotton Daily Wear Kurti', image: kurthi4Img, price: '₹649', originalPrice: '₹899', discount: '28% off', rating: 4, reviews: 31 },
             { id: 4, title: 'Indo Western Kurti', image: kurtiImg, price: '₹899', originalPrice: '₹1199', discount: '25% off', rating: 5, reviews: 42 }
           ].map(product => (
-            <div key={product.id} className="product-card" style={{ border: '1px solid #e6e6e6', borderRadius: '6px', background: '#fff', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            <div key={product.id} className="product-card" style={{ border: 'none', boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px', borderRadius: '12px', background: '#fff', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
                 <div className="card-image-wrap" style={{ position: 'relative' }}>
                   {product.badge && (
                     <div style={{ position: 'absolute', top: '10px', left: '10px', background: '#c0a07c', color: 'white', padding: '4px 10px', fontSize: '11px', fontWeight: 'bold', borderRadius: '4px', zIndex: 2 }}>{product.badge}</div>
@@ -230,7 +230,7 @@ const Home = () => {
                       className="heart-icon-anim"
                     />
                   </button>
-                  <img src={product.image} alt={product.title} style={{ width: '100%', aspectRatio: '1/1.1', objectFit: 'cover' }} />
+                  <img src={product.image} alt={product.title} style={{ width: '100%', aspectRatio: '1/1', objectFit: 'cover' }} />
                 </div>
                 
                 <div className="card-info" style={{ padding: '16px', textAlign: 'left', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
@@ -269,7 +269,7 @@ const Home = () => {
             <span className="brands-line" style={{ height: '1px', background: '#d4af37', width: '40px' }} />
           </div>
           <h2 className="brands-title" style={{ fontSize: '32px', fontWeight: '400', letterSpacing: '4px', margin: '0' }}>
-            <span className="brands-title-top" style={{ fontSize: '18px', display: 'block', color: '#8f7a5b', fontStyle: 'italic', marginBottom: '5px' }}>Top</span> BRANDS
+            <span className="brands-title-top" style={{ fontSize: '24px', display: 'inline-block', color: '#8f7a5b', fontStyle: 'italic', marginRight: '10px' }}>Top</span> BRANDS
           </h2>
           <div className="brands-eyebrow" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px', marginTop: '15px', marginBottom: '12px' }}>
             <span className="brands-line" style={{ height: '1px', background: '#d4af37', width: '40px' }} />
