@@ -27,11 +27,11 @@
   font-weight: 600;
 }
 
-/* TOP LAYOUT - 3 COLUMNS */
+/* TOP LAYOUT - 2 COLUMNS */
 .zentro-pdp-layout {
   display: grid;
-  grid-template-columns: 45% 30% 25%;
-  gap: 30px;
+  grid-template-columns: 55% 42%;
+  gap: 3%;
   margin-bottom: 40px;
 }
 
@@ -109,8 +109,14 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-/* MIDDLE COL - INFO */
-.zentro-info-col {
+/* RIGHT COL - TEXT CONTENT */
+.zentro-text-content-col {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.zentro-info-section {
   display: flex;
   flex-direction: column;
 }
@@ -211,9 +217,9 @@
 }
 
 .zentro-size-btn.active {
-  border-color: #8e158e;
-  color: #8e158e;
-  background: #fdf5fd;
+  border-color: #8A2BE2;
+  color: #8A2BE2;
+  background: #fcf4fc;
 }
 
 .zentro-size-price {
@@ -236,10 +242,15 @@
 .zentro-copy-btn {
   background: none;
   border: none;
-  color: #8e158e;
+  color: #8A2BE2;
   font-weight: 700;
   font-size: 13px;
   cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.zentro-copy-btn:hover {
+  opacity: 0.8;
 }
 
 .zentro-highlights-grid {
@@ -276,12 +287,18 @@
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
+  transition: color 0.2s;
+}
+
+.zentro-additional-details:hover {
+  color: #8A2BE2;
 }
 
 .zentro-actions-row {
   display: flex;
+  flex-direction: column;
   gap: 16px;
-  margin-top: auto;
+  margin-top: 24px;
 }
 
 .zentro-btn {
@@ -295,22 +312,31 @@
   justify-content: center;
   gap: 8px;
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .zentro-btn-cart {
   background: white;
-  border: 1px solid #8e158e;
-  color: #8e158e;
+  border: 1px solid #8A2BE2;
+  color: #8A2BE2;
+}
+
+.zentro-btn-cart:hover {
+  background: #fdf6fd;
 }
 
 .zentro-btn-buy {
-  background: #8e158e;
-  border: 1px solid #8e158e;
+  background: #8A2BE2;
+  border: 1px solid #8A2BE2;
   color: white;
 }
 
-/* RIGHT COL - SIDEBAR */
-.zentro-sidebar-col {
+.zentro-btn-buy:hover {
+  background: #7a26c4;
+}
+
+/* RIGHT COL - SIDEBAR SECTION */
+.zentro-sidebar-section {
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -318,10 +344,10 @@
 
 .zentro-sidebar-card {
   border: 1px solid #eaeaea;
-  border-radius: 8px;
+  border-radius: 18px;
   padding: 16px;
   background: white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
 }
 
 .zentro-seller-header {
@@ -348,14 +374,19 @@
 }
 
 .seller-view-btn {
-  border: 1px solid #8e158e;
-  color: #8e158e;
+  border: 1px solid #8A2BE2;
+  color: #8A2BE2;
   background: white;
   padding: 6px 12px;
-  border-radius: 4px;
+  border-radius: 6px;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.seller-view-btn:hover {
+  background: #fdf6fd;
 }
 
 .seller-stats {
@@ -406,12 +437,17 @@
 
 .delivery-input-row .check-btn {
   background: white;
-  border: 1px solid #8e158e;
-  color: #8e158e;
+  border: 1px solid #8A2BE2;
+  color: #8A2BE2;
   font-weight: 600;
   padding: 0 16px;
   border-radius: 4px;
   cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.delivery-input-row .check-btn:hover {
+  background: #fdf6fd;
 }
 
 .delivery-perks {
@@ -435,10 +471,10 @@
   display: flex;
   justify-content: space-between;
   border: 1px solid #eaeaea;
-  border-radius: 8px;
+  border-radius: 18px;
   padding: 16px 12px;
   background: white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
 }
 
 .trust-badge {
@@ -490,12 +526,17 @@
 .view-all-link {
   background: none;
   border: none;
-  color: #8e158e;
+  color: #8A2BE2;
   font-weight: 600;
   font-size: 13px;
   cursor: pointer;
   display: flex;
   align-items: center;
+  transition: opacity 0.2s;
+}
+
+.view-all-link:hover {
+  opacity: 0.8;
 }
 
 .similar-grid {
@@ -506,12 +547,19 @@
 
 .similar-card {
   border: 1px solid #eaeaea;
-  border-radius: 6px;
-  padding: 8px;
+  border-radius: 18px;
+  padding: 12px;
   background: white;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+  box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.03);
+}
+
+.similar-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 32px 0 rgba(31, 38, 135, 0.1);
 }
 
 .similar-img-wrap {
@@ -557,9 +605,10 @@
 /* REVIEWS */
 .zentro-reviews-col {
   border: 1px solid #eaeaea;
-  border-radius: 8px;
+  border-radius: 18px;
   padding: 24px;
   background: white;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
 }
 
 .review-summary-box {
@@ -729,4 +778,123 @@
   .zentro-lower-section {
     grid-template-columns: 1fr;
   }
+}
+
+/* SLIDER SECTION */
+.zentro-bottom-slider-section {
+  margin-top: 20px;
+  margin-bottom: 60px;
+}
+
+.horizontal-slider {
+  display: flex;
+  overflow-x: auto;
+  gap: 16px;
+  padding: 10px 4px 30px 4px;
+  scrollbar-width: thin;
+  scrollbar-color: #8A2BE2 #f0f0f0;
+}
+
+.horizontal-slider::-webkit-scrollbar {
+  height: 6px;
+}
+
+.horizontal-slider::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 4px;
+}
+
+.horizontal-slider::-webkit-scrollbar-thumb {
+  background-color: #8A2BE2;
+  border-radius: 4px;
+}
+
+.slider-card {
+  min-width: 220px;
+  flex-shrink: 0;
+  border: 1px solid #eaeaea;
+  border-radius: 18px;
+  padding: 12px;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+  box-shadow: 0 4px 16px 0 rgba(31, 38, 135, 0.03);
+}
+
+.slider-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 32px 0 rgba(31, 38, 135, 0.1);
+}
+
+.slider-img-wrap {
+  width: 100%;
+  height: 240px;
+  background: #f5eedf;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.slider-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.slider-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.product-card-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: #444;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.orig-price {
+  font-size: 11px;
+  color: #999;
+  text-decoration: line-through;
+}
+
+.discount {
+  font-size: 10px;
+  color: #ef4444;
+  font-weight: 700;
+}
+
+.rating-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.rating-badge {
+  background: #158b4b;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.review-count {
+  font-size: 11px;
+  color: #777;
 }

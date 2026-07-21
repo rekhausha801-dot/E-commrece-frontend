@@ -268,7 +268,13 @@ const TrendyCollection = () => {
                 <span className="diamond">✦</span>
               </div>
 
-              <button className="trendy-explore-btn">
+              <button 
+                className="trendy-explore-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate('/collection');
+                }}
+              >
                 Explore Collection <FaArrowRight className="explore-icon" />
               </button>
             </div>
