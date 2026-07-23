@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import './Cards.css';
 import { FiArrowRight, FiWatch, FiChevronLeft, FiChevronRight, FiGrid } from 'react-icons/fi';
-import { FaTshirt, FaFemale, FaUserTie, FaShoePrints, FaHome, FaMagic, FaChild, FaGem } from 'react-icons/fa';
+import { FaTshirt, FaFemale, FaUserTie, FaShoePrints, FaHome, FaMagic, FaChild, FaGem, FaVest } from 'react-icons/fa';
 import { GiRunningShoe } from 'react-icons/gi';
 import kurthiImg from '../assets/images/kurthi3.png';
 import topImg from '../assets/images/top2.jpeg';

@@ -4,6 +4,7 @@ import {
   Star, ShoppingCart, ShoppingBag, Search, ChevronRight, 
   MapPin, CheckCircle2, ShieldCheck, RefreshCcw, Heart, Share2, Tag
 } from 'lucide-react';
+import CustomerReviews from './CustomerReviews';
 import './ProductDetail.css';
 
 import dressMain from '../assets/images/banner0.png';
@@ -256,32 +257,8 @@ export default function ProductDetail() {
             </ul>
           </div>
 
-          <div className="pdp-section-card pdp-reviews-card">
-            <h2 className="pdp-section-title">Customer Reviews</h2>
-            <div className="pdp-review-overview">
-              <div className="pdp-review-score">
-                <span className="pdp-big-rating">4.6 <Star size={24} fill="#fff" /></span>
-                <span className="pdp-review-counts">12,548 Ratings<br/>2,143 Reviews</span>
-              </div>
-              <div className="pdp-review-bars">
-                {[
-                  { star: 5, pct: '78%' },
-                  { star: 4, pct: '14%' },
-                  { star: 3, pct: '5%' },
-                  { star: 2, pct: '2%' },
-                  { star: 1, pct: '1%' },
-                ].map(bar => (
-                  <div className="pdp-bar-row" key={bar.star}>
-                    <span className="pdp-star-label">{bar.star} ★</span>
-                    <div className="pdp-progress-bg">
-                      <div className="pdp-progress-fill" style={{ width: bar.pct }}></div>
-                    </div>
-                    <span className="pdp-pct-label">{bar.pct}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          {/* Top Brand Customer Reviews Section */}
+          <CustomerReviews />
 
           <div className="pdp-section-card">
             <h2 className="pdp-section-title">Delivery Information</h2>

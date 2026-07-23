@@ -14,6 +14,8 @@ import banner13Img from '../assets/images/banner13.png';
 import banner15Img from '../assets/images/baner15.png';
 import banner16Img from '../assets/images/banner16.png';
 import dffImg from '../assets/images/dff.png';
+import westernBannerImg from '../assets/images/westrenwear.png';
+import menBannerImg from '../assets/images/men7.jpeg';
 
 
 import manImg from '../assets/images/man.png';
@@ -66,7 +68,7 @@ const CATEGORY_DATA = {
   },
   'menswear': {
     title: "Menswear Collection",
-    banner: banner15Img,
+    banner: menBannerImg,
     images: [mens1, mens2, mens3, mens4, mens5,mens]
   },
   'footwear': {
@@ -76,17 +78,17 @@ const CATEGORY_DATA = {
   },
   'westernwear': {
     title: "Western Wear",
-    banner: banner12Img,
+    banner: westernBannerImg,
     images: [shirtImg, manImg, kidsImg, beautyImg]
   },
   'western-dresses': {
     title: "Western Dresses",
-    banner: banner12Img,
+    banner: westernBannerImg,
     images: [shirtImg, manImg, kidsImg, beautyImg]
   },
   'western': {
     title: "Western Wear",
-    banner: banner12Img,
+    banner: westernBannerImg,
     images: [shirtImg, manImg, kidsImg, beautyImg]
   },
   'home-decor': {
@@ -245,38 +247,7 @@ export default function CategoryPage() {
 
   return (
     <div className="collection-page">
-      {/* Banner */}
-      <div className="collection-banner" style={{ position: 'relative' }}>
-        <img src={currentCategory.banner} alt={currentCategory.title} className="banner-image" style={{ objectPosition: 'top center' }} />
-        {currentCategory.title && (
-          <div className="banner-text-overlay" style={{
-            position: 'absolute',
-            left: '8%',
-            top: '54%',
-            transform: 'translateY(-50%)',
-            color: '#2b2b2b',
-            maxWidth: '450px'
-          }}>
-            <h1 style={{ 
-              fontSize: '48px', 
-              fontFamily: '"Playfair Display", Georgia, serif', 
-              fontWeight: '700',
-              marginBottom: '15px',
-              lineHeight: '1.1'
-            }}>
-              {currentCategory.title}
-            </h1>
-            <p style={{ 
-              fontSize: '16px', 
-              color: '#444', 
-              marginBottom: '0',
-              lineHeight: '1.6'
-            }}>
-              Discover our latest collection. Crafted for comfort, designed for elegance to elevate your everyday style.
-            </p>
-          </div>
-        )}
-      </div>
+
 
       <div className="collection-main">
         {/* Sidebar */}
@@ -520,21 +491,51 @@ export default function CategoryPage() {
 
         {/* Content Area */}
         <div className="collection-content">
-          <div className="top-bar">
+          <div className="top-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', paddingBottom: '15px', borderBottom: 'none' }}>
             <div className="view-modes">
-              <button className="view-btn active" style={{width: 'auto', padding: '0 15px', gap: '8px', fontWeight: 'bold'}} onClick={() => setIsMobileFilterOpen(!isMobileFilterOpen)}>
-                <LayoutGrid size={18} /> FILTERS
+              <button 
+                className="view-btn" 
+                style={{
+                  width: 'auto', 
+                  padding: '8px 16px', 
+                  gap: '8px', 
+                  fontWeight: '600', 
+                  backgroundColor: '#8f7a5b', 
+                  color: 'white', 
+                  border: 'none', 
+                  borderRadius: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  fontSize: '13px',
+                  letterSpacing: '0.5px'
+                }} 
+                onClick={() => setIsMobileFilterOpen(!isMobileFilterOpen)}
+              >
+                <LayoutGrid size={16} /> FILTERS
               </button>
-              
             </div>
             
-            <div className="products-count">Showing 1-12 of 156 products</div>
+            <div className="products-count" style={{ fontSize: '13px', color: '#666', fontWeight: '500' }}>
+              Showing 1-12 of 156 products
+            </div>
             
             <div className="sort-container" style={{position: 'relative'}}>
               <div 
                 className="sort-select" 
                 onClick={() => setIsSortOpen(!isSortOpen)}
-                style={{cursor: 'pointer', userSelect: 'none'}}
+                style={{
+                  cursor: 'pointer', 
+                  userSelect: 'none', 
+                  border: '1px solid #e0e0e0', 
+                  padding: '8px 12px', 
+                  borderRadius: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  fontSize: '13px',
+                  color: '#555',
+                  backgroundColor: 'white'
+                }}
               >
                 Sort by: {sortBy} <ChevronDown size={14} color="#666" />
               </div>
@@ -546,7 +547,7 @@ export default function CategoryPage() {
                   marginTop: '5px',
                   background: 'white',
                   border: '1px solid #e0e0e0',
-                  borderRadius: '6px',
+                  borderRadius: '4px',
                   boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                   zIndex: 10,
                   minWidth: '160px',
@@ -563,8 +564,8 @@ export default function CategoryPage() {
                       style={{
                         padding: '10px 15px',
                         cursor: 'pointer',
-                        fontSize: '0.85rem',
-                        color: sortBy === option ? '#8f7a5b' : '#333',
+                        fontSize: '13px',
+                        color: sortBy === option ? '#8f7a5b' : '#555',
                         fontWeight: sortBy === option ? '600' : '400',
                         backgroundColor: sortBy === option ? '#fbf8f4' : 'white',
                         borderBottom: idx === arr.length - 1 ? 'none' : '1px solid #f0f0f0'
@@ -608,7 +609,7 @@ export default function CategoryPage() {
                   <div className="unified-card-rating">
                     <div className="unified-stars">
                       {[1, 2, 3, 4, 5].map((_, i) => (
-                        <FaStar key={i} size={14} color={i < product.rating ? "#8f7a5b" : "#e0e0e0"} />
+                        <Star key={i} size={14} fill={i < product.rating ? "#8f7a5b" : "#e0e0e0"} color={i < product.rating ? "#8f7a5b" : "#e0e0e0"} />
                       ))}
                     </div>
                     <span className="unified-reviews">({product.reviews})</span>

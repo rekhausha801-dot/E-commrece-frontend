@@ -3,6 +3,7 @@ import './Collection.css';
 import { 
   Filter, Minus, Heart, ShoppingBag, Eye, LayoutGrid, Menu, ChevronDown, ChevronUp, X, SlidersHorizontal, Check, Star, Shirt
 } from 'lucide-react';
+import KurtiBanner from './KurtiBanner';
 
 import kurthi5Img from '../assets/images/kurthi5.png';
 import top3Img from '../assets/images/top3.png';
@@ -12,7 +13,10 @@ import croptopImg from '../assets/images/croptop.png';
 import kurthi4Img from '../assets/images/kurthi4.png';
 import bannerImg from '../assets/images/baner3.png';
 import kurtiImg from '../assets/images/kurti.png';
+import dfdImg from '../assets/images/dfd.png';
 import kurthi3Img from '../assets/images/kurthi3.png';
+import kurti1Img from '../assets/images/kurti1.png';
+import kurti2BannerImg from '../assets/images/kurti2.png';
 
 const products = [
   {
@@ -24,7 +28,7 @@ const products = [
     reviews: 24,
     badge: 'NEW',
     badgeClass: 'new',
-    image: top3Img,
+    image: kurtiImg,
     colors: ['#9f3653', '#6d4c41', '#212121']
   },
   {
@@ -93,7 +97,7 @@ const products = [
     rating: 4,
     reviews: 15,
     badge: null,
-    image: kurtiImg,
+    image: dfdImg,
     colors: ['#111111', '#d32f2f']
   },
   {
@@ -237,43 +241,7 @@ export default function Collection() {
 
   return (
     <div className="collection-page">
-      {/* Banner */}
-      <div className="collection-banner" style={{ position: 'relative' }}>
-        <img 
-          src={bannerImg} 
-          alt="Kurti Banner" 
-          className="banner-image" 
-          style={{ width: '100%', height: '380px', objectFit: 'cover', objectPosition: 'center top' }}
-        />
-        <div className="banner-text-overlay" style={{
-          position: 'absolute',
-          left: '8%',
-          top: '55%',
-          transform: 'translateY(-50%)',
-          color: '#2b2b2b',
-          maxWidth: '800px',
-          textAlign: 'left'
-        }}>
-          <h1 style={{ 
-            fontSize: '52px', 
-            fontFamily: '"Playfair Display", Georgia, serif', 
-            fontWeight: '600',
-            marginBottom: '15px',
-            lineHeight: '1.2',
-            whiteSpace: 'nowrap'
-          }}>
-            Kurti Collection
-          </h1>
-          <p style={{ 
-            fontSize: '18px', 
-            color: '#444', 
-            marginBottom: '0',
-            fontFamily: 'Inter, sans-serif'
-          }}>
-            Trendy styles for every you
-          </p>
-        </div>
-      </div>
+      <KurtiBanner />
 
       <div className="collection-main">
         {/* Sidebar */}
@@ -519,21 +487,51 @@ export default function Collection() {
 
         {/* Content Area */}
         <div className="collection-content">
-          <div className="top-bar">
+          <div className="top-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', paddingBottom: '15px', borderBottom: 'none' }}>
             <div className="view-modes">
-              <button className="view-btn active" style={{width: 'auto', padding: '0 15px', gap: '8px', fontWeight: 'bold'}} onClick={() => setIsMobileFilterOpen(!isMobileFilterOpen)}>
-                <LayoutGrid size={18} /> FILTERS
+              <button 
+                className="view-btn" 
+                style={{
+                  width: 'auto', 
+                  padding: '8px 16px', 
+                  gap: '8px', 
+                  fontWeight: '600', 
+                  backgroundColor: '#8f7a5b', 
+                  color: 'white', 
+                  border: 'none', 
+                  borderRadius: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  fontSize: '13px',
+                  letterSpacing: '0.5px'
+                }} 
+                onClick={() => setIsMobileFilterOpen(!isMobileFilterOpen)}
+              >
+                <LayoutGrid size={16} /> FILTERS
               </button>
-              
             </div>
             
-            <div className="products-count">Showing 1-12 of 156 products</div>
+            <div className="products-count" style={{ fontSize: '13px', color: '#666', fontWeight: '500' }}>
+              Showing 1-12 of 156 products
+            </div>
             
             <div className="sort-container" style={{position: 'relative'}}>
               <div 
                 className="sort-select" 
                 onClick={() => setIsSortOpen(!isSortOpen)}
-                style={{cursor: 'pointer', userSelect: 'none'}}
+                style={{
+                  cursor: 'pointer', 
+                  userSelect: 'none', 
+                  border: '1px solid #e0e0e0', 
+                  padding: '8px 12px', 
+                  borderRadius: '4px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  fontSize: '13px',
+                  color: '#555',
+                  backgroundColor: 'white'
+                }}
               >
                 Sort by: {sortBy} <ChevronDown size={14} color="#666" />
               </div>
@@ -545,7 +543,7 @@ export default function Collection() {
                   marginTop: '5px',
                   background: 'white',
                   border: '1px solid #e0e0e0',
-                  borderRadius: '6px',
+                  borderRadius: '4px',
                   boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                   zIndex: 10,
                   minWidth: '160px',
@@ -562,8 +560,8 @@ export default function Collection() {
                       style={{
                         padding: '10px 15px',
                         cursor: 'pointer',
-                        fontSize: '0.85rem',
-                        color: sortBy === option ? '#8f7a5b' : '#333',
+                        fontSize: '13px',
+                        color: sortBy === option ? '#8f7a5b' : '#555',
                         fontWeight: sortBy === option ? '600' : '400',
                         backgroundColor: sortBy === option ? '#fbf8f4' : 'white',
                         borderBottom: idx === arr.length - 1 ? 'none' : '1px solid #f0f0f0'
@@ -603,7 +601,7 @@ export default function Collection() {
                   <div className="unified-card-rating">
                     <div className="unified-stars">
                       {[1, 2, 3, 4, 5].map((_, i) => (
-                        <FaStar key={i} size={14} color={i < product.rating ? "#8f7a5b" : "#e0e0e0"} />
+                        <Star key={i} size={14} fill={i < product.rating ? "#8f7a5b" : "#e0e0e0"} color={i < product.rating ? "#8f7a5b" : "#e0e0e0"} />
                       ))}
                     </div>
                     <span className="unified-reviews">({product.reviews})</span>

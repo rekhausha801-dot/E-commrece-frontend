@@ -1,0 +1,132 @@
+.shop-by-occasion {
+  padding: 40px 20px;
+  background-color: #FAF8F5; /* Match theme background */
+  text-align: center;
+}
+
+.occasion-header {
+  margin-bottom: 40px;
+}
+
+.occasion-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 36px;
+  color: #3b2b23;
+  margin: 0;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.occasion-subtitle {
+  font-size: 16px;
+  color: #555;
+  margin: 10px 0 15px 0;
+}
+
+.occasion-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+.occasion-line {
+  width: 50px;
+  height: 1px;
+  background-color: #3b2b23;
+}
+
+.occasion-icon {
+  color: #3b2b23;
+  font-size: 18px;
+}
+
+.occasion-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.occasion-card {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.occasion-card:hover {
+  transform: translateY(-5px);
+}
+
+.occasion-top-icon {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.occasion-image {
+  width: 100%;
+  height: 350px;
+  object-fit: cover;
+  object-position: top;
+}
+
+.occasion-footer {
+  padding: 15px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.occasion-footer.office { background-color: #d8e8d8; }
+.occasion-footer.casual { background-color: #f7e1e6; }
+.occasion-footer.party { background-color: #e2e1f2; }
+.occasion-footer.wedding { background-color: #fdf2df; }
+
+.occasion-icon-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #3b2b23;
+}
+
+.occasion-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #3b2b23;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+@media (max-width: 992px) {
+  .occasion-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .occasion-grid {
+    grid-template-columns: 1fr;
+  }
+}
