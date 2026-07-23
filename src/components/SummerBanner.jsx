@@ -1,6 +1,6 @@
 import React from 'react';
 import './SummerBanner.css';
-import seaImg from '../assets/banners/glo.png'; // Updated to use glo.png
+import seaImg from '../assets/banners/glo.png';
 import { FaArrowRight } from 'react-icons/fa';
 
 const SummerBanner = () => {

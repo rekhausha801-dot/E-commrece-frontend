@@ -7,11 +7,14 @@ import b1 from '../../assets/banners/b1.jpeg';
 import OfferCarousel from '../../components/OfferCarousel';
 import Cards from '../../components/Cards';
 import TrendyCollection from '../../components/TrendyCollection';
+import KurtiBanner from '../../components/KurtiBanner';
+import ShopByOccasion from '../../components/ShopByOccasion';
 import SummerBanner from '../../components/SummerBanner';
 import dressImg from '../../assets/images/dress.jpg';
 import kurtiImg from '../../assets/images/kurti.png';
 import kurthi2Img from '../../assets/images/kurthi2.png';
 import kurthi3Img from '../../assets/images/kurthi3.png';
+import kurthi5Img from '../../assets/images/kurthi5.png';
 import kurthi4Img from '../../assets/images/kurthi4.png';
 import watchImg from '../../assets/images/watch.png';
 import bagImg from '../../assets/images/beauty.png';
@@ -191,7 +194,7 @@ const Home = () => {
             { id: 1, title: 'Designer Kurthi', image: kurthi3Img, price: '₹499', originalPrice: '₹999', discount: '50% off', rating: 5, reviews: 24 },
             { id: 2, title: 'Floral A-Line Kurti', image: kurthi2Img, price: '₹799', originalPrice: '₹999', discount: '20% off', rating: 4, reviews: 18 },
             { id: 3, title: 'Cotton Daily Wear Kurti', image: kurthi4Img, price: '₹649', originalPrice: '₹899', discount: '28% off', rating: 4, reviews: 31 },
-            { id: 4, title: 'Indo Western Kurti', image: kurtiImg, price: '₹899', originalPrice: '₹1199', discount: '25% off', rating: 5, reviews: 42 }
+            { id: 4, title: 'Indo Western Kurti', image: kurthi5Img, price: '₹899', originalPrice: '₹1199', discount: '25% off', rating: 5, reviews: 42 }
           ].map(product => (
             <div key={product.id} className="unified-product-card">
               <div className="unified-card-image-wrap">
@@ -264,16 +267,11 @@ const Home = () => {
               <div className={`brand-card ${brand.bgClass}`} key={index}>
                 <div className="brand-content-centered">
                   <img 
-                    src={`https://logo.clearbit.com/${brand.domain}`} 
+                    src={`https://icon.horse/icon/${brand.domain}`} 
                     alt={`${brand.name} logo`} 
                     className="brand-logo-img" 
                     onError={(e) => {
-                      if (!e.target.dataset.fallback) {
-                        e.target.dataset.fallback = 'true';
-                        e.target.src = `https://icon.horse/icon/${brand.domain}`;
-                      } else {
-                        e.target.style.display = 'none';
-                      }
+                      e.target.style.display = 'none';
                     }} 
                   />
                   <div className="brand-logo-elegant">
@@ -291,6 +289,8 @@ const Home = () => {
           </div>
         </div>
       </div>
+
+      <ShopByOccasion />
 
     </div>
   );

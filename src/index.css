@@ -69,7 +69,7 @@ html, body {
 .unified-card-image-wrap {
   position: relative;
   width: 100%;
-  aspect-ratio: 1 / 1; /* Reduced height to fit viewport better */
+  aspect-ratio: 4 / 5; /* Better height for fashion portrait images */
   overflow: hidden;
   background-color: #f8f6f0;
 }
@@ -120,6 +120,21 @@ html, body {
 
 .unified-wishlist-btn:hover {
   transform: scale(1.1);
+}
+
+.unified-timer-pill {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  background: rgba(255, 240, 230, 0.95);
+  color: #c06949;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 20px;
+  z-index: 2;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  letter-spacing: 0.5px;
 }
 
 .unified-card-info {

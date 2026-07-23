@@ -21,50 +21,46 @@ const ALL_PRODUCTS = [
   {
     id: 1,
     image: dressImg,
-    badge: 'TRENDING',
-    badgeClass: 'badge-trending',
-    color: '#c0a07c',
-    title: 'Elegant Midi Dress',
-    price: '₹2,999',
-    originalPrice: '₹4,999',
-    rating: 5,
-    reviews: 342,
+    title: 'Designer Kurthi',
+    price: '₹499',
+    originalPrice: '₹999',
+    discount: '50% off',
+    rating: 4.5,
+    reviews: 24,
+    timer: '01h : 02m : 53s'
   },
   {
     id: 2,
     image: poloImg,
-    badge: 'NEW',
-    badgeClass: 'badge-new',
-    color: '#1a1d20',
     title: 'Classic Polo Shirt',
     price: '₹1,499',
     originalPrice: '₹2,499',
+    discount: '40% off',
     rating: 4,
     reviews: 128,
+    timer: '05h : 12m : 44s'
   },
   {
     id: 3,
     image: jordanImg,
-    badge: 'BESTSELLER',
-    badgeClass: 'badge-bestseller',
-    color: '#d4af37',
     title: 'Air Jordan 1 High',
     price: '₹12,999',
-    originalPrice: '',
+    originalPrice: '₹15,999',
+    discount: '18% off',
     rating: 5,
     reviews: 89,
+    timer: '00h : 45m : 12s'
   },
   {
     id: 4,
     image: cargoImg,
-    badge: 'TRENDING',
-    badgeClass: 'badge-trending',
-    color: '#5a774c',
-    title: 'Cargo Pants Collection',
+    title: 'Cargo Pants',
     price: '₹1,899',
     originalPrice: '₹2,999',
+    discount: '36% off',
     rating: 4,
     reviews: 215,
+    timer: '12h : 30m : 00s'
   }
 ];
 
@@ -173,9 +169,6 @@ const TrendyCollection = () => {
             onClick={() => navigate(`/product/${product.id}`, { state: { product } })}
           >
             <div className="unified-card-image-wrap">
-              <div className="unified-badge" style={{ background: product.color }}>
-                {product.badge === 'NEW' && <FaLeaf style={{ marginRight: '4px' }} />} {product.badge}
-              </div>
               <button
                 className="unified-wishlist-btn"
                 onClick={(e) => toggleLike(e, product.id)}
@@ -184,17 +177,22 @@ const TrendyCollection = () => {
                 {likedIds.includes(product.id) ? <FaHeart color="#ff4d4f" /> : <FaRegHeart color="#555" />}
               </button>
               <img src={product.image} alt={product.title} />
+              {product.timer && (
+                <div className="unified-timer-pill">
+                  {product.timer}
+                </div>
+              )}
             </div>
 
             <div className="unified-card-info">
               <h3 className="unified-card-title">
-                {product.title.replace(' Collection', '')}
+                {product.title}
               </h3>
               
               <div className="unified-card-rating">
                 <div className="unified-stars">
                   {[1, 2, 3, 4, 5].map((_, i) => (
-                    <FaStar key={i} size={14} color={i < product.rating ? "#8f7a5b" : "#e0e0e0"} />
+                    <FaStar key={i} size={14} color={i < Math.floor(product.rating) ? "#8f7a5b" : "#e0e0e0"} />
                   ))}
                 </div>
                 <span className="unified-reviews">({product.reviews})</span>
@@ -203,6 +201,7 @@ const TrendyCollection = () => {
               <div className="unified-card-price">
                 <span className="unified-price-new">{product.price}</span>
                 {product.originalPrice && <span className="unified-price-old">{product.originalPrice}</span>}
+                {product.discount && <span className="unified-price-discount">{product.discount}</span>}
               </div>
 
               <button 

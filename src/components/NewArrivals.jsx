@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './NewArrivals.css';
 
-import bgImg from '../assets/images/banner.png'; 
+import bgImg from '../assets/images/hjh.png'; 
 import lehengaImg from '../assets/images/kurthi2.png';
 import menswearImg from '../assets/images/mens1.png';
 import sareeImg from '../assets/images/sarees1.png';

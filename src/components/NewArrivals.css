@@ -6,8 +6,8 @@
 
 .premium-banner-container {
   position: relative;
-  width: 100%;
   height: 480px;
+  width: 100%;
   background-color: #2b1810; /* Dark brown fallback */
   overflow: hidden;
   display: flex;
