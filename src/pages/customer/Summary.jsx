@@ -21,6 +21,10 @@ import tshirtImage from '../../assets/Tshirt.png';
 
 const Summary = () => {
   const navigate = useNavigate();
+  
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className="lux-payment-page">

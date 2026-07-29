@@ -20,6 +20,7 @@
   font-family: 'Inter', sans-serif;
   background-color: var(--bg-color);
   min-height: 100vh;
+  padding-top: 40px;
   padding-bottom: 60px;
 }
 
@@ -178,7 +179,7 @@
 .lux-cart-items-container {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 12px;
   max-height: 580px;
   overflow-y: auto;
 }
@@ -203,7 +204,7 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   display: flex;
   gap: 24px;
-  margin-bottom: 2px;
+  margin-bottom: 0px;
 }
 
 /* Item image and details */

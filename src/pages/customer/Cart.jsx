@@ -74,6 +74,10 @@ const initialCart = [
 
 const Cart = () => {
   const navigate = useNavigate();
+  
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const [currentStep, setCurrentStep] = useState(1);
   const [cartItems, setCartItems] = useState(initialCart);
 
@@ -242,14 +246,7 @@ const Cart = () => {
                   <span>100% secure checkout</span>
                 </div>
               </div>
-              <div className="feature-divider"></div>
-              <div className="feature-item-dark">
-                <Headphones size={24} className="feature-icon-gold" />
-                <div className="feature-text-dark">
-                  <strong>24/7 Support</strong>
-                  <span>Dedicated support</span>
-                </div>
-              </div>
+
             </div>
           </div>
 
