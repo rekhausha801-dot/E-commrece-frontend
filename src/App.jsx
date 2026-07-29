@@ -22,7 +22,7 @@ function App() {
   return (
     <WishlistProvider>
       <BrowserRouter>
-        {/* <Cards /> */}
+        
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />

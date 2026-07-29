@@ -17,6 +17,10 @@ import './Cart.css';
 
 const Payment = () => {
   const navigate = useNavigate();
+  
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const [selectedMethod, setSelectedMethod] = useState('cod');
 
   return (

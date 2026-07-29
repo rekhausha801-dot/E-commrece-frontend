@@ -6,6 +6,10 @@ import './Cart.css'; // Reusing some base styles like stepper
 
 const Address = () => {
   const navigate = useNavigate();
+  
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 

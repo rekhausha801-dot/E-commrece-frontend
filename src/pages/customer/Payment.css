@@ -14,7 +14,7 @@
   padding: 0 20px;
 }
 
-/* Stepper */
+
 .lux-stepper-container {
   display: flex;
   align-items: center;
@@ -65,7 +65,7 @@
   background: #d8cbb8;
   min-width: 60px;
   margin-bottom: 25px;
-  /* Offset for text height to keep line centered on circles */
+
 }
 
 .lux-step-line.completed {
@@ -84,7 +84,7 @@
   font-weight: 700;
 }
 
-/* Layout */
+
 .lux-payment-layout {
   display: grid;
   grid-template-columns: 1fr 440px;
@@ -128,17 +128,17 @@
   margin-top: 8px;
 }
 
-/* Payment Options */
+
 .payment-options-list {
   display: flex;
   flex-direction: column;
   gap: 20px;
   margin-bottom: 30px;
   max-height: 380px;
-  /* Reduced height to force a scrollbar */
+
   overflow-y: auto;
   padding-right: 8px;
-  /* space for scrollbar */
+
 }
 
 .payment-options-list::-webkit-scrollbar {

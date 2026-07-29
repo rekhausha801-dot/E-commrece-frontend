@@ -21,6 +21,10 @@ import tshirtImage from '../../assets/Tshirt.png';
 
 const Summary = () => {
   const navigate = useNavigate();
+  
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className="lux-payment-page">
@@ -35,7 +39,7 @@ const Summary = () => {
 
           <div className="lux-step completed" onClick={() => navigate('/address')}>
             <div className="lux-step-icon"><Check size={16} /></div>
-            <span className="lux-step-label">Address</span>
+            <span className="lux-step-label">Addresses</span>
           </div>
           <div className="lux-step-line completed"></div>
 
