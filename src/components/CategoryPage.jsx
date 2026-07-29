@@ -230,7 +230,7 @@ export default function CategoryPage() {
     localStorage.setItem('ecommerce_wishlist', JSON.stringify(wishlist));
   }, [wishlist]);
 
-  const toggleWishlist = (product) => {
+  const handleWishlistToggle = (product) => {
     // If not already in wishlist, add it before navigating
     if (!wishlist.some(item => item.id === product.id)) {
       setWishlist([...wishlist, product]);
@@ -696,7 +696,7 @@ export default function CategoryPage() {
                   {product.badge && (
                     <div className="unified-badge" style={{ background: product.badgeClass === 'badge-new' ? '#1a1d20' : '#c0a07c' }}>{product.badge}</div>
                   )}
-                  <button className="unified-wishlist-btn" onClick={(e) => { e.stopPropagation(); toggleWishlist(product); }}>
+                  <button className="unified-wishlist-btn" onClick={(e) => { e.stopPropagation(); handleWishlistToggle(product); }}>
                     <Heart 
                       size={16} 
                       fill={wishlist.some(item => item.id === product.id) ? "#ff4d4f" : "none"} 
