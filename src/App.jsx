@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/customer/Home";
@@ -8,11 +8,16 @@ import WesternCollection from "./components/westren";
 import CategoryPage from "./components/CategoryPage";
 import ProductDetail from "./components/ProductDetail";
 import Customer from "./components/Customer";
+import Rewards from "./components/Rewards";
+import Login from "./pages/customer/Login";
 
-export default function App() {
+
+function AppContent() {
+  const location = useLocation();
+  const isLoginPage = location.pathname === "/login";
+
   return (
-    <BrowserRouter>
-      {/* <Cards /> */}
+    <>
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -21,9 +26,20 @@ export default function App() {
         <Route path="/category/:categoryId" element={<CategoryPage />} />
         <Route path="/product/:productId" element={<ProductDetail />} />
         <Route path="/customer" element={<div style={{paddingTop: "90px"}}><Customer /></div>} />
+        <Route path="/rewards" element={<Rewards />} />
+        <Route path="/login" element={<Login />} />
+
         <Route path="/shop" element={<h1 style={{padding: "120px 20px", textAlign: "center"}}>Shop Page - Coming Soon!</h1>} />
       </Routes>
-      <Footer />
+      {!isLoginPage && <Footer />}
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
     </BrowserRouter>
   );
 }

@@ -25,6 +25,9 @@ const kurtiBanner = () => {
             <h2 className="kurti-title">KURTI</h2>
             <h3 className="kurti-subtitle">COLLECTIONS</h3>
             
+            <button className="kurti-shop-btn">
+              SHOP NOW <FaArrowRight className="kurti-btn-icon" />
+            </button>
 
           </div>
         </div>

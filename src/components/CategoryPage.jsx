@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './Collection.css';
 import { 
-  Filter, Heart, ShoppingBag, Eye, LayoutGrid, Menu, ChevronDown, ChevronUp, X, SlidersHorizontal, Check, Star
+  Filter, Heart, ShoppingBag, Eye, LayoutGrid, Menu, ChevronDown, ChevronUp, X, SlidersHorizontal, Check, Star, ArrowRight
 } from 'lucide-react';
 
 // Import images
@@ -15,7 +15,7 @@ import banner15Img from '../assets/images/baner15.png';
 import banner16Img from '../assets/images/banner16.png';
 import dffImg from '../assets/images/dff.png';
 import westernBannerImg from '../assets/images/westrenwear.png';
-import menBannerImg from '../assets/images/men7.jpeg';
+import menBannerImg from '../assets/images/men9.png';
 
 
 import manImg from '../assets/images/man.png';
@@ -59,7 +59,13 @@ import newKids4 from '../assets/images/new_kids_4.png';
 
 import newFootwear1 from '../assets/images/new_footwear_1.png';
 
-
+import classicBlackWatchImg from '../assets/images/classic_black_watch.png';
+import stylishSunglassesImg from '../assets/images/stylish_sunglasses.png';
+import premiumLeatherBeltImg from '../assets/images/premium_leather_belt.png';
+import silverBraceletImg from '../assets/images/silver_bracelet.png';
+import goldEarringsImg from '../assets/images/gold_earrings.png';
+import leatherWalletImg from '../assets/images/leather_wallet.png';
+import silkNecktieImg from '../assets/images/silk_necktie.png';
 const CATEGORY_DATA = {
   'womenswear': {
     title: "Womenswear Collection",
@@ -93,7 +99,7 @@ const CATEGORY_DATA = {
   },
   'home-decor': {
     title: "Home Decor",
-    banner: banner13Img,
+    banner: homeImg,
     images: [newHome1, newHome2, newHome3, newHome4]
   },
   'beauty': {
@@ -104,7 +110,16 @@ const CATEGORY_DATA = {
   'accessories': {
     title: "Accessories",
     banner: banner16Img,
-    images: [watchImg, watchImg, watchImg, watchImg]
+    images: [
+      watchImg, 
+      stylishSunglassesImg, 
+      premiumLeatherBeltImg, 
+      classicBlackWatchImg,
+      silverBraceletImg,
+      goldEarringsImg,
+      leatherWalletImg,
+      silkNecktieImg
+    ]
   },
   'kids-fashion': {
     title: "Kids Fashion",
@@ -186,14 +201,25 @@ export default function CategoryPage() {
     image: currentCategory.images[index % currentCategory.images.length]
   })), [currentCategory]);
   
-  const [wishlist, setWishlist] = useState([]);
-
-  const toggleWishlist = (productId) => {
-    if (wishlist.includes(productId)) {
-      setWishlist(wishlist.filter(id => id !== productId));
-    } else {
-      setWishlist([...wishlist, productId]);
+  const [wishlist, setWishlist] = useState(() => {
+    try {
+      const saved = localStorage.getItem('ecommerce_wishlist');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      return [];
     }
+  });
+
+  React.useEffect(() => {
+    localStorage.setItem('ecommerce_wishlist', JSON.stringify(wishlist));
+  }, [wishlist]);
+
+  const toggleWishlist = (product) => {
+    // If not already in wishlist, add it before navigating
+    if (!wishlist.some(item => item.id === product.id)) {
+      setWishlist([...wishlist, product]);
+    }
+    navigate('/wishlist');
   };
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedFabrics, setSelectedFabrics] = useState([]);
@@ -247,7 +273,69 @@ export default function CategoryPage() {
 
   return (
     <div className="collection-page">
-
+      {currentCategory.banner && (
+        <div style={{ position: 'relative', width: '100%', height: '400px', overflow: 'hidden', marginBottom: '30px' }}>
+          <img 
+            src={currentCategory.banner} 
+            alt={currentCategory.title} 
+            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center', display: 'block' }} 
+          />
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            height: '100%',
+            width: '100%',
+            maxWidth: '600px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            paddingLeft: '8%',
+            background: 'linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0) 100%)',
+            color: '#ffffff'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+              <span style={{ width: '40px', height: '1px', backgroundColor: '#e5c398' }} />
+              <span style={{ fontSize: '10px', fontWeight: '600', letterSpacing: '3px', color: '#e5c398', textTransform: 'uppercase' }}>NEW SEASON</span>
+              <span style={{ width: '40px', height: '1px', backgroundColor: '#e5c398' }} />
+            </div>
+            
+            {categoryId === 'menswear' ? (
+              <>
+                <h2 style={{ fontSize: '64px', fontWeight: '400', letterSpacing: '2px', margin: '0', lineHeight: 1 }}>MENS</h2>
+                <h3 style={{ fontSize: '32px', fontWeight: '400', letterSpacing: '7px', color: '#e5c398', margin: '8px 0 0 0' }}>WEAR</h3>
+              </>
+            ) : (
+              <h2 style={{ fontSize: '48px', fontWeight: '400', letterSpacing: '2px', margin: '0', lineHeight: 1.2, textTransform: 'uppercase' }}>
+                {currentCategory.title}
+              </h2>
+            )}
+            
+            <button style={{
+              marginTop: '30px',
+              padding: '14px 32px',
+              backgroundColor: '#e5c398',
+              color: '#111',
+              border: 'none',
+              borderRadius: '4px',
+              fontSize: '14px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '10px',
+              width: 'fit-content',
+              letterSpacing: '1px',
+              transition: 'background-color 0.3s'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#d4b082'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#e5c398'}
+            >
+              SHOP NOW <ArrowRight size={18} />
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="collection-main">
         {/* Sidebar */}
@@ -592,11 +680,11 @@ export default function CategoryPage() {
                   {product.badge && (
                     <div className="unified-badge" style={{ background: product.badgeClass === 'badge-new' ? '#1a1d20' : '#c0a07c' }}>{product.badge}</div>
                   )}
-                  <button className="unified-wishlist-btn" onClick={(e) => { e.stopPropagation(); toggleWishlist(product.id); }}>
+                  <button className="unified-wishlist-btn" onClick={(e) => { e.stopPropagation(); toggleWishlist(product); }}>
                     <Heart 
                       size={16} 
-                      fill={wishlist.includes(product.id) ? "#ff4d4f" : "none"} 
-                      color={wishlist.includes(product.id) ? "#ff4d4f" : "#555"} 
+                      fill={wishlist.some(item => item.id === product.id) ? "#ff4d4f" : "none"} 
+                      color={wishlist.some(item => item.id === product.id) ? "#ff4d4f" : "#555"} 
                       style={{ transition: 'all 0.3s ease' }}
                     />
                   </button>

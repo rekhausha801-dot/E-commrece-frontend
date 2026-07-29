@@ -1,0 +1,317 @@
+.rc-container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: #fffdfc;
+  border-radius: 16px;
+  border: 1px solid #f4eae1;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Header Styles */
+.rc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #f4eae1;
+}
+
+.rc-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.rc-header-icon {
+  width: 48px;
+  height: 48px;
+  background-color: #fdf8f0;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a67c52;
+}
+
+.rc-title-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.rc-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #111;
+  margin: 0 0 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rc-subtitle {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+/* 4-Card Ticket Grid */
+.rc-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.rc-card {
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  position: relative;
+  border: none;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.rc-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+}
+
+
+.rc-card-top {
+  padding: 16px 16px 12px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+}
+
+.rc-card-top::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 15px;
+  right: 15px;
+  border-bottom: 2px dashed rgba(0,0,0,0.15);
+}
+
+.rc-card-header-row {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.rc-icon-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rc-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rc-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111;
+  margin: 0 0 4px 0;
+}
+
+.rc-card-reward {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.rc-star-divider {
+  display: flex;
+  align-items: center;
+  width: 100px;
+  margin: 8px auto;
+  gap: 8px;
+}
+
+.rc-star-divider::before, .rc-star-divider::after {
+  content: '';
+  height: 1px;
+  flex: 1;
+}
+
+.rc-bottom-section {
+  padding: 12px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.rc-info-box {
+  background-color: transparent;
+  color: #333;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 12px;
+  min-height: 40px;
+}
+
+.rc-action-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  background-color: #dcb383;
+  color: #111;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background-color 0.2s ease;
+}
+.rc-action-btn:hover {
+  background-color: #c99d6d;
+}
+
+/* Unified Beige/Gold Theme for all cards */
+.rc-card-green, .rc-card-pink, .rc-card-blue, .rc-card-purple {
+  border-top: 4px solid #cba876;
+}
+
+.rc-card-green .rc-card-top, .rc-card-pink .rc-card-top, .rc-card-blue .rc-card-top, .rc-card-purple .rc-card-top {
+  background: transparent;
+}
+
+.rc-icon-circle {
+  background-color: #fdf8f0;
+  color: #a67c52;
+}
+
+.rc-badge {
+  background-color: #fdf8f0;
+  color: #a67c52;
+}
+
+.rc-card-reward {
+  color: #a67c52;
+}
+
+.rc-star-divider::before, .rc-star-divider::after {
+  background-color: #e8d0a5;
+}
+
+.rc-star-divider svg {
+  color: #a67c52;
+}
+
+.rc-coupon-dashed {
+  border: 1px dashed #cba876;
+  padding: 8px;
+  border-radius: 6px;
+  color: #a67c52;
+  font-weight: 600;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fdf8f0;
+  margin-top: 6px;
+}
+
+.rc-info-box {
+  background-color: transparent;
+  color: #4a3623;
+}
+
+/* Specific elements that need the same theme */
+.rc-kurti-graphic {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 6px 0;
+  position: relative;
+  height: 55px;
+}
+.rc-kurti-graphic img {
+  height: 55px;
+  object-fit: contain;
+}
+.rc-kurti-graphic .rc-kurti-1 { transform: rotate(-5deg); margin-right: 8px; }
+.rc-kurti-graphic .rc-kurti-2 { transform: rotate(5deg); margin-left: 8px; }
+.rc-kurti-badge {
+  position: absolute;
+  background-color: #a67c52;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 11px;
+  border: 2px solid white;
+  z-index: 2;
+}
+
+.rc-progress-container {
+  width: 100%;
+  margin-top: 8px;
+  margin-bottom: 12px;
+}
+.rc-progress-bar {
+  height: 8px;
+  border-radius: 4px;
+  background-color: #fdf8f0;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.rc-progress-fill {
+  height: 100%;
+  background-color: #a67c52;
+  border-radius: 4px;
+  width: 100%;
+}
+.rc-progress-text {
+  font-size: 11px;
+  color: #4a3623;
+  font-weight: 600;
+}
+
+
+@media (max-width: 1200px) {
+  .rc-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .rc-grid {
+    grid-template-columns: 1fr;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+}

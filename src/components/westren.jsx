@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './Collection.css';
 import { 
-  Filter, Heart, ShoppingBag, Eye, LayoutGrid, Menu, ChevronDown, ChevronUp, X, SlidersHorizontal, Check, Star
+  Filter, Heart, ShoppingBag, Eye, LayoutGrid, Menu, ChevronDown, ChevronUp, X, SlidersHorizontal, Check, Star, ArrowRight
 } from 'lucide-react';
 
 import bannerImg from '../assets/images/westrenwear.png';
@@ -254,6 +254,29 @@ export default function WesternCollection() {
           </div>
           <h2 style={{ fontSize: '52px', fontWeight: '400', letterSpacing: '2px', margin: '0', lineHeight: 1 }}>WESTERN</h2>
           <h3 style={{ fontSize: '26px', fontWeight: '400', letterSpacing: '7px', color: '#e5c398', margin: '8px 0 0 0' }}>WEAR</h3>
+          
+          <button style={{
+            marginTop: '30px',
+            padding: '14px 32px',
+            backgroundColor: '#e5c398',
+            color: '#111',
+            border: 'none',
+            borderRadius: '4px',
+            fontSize: '14px',
+            fontWeight: '600',
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '10px',
+            width: 'fit-content',
+            letterSpacing: '1px',
+            transition: 'background-color 0.3s'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#d4b082'}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#e5c398'}
+          >
+            SHOP NOW <ArrowRight size={18} />
+          </button>
         </div>
       </div>
       <div className="collection-main">

@@ -5,6 +5,7 @@ import imgNew from '../assets/banners/image.png';
 import girlsImg from '../assets/banners/girls.png';
 import wearImg from '../assets/banners/wear.png';
 import musuImg from '../assets/banners/musu.png';
+import { X } from 'lucide-react';
 import '../pages/customer/Home.css';
 
 const OfferCarousel = () => {
@@ -69,9 +70,7 @@ const OfferCarousel = () => {
           <button className="carousel-close-btn" onClick={() => setShowCarousel(false)}>
             <div className="spinning-diamond-bg"></div>
             <div className="close-x-icon">
-              <svg width="18" height="18" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M1 1L13 13M1 13L13 1" stroke="#b28146" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+              <X size={18} color="#b28146" strokeWidth={2} />
             </div>
           </button>
 

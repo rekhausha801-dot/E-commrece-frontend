@@ -8,7 +8,7 @@ import OfferCarousel from '../../components/OfferCarousel';
 import Cards from '../../components/Cards';
 import TrendyCollection from '../../components/TrendyCollection';
 import KurtiBanner from '../../components/KurtiBanner';
-import ShopByOccasion from '../../components/ShopByOccasion';
+import RewardsCoupons from '../../components/RewardsCoupons';
 import SummerBanner from '../../components/SummerBanner';
 import dressImg from '../../assets/images/dress.jpg';
 import kurtiImg from '../../assets/images/kurti.png';
@@ -290,7 +290,7 @@ const Home = () => {
         </div>
       </div>
 
-      <ShopByOccasion />
+      <RewardsCoupons />
 
     </div>
   );
