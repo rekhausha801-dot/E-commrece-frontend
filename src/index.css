@@ -123,6 +123,21 @@ body {
   transform: scale(1.1);
 }
 
+.unified-timer-pill {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  background: rgba(255, 240, 230, 0.95);
+  color: #c06949;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 20px;
+  z-index: 2;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  letter-spacing: 0.5px;
+}
+
 .unified-card-info {
   padding: 12px 14px;
   display: flex;
