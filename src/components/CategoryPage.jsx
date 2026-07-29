@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { message } from 'antd';
 import './Collection.css';
 import { 
   Filter, Heart, ShoppingBag, Eye, LayoutGrid, Menu, ChevronDown, ChevronUp, X, SlidersHorizontal, Check, Star
 } from 'lucide-react';
+import { useWishlist } from '../context/WishlistContext';
+import { FaStar } from 'react-icons/fa';
 
 // Import images
 import bannerImg from '../assets/images/banner.png';
@@ -165,6 +168,19 @@ function Section({ title, children, defaultOpen = true }) {
 export default function CategoryPage() {
   const { categoryId } = useParams();
   const navigate = useNavigate();
+  const { wishlistItems, toggleWishlist, isInWishlist } = useWishlist();
+  const [addedToCart, setAddedToCart] = useState({});
+
+  const handleCartClick = (e, product) => {
+    e.stopPropagation();
+    if (addedToCart[product.id]) {
+      navigate('/cart');
+    } else {
+      setAddedToCart(prev => ({ ...prev, [product.id]: true }));
+      message.success(`${product.title || 'Product'} added to cart!`);
+    }
+  };
+
   const currentCategory = CATEGORY_DATA[categoryId] || {
     title: "Exclusive Collection",
     banner: bannerImg,
@@ -184,15 +200,6 @@ export default function CategoryPage() {
     image: currentCategory.images[index % currentCategory.images.length]
   })), [currentCategory]);
   
-  const [wishlist, setWishlist] = useState([]);
-
-  const toggleWishlist = (productId) => {
-    if (wishlist.includes(productId)) {
-      setWishlist(wishlist.filter(id => id !== productId));
-    } else {
-      setWishlist([...wishlist, productId]);
-    }
-  };
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedFabrics, setSelectedFabrics] = useState([]);
   const [selectedSizes, setSelectedSizes] = useState([]);
@@ -591,11 +598,17 @@ export default function CategoryPage() {
                   {product.badge && (
                     <div className="unified-badge" style={{ background: product.badgeClass === 'badge-new' ? '#1a1d20' : '#c0a07c' }}>{product.badge}</div>
                   )}
-                  <button className="unified-wishlist-btn" onClick={(e) => { e.stopPropagation(); toggleWishlist(product.id); }}>
+                  <button 
+                    className="unified-wishlist-btn" 
+                    onClick={(e) => { 
+                      e.stopPropagation(); 
+                      toggleWishlist(product); 
+                    }}
+                  >
                     <Heart 
                       size={16} 
-                      fill={wishlist.includes(product.id) ? "#ff4d4f" : "none"} 
-                      color={wishlist.includes(product.id) ? "#ff4d4f" : "#555"} 
+                      fill={isInWishlist(product.id) ? "#ff4d4f" : "none"} 
+                      color={isInWishlist(product.id) ? "#ff4d4f" : "#555"} 
                       style={{ transition: 'all 0.3s ease' }}
                     />
                   </button>
@@ -624,9 +637,9 @@ export default function CategoryPage() {
                     )}
                   </div>
                   
-                  <button className="unified-explore-btn" onClick={(e) => { e.stopPropagation(); /* Add to cart logic */ }}>
+                  <button className="unified-explore-btn" onClick={(e) => handleCartClick(e, product)}>
                     <ShoppingBag size={16} />
-                    ADD TO CART
+                    {addedToCart[product.id] ? "GO TO CART" : "ADD TO CART"}
                   </button>
                 </div>
               </div>
