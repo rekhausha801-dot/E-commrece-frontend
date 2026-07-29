@@ -7,11 +7,14 @@ import b1 from '../../assets/banners/b1.jpeg';
 import OfferCarousel from '../../components/OfferCarousel';
 import Cards from '../../components/Cards';
 import TrendyCollection from '../../components/TrendyCollection';
+import KurtiBanner from '../../components/KurtiBanner';
+import ShopByOccasion from '../../components/ShopByOccasion';
 import SummerBanner from '../../components/SummerBanner';
 import dressImg from '../../assets/images/dress.jpg';
 import kurtiImg from '../../assets/images/kurti.png';
 import kurthi2Img from '../../assets/images/kurthi2.png';
 import kurthi3Img from '../../assets/images/kurthi3.png';
+import kurthi5Img from '../../assets/images/kurthi5.png';
 import kurthi4Img from '../../assets/images/kurthi4.png';
 import watchImg from '../../assets/images/watch.png';
 import bagImg from '../../assets/images/beauty.png';
@@ -287,6 +290,8 @@ const Home = () => {
           </div>
         </div>
       </div>
+
+      <ShopByOccasion />
 
     </div>
   );

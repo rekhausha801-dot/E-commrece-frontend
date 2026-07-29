@@ -7,6 +7,7 @@ import {
   Truck, CreditCard, Box, Navigation, MoreHorizontal, ThumbsUp, ShoppingBag, Palette, Shield,
   Camera, MessageCircle, Edit2, Info, Award, X, Leaf, ArrowDown
 } from 'lucide-react';
+import CustomerReviews from './CustomerReviews';
 import './ProductDetail.css';
 
 import placeholderMain from '../assets/images/banner0.png';

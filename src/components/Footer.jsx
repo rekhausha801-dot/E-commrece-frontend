@@ -5,7 +5,7 @@ import {
   FiFacebook, FiInstagram, FiTwitter, FiYoutube, FiLinkedin, FiMail
 } from 'react-icons/fi';
 import { FaPinterestP } from 'react-icons/fa';
-import { BsBagFill } from 'react-icons/bs';
+import { BsBagHeartFill } from 'react-icons/bs';
 const Footer = () => {
   return (
     <footer className="footer-container">
@@ -26,8 +26,8 @@ const Footer = () => {
         <div className="footer-col-brand">
           <div className="footer-logo">
             <div className="logo-icon-container">
-              <span className="logo-text-jr">JR</span>
-              <BsBagFill className="logo-icon" />
+              <div className="logo-icon-bg"></div>
+              <BsBagHeartFill className="logo-icon" />
             </div>
             ShopEase
           </div>
