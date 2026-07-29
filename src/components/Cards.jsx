@@ -57,29 +57,30 @@ export default function Cards() {
         </button>
 
         <div className="category-cards-container" ref={scrollRef}>
-        {categories.map((cat, index) => {
-          const targetLink = cat.name === 'Ethnic Wear' ? '/collection' : cat.name === 'Western Dresses' ? '/western' : `/category/${cat.name.toLowerCase().replace(' ', '-')}`;
-          return (
-          <div key={`${cat.name}-${index}`} className="category-new-card">
-            <Link to={targetLink} className="category-new-card-image" style={{ display: 'block' }}>
-              <img src={cat.image} alt={cat.name} />
-            </Link>
-            <div className="category-new-card-content">
-              <div className="category-icon-wrapper" style={{ color: cat.iconColor, backgroundColor: cat.iconBg }}>
-                {cat.icon}
-              </div>
-              <div className="category-text-wrapper">
-                <Link to={targetLink} style={{ textDecoration: 'none', color: 'inherit' }}>
-                  <h3>{cat.name}</h3>
-                  <span className="category-subtitle">{cat.subtitle}</span>
+          {categories.map((cat, index) => {
+            const targetLink = cat.name === 'Ethnic Wear' ? '/collection' : cat.name === 'Western Dresses' ? '/western' : `/category/${cat.name.toLowerCase().replace(' ', '-')}`;
+            return (
+              <div key={`${cat.name}-${index}`} className="category-new-card">
+                <Link to={targetLink} className="category-new-card-image" style={{ display: 'block' }}>
+                  <img src={cat.image} alt={cat.name} />
                 </Link>
+                <div className="category-new-card-content">
+                  <div className="category-icon-wrapper" style={{ color: cat.iconColor, backgroundColor: cat.iconBg }}>
+                    {cat.icon}
+                  </div>
+                  <div className="category-text-wrapper">
+                    <Link to={targetLink} style={{ textDecoration: 'none', color: 'inherit' }}>
+                      <h3>{cat.name}</h3>
+                      <span className="category-subtitle">{cat.subtitle}</span>
+                    </Link>
+                  </div>
+                  <Link to={targetLink} className="category-arrow-btn">
+                    <FiArrowRight />
+                  </Link>
+                </div>
               </div>
-              <Link to={targetLink} className="category-arrow-btn">
-                <FiArrowRight />
-              </Link>
-            </div>
-          </div>
-        )})}
+            )
+          })}
         </div>
 
         <button className="scroll-button right" onClick={() => scroll('right')} aria-label="Scroll right">

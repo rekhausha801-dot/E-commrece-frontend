@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { message } from 'antd';
 import './Collection.css';
 import { 
-  Filter, Heart, ShoppingBag, Eye, LayoutGrid, Menu, ChevronDown, ChevronUp, X, SlidersHorizontal, Check, Star
+  Filter, Minus, Heart, ShoppingBag, Eye, LayoutGrid, Menu, ChevronDown, ChevronUp, X, SlidersHorizontal, Check, Star, Shirt
 } from 'lucide-react';
+import { useWishlist } from '../context/WishlistContext';
 
 import bannerImg from '../assets/images/westrenwear.png';
 import westren2Img from '../assets/images/westren2.png';
@@ -168,6 +171,19 @@ function Section({ title, children, defaultOpen = true }) {
 }
 
 export default function WesternCollection() {
+  const navigate = useNavigate();
+  const { wishlistItems, toggleWishlist, isInWishlist } = useWishlist();
+  const [addedToCart, setAddedToCart] = useState({});
+
+  const handleCartClick = (e, product) => {
+    e.stopPropagation();
+    if (addedToCart[product.id]) {
+      navigate('/cart');
+    } else {
+      setAddedToCart(prev => ({ ...prev, [product.id]: true }));
+      message.success(`${product.title || 'Product'} added to cart!`);
+    }
+  };
   
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedFabrics, setSelectedFabrics] = useState([]);
@@ -180,16 +196,6 @@ export default function WesternCollection() {
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [sortBy, setSortBy] = useState('Popularity');
   const [isSortOpen, setIsSortOpen] = useState(false);
-
-  const [wishlist, setWishlist] = useState([]);
-
-  const toggleWishlist = (productId) => {
-    if (wishlist.includes(productId)) {
-      setWishlist(wishlist.filter(id => id !== productId));
-    } else {
-      setWishlist([...wishlist, productId]);
-    }
-  };
 
   const totalFilters = selectedCategories.length + selectedFabrics.length + selectedSizes.length + selectedColors.length + (selectedRating ? 1 : 0) + (selectedDiscount ? 1 : 0);
 
@@ -208,12 +214,6 @@ export default function WesternCollection() {
     setArr(
       arr.includes(value) ? arr.filter((v) => v !== value) : [...arr, value]
     );
-  };
-
-  const renderStars = (rating) => {
-    return Array.from({ length: 5 }).map((_, idx) => (
-      <Star key={idx} size={12} fill={idx < rating ? "#8f7a5b" : "#e0e0e0"} color={idx < rating ? "#8f7a5b" : "#e0e0e0"} />
-    ));
   };
 
   const sortedProducts = [...products].sort((a, b) => {
@@ -590,16 +590,26 @@ export default function WesternCollection() {
 
           <div className={`unified-products-grid ${isMobileFilterOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
             {sortedProducts.map(product => (
-              <div key={product.id} className="unified-product-card">
+              <div 
+                key={product.id} 
+                className="unified-product-card"
+                onClick={() => navigate(`/product/${product.id}`, { state: { product } })}
+              >
                 <div className="unified-card-image-wrap">
                   {product.badge && (
                     <div className="unified-badge" style={{ background: product.badgeClass === 'badge-new' ? '#1a1d20' : '#c0a07c' }}>{product.badge}</div>
                   )}
-                  <button className="unified-wishlist-btn" onClick={() => toggleWishlist(product.id)}>
+                  <button 
+                    className="unified-wishlist-btn" 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleWishlist(product);
+                    }}
+                  >
                     <Heart 
                       size={16} 
-                      fill={wishlist.includes(product.id) ? "#ff4d4f" : "none"} 
-                      color={wishlist.includes(product.id) ? "#ff4d4f" : "#555"} 
+                      fill={isInWishlist(product.id) ? "#ff4d4f" : "none"} 
+                      color={isInWishlist(product.id) ? "#ff4d4f" : "#555"} 
                       style={{ transition: 'all 0.3s ease' }}
                     />
                   </button>
@@ -628,9 +638,9 @@ export default function WesternCollection() {
                     )}
                   </div>
                   
-                  <button className="unified-explore-btn">
+                  <button className="unified-explore-btn" onClick={(e) => handleCartClick(e, product)}>
                     <ShoppingBag size={16} />
-                    ADD TO CART
+                    {addedToCart[product.id] ? "GO TO CART" : "ADD TO CART"}
                   </button>
                 </div>
               </div>
