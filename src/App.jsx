@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/customer/Home";
@@ -7,6 +7,7 @@ import Collection from "./components/Collection";
 import WesternCollection from "./components/westren";
 import CategoryPage from "./components/CategoryPage";
 import ProductDetail from "./components/ProductDetail";
+
 import Wishlist from "./pages/customer/Wishlist";
 import Cart from "./pages/customer/Cart";
 import Address from "./pages/customer/Address";
@@ -17,7 +18,7 @@ import AccountLayout from "./pages/customer/AccountLayout";
 import AccountPlaceholder from "./pages/customer/AccountPlaceholder";
 import { WishlistProvider } from "./context/WishlistContext";
 
-export default function App() {
+
   return (
     <WishlistProvider>
       <BrowserRouter>

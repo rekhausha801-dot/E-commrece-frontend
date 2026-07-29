@@ -1,0 +1,151 @@
+.login-page-wrapper {
+  background-color: #fceceb; /* Soft peach/pink background */
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 120px 20px 60px; /* Padding for fixed navbar */
+  font-family: 'Inter', sans-serif;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 400px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.login-banner {
+  width: 100%;
+  height: 160px;
+  background-color: #f7e4df;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Fallback gradient if no image */
+.login-banner-fallback {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #fcd0c7, #f7b2a3);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 20px;
+  color: #d11243;
+}
+.login-banner-fallback h3 {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0;
+  line-height: 1.1;
+}
+.login-banner-fallback p {
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.login-content {
+  padding: 30px 30px 40px;
+}
+
+.login-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #3e4152;
+  margin-bottom: 30px;
+}
+.login-title span {
+  font-weight: 400;
+  color: #696e79;
+}
+
+.login-input-group {
+  position: relative;
+  margin-bottom: 24px;
+  border: 1px solid #d4d5d9;
+  display: flex;
+  align-items: center;
+}
+.login-input-group:focus-within {
+  border-color: #282c3f;
+}
+
+.input-prefix {
+  color: #94969f;
+  font-weight: 500;
+  padding: 12px 12px 12px 16px;
+  border-right: 1px solid transparent; /* Keeps spacing */
+}
+
+.login-input {
+  flex: 1;
+  border: none;
+  padding: 12px;
+  font-size: 14px;
+  color: #282c3f;
+  outline: none;
+}
+.login-input::placeholder {
+  color: #94969f;
+}
+
+.terms-container {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 30px;
+  gap: 12px;
+}
+.terms-checkbox {
+  margin-top: 3px;
+  cursor: pointer;
+  accent-color: #ff3f6c; /* Myntra pink */
+}
+
+.terms-text {
+  font-size: 12px;
+  color: #696e79;
+  line-height: 1.5;
+}
+.terms-link {
+  color: #ff3f6c;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.login-btn {
+  width: 100%;
+  padding: 14px;
+  background-color: #94969f; /* Greyed out state */
+  color: #ffffff;
+  border: none;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  cursor: not-allowed;
+  margin-bottom: 30px;
+}
+.login-btn.active {
+  background-color: #ff3f6c;
+  cursor: pointer;
+}
+
+.login-help {
+  font-size: 12px;
+  color: #696e79;
+}
+.login-help a {
+  color: #ff3f6c;
+  font-weight: 700;
+  text-decoration: none;
+}

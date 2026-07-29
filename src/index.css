@@ -156,7 +156,6 @@ body {
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  min-height: 36px;
   line-height: 1.2;
 }
 
