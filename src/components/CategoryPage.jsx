@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { message } from 'antd';
 import './Collection.css';
 import { 
   Filter, Heart, ShoppingBag, Eye, LayoutGrid, Menu, ChevronDown, ChevronUp, X, SlidersHorizontal, Check, Star, ArrowRight
 } from 'lucide-react';
+import { useWishlist } from '../context/WishlistContext';
+import { FaStar } from 'react-icons/fa';
 
 // Import images
 import bannerImg from '../assets/images/banner.png';
@@ -182,6 +185,19 @@ function Section({ title, children, defaultOpen = true }) {
 export default function CategoryPage() {
   const { categoryId } = useParams();
   const navigate = useNavigate();
+  const { wishlistItems, toggleWishlist, isInWishlist } = useWishlist();
+  const [addedToCart, setAddedToCart] = useState({});
+
+  const handleCartClick = (e, product) => {
+    e.stopPropagation();
+    if (addedToCart[product.id]) {
+      navigate('/cart');
+    } else {
+      setAddedToCart(prev => ({ ...prev, [product.id]: true }));
+      message.success(`${product.title || 'Product'} added to cart!`);
+    }
+  };
+
   const currentCategory = CATEGORY_DATA[categoryId] || {
     title: "Exclusive Collection",
     banner: bannerImg,
@@ -713,9 +729,9 @@ export default function CategoryPage() {
                     )}
                   </div>
                   
-                  <button className="unified-explore-btn" onClick={(e) => { e.stopPropagation(); /* Add to cart logic */ }}>
+                  <button className="unified-explore-btn" onClick={(e) => handleCartClick(e, product)}>
                     <ShoppingBag size={16} />
-                    ADD TO CART
+                    {addedToCart[product.id] ? "GO TO CART" : "ADD TO CART"}
                   </button>
                 </div>
               </div>

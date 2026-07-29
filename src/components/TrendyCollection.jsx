@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { message } from 'antd';
 import { FaFire, FaStar, FaRegStar, FaStarHalfAlt, FaRegHeart, FaHeart, FaTag, FaMagic, FaShoppingBag, FaTshirt, FaPalette, FaArrowRight, FaLeaf, FaShoePrints } from 'react-icons/fa';
 import './TrendyCollection.css';
 
@@ -21,13 +22,15 @@ const ALL_PRODUCTS = [
   {
     id: 1,
     image: dressImg,
-    title: 'Designer Kurthi',
-    price: '₹499',
-    originalPrice: '₹999',
-    discount: '50% off',
-    rating: 4.5,
-    reviews: 24,
-    timer: '01h : 02m : 53s'
+    badge: 'TRENDING',
+    badgeClass: 'badge-trending',
+    color: '#c0a07c',
+    title: 'Elegant Midi Dress',
+    price: '₹2,999',
+    originalPrice: '₹4,999',
+    rating: 5,
+    reviews: 342,
+    categoryLink: '/western'
   },
   {
     id: 2,
@@ -38,7 +41,7 @@ const ALL_PRODUCTS = [
     discount: '40% off',
     rating: 4,
     reviews: 128,
-    timer: '05h : 12m : 44s'
+    categoryLink: '/category/menswear'
   },
   {
     id: 3,
@@ -49,7 +52,7 @@ const ALL_PRODUCTS = [
     discount: '18% off',
     rating: 5,
     reviews: 89,
-    timer: '00h : 45m : 12s'
+    categoryLink: '/category/footwear'
   },
   {
     id: 4,
@@ -60,7 +63,7 @@ const ALL_PRODUCTS = [
     discount: '36% off',
     rating: 4,
     reviews: 215,
-    timer: '12h : 30m : 00s'
+    categoryLink: '/category/menswear'
   }
 ];
 
@@ -128,8 +131,18 @@ function FeatureIcon({ name }) {
 const TrendyCollection = () => {
   const [activeTab, setActiveTab] = useState('trending');
   const [likedIds, setLikedIds] = useState([]);
-
+  const [addedToCart, setAddedToCart] = useState({});
   const navigate = useNavigate();
+
+  const handleCartClick = (e, product) => {
+    e.stopPropagation();
+    if (addedToCart[product.id]) {
+      navigate('/cart');
+    } else {
+      setAddedToCart(prev => ({ ...prev, [product.id]: true }));
+      message.success(`${product.title || 'Product'} added to cart!`);
+    }
+  };
 
   const toggleLike = (e, id) => {
     e.stopPropagation();
@@ -158,15 +171,16 @@ const TrendyCollection = () => {
         <h2 className="trendy-title">
           Trending <span className="trendy-title-accent">Collections</span>
         </h2>
-        
+
       </div>
 
       <div className="unified-products-grid" style={{ marginTop: '30px', marginBottom: '10px' }}>
         {displayedProducts.map((product) => (
-          <div 
-            className="unified-product-card" 
+          <div
+            className="unified-product-card"
             key={product.id}
             onClick={() => navigate(`/product/${product.id}`, { state: { product } })}
+            style={{ cursor: 'pointer' }}
           >
             <div className="unified-card-image-wrap">
               <button
@@ -188,7 +202,7 @@ const TrendyCollection = () => {
               <h3 className="unified-card-title">
                 {product.title}
               </h3>
-              
+
               <div className="unified-card-rating">
                 <div className="unified-stars">
                   {[1, 2, 3, 4, 5].map((_, i) => (
@@ -204,14 +218,11 @@ const TrendyCollection = () => {
                 {product.discount && <span className="unified-price-discount">{product.discount}</span>}
               </div>
 
-              <button 
-                className="unified-explore-btn"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate('/collection');
-                }}
+              <button
+                className="unified-add-cart-btn"
+                onClick={(e) => handleCartClick(e, product)}
               >
-                Explore Collection <FaArrowRight style={{ marginLeft: '8px' }} />
+                <FaShoppingBag style={{ marginRight: '8px' }} /> {addedToCart[product.id] ? "Go to Cart" : "Add to Cart"}
               </button>
             </div>
           </div>

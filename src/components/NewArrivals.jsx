@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import './NewArrivals.css';
 
-import bgImg from '../assets/images/hjh.png'; 
+import bgImg from '../assets/images/banner.png';
 import lehengaImg from '../assets/images/kurthi2.png';
 import menswearImg from '../assets/images/mens1.png';
 import sareeImg from '../assets/images/sarees1.png';
@@ -12,7 +12,7 @@ const NewArrivals = () => {
   return (
     <section className="premium-banner-section">
       <div className="premium-banner-container">
-        
+
         {/* Background Image & Overlay */}
         <div className="premium-bg-wrapper">
           <img src={bgImg} alt="Background" className="premium-bg-img" />
@@ -21,7 +21,7 @@ const NewArrivals = () => {
 
         {/* Content */}
         <div className="premium-content-wrapper">
-          
+
           {/* Left Side Text */}
           <div className="premium-banner-left">
             <h2 className="premium-title">
@@ -36,7 +36,7 @@ const NewArrivals = () => {
           {/* Right Side Categories */}
           <div className="premium-banner-right">
             <div className="premium-category-grid">
-              
+
               <Link to="/category/lehengas" className="premium-cat-card">
                 <div className="premium-cat-img-wrapper">
                   <img src={lehengaImg} alt="Lehengas" />
