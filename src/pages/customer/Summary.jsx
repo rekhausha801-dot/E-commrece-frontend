@@ -39,7 +39,7 @@ const Summary = () => {
 
           <div className="lux-step completed" onClick={() => navigate('/address')}>
             <div className="lux-step-icon"><Check size={16} /></div>
-            <span className="lux-step-label">Address</span>
+            <span className="lux-step-label">Addresses</span>
           </div>
           <div className="lux-step-line completed"></div>
 
