@@ -18,7 +18,7 @@ import AccountLayout from "./pages/customer/AccountLayout";
 import AccountPlaceholder from "./pages/customer/AccountPlaceholder";
 import { WishlistProvider } from "./context/WishlistContext";
 
-
+function App() {
   return (
     <WishlistProvider>
       <BrowserRouter>
@@ -60,3 +60,5 @@ import { WishlistProvider } from "./context/WishlistContext";
     </WishlistProvider>
   );
 }
+
+export default App;
