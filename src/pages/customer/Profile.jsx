@@ -45,7 +45,7 @@ const Profile = () => {
             <Settings /> Account Settings
           </button>
           <button className="sidebar-nav-item">
-            <HelpCircle />Hel
+            <HelpCircle />H
           </button>
           <button className="sidebar-nav-item">
             <LogOut /> Logout
