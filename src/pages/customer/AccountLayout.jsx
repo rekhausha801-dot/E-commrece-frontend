@@ -1,25 +1,22 @@
 import React from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { 
-  LayoutDashboard, User, Package, MapPin, CreditCard, Gift, 
-  Bell, RotateCcw, Star, Clock, Phone, HelpCircle, Settings, LogOut 
+  User, ShoppingBag, MapPin, CreditCard, Ticket, 
+  Bell, Settings, Headphones, LogOut, Heart, RotateCcw
 } from 'lucide-react';
 import './AccountLayout.css';
 
+const userAvatar = 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=150&q=80';
+
 const navItems = [
-  { name: 'Dashboard', path: '/account/dashboard', icon: LayoutDashboard },
   { name: 'My Profile', path: '/account/profile', icon: User },
-  { name: 'My Orders', path: '/account/orders', icon: Package },
-  { name: 'Saved Addresses', path: '/account/addresses', icon: MapPin },
+  { name: 'My Orders', path: '/account/orders', icon: ShoppingBag },
+  { name: 'Wishlist', path: '/wishlist', icon: Heart },
+  { name: 'My Addresses', path: '/account/addresses', icon: MapPin },
+  { name: 'Return & Refund', path: '/account/returns', icon: RotateCcw },
   { name: 'Payment Methods', path: '/account/payment-methods', icon: CreditCard },
-  { name: 'Coupons & Rewards', path: '/account/coupons', icon: Gift },
   { name: 'Notifications', path: '/account/notifications', icon: Bell },
-  { name: 'Returns & Refunds', path: '/account/returns', icon: RotateCcw },
-  { name: 'My Reviews & Ratings', path: '/account/reviews', icon: Star },
-  { name: 'Recently Viewed', path: '/account/recently-viewed', icon: Clock },
-  { name: 'Help & Support', path: '/account/support', icon: Phone },
-  { name: 'FAQs', path: '/account/faqs', icon: HelpCircle },
-  { name: 'Account Settings', path: '/account/settings', icon: Settings },
+  { name: 'Help & Support', path: '/account/support', icon: Headphones },
 ];
 
 const AccountLayout = () => {
@@ -35,11 +32,13 @@ const AccountLayout = () => {
     <div className="account-layout">
       {/* Sidebar */}
       <aside className="account-sidebar">
-        <div className="account-sidebar-header">
-          <h3 className="account-user-name">John Doe</h3>
-          <p className="account-user-email">johndoe@example.com</p>
+        {/* User Profile Header */}
+        <div className="account-sidebar-profile">
+          <img src={userAvatar} alt="User Avatar" className="account-sidebar-avatar" />
+          <h3 className="account-sidebar-name">Rekha R</h3>
+          <p className="account-sidebar-email">rekha@gmail.com</p>
         </div>
-        
+
         <ul className="account-nav-list">
           {navItems.map((item, index) => {
             const Icon = item.icon;
@@ -55,13 +54,27 @@ const AccountLayout = () => {
               </li>
             );
           })}
+          
+          <li className="account-nav-logout">
+            <a href="/" onClick={handleLogout} className="account-nav-item">
+              <LogOut size={18} />
+              <span>Logout</span>
+            </a>
+          </li>
         </ul>
-        
-        <div className="account-nav-logout">
-          <a href="/" onClick={handleLogout} className="account-nav-item">
-            <LogOut size={18} />
-            <span>Logout</span>
-          </a>
+
+        {/* Need Help Card */}
+        <div className="account-sidebar-help">
+          <div className="account-help-top">
+            <div className="account-help-icon">
+              <Headphones size={20} />
+            </div>
+            <div className="account-help-text">
+              <h4>Need Help?</h4>
+              <p>We're here to assist you</p>
+            </div>
+          </div>
+          <button className="account-help-btn">Contact Support</button>
         </div>
       </aside>
 

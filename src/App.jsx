@@ -16,7 +16,14 @@ import Summary from "./pages/customer/Summary";
 import OrderConfirmed from "./pages/customer/OrderConfirmed";
 import AccountLayout from "./pages/customer/AccountLayout";
 import AccountPlaceholder from "./pages/customer/AccountPlaceholder";
+import Profile from "./pages/customer/Profile";
+import AccountSettings from "./pages/customer/AccountSettings";
+import AddAddress from "./pages/customer/AddAddress";
+import SavedAddresses from "./pages/customer/SavedAddresses";
+import PaymentMethods from "./pages/customer/PaymentMethods";
 import { WishlistProvider } from "./context/WishlistContext";
+
+import ReturnRefund from "./pages/customer/ReturnRefund";
 
 function App() {
   return (
@@ -41,14 +48,15 @@ function App() {
 
           <Route path="/account" element={<AccountLayout />}>
             <Route path="dashboard" element={<AccountPlaceholder />} />
-            <Route path="profile" element={<AccountPlaceholder />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="settings" element={<AccountSettings />} />
+            <Route path="add-address" element={<AddAddress />} />
             <Route path="orders" element={<AccountPlaceholder />} />
-            <Route path="addresses" element={<AccountPlaceholder />} />
-            <Route path="payment-methods" element={<AccountPlaceholder />} />
+            <Route path="addresses" element={<SavedAddresses />} />
+            <Route path="payment-methods" element={<PaymentMethods />} />
             <Route path="coupons" element={<AccountPlaceholder />} />
             <Route path="notifications" element={<AccountPlaceholder />} />
-            <Route path="returns" element={<AccountPlaceholder />} />
-            <Route path="reviews" element={<AccountPlaceholder />} />
+            <Route path="returns" element={<ReturnRefund />} />
             <Route path="recently-viewed" element={<AccountPlaceholder />} />
             <Route path="support" element={<AccountPlaceholder />} />
             <Route path="faqs" element={<AccountPlaceholder />} />
