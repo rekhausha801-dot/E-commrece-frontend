@@ -272,7 +272,7 @@ const Navbar = () => {
                 <ul className="dropdown-list two-columns">
                   {accountItems.map((item, idx) => (
                     <li key={idx}>
-                      <Link to={item === "Logout" ? "/" : item === "Wishlist" ? "/wishlist" : `/account/${item.toLowerCase().replace(/\s+/g, '-')}`}>{item}</Link>
+                      <Link to={item === "Logout" ? "/" : item === "Wishlist" ? "/wishlist" : item === "My Profile" ? "/account/profile" : `/account/${item.toLowerCase().replace(/\s+/g, '-')}`}>{item}</Link>
                     </li>
                   ))}
                 </ul>

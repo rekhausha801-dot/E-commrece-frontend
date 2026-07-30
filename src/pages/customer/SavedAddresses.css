@@ -1,0 +1,174 @@
+.saved-addresses-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Header */
+.sa-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.sa-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.sa-add-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #C89953;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sa-add-btn:hover {
+  background-color: #B68645;
+}
+
+/* Address List */
+.sa-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Address Card */
+.sa-card {
+  background-color: #fdfaf6;
+  border-radius: 16px;
+  padding: 40px 48px;
+  border: 1px solid #faeedd;
+  box-shadow: 0 4px 20px rgba(200, 153, 83, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Left Icon */
+.sa-card-left {
+  flex-shrink: 0;
+}
+
+.sa-icon-wrapper {
+  width: 48px;
+  height: 48px;
+  background-color: #f7eded;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sa-icon {
+  color: #C89953;
+}
+
+/* Middle Content */
+.sa-card-middle {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sa-name-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sa-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.sa-badge {
+  background-color: #f7eded;
+  color: #C89953;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.sa-address-text {
+  font-size: 14px;
+  color: #444;
+  line-height: 1.6;
+}
+
+.sa-phone {
+  font-size: 14px;
+  color: #1a1a1a;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* Right Actions */
+.sa-card-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.sa-action-btn {
+  width: 36px;
+  height: 36px;
+  background-color: transparent;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sa-action-btn:hover {
+  background-color: #f5f5f5;
+  border-color: #ccc;
+  color: #1a1a1a;
+}
+
+.sa-action-btn.delete {
+  color: #d32f2f;
+}
+
+.sa-action-btn.delete:hover {
+  background-color: #fdeaea;
+  border-color: #ffcdd2;
+  color: #c62828;
+}
+
+@media (max-width: 768px) {
+  .sa-card {
+    flex-direction: column;
+    position: relative;
+    padding-bottom: 72px; /* make room for actions at bottom */
+  }
+  
+  .sa-card-right {
+    position: absolute;
+    bottom: 24px;
+    right: 24px;
+  }
+}
