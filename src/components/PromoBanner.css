@@ -1,0 +1,342 @@
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap');
+
+.coupons-section {
+  padding: 0 5vw;
+  margin: 40px auto 60px auto;
+  max-width: 1400px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.coupons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.coupon-card {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease;
+  background-color: white;
+}
+
+.coupon-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Top Half Styles */
+.coupon-top {
+  position: relative;
+  padding: 25px 20px 25px 30px;
+  text-align: left;
+  color: #222;
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+
+/* Shipping Card */
+.coupon-top-shipping {
+  background: linear-gradient(135deg, #f2e3d5 0%, #e8d5b5 100%);
+  overflow: hidden;
+}
+
+/* Beauty Card */
+.coupon-top-beauty {
+  background: linear-gradient(135deg, #f4e8df 0%, #e8d5b5 100%);
+  overflow: hidden;
+}
+
+/* Fashion Card */
+.coupon-top-fashion {
+  background: linear-gradient(135deg, #f0e3d5 0%, #e6d1bb 100%);
+  overflow: hidden;
+}
+
+.coupon-top-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+  max-width: 55%;
+}
+
+.coupon-image-right {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  z-index: 1;
+}
+
+.coupon-image-right img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: right center;
+  display: block;
+  mask-image: linear-gradient(to right, transparent 0%, black 25%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 25%);
+}
+
+.fashion-img {
+  object-position: right top !important;
+  transform: scale(1.15);
+  transform-origin: right top;
+}
+
+.coupon-eyebrow {
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #3b2f21;
+}
+
+.coupon-sub-script {
+  font-family: 'Great Vibes', cursive;
+  font-size: 32px;
+  color: #2c2016;
+  margin: -8px 0 0px;
+  font-weight: 400;
+}
+
+.coupon-main-offer {
+  display: flex;
+  font-family: 'Playfair Display', serif;
+  color: #2c2016;
+  margin-bottom: auto;
+}
+
+.coupon-main-line1 {
+  display: block;
+  font-size: 80px;
+  line-height: 0.9;
+}
+
+.coupon-main-line2 {
+  display: block;
+  font-size: 32px;
+  margin-left: 5px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.coupon-top-desc {
+  font-size: 13px;
+  margin-bottom: 16px;
+  color: #1a1a1a;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+.coupon-top-desc p {
+  margin: 0;
+}
+
+.coupon-code-wrapper-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.coupon-code-wrapper {
+  display: inline-flex;
+  align-items: center;
+  background-color: #B88A42;
+  color: white;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 12px;
+  letter-spacing: 1px;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: 0 4px 10px rgba(184, 138, 66, 0.2);
+  margin-bottom: 20px;
+}
+
+.coupon-code-wrapper-group .coupon-code-wrapper {
+  margin-bottom: 0;
+}
+
+.coupon-icon-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.4);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: #3b2f21;
+}
+
+/* Bottom Half Styles */
+.coupon-bottom {
+  padding: 20px;
+  background-color: #faf9f6;
+  position: relative;
+  z-index: 1;
+  text-align: left;
+}
+
+.coupon-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.coupon-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  color: #2c2016;
+  margin: 0;
+  font-weight: 600;
+}
+
+.coupon-heart-btn {
+  background: transparent;
+  border: 1px solid #c9a98e;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #111;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.coupon-heart-btn:hover {
+  background-color: #f0e6da;
+  color: #8c5737;
+}
+
+.coupon-desc {
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+.coupon-desc p {
+  margin: 0;
+}
+
+.coupon-divider {
+  height: 1px;
+  background: repeating-linear-gradient(to right, transparent, transparent 5px, #d4c5b5 5px, #d4c5b5 10px);
+  margin: 16px 0;
+}
+
+.coupon-validity {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #4a3c2e;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+.coupon-cal-icon {
+  color: #8c6a46;
+}
+
+.coupon-get-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #B88A42;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.coupon-get-btn:hover {
+  background-color: #a37937;
+}
+
+/* Fashion Specific */
+.fashion-offer {
+  align-items: center;
+}
+
+.fashion-offer .giant-text {
+  font-size: 56px;
+  line-height: 0.8;
+  font-weight: 400;
+}
+
+.stacked-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-left: 8px;
+}
+
+.stacked-top {
+  font-size: 22px;
+  line-height: 1;
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.stacked-bottom {
+  font-size: 14px;
+  line-height: 1;
+  letter-spacing: 2px;
+  font-weight: 500;
+}
+
+/* Shipping Specific */
+.shipping-offer {
+  flex-direction: column;
+}
+
+.shipping-offer .large-text {
+  font-size: 46px;
+  line-height: 1.1;
+  font-weight: 400;
+}
+
+/* Beauty Specific */
+.beauty-offer {
+  flex-direction: column;
+}
+
+.beauty-offer .medium-text {
+  font-size: 32px;
+  line-height: 1;
+  font-weight: 400;
+}
+
+.beauty-offer .giant-text {
+  font-size: 56px;
+  line-height: 1.1;
+  font-weight: 500;
+}

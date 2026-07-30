@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { notification } from 'antd';
 import {
   Check,
   Truck,
@@ -12,19 +13,58 @@ import {
   ArrowLeft,
   Store,
   Edit2,
-  Wallet
+  Wallet,
+  X,
+  Minus,
+  Plus
 } from 'lucide-react';
 import './Summary.css';
 import './Payment.css'; // Reuse stepper styles
+import './Address.css'; // Reuse drawer styles
 import sareeImage from '../../assets/Maroon.png';
 import tshirtImage from '../../assets/Tshirt.png';
 
 const Summary = () => {
   const navigate = useNavigate();
-  
+  const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
+  const [editQty, setEditQty] = useState(1);
+  const [editSize, setEditSize] = useState('Free');
+
   React.useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const handleUpdateItem = () => {
+    setIsEditDrawerOpen(false);
+    notification.open({
+      message: <span style={{ color: '#1a1a1a', fontSize: '16px', fontWeight: 600, fontFamily: "'Inter', sans-serif" }}>Selection Saved</span>,
+      description: <span style={{ color: '#666', fontSize: '14px', fontFamily: "'Inter', sans-serif" }}>Your item details have been successfully updated.</span>,
+      icon: (
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#c99a53',
+          border: '1px solid #c99a53',
+          borderRadius: '50%',
+          width: '36px',
+          height: '36px',
+          boxShadow: '0 4px 12px rgba(201, 154, 83, 0.3)'
+        }}>
+          <Check size={20} color="#ffffff" strokeWidth={2.5} />
+        </div>
+      ),
+      placement: 'bottomRight',
+      duration: 3,
+      style: {
+        borderRadius: '12px',
+        boxShadow: '0 12px 40px rgba(0,0,0,0.08)',
+        border: '1px solid #f0e9df',
+        backgroundColor: '#ffffff',
+        padding: '20px 24px'
+      }
+    });
+  };
 
   return (
     <div className="lux-payment-page">
@@ -85,7 +125,7 @@ const Summary = () => {
                   </div>
                 </div>
 
-                <button className="spc-edit-btn">
+                <button className="spc-edit-btn" onClick={() => setIsEditDrawerOpen(true)}>
                   <Edit2 size={12} /> Edit
                 </button>
               </div>
@@ -122,7 +162,7 @@ const Summary = () => {
                   </div>
                 </div>
 
-                <button className="spc-edit-btn">
+                <button className="spc-edit-btn" onClick={() => setIsEditDrawerOpen(true)}>
                   <Edit2 size={12} /> Edit
                 </button>
               </div>
@@ -131,7 +171,7 @@ const Summary = () => {
             {/* Address Card */}
             <div className="summary-address-card" style={{ marginBottom: '20px' }}>
               <h2 className="summary-section-title with-icon" style={{ margin: '0 0 20px 0', paddingBottom: '16px', borderBottom: '1px dashed #e6dfd5', color: '#3d3224' }}>
-                <MapPin size={20} color="#c99a53" /> 
+                <MapPin size={20} color="#c99a53" />
                 Delivery Address
               </h2>
               <div className="sac-content">
@@ -236,6 +276,59 @@ const Summary = () => {
           </div>
         </div>
       </div>
+
+      {/* Premium Edit Item Drawer */}
+      {isEditDrawerOpen && (
+        <>
+          <div className="drawer-overlay premium" onClick={() => setIsEditDrawerOpen(false)}></div>
+          <div className="premium-edit-drawer">
+            <div className="ped-header">
+              <h3>Modify Selection</h3>
+              <button onClick={() => setIsEditDrawerOpen(false)} className="ped-close-btn">
+                <X size={20} color="#1A1A1A" />
+              </button>
+            </div>
+
+            <div className="ped-content">
+              <div className="ped-product-preview">
+                <img src={sareeImage} alt="Product" className="ped-img" />
+                <div className="ped-info">
+                  <span className="ped-brand">SILKORA</span>
+                  <h4>Georgette Embroidery Work Saree</h4>
+                  <div className="ped-price">₹468</div>
+                </div>
+              </div>
+
+              <div className="ped-divider"></div>
+
+              <div className="ped-section">
+                <label className="ped-label">Select Size</label>
+                <div className="ped-size-grid">
+                  <div className={`ped-size-box ${editSize === 'S' ? 'active' : ''}`} onClick={() => setEditSize('S')}>S</div>
+                  <div className={`ped-size-box ${editSize === 'M' ? 'active' : ''}`} onClick={() => setEditSize('M')}>M</div>
+                  <div className={`ped-size-box ${editSize === 'Free' ? 'active' : ''}`} onClick={() => setEditSize('Free')}>Free</div>
+                  <div className={`ped-size-box ${editSize === 'XL' ? 'active' : ''}`} onClick={() => setEditSize('XL')}>XL</div>
+                </div>
+              </div>
+
+              <div className="ped-section">
+                <label className="ped-label">Quantity</label>
+                <div className="ped-qty-wrapper">
+                  <button className="ped-qty-btn" onClick={() => setEditQty(q => Math.max(1, q - 1))}><Minus size={16} /></button>
+                  <span className="ped-qty-val">{editQty}</span>
+                  <button className="ped-qty-btn" onClick={() => setEditQty(q => q + 1)}><Plus size={16} /></button>
+                </div>
+              </div>
+            </div>
+
+            <div className="ped-footer">
+              <button className="ped-save-btn" onClick={handleUpdateItem}>
+                Update Item
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

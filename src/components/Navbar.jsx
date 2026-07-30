@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Search, ShoppingBag, User, Heart, Menu, Bell, ChevronDown, X, ShoppingCart } from 'lucide-react';
+import { Search, ShoppingBag, User, Heart, Menu, Bell, ChevronDown, X, ShoppingCart, Shirt, Footprints, Watch } from 'lucide-react';
 import './Navbar.css';
 
 const megaMenus = [
@@ -44,6 +44,22 @@ const megaMenus = [
 const wishlistItems = ["My Wishlist", "Saved for Later", "Recently Wishlisted", "Price Drop Alerts", "Back in Stock", "Move to Cart", "Share Wishlist"];
 const notificationItems = ["Order Updates", "Shipping Updates", "Delivered Orders", "Flash Sale Alerts", "Price Drop Notifications", "New Arrivals", "Exclusive Offers", "Coupons", "Back in Stock", "Reward Points"];
 const accountItems = ["My Profile", "My Orders", "Track Order", "Wishlist", "Saved Addresses", "Payment Methods", "Wallet", "Gift Cards", "Coupons", "Reward Points", "Returns & Refunds", "Notifications", "Help Center", "Customer Support", "Settings", "Logout"];
+
+const getCategoryIcon = (title) => {
+  const premiumProps = {
+    size: 18,
+    strokeWidth: 1.2,
+    color: "#C89953" // Signature gold color
+  };
+
+  switch (title.toLowerCase()) {
+    case 'clothing': return <Shirt {...premiumProps} />;
+    case 'footwear': return <Footprints {...premiumProps} />;
+    case 'accessories': return <Watch {...premiumProps} />;
+    case 'categories': return <ShoppingBag {...premiumProps} />;
+    default: return null;
+  }
+};
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -124,7 +140,10 @@ const Navbar = () => {
                     <div className="mega-menu-content">
                       {item.categories.map((cat, idx) => (
                         <div key={idx} className="mega-menu-column">
-                          <h4 className="mega-menu-title">{cat.title}</h4>
+                          <h4 className="mega-menu-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            {getCategoryIcon(cat.title)}
+                            {cat.title}
+                          </h4>
                           <ul className="mega-menu-list">
                             {cat.items.map((subItem, sIdx) => (
                               <li key={sIdx}>
@@ -156,21 +175,46 @@ const Navbar = () => {
               </div>
               
               <div className="search-input-expanded">
-                <input 
-                  type="text" 
-                  placeholder="Search products..." 
-                  autoFocus={isSearchOpen}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={handleSearchSubmit}
-                />
-                <Search size={18} className="search-icon-expanded" />
-                <button className="close-search-btn" onClick={(e) => {
-                  e.stopPropagation();
-                  setIsSearchOpen(false);
-                }}>
-                  <X size={16} />
-                </button>
+                <div className="search-input-container">
+                  {!searchQuery && (
+                    <div className="search-scrolling-placeholder">
+                      <div className="scrolling-text-track">
+                        <span>Search "Luxe Watches"</span>
+                        <span>Flat 50% Off on Ethnic Wear</span>
+                        <span>Search "Summer Collection"</span>
+                        <span>Get 20% Cashback on Shoes</span>
+                        <span>Search "Luxe Watches"</span>
+                      </div>
+                    </div>
+                  )}
+                  <input 
+                    type="text" 
+                    autoFocus={isSearchOpen}
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={handleSearchSubmit}
+                    className={!searchQuery ? 'hide-placeholder' : ''}
+                  />
+                </div>
+                <div className={`search-actions-wrapper ${searchQuery ? 'has-text' : 'is-empty'}`}>
+                  <Search 
+                    size={18} 
+                    className="search-icon-expanded" 
+                    onClick={() => {
+                      if (searchQuery.trim()) {
+                        setIsSearchOpen(false);
+                        navigate('/collection');
+                      }
+                    }}
+                    style={{ cursor: 'pointer' }}
+                  />
+                  <button className="close-search-btn" onClick={(e) => {
+                    e.stopPropagation();
+                    setIsSearchOpen(false);
+                  }}>
+                    <X size={16} />
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -182,7 +226,11 @@ const Navbar = () => {
             {/* Wishlist Link */}
             <Link to="/wishlist" className="icon-btn action-item desktop-only" style={{ textDecoration: 'none', color: 'inherit' }}>
               <div className="icon-badge-wrapper">
-                <Heart size={22} />
+                <Heart 
+                  size={22} 
+                  fill={location.pathname === '/wishlist' ? '#ff4d4f' : 'none'} 
+                  color={location.pathname === '/wishlist' ? '#ff4d4f' : 'currentColor'} 
+                />
               </div>
               <span className="icon-label">Wishlist</span>
             </Link>
@@ -266,7 +314,10 @@ const Navbar = () => {
                   <div className={`sidebar-sub-menu-container ${expandedMenus[item.title] ? 'expanded' : ''}`}>
                     {item.categories.map((cat, idx) => (
                       <div key={idx} className="sidebar-sub-category">
-                        <h5>{cat.title}</h5>
+                        <h5 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', fontSize: '14px', fontWeight: '600' }}>
+                          {getCategoryIcon(cat.title)}
+                          {cat.title}
+                        </h5>
                         <ul>
                           {cat.items.map((subItem, sIdx) => (
                             <li key={sIdx}>

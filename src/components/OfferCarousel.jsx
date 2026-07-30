@@ -67,11 +67,15 @@ const OfferCarousel = () => {
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
-          <button className="carousel-close-btn" onClick={() => setShowCarousel(false)}>
-            <div className="spinning-diamond-bg"></div>
-            <div className="close-x-icon">
-              <X size={18} color="#b28146" strokeWidth={2} />
-            </div>
+          <button className="carousel-close-btn" onClick={() => setShowCarousel(false)} style={{ zIndex: 100 }}>
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" className="premium-close-icon">
+              {/* Fill background strictly matching the tag shape */}
+              <path d="M 24 4 L 10 4 L 3 12 L 10 20 L 24 20 Z" fill="#FDFBF7" />
+              {/* Stroke outline */}
+              <path d="M 24 4 L 10 4 L 3 12 L 10 20 L 24 20" stroke="#C89953" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="icon-stroke" />
+              {/* Inner X mark */}
+              <path d="M 14 9 L 20 15 M 20 9 L 14 15" stroke="#C89953" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="icon-stroke" />
+            </svg>
           </button>
 
           <div className="carousel-images">
