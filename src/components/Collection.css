@@ -112,7 +112,8 @@
   display: flex;
   max-width: 1500px;
   margin: 0 auto;
-  padding: 15px 40px 60px; /* Reduced top padding */
+  padding: 15px 40px 60px;
+  /* Reduced top padding */
   gap: 30px;
 }
 
@@ -124,7 +125,7 @@
 
 .filter-btn-main {
   width: 100%;
-  background-color:#8f7a5b;
+  background-color: #8f7a5b;
   color: white;
   border: none;
   border-radius: 6px;
@@ -229,7 +230,7 @@
   height: 22px;
   border-radius: 50%;
   cursor: pointer;
-  border: 1px solid rgba(0,0,0,0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .view-more-link {
@@ -274,8 +275,13 @@
   border-radius: 50%;
 }
 
-.slider-thumb.min { left: 0; }
-.slider-thumb.max { right: 25%; }
+.slider-thumb.min {
+  left: 0;
+}
+
+.slider-thumb.max {
+  right: 25%;
+}
 
 .price-values {
   display: flex;
@@ -426,9 +432,17 @@
   letter-spacing: 0.5px;
 }
 
-.badge.new { background-color: #a49688; }
-.badge.bestseller { background-color: #bfa178; }
-.badge.discount { background-color: #a49688; }
+.badge.new {
+  background-color: #a49688;
+}
+
+.badge.bestseller {
+  background-color: #bfa178;
+}
+
+.badge.discount {
+  background-color: #a49688;
+}
 
 .wishlist-btn {
   position: absolute;
@@ -443,7 +457,7 @@
   align-items: center;
   justify-content: center;
   color: #666;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   cursor: pointer;
 }
 
@@ -516,7 +530,7 @@
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  border: 1px solid rgba(0,0,0,0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .card-actions {
@@ -559,7 +573,7 @@
 
 .quick-view:hover {
   border-color: #8f7a5b;
-  color:#8f7a5b;
+  color: #8f7a5b;
 }
 
 /* Sidebar Filter Custom Styles */
@@ -886,7 +900,7 @@
   align-items: center;
   gap: 12px;
   background: white;
-  border: 1px s                                                                                                                olid #e0e0e0;
+  border: 1px s olid #e0e0e0;
   border-radius: 8px;
   padding: 12px 15px;
   cursor: pointer;
@@ -920,7 +934,7 @@
 
 .show-results-btn {
   width: 100%;
-  background:#8f7a5b;
+  background: #8f7a5b;
   color: white;
   border: none;
   border-radius: 8px;
@@ -932,7 +946,7 @@
 }
 
 .show-results-btn:hover {
-  background:#8f7a5b;
+  background: #8f7a5b;
 }
 
 /* NEW FILTER STYLES matching image */
@@ -972,6 +986,7 @@
   border-bottom: 1px solid #eaeaea;
   padding: 16px 0;
 }
+
 .filter-panel-section-new:last-child {
   border-bottom: none;
 }
@@ -1047,6 +1062,7 @@
   cursor: pointer;
   border-radius: 4px;
 }
+
 .size-square-new.active {
   border-color: #8f7a5b;
   color: #8f7a5b;
@@ -1066,6 +1082,7 @@
   border: none;
   cursor: pointer;
 }
+
 .color-swatch-btn-new.active {
   box-shadow: 0 0 0 2px white, 0 0 0 4px #9f3653;
 }
@@ -1084,6 +1101,7 @@
   align-items: center;
   margin-top: 10px;
 }
+
 .slider-track-line-new {
   position: absolute;
   width: 100%;
@@ -1091,17 +1109,20 @@
   background: #e0e0e0;
   border-radius: 2px;
 }
+
 .slider-track-active-new {
   position: absolute;
   height: 4px;
   background: #c2466b;
   border-radius: 2px;
 }
+
 .slider-inputs-new {
   position: absolute;
   width: 100%;
   height: 100%;
 }
+
 .range-input-new {
   position: absolute;
   width: 100%;
@@ -1110,6 +1131,7 @@
   pointer-events: none;
   height: 24px;
 }
+
 .range-input-new::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 14px;
@@ -1120,6 +1142,7 @@
   cursor: pointer;
   pointer-events: auto;
 }
+
 .price-display-text-new {
   display: flex;
   justify-content: space-between;
@@ -1134,6 +1157,7 @@
   flex-direction: column;
   gap: 10px;
 }
+
 .rating-checkbox-item-new {
   display: flex;
   align-items: center;
@@ -1143,6 +1167,7 @@
   padding: 0;
   width: 100%;
 }
+
 .custom-checkbox-new {
   width: 14px;
   height: 14px;
@@ -1153,14 +1178,17 @@
   align-items: center;
   margin-right: 12px;
 }
+
 .custom-checkbox-new.active {
   border-color: #9f3653;
 }
+
 .rating-stars-new {
   display: flex;
   gap: 2px;
   margin-right: auto;
 }
+
 .rating-count-new {
   font-size: 12px;
   color: #888;
@@ -1190,16 +1218,20 @@
 }
 
 @media (max-width: 1200px) {
-  .products-grid { grid-template-columns: repeat(3, 1fr); }
+  .products-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 @media (max-width: 900px) {
-  .products-grid { grid-template-columns: repeat(2, 1fr); }
-  
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   .sidebar-overlay.open {
     display: block;
   }
-  
+
   .collection-sidebar {
     position: fixed;
     top: 0;
@@ -1210,9 +1242,9 @@
     overflow-y: auto;
     transition: left 0.3s ease;
     display: block;
-    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
   }
-  
+
   .collection-sidebar.open {
     left: 0;
   }
@@ -1221,14 +1253,15 @@
 /* Mobile viewport adjustments for category banner */
 @media (max-width: 480px) {
   .banner-image {
-    height: 25vh; /* Much smaller banner */
+    height: 25vh;
+    /* Much smaller banner */
     min-height: 160px;
   }
-  
+
   .collection-page .collection-banner {
     margin-bottom: 15px;
   }
-  
+
   .top-bar {
     flex-direction: column;
     align-items: flex-start;
@@ -1236,8 +1269,10 @@
   }
 
   .products-grid {
-    grid-template-columns: repeat(2, 1fr); /* 2 columns on mobile */
-    gap: 10px; /* Smaller gap between products */
+    grid-template-columns: repeat(2, 1fr);
+    /* 2 columns on mobile */
+    gap: 10px;
+    /* Smaller gap between products */
   }
 
   .brands-title {
@@ -1326,7 +1361,7 @@
   align-items: center;
   justify-content: center;
   color: #666;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   z-index: 2;
 }
@@ -1418,6 +1453,7 @@
 }
 
 @media (max-width: 1200px) {
+
   .unified-products-grid.sidebar-closed,
   .unified-products-grid.sidebar-open,
   .unified-products-grid {
@@ -1426,6 +1462,7 @@
 }
 
 @media (max-width: 900px) {
+
   .unified-products-grid.sidebar-closed,
   .unified-products-grid.sidebar-open,
   .unified-products-grid {
@@ -1434,6 +1471,7 @@
 }
 
 @media (max-width: 480px) {
+
   .unified-products-grid.sidebar-closed,
   .unified-products-grid.sidebar-open,
   .unified-products-grid {
@@ -1441,4 +1479,3 @@
     gap: 10px;
   }
 }
-

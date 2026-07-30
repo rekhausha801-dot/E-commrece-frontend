@@ -6,6 +6,7 @@ import {
   Filter, Minus, Heart, ShoppingBag, Eye, LayoutGrid, Menu, ChevronDown, ChevronUp, X, SlidersHorizontal, Check, Star, Shirt
 } from 'lucide-react';
 import { useWishlist } from '../context/WishlistContext';
+import KurtiBanner from './KurtiBanner';
 
 import kurthi5Img from '../assets/images/kurthi5.png';
 import top3Img from '../assets/images/top3.png';

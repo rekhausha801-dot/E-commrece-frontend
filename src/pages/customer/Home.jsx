@@ -8,8 +8,8 @@ import OfferCarousel from '../../components/OfferCarousel';
 import Cards from '../../components/Cards';
 import TrendyCollection from '../../components/TrendyCollection';
 import KurtiBanner from '../../components/KurtiBanner';
-import RewardsCoupons from '../../components/RewardsCoupons';
 import SummerBanner from '../../components/SummerBanner';
+import PromoBanner from '../../components/PromoBanner';
 import dressImg from '../../assets/images/dress.jpg';
 import kurtiImg from '../../assets/images/kurti.png';
 import kurthi2Img from '../../assets/images/kurthi2.png';
@@ -128,8 +128,8 @@ const Home = () => {
             { id: 3, title: 'Cotton Daily Wear Kurti', image: kurthi4Img, price: '₹649', originalPrice: '₹899', discount: '28% off', rating: 4, reviews: 31 },
             { id: 4, title: 'Indo Western Kurti', image: kurtiImg, price: '₹899', originalPrice: '₹1199', discount: '25% off', rating: 5, reviews: 42 }
           ].map(product => (
-            <div 
-              key={product.id} 
+            <div
+              key={product.id}
               className="unified-product-card"
               onClick={() => navigate(`/product/${product.id}`, { state: { product } })}
             >
@@ -217,8 +217,8 @@ const Home = () => {
             { id: 7, title: 'Men Casual Shirt', image: menCasualShirtImg, price: '₹1,299', rating: 4, reviews: 213, badge: 'NEW', color: '#4b7b9d' },
             { id: 8, title: 'Trendy Sneakers', image: trendySneakersImg, price: '₹2,199', rating: 4, reviews: 176, badge: 'NEW', color: '#5a774c' }
           ].map(product => (
-            <div 
-              key={product.id} 
+            <div
+              key={product.id}
               className="unified-product-card"
               onClick={() => navigate(`/product/${product.id}`, { state: { product } })}
             >
@@ -266,7 +266,7 @@ const Home = () => {
       </div>
 
 
-      <div className="brands-section" style={{ marginTop: '30px', marginBottom: '40px', width: '100%' }}>
+      <div className="brands-section" style={{ marginTop: '30px', marginBottom: '0px', width: '100%' }}>
         <SectionHeader titleDark="Top" titleGold="Brands" />
 
         <div className="brands-marquee-container">
@@ -291,7 +291,10 @@ const Home = () => {
         </div>
       </div>
 
-      <RewardsCoupons />
+      <div style={{ marginTop: '20px', marginBottom: '-60px' }}>
+        <SectionHeader eyebrowText="EXCLUSIVE REWARD" titleDark="Special" titleGold="Coupon" />
+      </div>
+      <PromoBanner />
 
     </div>
   );

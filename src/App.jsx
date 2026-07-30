@@ -14,6 +14,7 @@ import Address from "./pages/customer/Address";
 import Payment from "./pages/customer/Payment";
 import Summary from "./pages/customer/Summary";
 import OrderConfirmed from "./pages/customer/OrderConfirmed";
+import MyOrders from "./pages/customer/MyOrders";
 import AccountLayout from "./pages/customer/AccountLayout";
 import AccountPlaceholder from "./pages/customer/AccountPlaceholder";
 import { WishlistProvider } from "./context/WishlistContext";
@@ -22,7 +23,7 @@ function App() {
   return (
     <WishlistProvider>
       <BrowserRouter>
-        
+
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
@@ -39,10 +40,11 @@ function App() {
           <Route path="/order-confirmed" element={<OrderConfirmed />} />
 
 
+          <Route path="/account/my-orders" element={<MyOrders />} />
+
           <Route path="/account" element={<AccountLayout />}>
             <Route path="dashboard" element={<AccountPlaceholder />} />
             <Route path="profile" element={<AccountPlaceholder />} />
-            <Route path="orders" element={<AccountPlaceholder />} />
             <Route path="addresses" element={<AccountPlaceholder />} />
             <Route path="payment-methods" element={<AccountPlaceholder />} />
             <Route path="coupons" element={<AccountPlaceholder />} />
