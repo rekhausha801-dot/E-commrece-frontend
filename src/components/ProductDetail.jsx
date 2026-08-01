@@ -528,7 +528,7 @@ export default function ProductDetail() {
                       <ShoppingCart size={16} /> {isAdded ? "Go to Cart" : "Add to Cart"}
                     </span>
                   </button>
-                  <button className="pdp-btn-buy-now">
+                  <button className="pdp-btn-buy-now" onClick={() => navigate('/cart')}>
                     Buy Now
                   </button>
                 </>

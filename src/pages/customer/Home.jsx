@@ -266,19 +266,20 @@ const Home = () => {
       </div>
 
 
-      <div className="brands-section" style={{ marginTop: '30px', marginBottom: '0px', width: '100%' }}>
-        <SectionHeader titleDark="Top" titleGold="Brands" />
+      {/* <VirtualTryOn /> */}
+
+
+      <div className="brands-section" style={{ marginTop: '30px', marginBottom: '60px', width: '100%' }}>
+        <SectionHeader eyebrowText="EXCLUSIVE BRANDS" titleDark="Top" titleGold="Brands" />
 
         <div className="brands-marquee-container">
           <div className="brands-marquee">
             {[...BRANDS, ...BRANDS, ...BRANDS].map((brand, index) => (
               <div className={`brand-card ${brand.bgClass}`} key={index}>
                 <div className="brand-content-centered">
-
                   <div className="brand-logo-elegant">
                     {brand.name}
                   </div>
-
                   <div className="brand-floral-divider">
                     <span className="floral-line"></span>
                     <span className="floral-icon-small">✦</span>
@@ -291,10 +292,7 @@ const Home = () => {
         </div>
       </div>
 
-      <div style={{ marginTop: '20px', marginBottom: '-60px' }}>
-        <SectionHeader eyebrowText="EXCLUSIVE REWARD" titleDark="Special" titleGold="Coupon" />
-      </div>
-      <PromoBanner />
+
 
     </div>
   );

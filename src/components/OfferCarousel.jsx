@@ -69,8 +69,14 @@ const OfferCarousel = () => {
         >
           <button className="carousel-close-btn" onClick={() => setShowCarousel(false)} style={{ zIndex: 100 }}>
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" className="premium-close-icon">
+              <defs>
+                <linearGradient id="tagGradient" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stopColor="#732426" />
+                  <stop offset="100%" stopColor="#4A1516" />
+                </linearGradient>
+              </defs>
               {/* Fill background strictly matching the tag shape */}
-              <path d="M 24 4 L 10 4 L 3 12 L 10 20 L 24 20 Z" fill="#FDFBF7" />
+              <path d="M 24 4 L 10 4 L 3 12 L 10 20 L 24 20 Z" fill="url(#tagGradient)" />
               {/* Stroke outline */}
               <path d="M 24 4 L 10 4 L 3 12 L 10 20 L 24 20" stroke="#C89953" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" className="icon-stroke" />
               {/* Inner X mark */}
