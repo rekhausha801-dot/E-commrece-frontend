@@ -16,7 +16,7 @@ const megaMenus = [
   {
     title: "Women",
     categories: [
-      { title: "Clothing", items: ["Kurtis", "Sarees", "Dresses", "Tops", "T-Shirts", "Shirts", "Jeans", "Leggings", "Palazzo", "Co-ords", "Ethnic Sets"] },
+      { title: "Clothing", items: ["Kurtis", "Sarees", "Dresses", "Tops", "Women T-Shirts", "Shirts", "Jeans", "Leggings", "Palazzo", "Co-ords", "Ethnic Sets"] },
       { title: "Accessories", items: ["Handbags", "Jewellery", "Watches", "Sunglasses", "Dupattas"] },
       { title: "Footwear", items: ["Heels", "Flats", "Sneakers", "Sandals", "Boots"] }
     ]
@@ -24,7 +24,7 @@ const megaMenus = [
   {
     title: "Kids",
     categories: [
-      { title: "Categories", items: ["Boys Clothing", "Girls Clothing", "Baby Clothing", "Footwear", "Toys", "School Essentials", "Accessories", "Newborn Essentials"] }
+      { title: "Categories", items: ["Boys Clothing", "Girls Clothing", "Girls T-Shirts", "Baby Clothing", "Footwear", "Toys", "School Essentials", "Accessories", "Newborn Essentials"] }
     ]
   },
   {

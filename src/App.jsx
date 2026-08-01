@@ -7,6 +7,7 @@ import Collection from "./components/Collection";
 import WesternCollection from "./components/westren";
 import CategoryPage from "./components/CategoryPage";
 import ProductDetail from "./components/ProductDetail";
+import CustomizeTShirt from "./components/CustomizeTShirt";
 
 import Wishlist from "./pages/customer/Wishlist";
 import Cart from "./pages/customer/Cart";
@@ -38,6 +39,7 @@ function App() {
           <Route path="/western" element={<WesternCollection />} />
           <Route path="/category/:categoryId" element={<CategoryPage />} />
           <Route path="/product/:productId" element={<ProductDetail />} />
+          <Route path="/customize/:productId" element={<CustomizeTShirt />} />
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/shop" element={<h1 style={{ padding: "120px 20px", textAlign: "center" }}>Shop Page - Coming Soon!</h1>} />
