@@ -12,8 +12,10 @@ import watchImg from '../assets/images/watch.png';
 import homeImg from '../assets/images/home.png';
 import beautyImg from '../assets/images/beauty.png';
 import kidsImg from '../assets/images/kids.jpeg';
+import tshirt11Img from '../assets/images/t-shirt11.png';
 
 const categories = [
+  { name: 'Customize T-Shirt', subtitle: 'Design it your style', image: tshirt11Img, icon: <FaTshirt />, iconColor: '#b38e69', iconBg: '#f2ebe1', isCustom: true },
   { name: 'Ethnic Wear', subtitle: 'Traditional elegance', image: topImg, icon: <FaTshirt />, iconColor: '#b38e69', iconBg: '#f2ebe1' },
   { name: 'Western Dresses', subtitle: 'Modern & stylish', image: kurthiImg, icon: <FaFemale />, iconColor: '#b38e69', iconBg: '#f2ebe1' },
   { name: 'Menswear', subtitle: 'Sharp & casual', image: manImg, icon: <FaUserTie />, iconColor: '#b38e69', iconBg: '#f2ebe1' },
@@ -58,11 +60,12 @@ export default function Cards() {
 
         <div className="category-cards-container" ref={scrollRef}>
           {categories.map((cat, index) => {
-            const targetLink = cat.name === 'Ethnic Wear' ? '/collection' : cat.name === 'Western Dresses' ? '/western' : `/category/${cat.name.toLowerCase().replace(' ', '-')}`;
+            const targetLink = cat.name === 'Ethnic Wear' ? '/collection' : cat.name === 'Western Dresses' ? '/western' : cat.name === 'Customize T-Shirt' ? '/product/100' : `/category/${cat.name.toLowerCase().replace(' ', '-')}`;
             return (
               <div key={`${cat.name}-${index}`} className="category-new-card">
-                <Link to={targetLink} className="category-new-card-image" style={{ display: 'block' }}>
-                  <img src={cat.image} alt={cat.name} />
+                <Link to={targetLink} className="category-new-card-image" style={{ display: 'block', position: 'relative', background: cat.isCustom ? '#eacfa9' : 'transparent' }}>
+                  <img src={cat.image} alt={cat.name} style={cat.isCustom ? { opacity: 0.9 } : {}} />
+
                 </Link>
                 <div className="category-new-card-content">
                   <div className="category-icon-wrapper" style={{ color: cat.iconColor, backgroundColor: cat.iconBg }}>

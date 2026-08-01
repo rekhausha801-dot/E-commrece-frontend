@@ -105,7 +105,7 @@ const products = [
   },
   {
     id: 8,
-    title: 'Embroidered Kurti',
+    title: 'Embroidered Top',
     price: '₹999',
     originalPrice: '₹1499',
     rating: 5,
@@ -248,6 +248,16 @@ export default function Collection() {
   return (
     <div className="collection-page">
       <KurtiBanner />
+
+      <div className="pdp-breadcrumbs" style={{ padding: '20px 5% 0', fontSize: '14px' }}>
+        <span onClick={() => navigate('/')} style={{ color: '#666', cursor: 'pointer' }}>Home</span>
+        <span style={{ margin: '0 8px', color: '#ccc' }}>/</span>
+        <span onClick={() => navigate('/category/womenswear')} style={{ color: '#666', cursor: 'pointer' }}>Women</span>
+        <span style={{ margin: '0 8px', color: '#ccc' }}>/</span>
+        <span onClick={() => navigate('/category/clothing')} style={{ color: '#666', cursor: 'pointer' }}>Clothing</span>
+        <span style={{ margin: '0 8px', color: '#ccc' }}>/</span>
+        <span className="current" style={{ color: '#222', fontWeight: '600' }}>Kurtis</span>
+      </div>
 
       <div className="collection-main">
         {/* Sidebar */}
@@ -516,14 +526,12 @@ export default function Collection() {
                 <LayoutGrid size={16} /> FILTERS
               </button>
             </div>
+            
 
-            <div className="products-count" style={{ fontSize: '13px', color: '#666', fontWeight: '500' }}>
-              Showing 1-12 of 156 products
-            </div>
-
-            <div className="sort-container" style={{ position: 'relative' }}>
-              <div
-                className="sort-select"
+            
+            <div className="sort-container" style={{position: 'relative'}}>
+              <div 
+                className="sort-select" 
                 onClick={() => setIsSortOpen(!isSortOpen)}
                 style={{
                   cursor: 'pointer',
