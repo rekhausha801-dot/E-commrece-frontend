@@ -6,6 +6,7 @@ import './Wishlist.css';
 import '../../components/Collection.css';
 import bannerImg from "../../assets/banners/list.png";
 import { useWishlist } from '../../context/WishlistContext';
+import { useCart } from '../../context/CartContext';
 import westren3Img from '../../assets/images/westren3.png';
 import kurtiImg from '../../assets/images/kurti.png';
 import westren4Img from '../../assets/images/westren4.png';
@@ -64,6 +65,7 @@ const CustomSelect = ({ value, onChange, options }) => {
 
 const Wishlist = () => {
   const { wishlistItems, toggleWishlist, isInWishlist } = useWishlist();
+  const { addToCart } = useCart();
   const navigate = useNavigate();
   const [viewMode, setViewMode] = useState('grid');
   const [addedToCart, setAddedToCart] = useState({});
@@ -73,6 +75,7 @@ const Wishlist = () => {
     if (addedToCart[product.id]) {
       navigate('/cart');
     } else {
+      addToCart(product);
       setAddedToCart(prev => ({ ...prev, [product.id]: true }));
       message.success(`${product.title || 'Product'} added to cart!`);
     }
@@ -139,7 +142,30 @@ const Wishlist = () => {
             </div>
           </div>
           <div className="lux-controls-right">
-            <button className="lux-btn-dark">
+            <button className="lux-btn-dark" onClick={() => {
+              if (wishlistItems.length > 0) {
+                wishlistItems.forEach(item => addToCart(item));
+                message.success({
+                  content: 'All items moved to Cart!',
+                  className: 'custom-class',
+                  style: {
+                    marginTop: '5vh',
+                    color: '#0f5132',
+                    backgroundColor: '#d1e7dd',
+                    border: '1px solid #badbcc',
+                    padding: '8px 16px',
+                    borderRadius: '50px',
+                    fontWeight: '600',
+                    fontSize: '14px'
+                  },
+                });
+                setTimeout(() => {
+                  navigate('/cart');
+                }, 1000);
+              } else {
+                message.warning('Your wishlist is empty!');
+              }
+            }}>
               <ShoppingCart size={14} /> Move All to Cart
             </button>
             <button className="lux-btn-outline" onClick={() => navigate('/')}>
@@ -387,7 +413,7 @@ const Wishlist = () => {
           </div>
           <div className="lux-bb-right">
             <button className="lux-btn-dark" onClick={() => navigate('/collection')}>Continue Shopping</button>
-            <button className="lux-btn-outline"><ShoppingCart size={14} /> View Cart</button>
+            <button className="lux-btn-outline" onClick={() => navigate('/cart')}><ShoppingCart size={14} /> View Cart</button>
           </div>
         </div>
 

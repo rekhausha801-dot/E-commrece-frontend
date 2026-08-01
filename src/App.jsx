@@ -24,7 +24,8 @@ import AddAddress from "./pages/customer/AddAddress";
 import SavedAddresses from "./pages/customer/SavedAddresses";
 import PaymentMethods from "./pages/customer/PaymentMethods";
 import { WishlistProvider } from "./context/WishlistContext";
-
+import { OrderProvider } from "./context/OrderContext";
+import { CartProvider } from "./context/CartContext";
 import ReturnRefund from "./pages/customer/ReturnRefund";
 
 function App() {
@@ -49,28 +50,30 @@ function App() {
           <Route path="/order-confirmed" element={<OrderConfirmed />} />
 
 
-          <Route path="/account/my-orders" element={<MyOrders />} />
+              <Route path="/account/my-orders" element={<MyOrders />} />
 
-          <Route path="/account" element={<AccountLayout />}>
-            <Route path="dashboard" element={<AccountPlaceholder />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="settings" element={<AccountSettings />} />
-            <Route path="add-address" element={<AddAddress />} />
-            <Route path="orders" element={<AccountPlaceholder />} />
-            <Route path="addresses" element={<SavedAddresses />} />
-            <Route path="payment-methods" element={<PaymentMethods />} />
-            <Route path="coupons" element={<AccountPlaceholder />} />
-            <Route path="notifications" element={<AccountPlaceholder />} />
-            <Route path="returns" element={<ReturnRefund />} />
-            <Route path="recently-viewed" element={<AccountPlaceholder />} />
-            <Route path="support" element={<AccountPlaceholder />} />
-            <Route path="faqs" element={<AccountPlaceholder />} />
-            <Route path="settings" element={<AccountPlaceholder />} />
-          </Route>
-        </Routes>
-        <Footer />
-      </BrowserRouter>
-    </WishlistProvider>
+              <Route path="/account" element={<AccountLayout />}>
+                <Route path="dashboard" element={<AccountPlaceholder />} />
+                <Route path="profile" element={<Profile />} />
+                <Route path="settings" element={<AccountSettings />} />
+                <Route path="add-address" element={<AddAddress />} />
+                <Route path="orders" element={<AccountPlaceholder />} />
+                <Route path="addresses" element={<SavedAddresses />} />
+                <Route path="payment-methods" element={<PaymentMethods />} />
+                <Route path="coupons" element={<AccountPlaceholder />} />
+                <Route path="notifications" element={<AccountPlaceholder />} />
+                <Route path="returns" element={<ReturnRefund />} />
+                <Route path="recently-viewed" element={<AccountPlaceholder />} />
+                <Route path="support" element={<AccountPlaceholder />} />
+                <Route path="faqs" element={<AccountPlaceholder />} />
+                <Route path="settings" element={<AccountPlaceholder />} />
+              </Route>
+            </Routes>
+            <Footer />
+          </BrowserRouter>
+        </WishlistProvider>
+      </OrderProvider>
+    </CartProvider>
   );
 }
 
