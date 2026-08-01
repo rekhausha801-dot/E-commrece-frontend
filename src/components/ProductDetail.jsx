@@ -5,7 +5,8 @@ import {
   Star, ShoppingCart, ChevronRight, ChevronLeft, ArrowRight, Ruler,
   CheckCircle2, ShieldCheck, RefreshCcw, Heart, Plus, Minus, Check, Eye,
   Truck, CreditCard, Box, Navigation, MoreHorizontal, ThumbsUp, ShoppingBag, Palette, Shield,
-  Camera, MessageCircle, Edit2, Info, Award, X, Leaf, ArrowDown
+  Camera, MessageCircle, Edit2, Info, Award, X, Leaf, ArrowDown, Zap,
+  Flower2, Mountain, Feather, Flame, Rocket, Compass, Send, Headphones, Palmtree
 } from 'lucide-react';
 import CustomerReviews from './CustomerReviews';
 import './ProductDetail.css';
@@ -25,7 +26,7 @@ import westren3Img from '../assets/images/westren3.png';
 import westren4Img from '../assets/images/westren4.png';
 import westren5Img from '../assets/images/westren5.png';
 
-import { getSimilarProducts, determineProductCategory } from '../data/mockProducts';
+import { GLOBAL_PRODUCTS, getSimilarProducts, determineProductCategory, customizableDesigns } from '../data/mockProducts';
 
 function SimilarProductCard({ product, onQuickView }) {
   const navigate = useNavigate();
@@ -81,20 +82,24 @@ function SimilarProductCard({ product, onQuickView }) {
 
         {product.colors && (
           <div className="unified-color-swatches">
-            {product.colors.map(color => (
-              <div
-                key={color.name}
-                className={`color-swatch ${activeColor === color.name ? 'active' : ''}`}
-                style={{
-                  backgroundColor: color.hex,
-                  border: activeColor === color.name ? '2px solid #000' : '1px solid rgba(0,0,0,0.1)'
-                }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setActiveColor(color.name);
-                }}
-              />
-            ))}
+            {product.colors.map((color, idx) => {
+              const colorName = typeof color === 'string' ? `color-${idx}` : color.name;
+              const colorHex = typeof color === 'string' ? color : color.hex;
+              return (
+                <div
+                  key={colorName}
+                  className={`color-swatch ${activeColor === colorName ? 'active' : ''}`}
+                  style={{
+                    backgroundColor: colorHex,
+                    border: activeColor === colorName ? '2px solid #000' : '1px solid rgba(0,0,0,0.1)'
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveColor(colorName);
+                  }}
+                />
+              );
+            })}
             {product.colors.length > 2 && (
               <span className="color-more">+{product.colors.length - 2} more</span>
             )}
@@ -127,7 +132,16 @@ export default function ProductDetail() {
   const { productId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const product = location.state?.product;
+  let baseProduct = location.state?.product || GLOBAL_PRODUCTS.find(p => p.id === parseInt(productId)) || null;
+
+  // Dynamically attach customization ONLY for the specific White T-Shirt (ID 100) or t-shirt7 or t-shirt8
+  const isCustomizableTShirt = baseProduct?.id === 100 || (baseProduct?.image && (baseProduct.image.includes('t-shirt7') || baseProduct.image.includes('t-shirt8')));
+  
+  const product = baseProduct ? {
+    ...baseProduct,
+    customizable: isCustomizableTShirt ? true : baseProduct.customizable,
+    designs: isCustomizableTShirt ? customizableDesigns : baseProduct.designs
+  } : null;
 
   const [activeImage, setActiveImage] = useState(0);
   const [activeSize, setActiveSize] = useState('M');
@@ -137,11 +151,23 @@ export default function ProductDetail() {
   const [activeTab, setActiveTab] = useState('description');
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
+  const [activeDesign, setActiveDesign] = useState(product?.designs ? product.designs[0] : null);
 
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [reviewForm, setReviewForm] = useState({ rating: 0, title: '', content: '', image: null });
   const [hoveredStar, setHoveredStar] = useState(0);
   const fileInputRef = useRef(null);
+  const customizerScrollRef = useRef(null);
+
+  const scrollCustomizer = (direction) => {
+    if (customizerScrollRef.current) {
+      const scrollAmount = 200;
+      customizerScrollRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
 
   const handlePhotoUpload = (e) => {
     const file = e.target.files[0];
@@ -234,14 +260,17 @@ export default function ProductDetail() {
 
   const activeColorObj = colors.find(c => c.name === activeColor) || colors[0];
 
-  const displayImageSrc = activeColorObj?.image || product?.image || placeholderMain;
+  const displayImageSrc = (product?.customizable && activeDesign?.modelImage)
+    ? activeDesign.modelImage
+    : (activeColorObj?.image || product?.image || placeholderMain);
   const displayImages = Array(6).fill(displayImageSrc);
 
   const similarProducts = getSimilarProducts(product);
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [productId]);
+    setActiveDesign(product?.designs ? product.designs[0] : null);
+  }, [productId, product?.id]);
 
   const handleQtyChange = (type) => {
     if (type === 'inc' && quantity < 10) setQuantity(q => q + 1);
@@ -337,8 +366,14 @@ export default function ProductDetail() {
                     key={idx}
                     className={`pdp-thumb ${activeImage === idx ? 'active' : ''}`}
                     onClick={() => setActiveImage(idx)}
+                    style={{ position: 'relative' }}
                   >
                     <img src={img} alt={`Thumbnail ${idx}`} />
+                    {product?.customizable && activeDesign?.icon && !activeDesign?.isBaseImage && (
+                      <div style={{ position: 'absolute', top: '55%', left: '50%', transform: 'translate(-50%, -50%)', width: '40%', height: '40%', mixBlendMode: 'multiply', pointerEvents: 'none' }}>
+                        <img src={activeDesign.icon} alt={activeDesign.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -355,7 +390,14 @@ export default function ProductDetail() {
                   </button>
 
                   <button className="pdp-nav-btn pdp-prev" onClick={prevImage}><ChevronLeft size={20} /></button>
-                  <img src={displayImages[activeImage]} alt="Main Product" className="pdp-main-image" style={zoomStyle} />
+                  <div style={{ width: '100%', height: '100%', transition: 'transform 0.1s ease-out', ...zoomStyle }}>
+                    <img src={displayImages[activeImage]} alt="Main Product" className="pdp-main-image" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    {product?.customizable && activeDesign?.icon && !activeDesign?.isBaseImage && (
+                      <div style={{ position: 'absolute', top: '65%', left: '50%', transform: 'translate(-50%, -50%)', width: '35%', height: '35%', mixBlendMode: 'multiply', pointerEvents: 'none' }}>
+                        <img src={activeDesign.icon} alt={activeDesign.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                      </div>
+                    )}
+                  </div>
                   <button className="pdp-nav-btn pdp-next" onClick={nextImage}><ChevronRight size={20} /></button>
                 </div>
               </div>
@@ -418,21 +460,21 @@ export default function ProductDetail() {
               👑 PREMIUM COLLECTION
             </div>
 
-            <h1 className="pdp-product-title-new">Floral A-Line Kurti</h1>
+            <h1 className="pdp-product-title-new">{product?.title || 'Floral A-Line Kurti'}</h1>
 
             <div className="pdp-rating-summary-new">
               <Star size={14} fill="#C89953" color="#C89953" />
-              <span className="pdp-rating-num-new">4.8</span>
-              <span className="pdp-rating-text-new">(2,547 Ratings & 468 Reviews)</span>
+              <span className="pdp-rating-num-new">{product?.rating || 4.8}</span>
+              <span className="pdp-rating-text-new">({product?.reviews || '2,547'} Ratings)</span>
               <span className="pdp-rating-divider-new">|</span>
               <Box size={14} className="pdp-sold-icon-new" />
               <span className="pdp-sold-text-new">9.4K Sold</span>
             </div>
 
             <div className="pdp-price-block-new">
-              <span className="pdp-current-price-new">₹799</span>
-              <span className="pdp-original-price-new">₹999</span>
-              <span className="pdp-discount-text-new">40% OFF</span>
+              <span className="pdp-current-price-new">₹{product?.price || '799'}</span>
+              <span className="pdp-original-price-new">₹{product?.originalPrice || '999'}</span>
+              <span className="pdp-discount-text-new">{product?.discount || '40% OFF'}</span>
             </div>
             <div className="pdp-tax-inclusive-new">Inclusive of all taxes</div>
 
@@ -440,10 +482,73 @@ export default function ProductDetail() {
               <div className="pdp-stock-status-new">
                 <span className="pdp-status-dot-new"></span> In Stock
               </div>
-              {/* Product Description */}
-              <div className="pdp-short-description" style={{ marginTop: '12px', marginBottom: '0', color: '#666', fontSize: '14px', lineHeight: '1.6' }}>
-                <p>Elevate your everyday style with our beautiful Floral A-Line Kurti. Carefully crafted from premium breathable cotton, it offers both unparalleled comfort and effortless elegance for any occasion.</p>
-              </div>
+              {/* Product Description or Customizer */}
+              {product?.customizable && product?.designs ? (
+                <div className="pdp-right-col-customizer" style={{ marginTop: '20px' }}>
+                  <div className="pdp-customizer-header" style={{ padding: '0', marginBottom: '12px' }}>
+                    <h3 style={{ fontSize: '13px', fontWeight: '700', letterSpacing: '0.5px' }}>CHOOSE YOUR DESIGN</h3>
+                  </div>
+                  <div className="pdp-customizer-designs" style={{ padding: '16px 0', display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <button className="pdp-customizer-nav" onClick={() => scrollCustomizer('left')} style={{ background: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', border: 'none', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}><ChevronLeft size={16}/></button>
+                    <div ref={customizerScrollRef} className="pdp-customizer-designs-scroll" style={{ display: 'flex', gap: '16px', overflowX: 'auto', scrollbarWidth: 'none', flex: 1, padding: '4px' }}>
+                      {product.designs.map((design, idx) => (
+                        <div 
+                          key={design.id} 
+                          className={`pdp-design-option-full ${activeDesign?.id === design.id ? 'active' : ''}`}
+                          onClick={() => setActiveDesign(design)}
+                          style={{
+                            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', cursor: 'pointer',
+                            minWidth: '70px', padding: '12px 8px', borderRadius: '8px',
+                            background: activeDesign?.id === design.id ? '#fff' : 'transparent',
+                            border: activeDesign?.id === design.id ? '1px solid #b58d4e' : '1px solid transparent',
+                            position: 'relative',
+                            boxShadow: activeDesign?.id === design.id ? '0 2px 8px rgba(181,141,78,0.1)' : 'none',
+                            transition: 'all 0.2s'
+                          }}
+                        >
+                          {activeDesign?.id === design.id && (
+                            <div style={{
+                              position: 'absolute', top: '-6px', right: '-6px', background: '#b58d4e',
+                              borderRadius: '50%', width: '18px', height: '18px', display: 'flex',
+                              alignItems: 'center', justifyContent: 'center', color: '#fff', zIndex: 2
+                            }}>
+                              <Check size={10} strokeWidth={3} />
+                            </div>
+                          )}
+                          <div style={{ width: '50px', height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            {design.icon ? (
+                              <div style={{
+                                width: '100%',
+                                height: '100%',
+                                backgroundImage: `url(${design.icon})`,
+                                backgroundSize: design.id === 1 ? '500%' : 'contain',
+                                backgroundPosition: design.id === 1 ? 'center 40%' : 'center',
+                                backgroundRepeat: 'no-repeat',
+                                mixBlendMode: 'multiply'
+                              }} />
+                            ) : (
+                              (() => {
+                                const IconComp = {
+                                  Flower2, Mountain, Feather, Flame, Leaf, Rocket, Compass, Send, Headphones, Palmtree
+                                }[design.iconName];
+                                return IconComp ? <IconComp size={30} color={design.iconColor} strokeWidth={1.5} /> : null;
+                              })()
+                            )}
+                          </div>
+                          <span style={{ fontSize: '11px', fontWeight: '600', color: '#333' }}>
+                            {(idx + 1).toString().padStart(2, '0')}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                    <button className="pdp-customizer-nav" onClick={() => scrollCustomizer('right')} style={{ background: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', border: 'none', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}><ChevronRight size={16}/></button>
+                  </div>
+                </div>
+              ) : (
+                <div className="pdp-short-description" style={{ marginTop: '12px', marginBottom: '0', color: '#666', fontSize: '14px', lineHeight: '1.6' }}>
+                  <p>{product?.description || (product?.title === 'Floral A-Line Kurti' ? 'Elevate your everyday style with our beautiful Floral A-Line Kurti. Carefully crafted from premium breathable cotton, it offers both unparalleled comfort and effortless elegance for any occasion.' : 'Elevate your everyday style with this beautiful piece. Carefully crafted for comfort and elegance.')}</p>
+                </div>
+              )}
             </div>
 
             <div className="pdp-options-horizontal-divider"></div>
@@ -508,39 +613,52 @@ export default function ProductDetail() {
 
             <div className="pdp-options-horizontal-divider" style={{ marginTop: '0' }}></div>
 
-            {/* Action Buttons */}
-            <div className="pdp-action-buttons" style={{ marginTop: '12px' }}>
-              <button className="pdp-btn-wishlist-large" onClick={() => setIsWishlisted(!isWishlisted)}>
-                <Heart size={16} fill={isWishlisted ? '#8B4513' : 'none'} color="#8B4513" /> Wishlist
-              </button>
-              {activeColorObj.inStock ? (
-                <>
-                  <button className="pdp-btn-add-cart" onClick={() => {
-                    if (isAdded) {
-                      navigate('/cart');
-                    } else {
-                      setIsAdded(true);
-                      message.success(`${product?.title || 'Product'} added to cart!`);
-                    }
-                  }}>
-                    <div className="btn-shine"></div>
-                    <span className="btn-content">
-                      <ShoppingCart size={16} /> {isAdded ? "Go to Cart" : "Add to Cart"}
-                    </span>
-                  </button>
-                  <button className="pdp-btn-buy-now">
-                    Buy Now
-                  </button>
-                </>
-              ) : (
-                <button className="pdp-btn-notify-me">
-                  Notify Me When Available
+              <div className="pdp-action-buttons" style={{ marginTop: '24px', display: 'flex', gap: '12px' }}>
+                <button 
+                  className="pdp-btn-wishlist-large" 
+                  onClick={() => setIsWishlisted(!isWishlisted)}
+                  style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px 0', background: '#fff', border: '1px solid #ddd', borderRadius: '4px', color: '#8B4513', fontWeight: '600', cursor: 'pointer' }}
+                >
+                  <Heart size={16} fill={isWishlisted ? '#8B4513' : 'none'} color="#8B4513" /> Wishlist
                 </button>
-              )}
+                {activeColorObj.inStock ? (
+                  <>
+                    <button 
+                      className="pdp-btn-add-cart" 
+                      onClick={() => {
+                        if (isAdded) {
+                          navigate('/cart');
+                        } else {
+                          setIsAdded(true);
+                          message.success(`${product?.title || 'Product'} added to cart!`);
+                        }
+                      }}
+                      style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px 0', background: '#8B4513', border: 'none', borderRadius: '4px', color: '#fff', fontWeight: '600', cursor: 'pointer' }}
+                    >
+                      <ShoppingCart size={16} /> {isAdded ? "Go to Cart" : "Add to Cart"}
+                    </button>
+                    <button 
+                      className="pdp-btn-buy-now"
+                      style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '14px 0', background: '#000', border: 'none', borderRadius: '4px', color: '#fff', fontWeight: '600', cursor: 'pointer' }}
+                    >
+                      Buy Now
+                    </button>
+                  </>
+                ) : (
+                  <button 
+                    className="pdp-btn-notify-me"
+                    style={{ flex: 2, padding: '14px 0', background: '#f5f5f5', border: '1px solid #ddd', borderRadius: '4px', color: '#333', fontWeight: '600', cursor: 'pointer' }}
+                  >
+                    Notify Me When Available
+                  </button>
+                )}
+              </div>
             </div>
-
           </div>
-        </div>
+
+        {/* Removed Full Width Customizer Section */}
+
+        {/* Removed Sticky Bottom Bar */}
 
         {/* Tabs Box Section */}
         <div className="pdp-tabs-box">
@@ -931,12 +1049,12 @@ export default function ProductDetail() {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr><td>XS</td><td>32"</td><td>26"</td><td>34"</td></tr>
-                    <tr><td>S</td><td>34"</td><td>28"</td><td>36"</td></tr>
-                    <tr><td>M</td><td>36"</td><td>30"</td><td>38"</td></tr>
-                    <tr><td>L</td><td>38"</td><td>32"</td><td>40"</td></tr>
-                    <tr><td>XL</td><td>40"</td><td>34"</td><td>42"</td></tr>
-                    <tr><td>XXL</td><td>42"</td><td>36"</td><td>44"</td></tr>
+                    <tr><td>XS</td><td>32&quot;</td><td>26&quot;</td><td>34&quot;</td></tr>
+                    <tr><td>S</td><td>34&quot;</td><td>28&quot;</td><td>36&quot;</td></tr>
+                    <tr><td>M</td><td>36&quot;</td><td>30&quot;</td><td>38&quot;</td></tr>
+                    <tr><td>L</td><td>38&quot;</td><td>32&quot;</td><td>40&quot;</td></tr>
+                    <tr><td>XL</td><td>40&quot;</td><td>34&quot;</td><td>42&quot;</td></tr>
+                    <tr><td>XXL</td><td>42&quot;</td><td>36&quot;</td><td>44&quot;</td></tr>
                   </tbody>
                 </table>
               </div>

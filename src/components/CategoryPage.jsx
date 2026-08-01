@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { message } from 'antd';
 import './Collection.css';
 import { 
-  Filter, Heart, ShoppingBag, Eye, LayoutGrid, Menu, ChevronDown, ChevronUp, X, SlidersHorizontal, Check, Star, ArrowRight
+  Filter, Heart, ShoppingBag, Eye, LayoutGrid, Menu, ChevronDown, ChevronUp, X, SlidersHorizontal, Check, Star, ArrowRight, Shirt
 } from 'lucide-react';
 import { useWishlist } from '../context/WishlistContext';
 import { FaStar } from 'react-icons/fa';
@@ -37,6 +37,22 @@ import mens from '../assets/images/man.png';
 import footwear2Img from '../assets/images/footwear2.png';
 import footwear3Img from '../assets/images/footwear3.png';
 import footwear4Img from '../assets/images/footwear4.png';
+import tShirtImg from '../assets/images/t-shirt.png';
+import hdShirtImg from '../assets/images/hd_shirt.png';
+import poloImg from '../assets/images/polo.jpg';
+import menTshirtImg from '../assets/images/casual_tshirt.png';
+import tshirtBlack from '../assets/images/tshirt_black.png';
+import tshirtWhite from '../assets/images/tshirt_white.png';
+import tshirtNavy from '../assets/images/tshirt_navy.png';
+import tshirtRed from '../assets/images/tshirt_red.png';
+import tshirtOlive from '../assets/images/tshirt_olive.png';
+import tshirtGrey from '../assets/images/tshirt_grey.png';
+import poloBlack from '../assets/images/polo_black.png';
+import poloWhite from '../assets/images/polo_white.png';
+import poloNavy from '../assets/images/polo_navy.png';
+import poloMaroon from '../assets/images/polo_maroon.png';
+import poloGrey from '../assets/images/polo_grey.png';
+import poloOlive from '../assets/images/polo_olive.png';
 
 
 
@@ -69,7 +85,40 @@ import silverBraceletImg from '../assets/images/silver_bracelet.png';
 import goldEarringsImg from '../assets/images/gold_earrings.png';
 import leatherWalletImg from '../assets/images/leather_wallet.png';
 import silkNecktieImg from '../assets/images/silk_necktie.png';
+import topImg from '../assets/images/top.png';
+import top2Img from '../assets/images/top2.jpeg';
+import top3Img from '../assets/images/top3.png';
+import wtshirt1 from '../assets/images/T-shirt10.png';
+import wtshirt2 from '../assets/images/women_tshirt_2_1785476463079.png';
+import wtshirt3 from '../assets/images/women_tshirt_3_1785476471701.png';
+import wtshirt4 from '../assets/images/women_tshirt_4_1785476481060.png';
+import wtshirt5 from '../assets/images/women_tshirt_5_1785476490108.png';
+import wtshirt6 from '../assets/images/women_tshirt_6_1785476500329.png';
+import wtshirt7 from '../assets/images/women_tshirt_7_1785476509699.png';
+import wtshirt8 from '../assets/images/women_tshirt_8_1785476520232.png';
+import wmodel1 from '../assets/images/T-shirt10.png';
+import wmodel2 from '../assets/images/wtshirt_model_2_1785476733517.png';
+import wmodel3 from '../assets/images/wtshirt_model_3_1785476746885.png';
+import wmodel4 from '../assets/images/wtshirt_model_4_1785476755830.png';
+import wmodel5 from '../assets/images/wtshirt_model_5_1785476766000.png';
+import tshirt1Img from '../assets/images/t-shirt1.png';
+import tshirt2Img from '../assets/images/t-shirt2.png';
+import tshirt3Img from '../assets/images/t-shirt3.png';
+
+import tshirt6Img from '../assets/images/t-shirt6.png';
+import tshirt7Img from '../assets/images/t-shirt7.png';
+import tshirt8Img from '../assets/images/t-shirt8.png';
 const CATEGORY_DATA = {
+  'girls-t-shirts': {
+    title: "Girls T-Shirts Collection",
+    banner: banner15Img,
+    images: [wmodel5, wmodel4, wmodel3, wmodel2, wmodel1, newKids1, newKids2, tshirtWhite]
+  },
+  'women-t-shirts': {
+    title: "Women's T-Shirts Collection",
+    banner: banner0Img,
+    images: [tshirt8Img, tshirt1Img, tshirt2Img, tshirt3Img, tshirt6Img, tshirt7Img, tShirtImg, wmodel1, wmodel2, wmodel3, wmodel4, wmodel5, wtshirt1, wtshirt2, wtshirt3, tshirtWhite, topImg, top2Img, top3Img, tshirtBlack, tshirtRed]
+  },
   'womenswear': {
     title: "Womenswear Collection",
     banner: banner0Img,
@@ -79,6 +128,21 @@ const CATEGORY_DATA = {
     title: "Menswear Collection",
     banner: menBannerImg,
     images: [mens1, mens2, mens3, mens4, mens5,mens]
+  },
+  't-shirts': {
+    title: "T-Shirts Collection",
+    banner: menBannerImg,
+    images: [tshirtBlack, tshirtWhite, tshirtNavy, tshirtRed, tshirtOlive, tshirtGrey]
+  },
+  'shirts': {
+    title: "Shirts Collection",
+    banner: menBannerImg,
+    images: [menTshirtImg, hdShirtImg, menTshirtImg, manImg]
+  },
+  'polo-t-shirts': {
+    title: "Polo T-Shirts Collection",
+    banner: menBannerImg,
+    images: [poloBlack, poloWhite, poloNavy, poloMaroon, poloGrey, poloOlive]
   },
   'footwear': {
     title: "Footwear Collection",
@@ -214,8 +278,9 @@ export default function CategoryPage() {
     reviews: Math.floor(Math.random() * 50) + 10,
     badge: index === 0 ? 'NEW' : index === 1 ? 'BESTSELLER' : null,
     badgeClass: index === 0 ? 'new' : index === 1 ? 'bestseller' : '',
-    image: currentCategory.images[index % currentCategory.images.length]
-  })), [currentCategory]);
+    image: currentCategory.images[index % currentCategory.images.length],
+    categoryId: categoryId
+  })), [currentCategory, categoryId]);
   
   const [wishlist, setWishlist] = useState(() => {
     try {
@@ -352,6 +417,14 @@ export default function CategoryPage() {
           </div>
         </div>
       )}
+
+      <div className="pdp-breadcrumbs" style={{ padding: '20px 5% 0', fontSize: '14px' }}>
+        <span onClick={() => navigate('/')} style={{ color: '#666', cursor: 'pointer' }}>Home</span>
+        <span style={{ margin: '0 8px', color: '#ccc' }}>/</span>
+        <span onClick={() => navigate('/category/womenswear')} style={{ color: '#666', cursor: 'pointer' }}>Category</span>
+        <span style={{ margin: '0 8px', color: '#ccc' }}>/</span>
+        <span className="current" style={{ color: '#222', fontWeight: '600' }}>{currentCategory.title}</span>
+      </div>
 
       <div className="collection-main">
         {/* Sidebar */}
@@ -619,9 +692,7 @@ export default function CategoryPage() {
               </button>
             </div>
             
-            <div className="products-count" style={{ fontSize: '13px', color: '#666', fontWeight: '500' }}>
-              Showing 1-12 of 156 products
-            </div>
+
             
             <div className="sort-container" style={{position: 'relative'}}>
               <div 
@@ -686,6 +757,34 @@ export default function CategoryPage() {
           </div>
 
           <div className={`unified-products-grid ${isMobileFilterOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
+            {categoryId && categoryId.includes('t-shirt') && (
+              <div 
+                className="unified-product-card promo-custom-card"
+                onClick={() => navigate('/product/100')}
+                style={{ background: '#fcfaf7', cursor: 'pointer', display: 'flex', flexDirection: 'column', border: '1px solid #eaeaea', borderRadius: '8px', overflow: 'hidden' }}
+              >
+                <div className="unified-card-image-wrap" style={{ position: 'relative', background: '#eacfa9', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                  <img src={tshirt8Img} alt="Custom T-Shirt" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <div style={{ position: 'absolute', top: '50%', left: '50%', textAlign: 'center', background: '#c6def1', padding: '12px 16px', borderRadius: '4px', transform: 'translate(-50%, -50%) rotate(-5deg)' }}>
+                    <h2 style={{ fontSize: '18px', fontWeight: '900', color: '#111', margin: 0, lineHeight: 1.2 }}>YOUR<br/>DESIGN<br/>HERE</h2>
+                  </div>
+                </div>
+                
+                <div className="promo-card-footer" style={{ padding: '16px', display: 'flex', alignItems: 'center', gap: '12px', background: '#fdfbfa' }}>
+                  <div className="promo-icon" style={{ background: '#f4ebd8', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Shirt size={18} color="#8f7a5b" fill="#8f7a5b" />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <h4 style={{ margin: 0, fontSize: '13px', fontWeight: '700', color: '#333' }}>Customize T-Shirt</h4>
+                    <p style={{ margin: 0, fontSize: '11px', color: '#777' }}>Design it your style</p>
+                  </div>
+                  <div className="promo-arrow" style={{ width: '28px', height: '28px', border: '1px solid #e0e0e0', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <ArrowRight size={14} color="#8f7a5b" />
+                  </div>
+                </div>
+              </div>
+            )}
+            
             {sortedProducts.map(product => (
               <div 
                 key={product.id} 

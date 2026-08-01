@@ -15,7 +15,57 @@ import mens3Img from '../assets/images/mens3.png';
 import mens4Img from '../assets/images/mens4.png';
 import mens5Img from '../assets/images/mens5.png';
 
+import womenTshirt1 from '../assets/images/T-shirt10.png';
+import womenTshirt2 from '../assets/images/women_tshirt_2_1785476463079.png';
+import womenTshirt3 from '../assets/images/women_tshirt_3_1785476471701.png';
+import womenTshirt4 from '../assets/images/women_tshirt_4_1785476481060.png';
+import womenTshirt5 from '../assets/images/women_tshirt_5_1785476490108.png';
+import womenTshirt6 from '../assets/images/women_tshirt_6_1785476500329.png';
+import womenTshirt7 from '../assets/images/women_tshirt_7_1785476509699.png';
+import womenTshirt8 from '../assets/images/women_tshirt_8_1785476520232.png';
+import tshirt7Img from '../assets/images/t-shirt7.png';
+import tshirt8Img from '../assets/images/t-shirt8.png';
+
+import wtshirtModel1 from '../assets/images/T-shirt10.png';
+import wtshirtModel2 from '../assets/images/wtshirt_model_2_1785476733517.png';
+import wtshirtModel3 from '../assets/images/wtshirt_model_3_1785476746885.png';
+import wtshirtModel4 from '../assets/images/wtshirt_model_4_1785476755830.png';
+import wtshirtModel5 from '../assets/images/wtshirt_model_5_1785476766000.png';
+
+import designMountain from '../assets/images/design_mountain_1785562146868.png';
+import designBelieve from '../assets/images/design_believe_1785562155350.png';
+import designLion from '../assets/images/design_lion_1785562164005.png';
+import designLeaf from '../assets/images/design_leaf_1785562173657.png';
+import designAstronaut from '../assets/images/design_astronaut_1785562183443.png';
+import designCompass from '../assets/images/design_compass_1785562191828.png';
+import designPaperplane from '../assets/images/design_paperplane_1785562200995.png';
+import designHeadphones from '../assets/images/design_headphones_1785562209967.png';
+import designPalmtree from '../assets/images/design_palmtree_1785562219713.png';
+
+export const customizableDesigns = [
+  { id: 2, name: 'Adventure', icon: designMountain, iconName: null, iconColor: null, modelImage: tshirt8Img },
+  { id: 3, name: 'Believe', icon: designBelieve, iconName: null, iconColor: null, modelImage: tshirt8Img },
+  { id: 4, name: 'Lion', icon: designLion, iconName: null, iconColor: null, modelImage: tshirt8Img },
+  { id: 5, name: 'Leaf', icon: designLeaf, iconName: null, iconColor: null, modelImage: tshirt8Img },
+  { id: 6, name: 'Astronaut', icon: designAstronaut, iconName: null, iconColor: null, modelImage: tshirt8Img },
+  { id: 7, name: 'Compass', icon: designCompass, iconName: null, iconColor: null, modelImage: tshirt8Img },
+  { id: 8, name: 'Paper Plane', icon: designPaperplane, iconName: null, iconColor: null, modelImage: tshirt8Img },
+  { id: 9, name: 'Headphones', icon: designHeadphones, iconName: null, iconColor: null, modelImage: tshirt8Img },
+  { id: 10, name: 'Palm Tree', icon: designPalmtree, iconName: null, iconColor: null, modelImage: tshirt8Img }
+];
+
 export const GLOBAL_PRODUCTS = [
+  // WOMEN - CUSTOMIZABLE T-SHIRT
+  {
+    id: 100, category: 'Women', type: 'T-Shirt', title: 'Women White T-Shirt', fabric: 'Cotton', style: 'Regular Fit',
+    price: 799, originalPrice: 1299, rating: 4.8, reviews: 2547,
+    customizable: true,
+    colors: [
+      { name: 'White', hex: '#FFFFFF', inStock: true, image: tshirt8Img }
+    ],
+    designs: customizableDesigns
+  },
+
   // WOMEN - KURTIS
   {
     id: 201, category: 'Women', type: 'Kurti', title: 'Olive Green Rayon Kurti', fabric: 'Rayon', style: 'A-Line',

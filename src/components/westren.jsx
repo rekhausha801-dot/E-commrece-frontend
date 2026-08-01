@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { message } from 'antd';
 import './Collection.css';
 import { 
-  Filter, Minus, Heart, ShoppingBag, Eye, LayoutGrid, Menu, ChevronDown, ChevronUp, X, SlidersHorizontal, Check, Star, Shirt
+  Filter, Minus, Heart, ShoppingBag, Eye, LayoutGrid, Menu, ChevronDown, ChevronUp, X, SlidersHorizontal, Check, Star, Shirt, ArrowRight
 } from 'lucide-react';
 import { useWishlist } from '../context/WishlistContext';
 
@@ -279,6 +279,17 @@ export default function WesternCollection() {
           </button>
         </div>
       </div>
+
+      <div className="pdp-breadcrumbs" style={{ padding: '20px 5% 0', fontSize: '14px' }}>
+        <span onClick={() => navigate('/')} style={{ color: '#666', cursor: 'pointer' }}>Home</span>
+        <span style={{ margin: '0 8px', color: '#ccc' }}>/</span>
+        <span onClick={() => navigate('/category/womenswear')} style={{ color: '#666', cursor: 'pointer' }}>Women</span>
+        <span style={{ margin: '0 8px', color: '#ccc' }}>/</span>
+        <span onClick={() => navigate('/category/clothing')} style={{ color: '#666', cursor: 'pointer' }}>Clothing</span>
+        <span style={{ margin: '0 8px', color: '#ccc' }}>/</span>
+        <span className="current" style={{ color: '#222', fontWeight: '600' }}>Western Wear</span>
+      </div>
+
       <div className="collection-main">
         {/* Sidebar */}
         <div className={`sidebar-overlay ${isMobileFilterOpen ? 'open' : ''}`} onClick={() => setIsMobileFilterOpen(false)}></div>
@@ -545,9 +556,7 @@ export default function WesternCollection() {
               </button>
             </div>
             
-            <div className="products-count" style={{ fontSize: '13px', color: '#666', fontWeight: '500' }}>
-              Showing 1-12 of 156 products
-            </div>
+
             
             <div className="sort-container" style={{position: 'relative'}}>
               <div 
