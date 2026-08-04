@@ -24,53 +24,61 @@ import AddAddress from "./pages/customer/AddAddress";
 import SavedAddresses from "./pages/customer/SavedAddresses";
 import PaymentMethods from "./pages/customer/PaymentMethods";
 import { WishlistProvider } from "./context/WishlistContext";
+import { NotificationProvider } from "./context/NotificationContext";
 
 import ReturnRefund from "./pages/customer/ReturnRefund";
+import Support from "./pages/customer/Support";
+import Notifications from "./pages/customer/Notifications";
+import Login from "./pages/customer/Login";
 
 function App() {
   return (
-    <WishlistProvider>
-      <BrowserRouter>
+    <NotificationProvider>
+      <WishlistProvider>
+        <BrowserRouter>
+          <Navbar />
+          <main className="main-content" style={{ flex: 1, paddingBottom: "40px" }}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/collection" element={<Collection />} />
+              <Route path="/western" element={<WesternCollection />} />
+              <Route path="/category/:categoryId" element={<CategoryPage />} />
+              <Route path="/product/:productId" element={<ProductDetail />} />
+              <Route path="/customize/:productId" element={<CustomizeTShirt />} />
+              <Route path="/wishlist" element={<Wishlist />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/shop" element={<h1 style={{ padding: "120px 20px", textAlign: "center" }}>Shop Page - Coming Soon!</h1>} />
+              <Route path="/address" element={<Address />} />
+              <Route path="/payment" element={<Payment />} />
+              <Route path="/summary" element={<Summary />} />
+              <Route path="/order-confirmed" element={<OrderConfirmed />} />
 
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/collection" element={<Collection />} />
-          <Route path="/western" element={<WesternCollection />} />
-          <Route path="/category/:categoryId" element={<CategoryPage />} />
-          <Route path="/product/:productId" element={<ProductDetail />} />
-          <Route path="/customize/:productId" element={<CustomizeTShirt />} />
-          <Route path="/wishlist" element={<Wishlist />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/shop" element={<h1 style={{ padding: "120px 20px", textAlign: "center" }}>Shop Page - Coming Soon!</h1>} />
-          <Route path="/address" element={<Address />} />
-          <Route path="/payment" element={<Payment />} />
-          <Route path="/summary" element={<Summary />} />
-          <Route path="/order-confirmed" element={<OrderConfirmed />} />
 
+              <Route path="/account/my-orders" element={<MyOrders />} />
 
-          <Route path="/account/my-orders" element={<MyOrders />} />
-
-          <Route path="/account" element={<AccountLayout />}>
-            <Route path="dashboard" element={<AccountPlaceholder />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="settings" element={<AccountSettings />} />
-            <Route path="add-address" element={<AddAddress />} />
-            <Route path="orders" element={<AccountPlaceholder />} />
-            <Route path="addresses" element={<SavedAddresses />} />
-            <Route path="payment-methods" element={<PaymentMethods />} />
-            <Route path="coupons" element={<AccountPlaceholder />} />
-            <Route path="notifications" element={<AccountPlaceholder />} />
-            <Route path="returns" element={<ReturnRefund />} />
-            <Route path="recently-viewed" element={<AccountPlaceholder />} />
-            <Route path="support" element={<AccountPlaceholder />} />
-            <Route path="faqs" element={<AccountPlaceholder />} />
-            <Route path="settings" element={<AccountPlaceholder />} />
-          </Route>
-        </Routes>
-        <Footer />
-      </BrowserRouter>
-    </WishlistProvider>
+              <Route path="/account" element={<AccountLayout />}>
+                <Route path="dashboard" element={<AccountPlaceholder />} />
+                <Route path="profile" element={<Profile />} />
+                <Route path="settings" element={<AccountSettings />} />
+                <Route path="add-address" element={<AddAddress />} />
+                <Route path="orders" element={<AccountPlaceholder />} />
+                <Route path="addresses" element={<SavedAddresses />} />
+                <Route path="payment-methods" element={<PaymentMethods />} />
+                <Route path="coupons" element={<AccountPlaceholder />} />
+                <Route path="notifications" element={<Notifications />} />
+                <Route path="returns" element={<ReturnRefund />} />
+                <Route path="recently-viewed" element={<AccountPlaceholder />} />
+                <Route path="support" element={<Support />} />
+                <Route path="faqs" element={<AccountPlaceholder />} />
+                <Route path="settings" element={<AccountPlaceholder />} />
+              </Route>
+            </Routes>
+          </main>
+          <Footer />
+        </BrowserRouter>
+      </WishlistProvider>
+    </NotificationProvider>
   );
 }
 

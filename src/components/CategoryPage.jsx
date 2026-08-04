@@ -757,34 +757,7 @@ export default function CategoryPage() {
           </div>
 
           <div className={`unified-products-grid ${isMobileFilterOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
-            {categoryId && categoryId.includes('t-shirt') && (
-              <div 
-                className="unified-product-card promo-custom-card"
-                onClick={() => navigate('/product/100')}
-                style={{ background: '#fcfaf7', cursor: 'pointer', display: 'flex', flexDirection: 'column', border: '1px solid #eaeaea', borderRadius: '8px', overflow: 'hidden' }}
-              >
-                <div className="unified-card-image-wrap" style={{ position: 'relative', background: '#eacfa9', flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                  <img src={tshirt8Img} alt="Custom T-Shirt" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  <div style={{ position: 'absolute', top: '50%', left: '50%', textAlign: 'center', background: '#c6def1', padding: '12px 16px', borderRadius: '4px', transform: 'translate(-50%, -50%) rotate(-5deg)' }}>
-                    <h2 style={{ fontSize: '18px', fontWeight: '900', color: '#111', margin: 0, lineHeight: 1.2 }}>YOUR<br/>DESIGN<br/>HERE</h2>
-                  </div>
-                </div>
-                
-                <div className="promo-card-footer" style={{ padding: '16px', display: 'flex', alignItems: 'center', gap: '12px', background: '#fdfbfa' }}>
-                  <div className="promo-icon" style={{ background: '#f4ebd8', width: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <Shirt size={18} color="#8f7a5b" fill="#8f7a5b" />
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <h4 style={{ margin: 0, fontSize: '13px', fontWeight: '700', color: '#333' }}>Customize T-Shirt</h4>
-                    <p style={{ margin: 0, fontSize: '11px', color: '#777' }}>Design it your style</p>
-                  </div>
-                  <div className="promo-arrow" style={{ width: '28px', height: '28px', border: '1px solid #e0e0e0', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <ArrowRight size={14} color="#8f7a5b" />
-                  </div>
-                </div>
-              </div>
-            )}
-            
+
             {sortedProducts.map(product => (
               <div 
                 key={product.id} 

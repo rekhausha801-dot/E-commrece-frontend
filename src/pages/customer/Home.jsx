@@ -94,26 +94,7 @@ const Home = () => {
 
   return (
     <div className="home-container">
-      <style>
-        {`
-          .wishlist-btn {
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease !important;
-          }
-          .wishlist-btn:hover {
-            transform: scale(1.15);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15) !important;
-          }
-          .wishlist-btn:active {
-            transform: scale(0.9) !important;
-          }
-          .heart-icon-anim {
-            transition: fill 0.3s ease, color 0.3s ease, transform 0.2s ease !important;
-          }
-          .wishlist-btn:hover .heart-icon-anim {
-            transform: scale(1.1);
-          }
-        `}
-      </style>
+
       <OfferCarousel />
       <Cards />
 

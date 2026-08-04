@@ -18,6 +18,7 @@ import {
   Minus,
   Plus
 } from 'lucide-react';
+import { useNotification } from '../../context/NotificationContext';
 import './Summary.css';
 import './Payment.css'; // Reuse stepper styles
 import './Address.css'; // Reuse drawer styles
@@ -26,6 +27,7 @@ import tshirtImage from '../../assets/Tshirt.png';
 
 const Summary = () => {
   const navigate = useNavigate();
+  const { addNotification } = useNotification();
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
   const [editQty, setEditQty] = useState(1);
   const [editSize, setEditSize] = useState('Free');
@@ -33,6 +35,16 @@ const Summary = () => {
   React.useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const handlePlaceOrder = () => {
+    addNotification({
+      title: "Order Confirmed",
+      message: "Your order has been confirmed successfully.",
+      time: "Just now",
+      type: "order"
+    });
+    navigate('/order-confirmed');
+  };
 
   const handleUpdateItem = () => {
     setIsEditDrawerOpen(false);
@@ -258,7 +270,7 @@ const Summary = () => {
                 <span>You are saving ₹237 on this order</span>
               </div>
 
-              <button className="sp-place-order-btn" onClick={() => navigate('/order-confirmed')}>
+              <button className="sp-place-order-btn" onClick={handlePlaceOrder}>
                 <div className="sp-btn-content">
                   <Lock size={16} /> Place Order
                 </div>
