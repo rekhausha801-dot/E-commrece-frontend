@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { 
   User, ShoppingBag, MapPin, CreditCard, Ticket, 
   Bell, Settings, Headphones, LogOut, Heart, RotateCcw
@@ -21,6 +21,7 @@ const navItems = [
 
 const AccountLayout = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = (e) => {
     e.preventDefault();
@@ -74,12 +75,12 @@ const AccountLayout = () => {
               <p>We're here to assist you</p>
             </div>
           </div>
-          <button className="account-help-btn">Contact Support</button>
+          <button className="account-help-btn" onClick={() => navigate('/account/support')}>Contact Support</button>
         </div>
       </aside>
 
       {/* Main Content Area */}
-      <main className="account-content">
+      <main className={`account-content ${location.pathname.includes('/support') ? 'no-bg' : ''}`}>
         <Outlet />
       </main>
     </div>

@@ -25,16 +25,6 @@ const ReturnRefund = () => {
         <h1 className="rr-title">Return & Refund</h1>
         <p className="rr-subtitle">Request a return or track your refund status</p>
         
-        {/* Optional decorative box icon in top right corner to match design */}
-        <div className="rr-header-decor">
-          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#C89953" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-            <line x1="12" y1="22.08" x2="12" y2="12"></line>
-            <circle cx="17" cy="17" r="4" fill="white"></circle>
-            <path d="M17 19v-4m-2 2h4" stroke="currentColor"></path>
-          </svg>
-        </div>
       </div>
 
       {/* Top Stepper */}
@@ -51,7 +41,6 @@ const ReturnRefund = () => {
             <p>Choose the item you want to return</p>
           </div>
         </div>
-        <ChevronRight size={24} className="rr-step-arrow" />
         <div className="rr-step">
           <div className="rr-step-icon-wrapper">
             <FileText size={24} className="rr-step-icon" />
@@ -61,7 +50,6 @@ const ReturnRefund = () => {
             <p>Fill the return reason and submit request</p>
           </div>
         </div>
-        <ChevronRight size={24} className="rr-step-arrow" />
         <div className="rr-step">
           <div className="rr-step-icon-wrapper">
             <Wallet size={24} className="rr-step-icon" />
@@ -162,7 +150,7 @@ const ReturnRefund = () => {
                       />
                       <label htmlFor="return-image" className="rr-upload-label">
                         <UploadCloud size={24} className="rr-upload-icon" />
-                        <p>Click here to upload</p>
+                        <p>Drag & drop or click to upload</p>
                         <span>JPG, PNG up to 5MB</span>
                       </label>
                     </>
@@ -176,6 +164,39 @@ const ReturnRefund = () => {
 
           {/* Right Column - Info */}
           <div className="rr-right-col">
+
+            <div className="rr-card rr-info-card">
+              <h3 className="rr-card-title">Refund Information</h3>
+              <div className="rr-info-list">
+                <div className="rr-info-item">
+                  <div className="rr-info-label">
+                    <div className="rr-info-icon-box">
+                      <Wallet size={16} />
+                    </div>
+                    <span>Refund Method</span>
+                  </div>
+                  <div className="rr-info-value">Original Payment Method</div>
+                </div>
+                <div className="rr-info-item">
+                  <div className="rr-info-label">
+                    <div className="rr-info-icon-box">
+                      <Clock size={16} />
+                    </div>
+                    <span>Refund Time</span>
+                  </div>
+                  <div className="rr-info-value">5-7 Business Days</div>
+                </div>
+                <div className="rr-info-item">
+                  <div className="rr-info-label">
+                    <div className="rr-info-icon-box">
+                      <Truck size={16} />
+                    </div>
+                    <span>Return Pick-up</span>
+                  </div>
+                  <div className="rr-info-value">Free Pick-up Available</div>
+                </div>
+              </div>
+            </div>
 
             <div className="rr-card rr-policy-card">
               <h3 className="rr-card-title">Return Policy</h3>
@@ -226,31 +247,26 @@ const ReturnRefund = () => {
             <div className="rr-process-step">
               <div className="rr-process-icon"><FileCheck size={24} /></div>
               <h5>Return Requested</h5>
-              <p>We've received your return request</p>
             </div>
             <div className="rr-process-line"></div>
             <div className="rr-process-step">
               <div className="rr-process-icon"><CheckCircle size={24} /></div>
               <h5>Return Approved</h5>
-              <p>Your return request is approved</p>
             </div>
             <div className="rr-process-line"></div>
             <div className="rr-process-step">
               <div className="rr-process-icon"><Truck size={24} /></div>
               <h5>Pick-up Scheduled</h5>
-              <p>We will pick up the item from you</p>
             </div>
             <div className="rr-process-line"></div>
             <div className="rr-process-step">
               <div className="rr-process-icon"><Package size={24} /></div>
               <h5>Item Received</h5>
-              <p>We've received the returned item</p>
             </div>
             <div className="rr-process-line"></div>
             <div className="rr-process-step">
               <div className="rr-process-icon"><Wallet size={24} /></div>
               <h5>Refund Processed</h5>
-              <p>Your refund has been processed</p>
             </div>
           </div>
         </div>

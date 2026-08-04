@@ -268,7 +268,12 @@ const Navbar = () => {
               </div>
               <span className="icon-label" style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>Account <ChevronDown size={12} /></span>
               <div className="dropdown-menu standard-dropdown account-advanced-dropdown">
-                <div className="dropdown-header">My Account</div>
+                <div className="dropdown-welcome-section">
+                  <h4 className="welcome-title">Welcome</h4>
+                  <p className="welcome-subtitle">To access account and manage orders</p>
+                  <Link to="/login" className="welcome-login-btn">LOGIN / SIGNUP</Link>
+                </div>
+                <div className="dropdown-divider"></div>
                 <ul className="dropdown-list two-columns">
                   {accountItems.map((item, idx) => (
                     <li key={idx}>

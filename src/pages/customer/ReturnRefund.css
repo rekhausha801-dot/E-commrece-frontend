@@ -23,12 +23,6 @@
   margin: 0;
 }
 
-.rr-header-decor {
-  position: absolute;
-  top: -10px;
-  right: 10px;
-  opacity: 0.8;
-}
 
 /* Top Stepper */
 .rr-top-stepper {
@@ -142,7 +136,7 @@
 .rr-right-col {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 32px;
 }
 
 .rr-card {
@@ -400,7 +394,7 @@
   height: 56px;
   border-radius: 50%;
   background-color: #fdfaf6;
-  border: 1px solid #faeedd;
+  border: 1px solid #C89953;
   color: #C89953;
   display: flex;
   align-items: center;
@@ -428,11 +422,11 @@
 .rr-process-line {
   flex: 1;
   height: 1px;
-  border-top: 2px dashed #C89953;
+  border-top: 2px solid #C89953;
   margin-top: 28px;
-  opacity: 0.5;
   z-index: 1;
 }
+
 
 /* Right Column Info Cards */
 .rr-info-card,
@@ -441,24 +435,46 @@
   border: 1px solid #faeedd;
 }
 
+.rr-info-card .rr-card-title {
+  margin-bottom: 12px;
+}
+
 .rr-info-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
 }
 
 .rr-info-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 20px 0;
+  border-top: 1px solid #faeedd;
+}
+
+.rr-info-item:last-child {
+  padding-bottom: 0;
 }
 
 .rr-info-label {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   color: #666;
   font-size: 13px;
+}
+
+.rr-info-icon-box {
+  width: 32px;
+  height: 32px;
+  background-color: #fff;
+  border: 1px solid #faeedd;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #C89953;
+  box-shadow: 0 1px 4px rgba(200, 153, 83, 0.05);
 }
 
 .rr-info-value {
@@ -473,13 +489,13 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 .rr-policy-list li {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
+  gap: 12px;
   font-size: 13px;
   color: #555;
   line-height: 1.5;
