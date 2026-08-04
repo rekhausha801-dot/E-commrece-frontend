@@ -26,6 +26,7 @@ import PaymentMethods from "./pages/customer/PaymentMethods";
 import { WishlistProvider } from "./context/WishlistContext";
 import { OrderProvider } from "./context/OrderContext";
 import { CartProvider } from "./context/CartContext";
+import { NotificationProvider } from "./context/NotificationContext";
 import ReturnRefund from "./pages/customer/ReturnRefund";
 import Support from "./pages/customer/Support";
 import Notifications from "./pages/customer/Notifications";
@@ -34,11 +35,13 @@ import Login from "./pages/customer/Login";
 function App() {
   return (
     <NotificationProvider>
-      <WishlistProvider>
-        <BrowserRouter>
-          <Navbar />
-          <main className="main-content" style={{ flex: 1, paddingBottom: "40px" }}>
-            <Routes>
+      <CartProvider>
+        <OrderProvider>
+          <WishlistProvider>
+            <BrowserRouter>
+              <Navbar />
+              <main className="main-content" style={{ flex: 1, paddingBottom: "40px" }}>
+                <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/collection" element={<Collection />} />
@@ -76,11 +79,13 @@ function App() {
                 <Route path="settings" element={<AccountPlaceholder />} />
               </Route>
             </Routes>
-            <Footer />
-          </BrowserRouter>
-        </WishlistProvider>
-      </OrderProvider>
-    </CartProvider>
+          </main>
+          <Footer />
+        </BrowserRouter>
+          </WishlistProvider>
+        </OrderProvider>
+      </CartProvider>
+    </NotificationProvider>
   );
 }
 
