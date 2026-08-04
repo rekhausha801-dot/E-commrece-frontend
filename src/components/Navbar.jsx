@@ -115,12 +115,12 @@ const Navbar = () => {
               <ShoppingBag size={28} strokeWidth={1.5} color="#C89953" />
             </div>
             <div className="brand-text-container">
-               <span className="brand-text-luxury" style={{ letterSpacing: '2px',color:"#631F20",textTransform: 'uppercase'}}>R</span>
+              <span className="brand-text-luxury" style={{ letterSpacing: '2px', color: "#631F20", textTransform: 'uppercase' }}>R</span>
             </div>
           </Link>
         </div>
 
-        
+
         <nav className="navbar-center desktop-only">
           <ul className="nav-menu">
             {megaMenus.map((item, index) => (
@@ -161,7 +161,7 @@ const Navbar = () => {
           </ul>
         </nav>
 
-       
+
         <div className="navbar-right">
 
           <div className="action-icons">
@@ -173,7 +173,7 @@ const Navbar = () => {
                 </div>
                 <span className="icon-label">Search</span>
               </div>
-              
+
               <div className="search-input-expanded">
                 <div className="search-input-container">
                   {!searchQuery && (
@@ -187,8 +187,8 @@ const Navbar = () => {
                       </div>
                     </div>
                   )}
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     autoFocus={isSearchOpen}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -197,9 +197,9 @@ const Navbar = () => {
                   />
                 </div>
                 <div className={`search-actions-wrapper ${searchQuery ? 'has-text' : 'is-empty'}`}>
-                  <Search 
-                    size={18} 
-                    className="search-icon-expanded" 
+                  <Search
+                    size={18}
+                    className="search-icon-expanded"
                     onClick={() => {
                       if (searchQuery.trim()) {
                         setIsSearchOpen(false);
@@ -226,10 +226,10 @@ const Navbar = () => {
             {/* Wishlist Link */}
             <Link to="/wishlist" className="icon-btn action-item desktop-only" style={{ textDecoration: 'none', color: 'inherit' }}>
               <div className="icon-badge-wrapper">
-                <Heart 
-                  size={22} 
-                  fill={location.pathname === '/wishlist' ? '#ff4d4f' : 'none'} 
-                  color={location.pathname === '/wishlist' ? '#ff4d4f' : 'currentColor'} 
+                <Heart
+                  size={22}
+                  fill={location.pathname === '/wishlist' ? '#ff4d4f' : 'none'}
+                  color={location.pathname === '/wishlist' ? '#ff4d4f' : 'currentColor'}
                 />
               </div>
               <span className="icon-label">Wishlist</span>
