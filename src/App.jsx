@@ -58,7 +58,6 @@ function App() {
               <Route path="/account/my-orders" element={<MyOrders />} />
 
               <Route path="/account/my-orders" element={<MyOrders />} />
-
               <Route path="/account" element={<AccountLayout />}>
                 <Route path="dashboard" element={<AccountPlaceholder />} />
                 <Route path="profile" element={<Profile />} />
