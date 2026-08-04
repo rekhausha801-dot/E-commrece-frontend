@@ -6,7 +6,7 @@
   margin-top: -40px;
 }
 
-/* Header Banner */
+
 .lux-wishlist-banner {
   position: relative;
   height: 400px;
@@ -79,7 +79,7 @@
   background: #1a1510;
 }
 
-/* Controls Bar */
+
 .lux-controls-wrapper {
   max-width: 1200px;
   margin: -40px auto 0;
@@ -155,7 +155,7 @@
   background: #f9f9f9;
 }
 
-/* Filter Bar */
+
 .lux-filter-bar-container {
   display: flex;
   justify-content: center;
@@ -364,7 +364,7 @@
   color: #111;
 }
 
-/* List View Styles */
+
 .unified-products-grid.list-view {
   display: flex !important;
   flex-direction: column;
