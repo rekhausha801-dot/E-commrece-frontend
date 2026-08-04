@@ -20,7 +20,7 @@ const PromoBanner = () => {
     <div className="coupons-section">
       <div className="coupons-grid">
 
-        {/* Card 1: Free Shipping */}
+       
         <div className="coupon-card">
           <div className="coupon-top coupon-top-shipping">
             <div className="coupon-top-content">
@@ -82,7 +82,7 @@ const PromoBanner = () => {
           </div>
         </div>
 
-        {/* Card 2: Beauty */}
+       
         <div className="coupon-card">
           <div className="coupon-top coupon-top-beauty">
             <div className="coupon-top-content">
@@ -143,7 +143,7 @@ const PromoBanner = () => {
           </div>
         </div>
 
-        {/* Card 3: Fashion */}
+        
         <div className="coupon-card">
           <div className="coupon-top coupon-top-fashion">
             <div className="coupon-top-content">

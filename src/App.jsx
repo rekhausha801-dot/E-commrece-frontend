@@ -24,8 +24,8 @@ import AddAddress from "./pages/customer/AddAddress";
 import SavedAddresses from "./pages/customer/SavedAddresses";
 import PaymentMethods from "./pages/customer/PaymentMethods";
 import { WishlistProvider } from "./context/WishlistContext";
-import { NotificationProvider } from "./context/NotificationContext";
-
+import { OrderProvider } from "./context/OrderContext";
+import { CartProvider } from "./context/CartContext";
 import ReturnRefund from "./pages/customer/ReturnRefund";
 import Support from "./pages/customer/Support";
 import Notifications from "./pages/customer/Notifications";
@@ -57,6 +57,8 @@ function App() {
 
               <Route path="/account/my-orders" element={<MyOrders />} />
 
+              <Route path="/account/my-orders" element={<MyOrders />} />
+
               <Route path="/account" element={<AccountLayout />}>
                 <Route path="dashboard" element={<AccountPlaceholder />} />
                 <Route path="profile" element={<Profile />} />
@@ -74,11 +76,11 @@ function App() {
                 <Route path="settings" element={<AccountPlaceholder />} />
               </Route>
             </Routes>
-          </main>
-          <Footer />
-        </BrowserRouter>
-      </WishlistProvider>
-    </NotificationProvider>
+            <Footer />
+          </BrowserRouter>
+        </WishlistProvider>
+      </OrderProvider>
+    </CartProvider>
   );
 }
 

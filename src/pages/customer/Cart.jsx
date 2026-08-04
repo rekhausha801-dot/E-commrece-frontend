@@ -3,134 +3,55 @@ import { ShoppingBag, MapPin, CreditCard, Receipt, Star, Trash2, Truck, Minus, P
 import { Link, useNavigate } from 'react-router-dom';
 import './Cart.css';
 import kurtiImg from '../../assets/images/kurti.png';
-import mens1Img from '../../assets/images/mens1.png';
-
-const initialCart = [
-  {
-    id: 1,
-    brand: 'APPLE',
-    title: 'AirPods Pro (2nd generation)',
-    color: 'White',
-    size: 'One Size',
-    price: 249.00,
-    oldPrice: 299.00,
-    discount: '15% OFF',
-    image: kurtiImg,
-    stock: 'In Stock',
-    delivery: 'Tomorrow, by 8 PM',
-    rating: '4.9',
-    reviews: '2,450',
-    qty: 1
-  },
-  {
-    id: 2,
-    brand: 'ZARA',
-    title: 'Structured Wool Blend Coat',
-    color: 'Camel',
-    size: 'M',
-    price: 159.99,
-    oldPrice: 199.99,
-    discount: '20% OFF',
-    image: mens1Img,
-    stock: 'In Stock',
-    delivery: 'Wednesday, by 9 PM',
-    rating: '4.8',
-    reviews: '1,230',
-    qty: 1
-  },
-  {
-    id: 3,
-    brand: 'APPLE',
-    title: 'AirPods Pro (2nd generation) - Gift',
-    color: 'White',
-    size: 'One Size',
-    price: 249.00,
-    oldPrice: 299.00,
-    discount: '15% OFF',
-    image: kurtiImg,
-    stock: 'In Stock',
-    delivery: 'Tomorrow, by 8 PM',
-    rating: '4.9',
-    reviews: '2,450',
-    qty: 1
-  },
-  {
-    id: 4,
-    brand: 'ZARA',
-    title: 'Structured Wool Blend Coat - Gift',
-    color: 'Camel',
-    size: 'L',
-    price: 159.99,
-    oldPrice: 199.99,
-    discount: '20% OFF',
-    image: mens1Img,
-    stock: 'In Stock',
-    delivery: 'Wednesday, by 9 PM',
-    rating: '4.8',
-    reviews: '1,230',
-    qty: 1
-  }
-];
+import { useCart } from '../../context/CartContext';
 
 const Cart = () => {
   const navigate = useNavigate();
-  
+
   React.useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-  const [currentStep, setCurrentStep] = useState(1);
-  const [cartItems, setCartItems] = useState(initialCart);
-
-  const updateQty = (id, delta) => {
-    setCartItems(cartItems.map(item => {
-      if (item.id === id) {
-        return { ...item, qty: Math.max(1, item.qty + delta) };
-      }
-      return item;
-    }));
-  };
-
-  const removeItem = (id) => setCartItems(cartItems.filter(item => item.id !== id));
+  const { cartItems, updateQty, removeItem } = useCart();
 
   const cartItemCount = cartItems.reduce((acc, item) => acc + item.qty, 0);
-  const subtotal = 449.99;
-  const productDiscount = 25.00;
-  const couponDiscount = 15.00;
+  const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.qty), 0);
+  const productDiscount = cartItems.length > 0 ? 25.00 : 0;
+  const couponDiscount = cartItems.length > 0 ? 15.00 : 0;
   const shipping = 0;
-  const tax = 18.45;
-  const grandTotal = 387.44;
-  const totalSavings = 40.00;
+  const tax = subtotal * 0.041;
+  const grandTotal = Math.max(0, subtotal - productDiscount - couponDiscount + tax);
+  const totalSavings = productDiscount + couponDiscount;
 
   return (
     <div className="lux-cart-page">
       <div className="lux-cart-container">
-        {/* Stepper */}
+       
         <div className="lux-stepper-container">
           <div className="lux-step active">
             <div className="lux-step-icon">1</div>
             <span className="lux-step-label">Cart</span>
           </div>
           <div className="lux-step-line pending"></div>
-          
+
           <div className="lux-step pending">
             <div className="lux-step-icon">2</div>
             <span className="lux-step-label">Address</span>
           </div>
           <div className="lux-step-line pending"></div>
-          
+
           <div className="lux-step pending">
             <div className="lux-step-icon">3</div>
             <span className="lux-step-label">Payment</span>
           </div>
           <div className="lux-step-line pending"></div>
-          
+
           <div className="lux-step pending">
             <div className="lux-step-icon">4</div>
             <span className="lux-step-label">Summary</span>
           </div>
         </div>
 
-       
+
         <div className="lux-page-header">
           <div className="header-left-content">
             <div className="title-row">
@@ -153,10 +74,10 @@ const Cart = () => {
           </div>
         </div>
 
-        {/* Main Layout */}
+       
         <div className="lux-cart-layout">
 
-          {/* LEFT SECTION */}
+          
           <div className="lux-cart-left">
             <div className="lux-cart-items-container">
               {cartItems.map((item, index) => (

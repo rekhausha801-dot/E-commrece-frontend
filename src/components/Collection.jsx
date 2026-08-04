@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { message } from 'antd';
 import './Collection.css';
-import { 
+import {
   Filter, Minus, Heart, ShoppingBag, Eye, LayoutGrid, Menu, ChevronDown, ChevronUp, X, SlidersHorizontal, Check, Star, Shirt
 } from 'lucide-react';
 import { useWishlist } from '../context/WishlistContext';
@@ -317,7 +317,7 @@ export default function Collection() {
               <Section title="PRICE">
                 <div className="custom-price-slider">
                   <div className="slider-track-line"></div>
-                  <div 
+                  <div
                     className="slider-track-active"
                     style={{
                       left: `${(minPrice / 5000) * 100}%`,
@@ -456,8 +456,8 @@ export default function Collection() {
                         onClick={() => toggle(selectedColors, setSelectedColors, c.name)}
                         className={`color-swatch-btn ${active ? 'active' : ''}`}
                       >
-                        <div 
-                          className="color-swatch-inner" 
+                        <div
+                          className="color-swatch-inner"
                           style={{ backgroundColor: c.hex }}
                         ></div>
                       </button>
@@ -477,11 +477,11 @@ export default function Collection() {
                     >
                       <div className="rating-filter-stars">
                         {Array.from({ length: 5 }).map((_, idx) => (
-                          <Star 
-                            key={idx} 
-                            size={14} 
-                            fill={idx < r ? "#8f7a5b" : "#e0e0e0"} 
-                            color={idx < r ? "#8f7a5b" : "#e0e0e0"} 
+                          <Star
+                            key={idx}
+                            size={14}
+                            fill={idx < r ? "#8f7a5b" : "#e0e0e0"}
+                            color={idx < r ? "#8f7a5b" : "#e0e0e0"}
                           />
                         ))}
                       </div>
@@ -491,7 +491,7 @@ export default function Collection() {
                 </div>
               </Section>
             </div>
-            
+
             {/* Footer button */}
             <div className="filter-sidebar-footer">
               <button className="show-results-btn" onClick={() => setIsMobileFilterOpen(false)}>
@@ -505,22 +505,22 @@ export default function Collection() {
         <div className="collection-content">
           <div className="top-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', paddingBottom: '15px', borderBottom: 'none' }}>
             <div className="view-modes">
-              <button 
-                className="view-btn" 
+              <button
+                className="view-btn"
                 style={{
-                  width: 'auto', 
-                  padding: '8px 16px', 
-                  gap: '8px', 
-                  fontWeight: '600', 
-                  backgroundColor: '#8f7a5b', 
-                  color: 'white', 
-                  border: 'none', 
+                  width: 'auto',
+                  padding: '8px 16px',
+                  gap: '8px',
+                  fontWeight: '600',
+                  backgroundColor: '#8f7a5b',
+                  color: 'white',
+                  border: 'none',
                   borderRadius: '4px',
                   display: 'flex',
                   alignItems: 'center',
                   fontSize: '13px',
                   letterSpacing: '0.5px'
-                }} 
+                }}
                 onClick={() => setIsMobileFilterOpen(!isMobileFilterOpen)}
               >
                 <LayoutGrid size={16} /> FILTERS
@@ -534,10 +534,10 @@ export default function Collection() {
                 className="sort-select" 
                 onClick={() => setIsSortOpen(!isSortOpen)}
                 style={{
-                  cursor: 'pointer', 
-                  userSelect: 'none', 
-                  border: '1px solid #e0e0e0', 
-                  padding: '8px 12px', 
+                  cursor: 'pointer',
+                  userSelect: 'none',
+                  border: '1px solid #e0e0e0',
+                  padding: '8px 12px',
                   borderRadius: '4px',
                   display: 'flex',
                   alignItems: 'center',
@@ -564,7 +564,7 @@ export default function Collection() {
                   overflow: 'hidden'
                 }}>
                   {['Popularity', 'Price: Low to High', 'Price: High to Low', 'Rating'].map((option, idx, arr) => (
-                    <div 
+                    <div
                       key={option}
                       className="sort-option"
                       onClick={() => {
@@ -593,8 +593,8 @@ export default function Collection() {
 
           <div className={`unified-products-grid ${isMobileFilterOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
             {sortedProducts.map(product => (
-              <div 
-                key={product.id} 
+              <div
+                key={product.id}
                 className="unified-product-card"
                 onClick={() => navigate(`/product/${product.id}`, { state: { product } })}
               >
@@ -602,26 +602,26 @@ export default function Collection() {
                   {product.badge && (
                     <div className="unified-badge" style={{ background: product.badgeClass === 'badge-new' ? '#1a1d20' : '#c0a07c' }}>{product.badge}</div>
                   )}
-                  <button 
-                    className="unified-wishlist-btn" 
+                  <button
+                    className="unified-wishlist-btn"
                     onClick={(e) => {
                       e.stopPropagation();
                       toggleWishlist(product);
                     }}
                   >
-                    <Heart 
-                      size={16} 
-                      fill={isInWishlist(product.id) ? "#ff4d4f" : "none"} 
-                      color={isInWishlist(product.id) ? "#ff4d4f" : "#555"} 
+                    <Heart
+                      size={16}
+                      fill={isInWishlist(product.id) ? "#ff4d4f" : "none"}
+                      color={isInWishlist(product.id) ? "#ff4d4f" : "#555"}
                       style={{ transition: 'all 0.3s ease' }}
                     />
                   </button>
                   <img src={product.image} alt={product.title} />
                 </div>
-                
+
                 <div className="unified-card-info">
                   <h3 className="unified-card-title">{product.title}</h3>
-                  
+
                   <div className="unified-card-rating">
                     <div className="unified-stars">
                       {[1, 2, 3, 4, 5].map((_, i) => (
@@ -630,7 +630,7 @@ export default function Collection() {
                     </div>
                     <span className="unified-reviews">({product.reviews})</span>
                   </div>
-                  
+
                   <div className="unified-card-price">
                     <span className="unified-price-new">{product.price}</span>
                     {product.originalPrice && <span className="unified-price-old">{product.originalPrice}</span>}
@@ -640,8 +640,8 @@ export default function Collection() {
                       </span>
                     )}
                   </div>
-                  
-                  <button 
+
+                  <button
                     className="unified-explore-btn"
                     onClick={(e) => handleCartClick(e, product)}
                   >

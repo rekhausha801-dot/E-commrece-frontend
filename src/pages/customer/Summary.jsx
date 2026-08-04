@@ -20,17 +20,46 @@ import {
 } from 'lucide-react';
 import { useNotification } from '../../context/NotificationContext';
 import './Summary.css';
-import './Payment.css'; // Reuse stepper styles
 import './Address.css'; // Reuse drawer styles
-import sareeImage from '../../assets/Maroon.png';
-import tshirtImage from '../../assets/Tshirt.png';
+import { useOrders } from '../../context/OrderContext';
+import { useCart } from '../../context/CartContext';
 
 const Summary = () => {
   const navigate = useNavigate();
-  const { addNotification } = useNotification();
+  const { addOrder } = useOrders();
+  const { cartItems, clearCart } = useCart();
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
   const [editQty, setEditQty] = useState(1);
   const [editSize, setEditSize] = useState('Free');
+
+  const totalItems = cartItems.reduce((acc, item) => acc + item.qty, 0);
+  const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.qty), 0);
+  const addFees = totalItems > 0 ? 60 : 0;
+  const orderTotal = subtotal + addFees;
+
+  const handlePlaceOrder = () => {
+    if (cartItems.length === 0) return;
+
+    // Create an order array from the actual cart items
+    const newOrder = cartItems.map(item => ({
+      id: `ORD${Math.floor(100000 + Math.random() * 900000)}`,
+      date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+      product: item.title,
+      size: item.size,
+      color: item.color,
+      amount: `₹${(item.price * item.qty).toFixed(2)}`,
+      payment: 'Paid',
+      paymentColor: '#2a7e4f',
+      status: 'Pending',
+      statusColor: '#d97706',
+      statusBg: '#fef3c7',
+      image: item.image
+    }));
+
+    addOrder(newOrder);
+    clearCart();
+    navigate('/order-confirmed');
+  };
 
   React.useEffect(() => {
     window.scrollTo(0, 0);
@@ -112,73 +141,37 @@ const Summary = () => {
           <div className="lux-summary-left">
             <h2 className="summary-section-title">Product Details</h2>
 
-            {/* Product Card 1 */}
-            <div className="summary-product-card">
-              <div className="spc-delivery-banner">
-                <Truck size={16} className="gold-icon" />
-                <span>Estimated Delivery by Monday, 03rd Aug</span>
-              </div>
-              <div className="spc-divider"></div>
-
-              <div className="spc-content">
-                <div className="spc-image-wrap">
-                  <img src={sareeImage} alt="Saree" className="spc-image" />
+            {cartItems.map((item, index) => (
+              <div key={item.id} className="summary-product-card">
+                <div className="spc-delivery-banner">
+                  <Truck size={16} className="gold-icon" />
+                  <span>Estimated Delivery {item.delivery}</span>
                 </div>
+                <div className="spc-divider"></div>
 
-                <div className="spc-details">
-                  <h3 className="spc-title">GEORGETTE EMBROIDERY WORK SAREE</h3>
-                  <div className="spc-price">₹468</div>
-                  <div className="spc-returns">
-                    <Check size={14} color="#2a7e4f" />
-                    <span>All issue easy returns</span>
+                <div className="spc-content">
+                  <div className="spc-image-wrap">
+                    <img src={item.image} alt={item.title} className="spc-image" />
                   </div>
-                  <div className="spc-meta">
-                    Size: Free Size &nbsp;&bull;&nbsp; Qty: 1
+
+                  <div className="spc-details">
+                    <h3 className="spc-title">{item.title}</h3>
+                    <div className="spc-price">₹{(item.price * item.qty).toFixed(2)}</div>
+                    <div className="spc-returns">
+                      <Check size={14} color="#2a7e4f" />
+                      <span>All issue easy returns</span>
+                    </div>
+                    <div className="spc-meta">
+                      Size: {item.size} &nbsp;&bull;&nbsp; Qty: {item.qty}
+                    </div>
                   </div>
+
+                  <button className="spc-edit-btn" onClick={() => setIsEditDrawerOpen(true)}>
+                    <Edit2 size={12} /> Edit
+                  </button>
                 </div>
-
-                <button className="spc-edit-btn" onClick={() => setIsEditDrawerOpen(true)}>
-                  <Edit2 size={12} /> Edit
-                </button>
               </div>
-
-              <div className="spc-divider"></div>
-              <div className="spc-footer">
-                <Store size={14} className="gold-icon" />
-                <span>Sold by: Silkora_Saree</span>
-              </div>
-            </div>
-
-            {/* Product Card 2 */}
-            <div className="summary-product-card">
-              <div className="spc-delivery-banner">
-                <Truck size={16} className="gold-icon" />
-                <span>Estimated Delivery by Tuesday, 04th Aug</span>
-              </div>
-              <div className="spc-divider"></div>
-
-              <div className="spc-content">
-                <div className="spc-image-wrap">
-                  <img src={tshirtImage} alt="T-Shirt" className="spc-image" />
-                </div>
-
-                <div className="spc-details">
-                  <h3 className="spc-title">4 PCS Crochet Threads, Soft Threads for Crocheting...</h3>
-                  <div className="spc-price">₹124</div>
-                  <div className="spc-returns">
-                    <Check size={14} color="#2a7e4f" />
-                    <span>All issue easy returns</span>
-                  </div>
-                  <div className="spc-meta">
-                    Size: Free Size &nbsp;&bull;&nbsp; Qty: 1
-                  </div>
-                </div>
-
-                <button className="spc-edit-btn" onClick={() => setIsEditDrawerOpen(true)}>
-                  <Edit2 size={12} /> Edit
-                </button>
-              </div>
-            </div>
+            ))}
 
             {/* Address Card */}
             <div className="summary-address-card" style={{ marginBottom: '20px' }}>
@@ -242,7 +235,7 @@ const Summary = () => {
                 <div className="sp-icon-box">
                   <ShoppingBag size={20} color="#c99a53" />
                 </div>
-                <h3 className="sp-title">Price Details (10 Items)</h3>
+                <h3 className="sp-title">Price Details ({totalItems} Items)</h3>
               </div>
 
               <div className="sp-divider"></div>
@@ -250,11 +243,11 @@ const Summary = () => {
               <div className="sp-body">
                 <div className="sp-row">
                   <span className="sp-label">Product Price</span>
-                  <span className="sp-val">₹2138</span>
+                  <span className="sp-val">₹{subtotal.toFixed(2)}</span>
                 </div>
                 <div className="sp-row">
                   <span className="sp-label">Additional Fees</span>
-                  <span className="sp-val">₹60</span>
+                  <span className="sp-val">₹{addFees.toFixed(2)}</span>
                 </div>
               </div>
 
@@ -262,7 +255,7 @@ const Summary = () => {
 
               <div className="sp-total-row">
                 <span className="sp-total-label">Order Total</span>
-                <span className="sp-total-val">₹2198</span>
+                <span className="sp-total-val">₹{orderTotal.toFixed(2)}</span>
               </div>
 
               <div className="sp-savings-banner">
