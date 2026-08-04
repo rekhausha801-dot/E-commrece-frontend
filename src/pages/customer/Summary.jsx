@@ -16,12 +16,14 @@ import {
   Wallet,
   X,
   Minus,
-  Plus
+  Plus,
+  ChevronRight
 } from 'lucide-react';
 import './Summary.css';
 import './Address.css'; // Reuse drawer styles
 import { useOrders } from '../../context/OrderContext';
 import { useCart } from '../../context/CartContext';
+import CheckoutStepper from '../../components/CheckoutStepper';
 
 const Summary = () => {
   const navigate = useNavigate();
@@ -31,10 +33,23 @@ const Summary = () => {
   const [editQty, setEditQty] = useState(1);
   const [editSize, setEditSize] = useState('Free');
 
+  // Coupon state
+  const [isCouponModalOpen, setIsCouponModalOpen] = useState(false);
+  const [enteredCode, setEnteredCode] = useState('');
+  const [selectedCouponCode, setSelectedCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [couponDiscount, setCouponDiscount] = useState(0);
+
+  const availableCoupons = [
+    { code: 'MYNTRAEXCLUSIVE1', save: 157, desc: '35% off on minimum purchase of Rs. 300.', expiry: '30th September 2026 | 11:55 PM' },
+    { code: 'MYNTRA300', save: 300, desc: 'Rs. 300 off on minimum purchase of Rs. 1499.', expiry: '30th September 2026 | 11:05 AM' },
+    { code: 'MYNTRA400', save: 400, desc: 'Rs. 400 off on minimum purchase of Rs. 3999.', expiry: '09th August 2026 | 11:59 PM' }
+  ];
+
   const totalItems = cartItems.reduce((acc, item) => acc + item.qty, 0);
   const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.qty), 0);
   const addFees = totalItems > 0 ? 60 : 0;
-  const orderTotal = subtotal + addFees;
+  const orderTotal = subtotal + addFees - couponDiscount;
 
   const handlePlaceOrder = () => {
     if (cartItems.length === 0) return;
@@ -96,34 +111,29 @@ const Summary = () => {
     });
   };
 
+  const handleApplyCoupon = () => {
+    const codeToApply = enteredCode || selectedCouponCode;
+    const found = availableCoupons.find(c => c.code === codeToApply);
+    if (found) {
+      setAppliedCoupon(found);
+      setCouponDiscount(found.save);
+      setIsCouponModalOpen(false);
+      notification.success({ message: 'Coupon Applied Successfully' });
+    } else if (codeToApply) {
+      notification.error({ message: 'Invalid Coupon Code' });
+    }
+  };
+
+  const getSelectedCouponSave = () => {
+    const codeToApply = enteredCode || selectedCouponCode;
+    const found = availableCoupons.find(c => c.code === codeToApply);
+    return found ? found.save : 0;
+  };
+
   return (
     <div className="lux-payment-page">
       <div className="lux-cart-container">
-        {/* Stepper */}
-        <div className="lux-stepper-container">
-          <div className="lux-step completed" onClick={() => navigate('/cart')}>
-            <div className="lux-step-icon"><Check size={16} /></div>
-            <span className="lux-step-label">Cart</span>
-          </div>
-          <div className="lux-step-line completed"></div>
-
-          <div className="lux-step completed" onClick={() => navigate('/address')}>
-            <div className="lux-step-icon"><Check size={16} /></div>
-            <span className="lux-step-label">Addresses</span>
-          </div>
-          <div className="lux-step-line completed"></div>
-
-          <div className="lux-step completed" onClick={() => navigate('/payment')}>
-            <div className="lux-step-icon"><Check size={16} /></div>
-            <span className="lux-step-label">Payment</span>
-          </div>
-          <div className="lux-step-line completed"></div>
-
-          <div className="lux-step active">
-            <div className="lux-step-icon">4</div>
-            <span className="lux-step-label">Summary</span>
-          </div>
-        </div>
+        <CheckoutStepper currentStep={4} />
 
         <div className="lux-summary-layout">
           {/* Left Column */}
@@ -238,6 +248,17 @@ const Summary = () => {
                   <span className="sp-label">Additional Fees</span>
                   <span className="sp-val">₹{addFees.toFixed(2)}</span>
                 </div>
+                <div className="sp-row sp-coupon-row">
+                  <span className="sp-label">Coupon Discount</span>
+                  {appliedCoupon ? (
+                    <div className="sp-coupon-applied">
+                      <span className="sp-val sp-discount">-₹{couponDiscount.toFixed(2)}</span>
+                      <button className="sp-remove-coupon" onClick={() => { setAppliedCoupon(null); setCouponDiscount(0); }}>Remove</button>
+                    </div>
+                  ) : (
+                    <button className="sp-apply-coupon" onClick={() => setIsCouponModalOpen(true)}>Apply Coupon</button>
+                  )}
+                </div>
               </div>
 
               <div className="sp-divider sp-divider-bottom"></div>
@@ -323,7 +344,81 @@ const Summary = () => {
           </div>
         </>
       )}
-    </div>
+      {/* Coupon Modal Overlay */}
+    {isCouponModalOpen && (
+      <div className="cm-overlay">
+        <div className="cm-modal">
+          <div className="cm-header">
+            <h3>APPLY COUPON</h3>
+            <button className="cm-close" onClick={() => setIsCouponModalOpen(false)}>
+              <X size={24} color="#333" />
+            </button>
+          </div>
+          <div className="cm-body">
+            <div className="cm-input-box">
+              <input 
+                type="text" 
+                placeholder="Enter coupon code" 
+                value={enteredCode}
+                onChange={(e) => {
+                  setEnteredCode(e.target.value.toUpperCase());
+                  setSelectedCouponCode('');
+                }}
+              />
+              <button className="cm-check-btn" onClick={handleApplyCoupon}>CHECK</button>
+            </div>
+            
+            <div className="cm-list">
+              {availableCoupons.map((coupon, index) => (
+                <div key={coupon.code} className="cm-coupon-item">
+                  {index === 1 && <div className="cm-unlock-title">UNLOCK MORE COUPONS</div>}
+                  <div className="cm-card-row">
+                    <label className="cm-checkbox">
+                      <input 
+                        type="checkbox" 
+                        checked={selectedCouponCode === coupon.code}
+                        onChange={() => {
+                          setSelectedCouponCode(selectedCouponCode === coupon.code ? '' : coupon.code);
+                          setEnteredCode('');
+                        }}
+                      />
+                      <span className="cm-checkmark">
+                        {selectedCouponCode === coupon.code && <Check size={14} color="#FFF" strokeWidth={3} />}
+                      </span>
+                    </label>
+                    <div className="cm-card-content">
+                      <div className={`cm-code ${selectedCouponCode === coupon.code ? 'active' : ''}`}>
+                        {coupon.code}
+                      </div>
+                      <div className="cm-save">Save ₹{coupon.save}</div>
+                      <div className="cm-desc">{coupon.desc}</div>
+                      <div className="cm-expiry">Expires on: {coupon.expiry}</div>
+                      {index > 0 && (
+                        <div className="cm-more-req">
+                          Shop for Rs. 1053 more to apply. <br/>
+                          <span className="cm-view-items" onClick={() => {
+                            setIsCouponModalOpen(false);
+                            navigate('/collection');
+                          }}>View applicable items <ChevronRight size={12}/></span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="cm-footer">
+            <div className="cm-max-save">
+              Maximum savings: <br/>
+              <strong>₹{getSelectedCouponSave()}</strong>
+            </div>
+            <button className="cm-apply-btn" onClick={handleApplyCoupon}>APPLY</button>
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
   );
 };
 

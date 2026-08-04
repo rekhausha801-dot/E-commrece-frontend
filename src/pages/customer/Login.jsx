@@ -11,7 +11,7 @@ const Login = () => {
   return (
     <div className="login-page-wrapper">
       <div className="login-container">
-        
+
         {/* Banner Section */}
         <div className="login-banner">
           <div className="login-banner-fallback">
@@ -28,20 +28,20 @@ const Login = () => {
 
           <div className="login-input-group">
             <span className="input-prefix">+91 |</span>
-            <input 
-              type="tel" 
-              className="login-input" 
-              placeholder="Mobile Number*" 
+            <input
+              type="tel"
+              className="login-input"
+              placeholder="Mobile Number*"
               value={mobileNumber}
               onChange={(e) => setMobileNumber(e.target.value.replace(/\D/g, '').slice(0, 10))}
             />
           </div>
 
           <div className="terms-container">
-            <input 
-              type="checkbox" 
-              className="terms-checkbox" 
-              id="terms" 
+            <input
+              type="checkbox"
+              className="terms-checkbox"
+              id="terms"
               checked={agreed}
               onChange={(e) => setAgreed(e.target.checked)}
             />
@@ -50,7 +50,7 @@ const Login = () => {
             </label>
           </div>
 
-          <button 
+          <button
             className={`login-btn ${(isValidNumber && agreed) ? 'active' : ''}`}
             disabled={!(isValidNumber && agreed)}
           >

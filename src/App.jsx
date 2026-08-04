@@ -27,27 +27,33 @@ import { WishlistProvider } from "./context/WishlistContext";
 import { OrderProvider } from "./context/OrderContext";
 import { CartProvider } from "./context/CartContext";
 import ReturnRefund from "./pages/customer/ReturnRefund";
+import Coupons from "./pages/customer/Coupons";
+import Register from "./pages/customer/Register";
 
 function App() {
   return (
-    <WishlistProvider>
-      <BrowserRouter>
+    <CartProvider>
+      <OrderProvider>
+        <WishlistProvider>
+          <BrowserRouter>
 
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/collection" element={<Collection />} />
-          <Route path="/western" element={<WesternCollection />} />
-          <Route path="/category/:categoryId" element={<CategoryPage />} />
-          <Route path="/product/:productId" element={<ProductDetail />} />
-          <Route path="/customize/:productId" element={<CustomizeTShirt />} />
-          <Route path="/wishlist" element={<Wishlist />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/shop" element={<h1 style={{ padding: "120px 20px", textAlign: "center" }}>Shop Page - Coming Soon!</h1>} />
-          <Route path="/address" element={<Address />} />
-          <Route path="/payment" element={<Payment />} />
-          <Route path="/summary" element={<Summary />} />
-          <Route path="/order-confirmed" element={<OrderConfirmed />} />
+            <Navbar />
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/collection" element={<Collection />} />
+              <Route path="/western" element={<WesternCollection />} />
+              <Route path="/category/:categoryId" element={<CategoryPage />} />
+              <Route path="/product/:productId" element={<ProductDetail />} />
+              <Route path="/customize/:productId" element={<CustomizeTShirt />} />
+              <Route path="/wishlist" element={<Wishlist />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/shop" element={<h1 style={{ padding: "120px 20px", textAlign: "center" }}>Shop Page - Coming Soon!</h1>} />
+              <Route path="/address" element={<Address />} />
+              <Route path="/payment" element={<Payment />} />
+              <Route path="/summary" element={<Summary />} />
+              <Route path="/order-confirmed" element={<OrderConfirmed />} />
+              <Route path="/coupons" element={<Coupons />} />
 
 
               <Route path="/account/my-orders" element={<MyOrders />} />
@@ -60,7 +66,6 @@ function App() {
                 <Route path="orders" element={<AccountPlaceholder />} />
                 <Route path="addresses" element={<SavedAddresses />} />
                 <Route path="payment-methods" element={<PaymentMethods />} />
-                <Route path="coupons" element={<AccountPlaceholder />} />
                 <Route path="notifications" element={<AccountPlaceholder />} />
                 <Route path="returns" element={<ReturnRefund />} />
                 <Route path="recently-viewed" element={<AccountPlaceholder />} />
@@ -72,8 +77,8 @@ function App() {
             <Footer />
           </BrowserRouter>
         </WishlistProvider>
-      </OrderProvider>
-    </CartProvider>
+      </OrderProvider >
+    </CartProvider >
   );
 }
 

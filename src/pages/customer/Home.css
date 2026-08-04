@@ -97,22 +97,28 @@
 
 .carousel-close-btn {
   position: absolute;
-  top: 0;
+  top: 20px;
   right: 0;
-  background: transparent;
-  border: none;
-  width: 48px;
+  background: #59171b;
+  /* Deep red maroon from image */
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(200, 153, 83, 0.4);
+  border-right: none;
+  border-radius: 24px 0 0 24px;
+  /* Semi-circle on the left */
+  width: 44px;
   height: 48px;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
+  padding-left: 4px;
   cursor: pointer;
   z-index: 10;
-  padding: 0;
   opacity: 0;
   transform: translateX(10px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition: all 0.3s ease;
   pointer-events: none;
+  box-shadow: -2px 2px 15px rgba(0, 0, 0, 0.15);
 }
 
 .hero-banner-section:hover .carousel-close-btn {

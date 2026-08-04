@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { message } from 'antd';
 import './Collection.css';
 import {
-  Filter, Minus, Heart, ShoppingBag, Eye, LayoutGrid, Menu, ChevronDown, ChevronUp, X, SlidersHorizontal, Check, Star, Shirt
+  Filter, Minus, Heart, ShoppingBag, Eye, LayoutGrid, Menu, ChevronDown, ChevronUp, X, SlidersHorizontal, Check, Star, Shirt, ArrowRight
 } from 'lucide-react';
 import { useWishlist } from '../context/WishlistContext';
 

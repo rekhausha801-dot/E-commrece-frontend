@@ -3,6 +3,7 @@ import { MapPin, Phone, Crosshair, X, Check, ShoppingBag, CreditCard, Receipt } 
 import { useNavigate } from 'react-router-dom';
 import './Address.css';
 import './Cart.css'; // Reusing some base styles like stepper
+import CheckoutStepper from '../../components/CheckoutStepper';
 
 const Address = () => {
   const navigate = useNavigate();
@@ -63,33 +64,10 @@ const Address = () => {
 
   return (
     <div className="lux-address-page">
-      {/* Stepper (reusing structure from Cart) */}
-      <div className="lux-stepper-container">
-        <div className="lux-step completed" onClick={() => navigate('/cart')} style={{ cursor: 'pointer' }}>
-          <div className="lux-step-icon"><Check size={16} /></div>
-          <span className="lux-step-label">Cart</span>
-        </div>
-        <div className="lux-step-line completed"></div>
-        
-        <div className="lux-step active">
-          <div className="lux-step-icon">2</div>
-          <span className="lux-step-label">Address</span>
-        </div>
-        <div className="lux-step-line pending"></div>
-        
-        <div className="lux-step pending">
-          <div className="lux-step-icon">3</div>
-          <span className="lux-step-label">Payment</span>
-        </div>
-        <div className="lux-step-line pending"></div>
-        
-        <div className="lux-step pending">
-          <div className="lux-step-icon">4</div>
-          <span className="lux-step-label">Summary</span>
-        </div>
-      </div>
+      <div className="lux-cart-container">
+        <CheckoutStepper currentStep={2} />
 
-      <div className="lux-address-layout">
+        <div className="lux-address-layout">
 
         <div className="lux-address-header-container">
           <div className="lux-address-header-row">
@@ -133,6 +111,7 @@ const Address = () => {
             </div>
           </div>
         </div>
+      </div>
       </div>
 
       {/* Side Drawer */}

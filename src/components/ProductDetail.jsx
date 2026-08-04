@@ -27,9 +27,11 @@ import westren4Img from '../assets/images/westren4.png';
 import westren5Img from '../assets/images/westren5.png';
 
 import { GLOBAL_PRODUCTS, getSimilarProducts, determineProductCategory, customizableDesigns } from '../data/mockProducts';
+import { useWishlist } from '../context/WishlistContext';
 
 function SimilarProductCard({ product, onQuickView }) {
   const navigate = useNavigate();
+  const { toggleWishlist, isInWishlist } = useWishlist();
   const [isAdded, setIsAdded] = useState(false);
   // Use product colors if available, otherwise just use its main image
   const [activeColor, setActiveColor] = useState(product.colors ? product.colors[0].name : '');
@@ -47,8 +49,11 @@ function SimilarProductCard({ product, onQuickView }) {
         <div className="unified-badge" style={{ background: '#d3b585', opacity: 0.9 }}>
           {product.badge || 'SIMILAR'}
         </div>
-        <button className="unified-wishlist-btn" onClick={(e) => e.stopPropagation()}>
-          <Heart size={16} color="#666" />
+        <button className="unified-wishlist-btn" onClick={(e) => {
+          e.stopPropagation();
+          toggleWishlist(product);
+        }}>
+          <Heart size={16} fill={isInWishlist(product.id) ? '#ff4d4f' : 'none'} color={isInWishlist(product.id) ? '#ff4d4f' : '#666'} />
         </button>
         <img src={displayImage} alt={product.title} />
         <button
@@ -132,6 +137,7 @@ export default function ProductDetail() {
   const { productId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const { toggleWishlist, isInWishlist } = useWishlist();
   let baseProduct = location.state?.product || GLOBAL_PRODUCTS.find(p => p.id === parseInt(productId)) || null;
 
   // Dynamically attach customization ONLY for the specific White T-Shirt (ID 100) or t-shirt7 or t-shirt8
@@ -147,7 +153,6 @@ export default function ProductDetail() {
   const [activeSize, setActiveSize] = useState('M');
   const [activeColor, setActiveColor] = useState('Brown');
   const [quantity, setQuantity] = useState(1);
-  const [isWishlisted, setIsWishlisted] = useState(false);
   const [activeTab, setActiveTab] = useState('description');
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
@@ -385,8 +390,12 @@ export default function ProductDetail() {
                   onMouseLeave={handleMouseLeave}
                 >
                   <div className="pdp-discount-badge">-40%</div>
-                  <button className="pdp-wishlist-heart-btn" onClick={() => setIsWishlisted(!isWishlisted)}>
-                    <Heart size={18} fill={isWishlisted ? '#8B4513' : 'none'} color={isWishlisted ? '#8B4513' : '#666'} />
+                  <button className="pdp-wishlist-heart-btn" onClick={() => {
+                    if (product) {
+                      toggleWishlist(product);
+                    }
+                  }}>
+                    <Heart size={18} fill={isInWishlist(product?.id) ? '#8B4513' : 'none'} color={isInWishlist(product?.id) ? '#8B4513' : '#666'} />
                   </button>
 
                   <button className="pdp-nav-btn pdp-prev" onClick={prevImage}><ChevronLeft size={20} /></button>
@@ -440,7 +449,7 @@ export default function ProductDetail() {
                 }}
               >
                 {adsData.map((ad) => (
-                  <div key={ad.id} className="pdp-ad-banner" style={{ minWidth: '100%', flex: '0 0 100%', boxSizing: 'border-box', margin: 0 }}>
+                  <div key={ad.id} className="pdp-ad-banner" style={{ minWidth: '100%', flex: '0 0 100%', boxSizing: 'border-box', margin: 0, cursor: 'pointer' }} onClick={() => navigate(`/product/${ad.id}`)}>
                     <img src={ad.image} alt="Ad Product" className="pdp-ad-img" />
                     <div className="pdp-ad-content">
                       <div className="pdp-ad-title">{ad.title}</div>
@@ -616,10 +625,14 @@ export default function ProductDetail() {
               <div className="pdp-action-buttons" style={{ marginTop: '24px', display: 'flex', gap: '12px' }}>
                 <button 
                   className="pdp-btn-wishlist-large" 
-                  onClick={() => setIsWishlisted(!isWishlisted)}
+                  onClick={() => {
+                    if (product) {
+                      toggleWishlist(product);
+                    }
+                  }}
                   style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px 0', background: '#fff', border: '1px solid #ddd', borderRadius: '4px', color: '#8B4513', fontWeight: '600', cursor: 'pointer' }}
                 >
-                  <Heart size={16} fill={isWishlisted ? '#8B4513' : 'none'} color="#8B4513" /> Wishlist
+                  <Heart size={16} fill={isInWishlist(product?.id) ? '#8B4513' : 'none'} color="#8B4513" /> Wishlist
                 </button>
                 {activeColorObj.inStock ? (
                   <>
@@ -639,6 +652,7 @@ export default function ProductDetail() {
                     </button>
                     <button 
                       className="pdp-btn-buy-now"
+                      onClick={() => navigate('/cart')}
                       style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '14px 0', background: '#000', border: 'none', borderRadius: '4px', color: '#fff', fontWeight: '600', cursor: 'pointer' }}
                     >
                       Buy Now
