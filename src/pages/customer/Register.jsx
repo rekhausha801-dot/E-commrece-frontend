@@ -57,7 +57,7 @@ const Register = () => {
               </div>
 
               <div className="register-input-group">
-                <label className="register-label">Mobile</label>
+                <label className="register-label">Mobile NO</label>
                 <div className="input-with-icon">
                   <span className="input-left-icon"><Phone size={16} /></span>
                   <input 
