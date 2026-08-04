@@ -39,7 +39,7 @@ const products = [
     title: 'Printed Straight Kurti',
     price: '₹699',
     originalPrice: '₹999',
-    rating: 3,
+    rating: 5,
     reviews: 18,
     badge: 'BESTSELLER',
     badgeClass: 'bestseller',
