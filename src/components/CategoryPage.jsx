@@ -6,6 +6,7 @@ import {
   Filter, Heart, ShoppingBag, Eye, LayoutGrid, Menu, ChevronDown, ChevronUp, X, SlidersHorizontal, Check, Star, ArrowRight, Shirt
 } from 'lucide-react';
 import { useWishlist } from '../context/WishlistContext';
+import { useCart } from '../context/CartContext';
 import { FaStar } from 'react-icons/fa';
 
 // Import images
@@ -250,6 +251,7 @@ export default function CategoryPage() {
   const { categoryId } = useParams();
   const navigate = useNavigate();
   const { wishlistItems, toggleWishlist, isInWishlist } = useWishlist();
+  const { addToCart } = useCart();
   const [addedToCart, setAddedToCart] = useState({});
 
   const handleCartClick = (e, product) => {
@@ -258,6 +260,7 @@ export default function CategoryPage() {
       navigate('/cart');
     } else {
       setAddedToCart(prev => ({ ...prev, [product.id]: true }));
+      addToCart(product);
       message.success(`${product.title || 'Product'} added to cart!`);
     }
   };

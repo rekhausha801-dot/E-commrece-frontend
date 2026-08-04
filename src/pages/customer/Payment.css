@@ -1,17 +1,9 @@
 .lux-payment-page {
   font-family: 'Inter', sans-serif;
-  background-color: #faf9f6;
-  background-image: radial-gradient(#efe8db 1px, transparent 1px);
-  background-size: 20px 20px;
+  background-color: var(--bg-color);
   min-height: 100vh;
   padding-bottom: 80px;
   padding-top: 40px;
-}
-
-.lux-cart-container {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 20px;
 }
 
 

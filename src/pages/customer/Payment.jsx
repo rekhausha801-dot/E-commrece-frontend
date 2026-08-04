@@ -13,7 +13,7 @@ import {
   CreditCard
 } from 'lucide-react';
 import './Payment.css';
-import './Cart.css';
+import CheckoutStepper from '../../components/CheckoutStepper';
 
 const Payment = () => {
   const navigate = useNavigate();
@@ -26,31 +26,7 @@ const Payment = () => {
   return (
     <div className="lux-payment-page">
       <div className="lux-cart-container">
-        {/* Stepper */}
-        <div className="lux-stepper-container">
-          <div className="lux-step completed" onClick={() => navigate('/cart')}>
-            <div className="lux-step-icon"><Check size={16} /></div>
-            <span className="lux-step-label">Cart</span>
-          </div>
-          <div className="lux-step-line completed"></div>
-
-          <div className="lux-step completed" onClick={() => navigate('/address')}>
-            <div className="lux-step-icon"><Check size={16} /></div>
-            <span className="lux-step-label">Address</span>
-          </div>
-          <div className="lux-step-line completed"></div>
-
-          <div className="lux-step active">
-            <div className="lux-step-icon">3</div>
-            <span className="lux-step-label">Payment</span>
-          </div>
-          <div className="lux-step-line pending"></div>
-
-          <div className="lux-step pending">
-            <div className="lux-step-icon">4</div>
-            <span className="lux-step-label">Summary</span>
-          </div>
-        </div>
+        <CheckoutStepper currentStep={3} />
 
         {/* Content Layout */}
         <div className="lux-payment-layout">

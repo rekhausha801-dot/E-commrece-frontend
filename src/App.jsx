@@ -27,20 +27,20 @@ import { WishlistProvider } from "./context/WishlistContext";
 import { OrderProvider } from "./context/OrderContext";
 import { CartProvider } from "./context/CartContext";
 import ReturnRefund from "./pages/customer/ReturnRefund";
-import Support from "./pages/customer/Support";
-import Notifications from "./pages/customer/Notifications";
-import Login from "./pages/customer/Login";
+import Coupons from "./pages/customer/Coupons";
+import Register from "./pages/customer/Register";
 
 function App() {
   return (
-    <NotificationProvider>
-      <WishlistProvider>
-        <BrowserRouter>
-          <Navbar />
-          <main className="main-content" style={{ flex: 1, paddingBottom: "40px" }}>
+    <CartProvider>
+      <OrderProvider>
+        <WishlistProvider>
+          <BrowserRouter>
+
+            <Navbar />
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
               <Route path="/collection" element={<Collection />} />
               <Route path="/western" element={<WesternCollection />} />
               <Route path="/category/:categoryId" element={<CategoryPage />} />
@@ -53,7 +53,7 @@ function App() {
               <Route path="/payment" element={<Payment />} />
               <Route path="/summary" element={<Summary />} />
               <Route path="/order-confirmed" element={<OrderConfirmed />} />
-
+              <Route path="/coupons" element={<Coupons />} />
 
               <Route path="/account/my-orders" element={<MyOrders />} />
 
@@ -79,8 +79,8 @@ function App() {
             <Footer />
           </BrowserRouter>
         </WishlistProvider>
-      </OrderProvider>
-    </CartProvider>
+      </OrderProvider >
+    </CartProvider >
   );
 }
 
