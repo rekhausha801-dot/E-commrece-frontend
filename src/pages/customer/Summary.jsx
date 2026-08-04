@@ -18,6 +18,7 @@ import {
   Minus,
   Plus
 } from 'lucide-react';
+import { useNotification } from '../../context/NotificationContext';
 import './Summary.css';
 import './Address.css'; // Reuse drawer styles
 import { useOrders } from '../../context/OrderContext';
@@ -63,6 +64,16 @@ const Summary = () => {
   React.useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  const handlePlaceOrder = () => {
+    addNotification({
+      title: "Order Confirmed",
+      message: "Your order has been confirmed successfully.",
+      time: "Just now",
+      type: "order"
+    });
+    navigate('/order-confirmed');
+  };
 
   const handleUpdateItem = () => {
     setIsEditDrawerOpen(false);

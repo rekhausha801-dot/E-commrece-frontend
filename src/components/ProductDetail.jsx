@@ -370,7 +370,7 @@ export default function ProductDetail() {
                   >
                     <img src={img} alt={`Thumbnail ${idx}`} />
                     {product?.customizable && activeDesign?.icon && !activeDesign?.isBaseImage && (
-                      <div style={{ position: 'absolute', top: '55%', left: '50%', transform: 'translate(-50%, -50%)', width: '40%', height: '40%', mixBlendMode: 'multiply', pointerEvents: 'none' }}>
+                      <div style={{ position: 'absolute', top: '55%', left: '56%', transform: 'translate(-50%, -50%)', width: '40%', height: '40%', mixBlendMode: 'multiply', pointerEvents: 'none' }}>
                         <img src={activeDesign.icon} alt={activeDesign.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                       </div>
                     )}
@@ -393,7 +393,7 @@ export default function ProductDetail() {
                   <div style={{ width: '100%', height: '100%', transition: 'transform 0.1s ease-out', ...zoomStyle }}>
                     <img src={displayImages[activeImage]} alt="Main Product" className="pdp-main-image" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     {product?.customizable && activeDesign?.icon && !activeDesign?.isBaseImage && (
-                      <div style={{ position: 'absolute', top: '65%', left: '50%', transform: 'translate(-50%, -50%)', width: '35%', height: '35%', mixBlendMode: 'multiply', pointerEvents: 'none' }}>
+                      <div style={{ position: 'absolute', top: '65%', left: '56%', transform: 'translate(-50%, -50%)', width: '35%', height: '35%', mixBlendMode: 'multiply', pointerEvents: 'none' }}>
                         <img src={activeDesign.icon} alt={activeDesign.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                       </div>
                     )}
@@ -472,8 +472,12 @@ export default function ProductDetail() {
             </div>
 
             <div className="pdp-price-block-new">
-              <span className="pdp-current-price-new">₹{product?.price || '799'}</span>
-              <span className="pdp-original-price-new">₹{product?.originalPrice || '999'}</span>
+              <span className="pdp-current-price-new">
+                {product?.price?.toString().startsWith('₹') ? product.price : `₹${product?.price || '799'}`}
+              </span>
+              <span className="pdp-original-price-new">
+                {product?.originalPrice?.toString().startsWith('₹') ? product.originalPrice : `₹${product?.originalPrice || '999'}`}
+              </span>
               <span className="pdp-discount-text-new">{product?.discount || '40% OFF'}</span>
             </div>
             <div className="pdp-tax-inclusive-new">Inclusive of all taxes</div>
