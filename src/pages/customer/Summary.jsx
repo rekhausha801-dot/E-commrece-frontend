@@ -28,6 +28,7 @@ const Summary = () => {
   const navigate = useNavigate();
   const { addOrder } = useOrders();
   const { cartItems, clearCart } = useCart();
+  const { addNotification } = useNotification();
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
   const [editQty, setEditQty] = useState(1);
   const [editSize, setEditSize] = useState('Free');
@@ -58,14 +59,6 @@ const Summary = () => {
 
     addOrder(newOrder);
     clearCart();
-    navigate('/order-confirmed');
-  };
-
-  React.useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
-  const handlePlaceOrder = () => {
     addNotification({
       title: "Order Confirmed",
       message: "Your order has been confirmed successfully.",
@@ -74,6 +67,10 @@ const Summary = () => {
     });
     navigate('/order-confirmed');
   };
+
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const handleUpdateItem = () => {
     setIsEditDrawerOpen(false);
