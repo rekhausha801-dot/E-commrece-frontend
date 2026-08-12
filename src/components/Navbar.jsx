@@ -246,7 +246,7 @@ const Navbar = () => {
                 <div className="dropdown-header">Notifications</div>
                 <ul className="dropdown-list">
                   {notificationItems.map((item, idx) => (
-                    <li key={idx}><Link to="/notifications">{item}</Link></li>
+                    <li key={idx}><Link to="/account/notifications">{item}</Link></li>
                   ))}
                 </ul>
               </div>
@@ -339,7 +339,7 @@ const Navbar = () => {
             <div className="sidebar-divider"></div>
             <li className="sidebar-item"><Link to="/account/profile"><User size={18} /> My Account</Link></li>
             <li className="sidebar-item"><Link to="/wishlist"><Heart size={18} /> Wishlist</Link></li>
-            <li className="sidebar-item"><Link to="/notifications"><Bell size={18} /> Notifications</Link></li>
+            <li className="sidebar-item"><Link to="/account/notifications"><Bell size={18} /> Notifications</Link></li>
           </ul>
         </div>
       </aside>

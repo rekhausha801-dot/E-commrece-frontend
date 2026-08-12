@@ -1,0 +1,681 @@
+Created At: 2026-08-06T04:18:51Z
+Completed At: 2026-08-06T04:18:51Z
+File Path: `file:///d:/n/E-commrece-frontend/src/pages/admin/Dashboard.jsx`
+Total Lines: 673
+Total Bytes: 38676
+Showing lines 1 to 673
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: import React from 'react';
+2: import './Dashboard.css';
+3: import {
+4:   LayoutDashboard, BarChart2, FileText, Settings, Users, PieChart,
+5:   Zap, Search, Bell, Plus, TrendingUp, ShoppingBag, ShoppingCart, User,
+6:   ChevronDown, MoreVertical, Heart, Crown, Calendar, Package, ArrowUpRight,
+7:   Clock, RotateCcw, Truck, CheckCircle2, XCircle, FilePlus, Grid, Upload, Send, Menu,
+8:   AlertTriangle, Star, ThumbsUp, ArrowRight,
+9:   SearchCheckIcon
+10: } from 'lucide-react';
+11: import {
+12:   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Area, AreaChart,
+13:   PieChart as RechartsPieChart, Pie, Cell, BarChart, Bar
+14: } from 'recharts';
+15: 
+16: const revenueData = [
+17:   { name: 'May 18', revenue: 20000 },
+18:   { name: 'May 19', revenue: 35000 },
+19:   { name: 'May 20', revenue: 52000 },
+20:   { name: 'May 21', revenue: 38000 },
+21:   { name: 'May 22', revenue: 65000 },
+22:   { name: 'May 23', revenue: 78000 },
+23:   { name: 'May 24', revenue: 100000 },
+24: ];
+25: 
+26: const sparklineTotalRevenue = [{ v: 40 }, { v: 30 }, { v: 60 }, { v: 45 }, { v: 70 }, { v: 90 }, { v: 120 }];
+27: const sparklineTotalOrders = [{ v: 10 }, { v: 15 }, { v: 12 }, { v: 22 }, { v: 18 }, { v: 28 }, { v: 25 }];
+28: const sparklineTotalCustomers = [{ v: 20 }, { v: 25 }, { v: 20 }, { v: 35 }, { v: 30 }, { v: 45 }, { v: 40 }];
+29: const sparklineTotalProducts = [{ v: 5 }, { v: 10 }, { v: 15 }, { v: 12 }, { v: 20 }, { v: 18 }, { v: 30 }];
+30: 
+31: const topSellingProducts = [
+32:   { name: 'Linen Shirt', sold: '256 sold', price: '₹2,45,000', img: 'https://images.unsplash.com/photo-1596755094514-f87e32f85e23?w=100' },
+33:   { name: 'Summer Dress', sold: '182 sold', price: '₹1,86,000', img: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=100' },
+34:   { name: 'Sneakers', sold: '140 sold', price: '₹1,45,000', img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100' },
+35:   { name: 'Handbag', sold: '112 sold', price: '₹98,000', img: 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?w=100' },
+36: ];
+37: 
+38: const topCategoriesData = [
+39:   { name: 'Women\'s Wear', value: 42, color: '#8c673d' },
+40:   { name: 'Men\'s Wear', value: 24, color: '#dfbc88' },
+41:   { name: 'Accessories', value: 16, color: '#b98e54' },
+42:   { name: 'Footwear', value: 10, color: '#eedda8' },
+43:   { name: 'Others', value: 8, color: '#1f1f1f' },
+44: ];
+45: 
+46: const recentOrdersData = [
+47:   { id: '#ORD1042', date: 'May 24, 2024', customer: 'Janani R.', amount: '₹3,450', status: 'Delivered', statusClass: 'delivered', img: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=100' },
+48:   { id: '#ORD1043', date: 'May 24, 2024', customer: 'Ravi K.', amount: '₹1,250', status: 'Processing', statusClass: 'processing', img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100' },
+49:   { id: '#ORD1044', date: 'May 24, 2024', customer: 'Priya S.', amount: '₹4,990', status: 'Pending', statusClass: 'pending', img: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=100' },
+50: ];
+51: 
+52: const lowStockAlertData = [
+53:   { name: 'Women\'s Hoodie', size: 'M', stock: 3, percent: 15, status: 'Low', statusClass: 'low', img: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=100' },
+54:   { name: 'Casual Sandals', size: '6', stock: 2, percent: 10, status: 'Low', statusClass: 'low', img: 'https://images.unsplash.com/photo-1603808033192-082d6919d3e1?w=100' },
+55:   { name: 'Running Shoes', size: '9', stock: 1, percent: 8, status: 'Low', statusClass: 'low', img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100' },
+56: ];
+57: 
+58: const recentReviewsData = [
+59:   { rating: 5, text: '"Excellent quality and fast delivery!"', author: 'Anjali S.', time: '2 hours ago', helpful: 12, avatar: 'https://i.pravatar.cc/100?img=5', productImg: 'https://images.unsplash.com/photo-1596755094514-f87e32f85e23?w=100' },
+60:   { rating: 5, text: '"Loved the fabric and fit."', author: 'Priya M.', time: '5 hours ago', helpful: 8, avatar: 'https://i.pravatar.cc/100?img=9', productImg: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=100' },
+61:   { rating: 5, text: '"Worth every penny!"', author: 'Rahul K.', time: '1 day ago', helpful: 15, avatar: 'https://i.pravatar.cc/100?img=11', productImg: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100' },
+62: ];
+63: 
+64: const notificationsData = [
+65:   { dot: 'red', text: 'New order #ORD1047 has been placed', time: '2 min ago' },
+66:   { dot: 'yellow', text: 'Product "Women\'s Jacket" is low in stock', time: '15 min ago' },
+67:   { dot: 'blue', text: 'New customer registered: Sneha R.', time: '25 min ago' },
+68: ];
+69: 
+70: const calendarData = [
+71:   { date: '24 May', event: 'New Orders & Shipments' },
+72:   { date: '25 May', event: 'Flash Sale (Summer Collection)' },
+73:   { date: '26 May', event: 'Coupon "WELCOME10" Expiring' },
+74: ];
+75: 
+76: const ordersOverviewData = [
+77:   { title: 'Pending', count: 42, icon: 'Clock', color: '#ff9800', bg: '#fff4e5' },
+78:   { title: 'Processing', count: 18, icon: 'RotateCcw', color: '#2196f3', bg: '#e3f2fd' },
+79:   { title: 'Shipped', count: 26, icon: 'Truck', color: '#9c27b0', bg: '#f3e5f5' },
+80:   { title: 'Delivered', count: 105, icon: 'CheckCircle2', color: '#4caf50', bg: '#e8f5e9' },
+81:   { title: 'Cancelled', count: 5, icon: 'XCircle', color: '#f44336', bg: '#ffebee' }
+82: ];
+83: 
+84: const topSellingData = [
+85:   { name: 'Linen Shirt', sold: 256, price: '₹2,45,000', img: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=100' },
+86:   { name: 'Summer Dress', sold: 182, price: '₹1,86,000', img: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=100' },
+87:   { name: 'Sneakers', sold: 140, price: '₹1,45,000', img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100' },
+88:   { name: 'Handbag', sold: 112, price: '₹98,000', img: 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?w=100' }
+89: ];
+90: 
+91: const sunburstRing1 = [{ name: 'R1', value: 100, fill: '#2e7d32' }];
+92: const sunburstRing2 = [
+93:   { name: 'R2-1', value: 40, fill: '#388e3c' },
+94:   { name: 'R2-2', value: 20, fill: '#1976d2' },
+95:   { name: 'R2-3', value: 15, fill: '#673ab7' },
+96:   { name: 'R2-4', value: 25, fill: '#d84315' }
+97: ];
+98: const sunburstRing3 = [
+99:   { name: 'R3-1', value: 20, fill: '#4caf50' },
+100:   { name: 'R3-2', value: 10, fill: '#4caf50' },
+101:   { name: 'R3-3', value: 10, fill: '#4caf50' },
+102:   { name: 'R3-4', value: 10, fill: '#42a5f5' },
+103:   { name: 'R3-5', value: 10, fill: '#42a5f5' },
+104:   { name: 'R3-6', value: 8, fill: '#9575cd' },
+105:   { name: 'R3-7', value: 7, fill: '#9575cd' },
+106:   { name: 'R3-8', value: 12, fill: '#ff8a65' },
+107:   { name: 'R3-9', value: 13, fill: '#ff8a65' }
+108: ];
+109: const sunburstRing4 = Array.from({ length: 40 }).map((_, i) => ({
+110:   name: `R4-${i}`,
+111:   value: Math.random() * 5 + 2,
+112:   fill: i < 15 ? '#81c784' : i < 23 ? '#64b5f6' : i < 30 ? '#ba68c8' : '#ffab91'
+113: }));
+114: 
+115: const ordersOverviewBarData = [
+116:   { name: 'Pending', count: 52, color: '#8c673d' },
+117:   { name: 'Processing', count: 28, color: '#1f1f1f' },
+118:   { name: 'Shipped', count: 36, color: '#dfbc88' },
+119:   { name: 'Delivered', count: 105, color: '#b98e54' },
+120:   { name: 'Cancelled', count: 25, color: '#eedda8' },
+121: ];
+122: 
+123: const Dashboard = () => {
+124:   return (
+125:     <div className="dashboard-container">
+126:       {/* Sidebar - KEEP UNCHANGED */}
+127:       <aside className="dashboard-sidebar">
+128:         <div className="sidebar-top">
+129:           <div className="sidebar-logo">
+130:             <div className="logo-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+131:               <Crown size={24} color="#c9a05b" strokeWidth={2} />
+132:               <h2 style={{ margin: 0 }}>RELIETECH</h2>
+133:             </div>
+134:             <p style={{ marginTop: '2px' }}>PREMIUM FASHION</p>
+135:           </div>
+136: 
+137:           <nav className="sidebar-nav">
+138:             <button className="nav-item active"><LayoutDashboard size={18} className="nav-icon" /> Dashboard</button>
+139:             <button className="nav-item"><Package size={18} className="nav-icon" /> Products</button>
+140:             <button className="nav-item"><Grid size={18} className="nav-icon" /> Categories</button>
+141:             <button className="nav-item"><Zap size={18} className="nav-icon" /> Brands</button>
+142:             <button className="nav-item"><ShoppingCart size={18} className="nav-icon" /> Orders</button>
+143:             <button className="nav-item"><Users size={18} className="nav-icon" /> Customers</button>
+144:             <button className="nav-item"><Zap size={18} className="nav-icon" /> Coupons</button>
+145:             <button className="nav-item"><Settings size={18} className="nav-icon" /> Reviews</button>
+146:             <button className="nav-item"><FileText size={18} className="nav-icon" /> Banners</button>
+147:             <button className="nav-item"><PieChart size={18} className="nav-icon" /> Reports</button>
+148:             <button className="nav-item"><Bell size={18} className="nav-icon" /> Notifications</button>
+149:             <button className="nav-item"><Settings size={18} className="nav-icon" /> Settings</button>
+150:           </nav>
+151:         </div>
+152: 
+153:         <div className="sidebar-bottom">
+154:           <div className="elevate-card">
+155:             <h4>Elevate<br />Your Store</h4>
+156:             <p>Manage. Grow.<br />Succeed.</p>
+157:             <button className="elevate-btn">View Insights →</button>
+158:           </div>
+159:           <div className="sidebar-footer">
+160:             <p style={{ fontSize: '10px', color: '#666', textAlign: 'center' }}>© 2024 RELIETECH. All rights reserved.</p>
+161:           </div>
+162:         </div>
+163:       </aside>
+164: 
+165:     
+166:       <main className="dashboard-main">
+167:       
+168:         <header className="dashboard-header">
+169:           <div className="header-left">
+170:             <button className="menu-toggle"><Menu size={20} color="#a07d4b" /></button>
+171:             <div className="header-title-wrap">
+172:               <h2>Dashboard</h2>
+173:               <div className="breadcrumbs">
+174:               
+175:               </div>
+176:             </div>
+177:           </div>
+178: 
+179:           <div className="header-right">
+180:             <div className="search-bar">
+181:               <Search size={16} color="#c9a05b" className="search-icon" />
+182:               <input type="text" placeholder="Search products, orders..." />
+183:               <div className="search-shortcut">
+184:                <SearchIcon></SearchIcon>
+185:               </div>
+186:             </div>
+187: 
+188:             <div className="notification-icon">
+189:               <Bell size={20} color="#333" />
+190:               <span className="notification-badge">8</span>
+191:             </div>
+192: 
+193:             <div className="admin-profile">
+194:               <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100" alt="Admin" />
+195:               <div className="admin-info">
+196:                 <span className="admin-name">Admin User</span>
+197:                 <span className="admin-role">Super Admin</span>
+198:               </div>
+199:               <ChevronDown size={16} color="#888" />
+200:             </div>
+201:           </div>
+202:         </header>
+203: 
+204: 
+205: 
+206: 
+207:       
+208:         <div className="stats-grid">
+209:          
+210:           <div className="stat-card dark">
+211:             <div className="stat-top">
+212:               <div className="stat-icon gold"><span style={{ fontSize: '18px', fontWeight: 'bold' }}>₹</span></div>
+213:               <div className="stat-info">
+214:                 <span className="stat-title">Total Revenue</span>
+215:                 <h2 className="stat-value gold-text">₹8,75,420</h2>
+216:                 <div className="stat-bottom">
+217:                   <span className="stat-change positive">↑ 12.5%</span> <span className="stat-change-text">vs yesterday</span>
+218:                 </div>
+219:               </div>
+220:             </div>
+221:             <div className="stat-chart-sparkline">
+222:               <ResponsiveContainer width="100%" height="100%">
+223:                 <AreaChart data={sparklineTotalRevenue}>
+224:                   <defs>
+225:                     <linearGradient id="glowDark" x1="0" y1="0" x2="0" y2="1">
+226:                       <stop offset="5%" stopColor="#c9a05b" stopOpacity={0.8} />
+227:                       <stop offset="95%" stopColor="#c9a05b" stopOpacity={0} />
+228:                     </linearGradient>
+229:                   </defs>
+230:                   <Area type="monotone" dataKey="v" stroke="#c9a05b" strokeWidth={2} fill="url(#glowDark)" dot={{ r: 2.5, fill: '#c9a05b', strokeWidth: 0 }} />
+231:                 </AreaChart>
+232:               </ResponsiveContainer>
+233:             </div>
+234:           </div>
+235: 
+236:         
+237:           <div className="stat-card light">
+238:             <div className="stat-top">
+239:               <div className="stat-icon gold"><ShoppingBag size={18} color="#554422" /></div>
+240:               <div className="stat-info">
+241:                 <span className="stat-title">Total Orders</span>
+242:                 <h2 className="stat-value">1,245</h2>
+243:                 <div className="stat-bottom">
+244:                   <span className="stat-change positive">↑ 18</span> <span className="stat-change-text">new today</span>
+245:                 </div>
+246:               </div>
+247:             </div>
+248:             <div className="stat-chart-sparkline">
+249:               <ResponsiveContainer width="100%" height="100%">
+250:                 <AreaChart data={sparklineTotalOrders}>
+251:                   <defs>
+252:                     <linearGradient id="glowLight" x1="0" y1="0" x2="0" y2="1">
+253:                       <stop offset="5%" stopColor="#c9a05b" stopOpacity={0.5} />
+254:                       <stop offset="95%" stopColor="#c9a05b" stopOpacity={0} />
+255:                     </linearGradient>
+256:                   </defs>
+257:                   <Area type="monotone" dataKey="v" stroke="#c9a05b" strokeWidth={2} fill="url(#glowLight)" dot={{ r: 2.5, fill: '#c9a05b', strokeWidth: 0 }} />
+258:                 </AreaChart>
+259:               </ResponsiveContainer>
+260:             </div>
+261:           </div>
+262: 
+263:          
+264:           <div className="stat-card light">
+265:             <div className="stat-top">
+266:               <div className="stat-icon gold"><Users size={18} color="#554422" /></div>
+267:               <div className="stat-info">
+268:                 <span className="stat-title">Total Customers</span>
+269:                 <h2 className="stat-value">3,528</h2>
+270:                 <div className="stat-bottom">
+271:                   <span className="stat-change positive">↑ 35</span> <span className="stat-change-text">new today</span>
+272:                 </div>
+273:               </div>
+274:             </div>
+275:             <div className="stat-chart-sparkline">
+276:               <ResponsiveContainer width="100%" height="100%">
+277:                 <AreaChart data={sparklineTotalCustomers}>
+278:                   <defs>
+279:                     <linearGradient id="glowLight" x1="0" y1="0" x2="0" y2="1">
+280:                       <stop offset="5%" stopColor="#c9a05b" stopOpacity={0.5} />
+281:                       <stop offset="95%" stopColor="#c9a05b" stopOpacity={0} />
+282:                     </linearGradient>
+283:                   </defs>
+284:                   <Area type="monotone" dataKey="v" stroke="#c9a05b" strokeWidth={2} fill="url(#glowLight)" dot={{ r: 2.5, fill: '#c9a05b', strokeWidth: 0 }} />
+285:                 </AreaChart>
+286:               </ResponsiveContainer>
+287:             </div>
+288:           </div>
+289: 
+290:  
+291:           <div className="stat-card dark">
+292:             <div className="stat-top">
+293:               <div className="stat-icon gold"><Package size={18} color="#c9a05b" /></div>
+294:               <div className="stat-info">
+295:                 <span className="stat-title">Total Products</span>
+296:                 <h2 className="stat-value gold-text">560</h2>
+297:                 <div className="stat-bottom">
+298:                   <span className="stat-change negative">12</span> <span className="stat-change-text">low stock items</span>
+299:                 </div>
+300:               </div>
+301:             </div>
+302:             <div className="stat-chart-sparkline">
+303:               <ResponsiveContainer width="100%" height="100%">
+304:                 <AreaChart data={sparklineTotalProducts}>
+305:                   <defs>
+306:                     <linearGradient id="glowDark" x1="0" y1="0" x2="0" y2="1">
+307:                       <stop offset="5%" stopColor="#c9a05b" stopOpacity={0.8} />
+308:                       <stop offset="95%" stopColor="#c9a05b" stopOpacity={0} />
+309:                     </linearGradient>
+310:                   </defs>
+311:                   <Area type="monotone" dataKey="v" stroke="#c9a05b" strokeWidth={2} fill="url(#glowDark)" dot={{ r: 2.5, fill: '#c9a05b', strokeWidth: 0 }} />
+312:                 </AreaChart>
+313:               </ResponsiveContainer>
+314:             </div>
+315:           </div>
+316:         </div>
+317: 
+318:        
+319:         <div className="middle-grid">
+320:          
+321:           <div className="dashboard-card">
+322:             <div className="card-header">
+323:               <h3>Revenue Overview</h3>
+324:               <button className="time-filter">Last 7 Days <ChevronDown size={14} /></button>
+325:             </div>
+326:             <div className="card-sub-header">
+327:               <h2>₹8,75,420 <span className="stat-change positive text-sm">↑ 12.5%</span></h2>
+328:             </div>
+329:             <div className="revenue-chart-container" style={{ height: '250px', marginTop: '20px' }}>
+330:               <ResponsiveContainer width="100%" height="100%">
+331:                 <AreaChart data={revenueData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+332:                   <defs>
+333:                     <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+334:                       <stop offset="5%" stopColor="#c9a05b" stopOpacity={0.6} />
+335:                       <stop offset="95%" stopColor="#c9a05b" stopOpacity={0} />
+336:                     </linearGradient>
+337:                   </defs>
+338:                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
+339:                   <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#888' }} dy={10} />
+340:                   <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#888' }} tickFormatter={(value) => `${value === 0 ? '0' : value / 1000 + 'K'}`} />
+341:                   <RechartsTooltip cursor={{ stroke: '#e0e0e0', strokeWidth: 1, strokeDasharray: '4 4' }} />
+342:                   <Area type="monotone" dataKey="revenue" stroke="#c9a05b" strokeWidth={2} fillOpacity={1} fill="url(#colorRevenue)" dot={{ r: 4, fill: '#c9a05b', strokeWidth: 0 }} activeDot={{ r: 6, fill: '#fff', stroke: '#c9a05b', strokeWidth: 2 }} />
+343:                 </AreaChart>
+344:               </ResponsiveContainer>
+345:             </div>
+346:           </div>
+347: 
+348: 
+349:           <div className="dashboard-card">
+350:             <div className="card-header">
+351:               <h3>Top Categories</h3>
+352:               <button className="card-action">View All</button>
+353:             </div>
+354:             <div className="donut-chart-wrapper" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '16px' }}>
+355: 
+356:               <div style={{ position: 'relative', width: '160px', height: '160px' }}>
+357:                 <ResponsiveContainer width="100%" height="100%">
+358:                   <RechartsPieChart>
+359:                     <Pie
+360:                       data={topCategoriesData}
+361:                       cx="50%"
+362:                       cy="50%"
+363:                       innerRadius={50}
+364:                       outerRadius={78}
+365:                       paddingAngle={2}
+366:                       dataKey="value"
+367:                       stroke="none"
+368:                     >
+369:                       {topCategoriesData.map((entry, index) => (
+370:                         <Cell key={`cell-${index}`} fill={entry.color} />
+371:                       ))}
+372:                     </Pie>
+373:                   </RechartsPieChart>
+374:                 </ResponsiveContainer>
+375: 
+376:                 <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
+377:                   <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#222', lineHeight: '1' }}>560</span>
+378:                   <span style={{ fontSize: '10px', color: '#888', marginTop: '4px', lineHeight: '1' }}>Products</span>
+379:                 </div>
+380:               </div>
+381: 
+382:               <div className="donut-legend-list" style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%', marginTop: '24px' }}>
+383:                 {topCategoriesData.map((item, index) => (
+384:                   <div className="legend-item" key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+385:                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+386:                       <div style={{ width: '8px', height: '8px', borderRadius: '2px', backgroundColor: item.color }}></div>
+387:                       <span style={{ fontSize: '12px', color: '#444' }}>{item.name}</span>
+388:                     </div>
+389:                     <span style={{ fontSize: '12px', fontWeight: '500', color: '#222' }}>{item.value}%</span>
+390:                   </div>
+391:                 ))}
+392:               </div>
+393: 
+394:             </div>
+395:           </div>
+396: 
+397:         
+398:           <div className="dashboard-card" style={{ padding: '24px', backgroundColor: '#fcfaf5', borderRadius: '16px', border: '1px solid #f2ecdf', display: 'flex', flexDirection: 'column', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+399:             <div className="card-header" style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+400:               <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '600', color: '#1a1a1a', fontFamily: '"Playfair Display", Georgia, serif', whiteSpace: 'nowrap' }}>Low Stock Alert</h3>
+401:               <button className="card-action" style={{ display: 'flex', alignItems: 'center', color: '#555', fontSize: '12px', fontWeight: '400', background: 'none', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}>View All</button>
+402:             </div>
+403: 
+404:             <div className="low-stock-list" style={{ display: 'flex', flexDirection: 'column' }}>
+405:               {lowStockAlertData.map((item, index) => (
+406:                 <div className="low-stock-item" key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '20px', marginBottom: index !== lowStockAlertData.length - 1 ? '20px' : '0', borderBottom: index !== lowStockAlertData.length - 1 ? '1px solid #f0e8db' : 'none' }}>
+407: 
+408:                  
+409:                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: '1' }}>
+410:                     <span style={{ fontSize: '13px', fontWeight: '500', color: '#222' }}>{item.name}</span>
+411:                     <span style={{ fontSize: '11px', color: '#888' }}>Size: {item.size}</span>
+412:                   </div>
+413: 
+414:                   <div style={{ flex: '1', display: 'flex', justifyContent: 'center' }}>
+415:                     <span style={{ fontSize: '13px', color: '#444' }}>Stock: {item.stock}</span>
+416:                   </div>
+417: 
+418:                 
+419:                   <div style={{ display: 'flex', alignItems: 'center', flex: '1', justifyContent: 'flex-end' }}>
+420:                     <span style={{ fontSize: '11px', padding: '4px 10px', borderRadius: '4px', fontWeight: '500', backgroundColor: '#fcf0e3', color: '#d97b41' }}>
+421:                       Low
+422:                     </span>
+423:                   </div>
+424: 
+425:                 </div>
+426:               ))}
+427:             </div>
+428: 
+429:             <div style={{ marginTop: 'auto', paddingTop: '24px' }}>
+430:               <button style={{ background: 'none', border: 'none', color: '#b98e54', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', padding: 0 }}>
+431:                 View All Products <ArrowRight size={14} />
+432:               </button>
+433:             </div>
+434:           </div>
+435: 
+436: 
+437: 
+438:          
+439:           <div className="dashboard-card" style={{ padding: '24px' }}>
+440:             <div className="card-header" style={{ marginBottom: '20px' }}>
+441:               <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '600', color: '#222' }}>Orders Overview</h3>
+442:               <button className="card-action" style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#888', fontWeight: '500' }}>View All</button>
+443:             </div>
+444:             <div className="orders-overview-chart" style={{ width: '100%', height: '300px', marginTop: '10px' }}>
+445:               <ResponsiveContainer width="100%" height="100%">
+446:                 <BarChart data={ordersOverviewBarData} margin={{ top: 20, right: 30, left: -10, bottom: 5 }}>
+447:                   <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#666' }} axisLine={{ stroke: '#ccc' }} tickLine={false} />
+448:                   <YAxis tick={{ fontSize: 11, fill: '#666' }} axisLine={{ stroke: '#ccc' }} tickLine={false} />
+449:                   <RechartsTooltip
+450:                     formatter={(value) => [`${value} orders`, 'Orders']}
+451:                     labelStyle={{ color: '#333', fontWeight: 'bold' }}
+452:                     contentStyle={{ borderRadius: '8px', border: '1px solid #eee', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
+453:                   />
+454:                   <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+455:                     {ordersOverviewBarData.map((entry, index) => (
+456:                       <Cell key={`cell-${index}`} fill={entry.color} />
+457:                     ))}
+458:                   </Bar>
+459:                 </BarChart>
+460:               </ResponsiveContainer>
+461:             </div>
+462:           </div>
+463: 
+464: 
+465: 
+466:         
+467:           <div className="dashboard-card" style={{ padding: '24px', backgroundColor: '#fcfaf5', borderRadius: '16px', border: '1px solid #f2ecdf', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+468:             <div className="card-header" style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+469:               <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '600', color: '#1a1a1a', fontFamily: '"Playfair Display", Georgia, serif', whiteSpace: 'nowrap' }}>Top Selling Products</h3>
+470:               <button className="card-action" style={{ display: 'flex', alignItems: 'center', color: '#555', fontSize: '12px', fontWeight: '400', background: 'none', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}>View All</button>
+471:             </div>
+472:             <div className="top-selling-list" style={{ display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'space-between' }}>
+473:               {topSellingData.map((item, index) => (
+474:                 <div key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: index !== topSellingData.length - 1 ? '16px' : '0', marginBottom: index !== topSellingData.length - 1 ? '16px' : '0', borderBottom: index !== topSellingData.length - 1 ? '1px dashed #e6dec9' : 'none' }}>
+475:                   <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+476:                     <div style={{ width: '52px', height: '52px', borderRadius: '50%', overflow: 'hidden', backgroundColor: '#fff', flexShrink: 0, border: '1px solid #eadecb', padding: '2px' }}>
+477:                       <img src={item.img} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+478:                     </div>
+479:                     <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+480:                       <span style={{ fontSize: '16px', fontWeight: '500', color: '#111', fontFamily: '"Playfair Display", Georgia, serif' }}>{item.name}</span>
+481:                       <span style={{ fontSize: '13px', color: '#888', fontWeight: '400' }}>{item.sold}</span>
+482:                     </div>
+483:                   </div>
+484:                   <span style={{ fontSize: '14px', fontWeight: '500', color: '#111', letterSpacing: '0.5px' }}>{item.price}</span>
+485:                 </div>
+486:               ))}
+487:             </div>
+488:           </div>
+489: 
+490:         </div>
+491: 
+492: 
+493:         <div className="bottom-grid">
+494: 
+495:        
+496:           <div className="dashboard-card" style={{ padding: '24px' }}>
+497:             <div className="card-header" style={{ marginBottom: '24px' }}>
+498:               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+499:                 <div style={{ width: '40px', height: '40px', borderRadius: '12px', backgroundColor: '#fdf8ee', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(201,160,91,0.15)' }}>
+500:                   <ShoppingBag size={20} color="#c9a05b" />
+501:                 </div>
+502:                 <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '600', color: '#222' }}>Recent Orders</h3>
+503:               </div>
+504:               <button className="card-action" style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#c9a05b', fontWeight: '500' }}>View All <ArrowRight size={14} /></button>
+505:             </div>
+506:             <div className="recent-orders-list" style={{ display: 'flex', flexDirection: 'column' }}>
+507:               {recentOrdersData.map((order, index) => (
+508:                 <div className="recent-order-item" key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '20px', marginBottom: index !== recentOrdersData.length - 1 ? '20px' : '0', borderBottom: index !== recentOrdersData.length - 1 ? '1px solid #f0eade' : 'none' }}>
+509:                   <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+510:                     <div style={{ width: '64px', height: '64px', borderRadius: '12px', overflow: 'hidden', backgroundColor: '#f5f5f5' }}>
+511:                       <img src={order.img} alt="Product" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+512:                     </div>
+513:                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+514:                       <span style={{ fontSize: '14px', fontWeight: '600', color: '#222' }}>{order.id}</span>
+515:                       <span style={{ fontSize: '12px', color: '#888' }}>{order.date}</span>
+516:                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
+517:                         <User size={12} color="#888" />
+518:                         <span style={{ fontSize: '12px', color: '#666' }}>{order.customer}</span>
+519:                       </div>
+520:                     </div>
+521:                   </div>
+522:                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '10px' }}>
+523:                     <span style={{ fontSize: '16px', fontWeight: '700', color: '#222' }}>{order.amount}</span>
+524:                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', borderRadius: '6px', backgroundColor: order.status === 'Delivered' ? '#e8f5e9' : order.status === 'Processing' ? '#e3f2fd' : '#fff4e5' }}>
+525:                       <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: order.status === 'Delivered' ? '#4caf50' : order.status === 'Processing' ? '#2196f3' : '#ff9800' }}></div>
+526:                       <span style={{ fontSize: '12px', fontWeight: '500', color: order.status === 'Delivered' ? '#4caf50' : order.status === 'Processing' ? '#2196f3' : '#ff9800' }}>{order.status}</span>
+527:                     </div>
+528:                   </div>
+529:                 </div>
+530:               ))}
+531:             </div>
+532:             <div style={{ marginTop: 'auto', paddingTop: '24px' }}>
+533:               <button style={{ width: '100%', padding: '14px', backgroundColor: '#fdf8ee', border: 'none', borderRadius: '8px', color: '#c9a05b', fontWeight: '600', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer', fontSize: '14px' }}>
+534:                 <ShoppingBag size={16} /> View All Orders <ArrowRight size={16} style={{ marginLeft: '4px' }} />
+535:               </button>
+536:             </div>
+537:           </div>
+538: 
+539: 
+540: 
+541:          
+542:           <div className="dashboard-card" style={{ padding: '24px' }}>
+543:             <div className="card-header" style={{ marginBottom: '24px' }}>
+544:               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+545:                 <div style={{ width: '40px', height: '40px', borderRadius: '12px', backgroundColor: '#fdf8ee', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(201,160,91,0.15)' }}>
+546:                   <Star size={20} color="#c9a05b" />
+547:                 </div>
+548:                 <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '600', color: '#222' }}>Recent Reviews</h3>
+549:               </div>
+550:               <button className="card-action" style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#c9a05b', fontWeight: '500' }}>View All <ArrowRight size={14} /></button>
+551:             </div>
+552:             <div className="recent-reviews-list" style={{ display: 'flex', flexDirection: 'column' }}>
+553:               {recentReviewsData.map((review, index) => (
+554:                 <div className="review-item" key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '20px', marginBottom: index !== recentReviewsData.length - 1 ? '20px' : '0', borderBottom: index !== recentReviewsData.length - 1 ? '1px solid #f0eade' : 'none' }}>
+555:                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
+556:                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+557:                       <img src={review.avatar} alt="Reviewer" style={{ width: '40px', height: '40px', borderRadius: '50%' }} />
+558:                       <div style={{ display: 'flex', flexDirection: 'column' }}>
+559:                         <span style={{ fontSize: '14px', fontWeight: '600', color: '#222' }}>{review.author}</span>
+560:                         <span style={{ fontSize: '12px', color: '#888' }}>{review.time}</span>
+561:                       </div>
+562:                     </div>
+563:                     <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginTop: '2px' }}>
+564:                       {Array.from({ length: 5 }).map((_, i) => (
+565:                         <Star key={i} size={14} fill={i < review.rating ? "#ffc107" : "none"} color={i < review.rating ? "#ffc107" : "#e0e0e0"} />
+566:                       ))}
+567:                     </div>
+568:                     <p style={{ margin: 0, fontSize: '13px', color: '#222', fontStyle: 'italic' }}>{review.text}</p>
+569:                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
+570:                       <ThumbsUp size={14} color="#888" />
+571:                       <span style={{ fontSize: '12px', color: '#666' }}>Helpful ({review.helpful})</span>
+572:                     </div>
+573:                   </div>
+574:                   <div style={{ width: '64px', height: '64px', borderRadius: '12px', overflow: 'hidden', backgroundColor: '#f5f5f5', marginLeft: '16px' }}>
+575:                     <img src={review.productImg} alt="Product" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+576:                   </div>
+577:                 </div>
+578:               ))}
+579:             </div>
+580:             <div style={{ marginTop: 'auto', paddingTop: '24px' }}>
+581:               <button style={{ width: '100%', padding: '14px', backgroundColor: '#fdf8ee', border: 'none', borderRadius: '8px', color: '#c9a05b', fontWeight: '600', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer', fontSize: '14px' }}>
+582:                 <Star size={16} /> View All Reviews <ArrowRight size={16} style={{ marginLeft: '4px' }} />
+583:               </button>
+584:             </div>
+585:           </div>
+586:         </div>
+587: 
+588:       
+589:         <div className="footer-grid">
+590:          
+591:           <div className="dashboard-card">
+592:             <div className="card-header">
+593:               <h3>Notifications</h3>
+594:               <button className="card-action">View All</button>
+595:             </div>
+596:             <div className="notifications-list" style={{ marginTop: '10px' }}>
+597:               {notificationsData.map((notif, i) => (
+598:                 <div className="notif-item" key={i}>
+599:                   <div className={`notif-dot ${notif.dot}`}></div>
+600:                   <div className="notif-content">
+601:                     <p className="notif-text">{notif.text}</p>
+602:                   </div>
+603:                   <span className="notif-time">{notif.time}</span>
+604:                 </div>
+605:               ))}
+606:             </div>
+607:           </div>
+608: 
+609:           
+610:           <div className="dashboard-card">
+611:             <div className="card-header">
+612:               <h3>Quick Actions</h3>
+613:             </div>
+614:             <div className="quick-actions-grid">
+615:               <button className="action-btn">
+616:                 <div className="action-icon-wrap"><FilePlus size={20} /></div>
+617:                 <span>Add Product</span>
+618:               </button>
+619:               <button className="action-btn">
+620:                 <div className="action-icon-wrap"><Grid size={20} /></div>
+621:                 <span>Add Category</span>
+622:               </button>
+623:               <button className="action-btn">
+624:                 <div className="action-icon-wrap"><span style={{ fontSize: '20px', fontWeight: 'bold' }}>$</span></div>
+625:                 <span>Create Coupon</span>
+626:               </button>
+627:               <button className="action-btn">
+628:                 <div className="action-icon-wrap"><Upload size={20} /></div>
+629:                 <span>Upload Banner</span>
+630:               </button>
+631:               <button className="action-btn">
+632:                 <div className="action-icon-wrap"><Send size={20} /></div>
+633:                 <span>Send Notification</span>
+634:               </button>
+635:             </div>
+636:           </div>
+637: 
+638:           
+639:           <div className="dashboard-card">
+640:             <div className="card-header">
+641:               <h3>Calendar</h3>
+642:               <button className="card-action">View All</button>
+643:             </div>
+644:             <div className="calendar-widget" style={{ marginTop: '10px' }}>
+645:               {calendarData.map((item, i) => (
+646:                 <div className="cal-item" key={i}>
+647:                   <span className="cal-date">{item.date}</span>
+648:                   <span className="cal-event">{item.event}</span>
+649:                 </div>
+650:               ))}
+651:             </div>
+652:             <div style={{ position: 'absolute', right: '16px', bottom: '16px' }}>
+653:               <div style={{ background: '#fcf6eb', borderRadius: '8px', padding: '12px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', border: '1px solid #ebd59e' }}>
+654:                 <span style={{ fontSize: '10px', color: '#8f7142' }}>MAY</span>
+655:                 <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#1a1a1a' }}>24</span>
+656:               </div>
+657:             </div>
+658:           </div>
+659:         </div>
+660: 
+661:       </main>
+662:     </div>
+663:   );
+664: };
+665: 
+666: const StarIcon = ({ filled }) => (
+667:   <svg width="12" height="12" viewBox="0 0 24 24" fill={filled ? "#c9a05b" : "none"} stroke={filled ? "#c9a05b" : "#ddd"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+668:     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+669:   </svg>
+670: )
+671: 
+672: export default Dashboard;
+673: 
+The above content shows the entire, complete file contents of the requested file.

@@ -22,7 +22,7 @@ const MyOrders = () => {
   const initialOrders = [
     {
       id: 'ORD102455',
-      date: '29 Jul, 2025',
+      date: '10 Aug, 2026',
       total: '1,468',
       status: 'Delivered',
       statusColor: 'green',
@@ -31,11 +31,11 @@ const MyOrders = () => {
       size: 'Free Size',
       color: 'Maroon',
       qty: 1,
-      deliveryText: 'Delivered on 02 Aug, 2025'
+      deliveryText: 'Delivered on 11 Aug, 2026'
     },
     {
       id: 'ORD10221',
-      date: '25 Jul, 2025',
+      date: '08 Aug, 2026',
       total: '2,349',
       status: 'Shipped',
       statusColor: 'blue',
@@ -43,11 +43,11 @@ const MyOrders = () => {
       title: 'PU Leather Tote Bag',
       color: 'Tan Brown',
       qty: 1,
-      deliveryText: 'Expected delivery: 04 Aug, 2025'
+      deliveryText: 'Expected delivery: 12 Aug, 2026'
     },
     {
       id: 'ORD101987',
-      date: '21 Jul, 2025',
+      date: '05 Aug, 2026',
       total: '999',
       status: 'Processing',
       statusColor: 'purple',
@@ -59,7 +59,7 @@ const MyOrders = () => {
     },
     {
       id: 'ORD101986',
-      date: '20 Jul, 2025',
+      date: '02 Aug, 2026',
       total: '1,299',
       status: 'Shipped',
       statusColor: 'blue',
@@ -68,7 +68,7 @@ const MyOrders = () => {
       size: 'M',
       color: 'Blue',
       qty: 2,
-      deliveryText: 'Expected delivery: 05 Aug, 2025'
+      deliveryText: 'Expected delivery: 10 Aug, 2026'
     },
     {
       id: 'ORD101985',
@@ -189,7 +189,6 @@ const MyOrders = () => {
     { name: 'Custom Range', count: null, icon: <Calendar size={18} /> }
   ];
 
-  // Filtering & Sorting Logic
   let filteredOrders = initialOrders.filter(order => {
     const searchLower = searchQuery.toLowerCase();
     const matchesSearch = order.title.toLowerCase().includes(searchLower) ||
@@ -198,7 +197,29 @@ const MyOrders = () => {
     // Status filter
     const matchesStatus = activeStatus === 'All Orders' || order.status === activeStatus;
 
-    return matchesSearch && matchesStatus;
+    // Time filter
+    let matchesTime = true;
+    if (activeTime !== 'All Time') {
+      const orderDate = new Date(order.date);
+      const today = new Date();
+      // Reset times to start of day for accurate day differences
+      today.setHours(0, 0, 0, 0);
+      const oDate = new Date(orderDate);
+      oDate.setHours(0, 0, 0, 0);
+      
+      const diffTime = today.getTime() - oDate.getTime();
+      const diffDays = diffTime / (1000 * 3600 * 24);
+
+      if (activeTime === 'Today') {
+        matchesTime = diffDays === 0;
+      } else if (activeTime === 'Last 7 Days') {
+        matchesTime = diffDays >= 0 && diffDays <= 7;
+      } else if (activeTime === 'Last 30 Days') {
+        matchesTime = diffDays >= 0 && diffDays <= 30;
+      }
+    }
+
+    return matchesSearch && matchesStatus && matchesTime;
   });
 
   filteredOrders.sort((a, b) => {

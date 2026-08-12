@@ -1,0 +1,78 @@
+Created At: 2026-08-06T06:50:21Z
+Completed At: 2026-08-06T06:50:21Z
+File Path: `file:///d:/n/E-commrece-frontend/src/pages/admin/Dashboard.jsx`
+Total Lines: 672
+Total Bytes: 39196
+Showing lines 416 to 485
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+416:             <div className="low-stock-list" style={{ display: 'flex', flexDirection: 'column' }}>
+417:               {lowStockAlertData.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase())).map((item, index) => (
+418:                 <div className="low-stock-item" key={index} style={{ display: 'flex', alignItems: 'center', padding: '16px 0', borderBottom: index < 2 ? '1px solid #f0f0f0' : 'none' }}>
+419:                   <div style={{ flexShrink: 0, marginRight: '16px' }}>
+420:                     <div style={{ width: '72px', height: '72px', borderRadius: '12px', overflow: 'hidden', backgroundColor: '#f5f5f5' }}>
+421:                       <img src={item.img} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+422:                     </div>
+423:                   </div>
+424:                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: '1', minWidth: 0 }}>
+425:                     <span style={{ fontSize: '16px', fontWeight: '600', color: '#111', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.name}</span>
+426:                     <span style={{ fontSize: '13px', color: '#888' }}>Size: {item.size}</span>
+427:                     <div style={{ width: '70%', height: '6px', backgroundColor: '#feece6', borderRadius: '3px', marginTop: '6px', overflow: 'hidden' }}>
+428:                       <div style={{ width: item.stock === 1 ? '10%' : item.stock === 2 ? '20%' : '30%', height: '100%', backgroundColor: '#ef5350' }}></div>
+429:                     </div>
+430:                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '6px' }}>
+431:                       <AlertTriangle size={14} color="#e53935" />
+432:                       <span style={{ fontSize: '13px', color: '#555' }}>Only <span style={{ color: '#e53935', fontWeight: '600' }}>{item.stock}</span> left</span>
+433:                     </div>
+434:                   </div>
+435:                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '12px' }}>
+436:                     <span style={{ fontSize: '14px', color: '#555' }}>Stock: <span style={{ fontWeight: '600', color: '#111' }}>{item.stock}</span></span>
+437:                     <span style={{ fontSize: '12px', padding: '4px 12px', borderRadius: '8px', fontWeight: '600', backgroundColor: '#feece6', color: '#e53935' }}>
+438:                       Low
+439:                     </span>
+440:                   </div>
+441:                 </div>
+442:               ))}
+443:             </div>
+444:             
+445:             <div style={{ marginTop: 'auto', paddingTop: '16px' }}>
+446:               <button style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px', backgroundColor: '#fdf5ef', border: 'none', borderRadius: '12px', color: '#d85c35', fontSize: '15px', fontWeight: '600', cursor: 'pointer' }}>
+447:                 <ShoppingBag size={18} /> View All Products <ArrowRight size={16} />
+448:               </button>
+449:             </div>
+450:           </div>
+451: 
+452: 
+453: 
+454: 
+455:           <div className="dashboard-card" style={{ padding: '24px 24px 0 24px', backgroundColor: '#fdfaf5', borderRadius: '24px', border: '1px solid #f2ecdf', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', height: '100%' }}>
+456:             <div className="card-header" style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+457:               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+458:                 <div style={{ width: '48px', height: '48px', borderRadius: '50%', border: '1px solid #f0e6d2', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#fcf8f0', flexShrink: 0 }}>
+459:                   <ShoppingBag size={20} color="#b78644" />
+460:                 </div>
+461:                 <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600', color: '#1a1a1a', whiteSpace: 'nowrap' }}>Orders <span style={{ color: '#b78644' }}>Overview</span></h3>
+462:               </div>
+463:             </div>
+464:             <div className="orders-overview-chart" style={{ width: '100%', flex: '1', minHeight: '260px', marginTop: '10px' }}>
+465:               <ResponsiveContainer width="100%" height="100%">
+466:                 <BarChart data={ordersOverviewBarData} margin={{ top: 20, right: 30, left: -10, bottom: 0 }}>
+467:                   <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#666' }} axisLine={{ stroke: '#ccc' }} tickLine={false} />
+468:                   <YAxis tick={{ fontSize: 11, fill: '#666' }} axisLine={{ stroke: '#ccc' }} tickLine={false} />
+469:                   <RechartsTooltip
+470:                     formatter={(value) => [`${value} orders`, 'Orders']}
+471:                     labelStyle={{ color: '#333', fontWeight: 'bold' }}
+472:                     contentStyle={{ borderRadius: '8px', border: '1px solid #eee', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
+473:                   />
+474:                   <Bar dataKey="count" radius={[4, 4, 0, 0]} barSize={32}>
+475:                     {ordersOverviewBarData.map((entry, index) => (
+476:                       <Cell key={`cell-${index}`} fill={entry.color} />
+477:                     ))}
+478:                   </Bar>
+479:                 </BarChart>
+480:               </ResponsiveContainer>
+481:             </div>
+482:           </div>
+483: 
+484: 
+485: 
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.
