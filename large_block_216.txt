@@ -1,0 +1,109 @@
+Created At: 2026-08-06T05:12:24Z
+Completed At: 2026-08-06T05:12:24Z
+File Path: `file:///d:/n/E-commrece-frontend/src/pages/admin/Dashboard.jsx`
+Total Lines: 681
+Total Bytes: 39794
+Showing lines 400 to 500
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+400:               </div>
+401: 
+402:             </div>
+403:           </div>
+404: 
+405: 
+406:           <div className="dashboard-card" style={{ padding: '24px', backgroundColor: '#fcfaf5', borderRadius: '16px', border: '1px solid #f2ecdf', display: 'flex', flexDirection: 'column', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+407:             <div className="card-header" style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+408:               <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '600', color: '#1a1a1a', fontFamily: '"Playfair Display", Georgia, serif', whiteSpace: 'nowrap' }}>Low Stock Alert</h3>
+409:               <button className="card-action" style={{ display: 'flex', alignItems: 'center', color: '#555', fontSize: '12px', fontWeight: '400', background: 'none', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}>View All</button>
+410:             </div>
+411: 
+412:             <div className="low-stock-list" style={{ display: 'flex', flexDirection: 'column' }}>
+413:               {lowStockAlertData.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase())).map((item, index) => (
+414:                 <div className="low-stock-item" key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '20px', marginBottom: index !== lowStockAlertData.length - 1 ? '20px' : '0', borderBottom: index !== lowStockAlertData.length - 1 ? '1px solid #f0e8db' : 'none' }}>
+415: 
+416: 
+417:                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: '1' }}>
+418:                     <span style={{ fontSize: '13px', fontWeight: '500', color: '#222' }}>{item.name}</span>
+419:                     <span style={{ fontSize: '11px', color: '#888' }}>Size: {item.size}</span>
+420:                   </div>
+421: 
+422:                   <div style={{ flex: '1', display: 'flex', justifyContent: 'center' }}>
+423:                     <span style={{ fontSize: '13px', color: '#444' }}>Stock: {item.stock}</span>
+424:                   </div>
+425: 
+426: 
+427:                   <div style={{ display: 'flex', alignItems: 'center', flex: '1', justifyContent: 'flex-end' }}>
+428:                     <span style={{ fontSize: '11px', padding: '4px 10px', borderRadius: '4px', fontWeight: '500', backgroundColor: '#fcf0e3', color: '#d97b41' }}>
+429:                       Low
+430:                     </span>
+431:                   </div>
+432: 
+433:                 </div>
+434:               ))}
+435:             </div>
+436: 
+437:             <div style={{ marginTop: 'auto', paddingTop: '24px' }}>
+438:               <button style={{ background: 'none', border: 'none', color: '#b98e54', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', padding: 0 }}>
+439:                 View All Products <ArrowRight size={14} />
+440:               </button>
+441:             </div>
+442:           </div>
+443: 
+444: 
+445: 
+446: 
+447:           <div className="dashboard-card" style={{ padding: '24px' }}>
+448:             <div className="card-header" style={{ marginBottom: '20px' }}>
+449:               <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '600', color: '#222' }}>Orders Overview</h3>
+450:               <button className="card-action" style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#888', fontWeight: '500' }}>View All</button>
+451:             </div>
+452:             <div className="orders-overview-chart" style={{ width: '100%', height: '300px', marginTop: '10px' }}>
+453:               <ResponsiveContainer width="100%" height="100%">
+454:                 <BarChart data={ordersOverviewBarData} margin={{ top: 20, right: 30, left: -10, bottom: 5 }}>
+455:                   <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#666' }} axisLine={{ stroke: '#ccc' }} tickLine={false} />
+456:                   <YAxis tick={{ fontSize: 11, fill: '#666' }} axisLine={{ stroke: '#ccc' }} tickLine={false} />
+457:                   <RechartsTooltip
+458:                     formatter={(value) => [`${value} orders`, 'Orders']}
+459:                     labelStyle={{ color: '#333', fontWeight: 'bold' }}
+460:                     contentStyle={{ borderRadius: '8px', border: '1px solid #eee', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
+461:                   />
+462:                   <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+463:                     {ordersOverviewBarData.map((entry, index) => (
+464:                       <Cell key={`cell-${index}`} fill={entry.color} />
+465:                     ))}
+466:                   </Bar>
+467:                 </BarChart>
+468:               </ResponsiveContainer>
+469:             </div>
+470:           </div>
+471: 
+472: 
+473: 
+474: 
+475:           <div className="dashboard-card" style={{ padding: '24px', backgroundColor: '#fcfaf5', borderRadius: '16px', border: '1px solid #f2ecdf', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+476:             <div className="card-header" style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+477:               <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '600', color: '#1a1a1a', fontFamily: '"Playfair Display", Georgia, serif', whiteSpace: 'nowrap' }}>Top Selling Products</h3>
+478:               <button className="card-action" style={{ display: 'flex', alignItems: 'center', color: '#555', fontSize: '12px', fontWeight: '400', background: 'none', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}>View All</button>
+479:             </div>
+480:             <div className="top-selling-list" style={{ display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'space-between' }}>
+481:               {topSellingData.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase())).map((item, index) => (
+482:                 <div key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: index !== topSellingData.length - 1 ? '16px' : '0', marginBottom: index !== topSellingData.length - 1 ? '16px' : '0', borderBottom: index !== topSellingData.length - 1 ? '1px dashed #e6dec9' : 'none' }}>
+483:                   <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+484:                     <div style={{ width: '52px', height: '52px', borderRadius: '50%', overflow: 'hidden', backgroundColor: '#fff', flexShrink: 0, border: '1px solid #eadecb', padding: '2px' }}>
+485:                       <img src={item.img} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+486:                     </div>
+487:                     <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+488:                       <span style={{ fontSize: '16px', fontWeight: '500', color: '#111', fontFamily: '"Playfair Display", Georgia, serif' }}>{item.name}</span>
+489:                       <span style={{ fontSize: '13px', color: '#888', fontWeight: '400' }}>{item.sold}</span>
+490:                     </div>
+491:                   </div>
+492:                   <span style={{ fontSize: '14px', fontWeight: '500', color: '#111', letterSpacing: '0.5px' }}>{item.price}</span>
+493:                 </div>
+494:               ))}
+495:             </div>
+496:           </div>
+497: 
+498:         </div>
+499: 
+500: 
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

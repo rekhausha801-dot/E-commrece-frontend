@@ -1,0 +1,107 @@
+Created At: 2026-08-06T04:39:41Z
+Completed At: 2026-08-06T04:39:44Z
+The following changes were made by the multi_replace_file_content tool to: d:\n\E-commrece-frontend\src\pages\admin\Dashboard.jsx. If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission.
+[diff_block_start]
+@@ -82,10 +82,10 @@
+ ];
+ 
+ const topSellingData = [
+-  { name: 'Linen Shirt', sold: 256, price: '₹2,45,000', img: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=100' },
+-  { name: 'Summer Dress', sold: 182, price: '₹1,86,000', img: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=100' },
+-  { name: 'Sneakers', sold: 140, price: '₹1,45,000', img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100' },
+-  { name: 'Handbag', sold: 112, price: '₹98,000', img: 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?w=100' }
++  { name: 'Linen Shirt', sold: 256, price: '₹2,45,000', img: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=100', rating: 4.8, reviews: 128, increase: 18.5 },
++  { name: 'Summer Dress', sold: 182, price: '₹1,86,000', img: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=100', rating: 4.7, reviews: 96, increase: 12.3 },
++  { name: 'Sneakers', sold: 140, price: '₹1,45,000', img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100', rating: 4.6, reviews: 87, increase: 9.8 },
++  { name: 'Handbag', sold: 112, price: '₹98,000', img: 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?w=100', rating: 4.9, reviews: 78, increase: 7.6 }
+ ];
+ 
+ const sunburstRing1 = [{ name: 'R1', value: 100, fill: '#2e7d32' }];
+@@ -471,26 +471,65 @@
+ 
+ 
+ 
+-          <div className="dashboard-card" style={{ padding: '24px', backgroundColor: '#fcfaf5', borderRadius: '16px', border: '1px solid #f2ecdf', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+-            <div className="card-header" style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+-              <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '600', color: '#1a1a1a', fontFamily: '"Playfair Display", Georgia, serif', whiteSpace: 'nowrap' }}>Top Selling Products</h3>
+-              <button className="card-action" style={{ display: 'flex', alignItems: 'center', color: '#555', fontSize: '12px', fontWeight: '400', background: 'none', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}>View All</button>
+-            </div>
+-            <div className="top-selling-list" style={{ display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'space-between' }}>
++          <div className="dashboard-card" style={{ padding: '24px', backgroundColor: '#fdfaf5', borderRadius: '16px', border: '1px solid #f2ecdf', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
++            <div className="card-header" style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
++              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
++                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#fcf6eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
++                  <ShoppingBag size={22} color="#b48c4d" />
++                </div>
++                <h3 style={{ margin: 0, fontSize: '20px', fontWeight: '600', color: '#1a1a1a', fontFamily: '"Inter", sans-serif' }}>Top Selling Products</h3>
++              </div>
++              <button className="card-action" style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#b48c4d', fontSize: '14px', fontWeight: '600', background: 'none', border: 'none', cursor: 'pointer' }}>
++                View All <ArrowRight size={16} />
++              </button>
++            </div>
++            
++            <div className="top-selling-list" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+               {topSellingData.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase())).map((item, index) => (
+-                <div key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: index !== topSellingData.length - 1 ? '16px' : '0', marginBottom: index !== topSellingData.length - 1 ? '16px' : '0', borderBottom: index !== topSellingData.length - 1 ? '1px dashed #e6dec9' : 'none' }}>
+-                  <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+-                    <div style={{ width: '52px', height: '52px', borderRadius: '50%', overflow: 'hidden', backgroundColor: '#fff', flexShrink: 0, border: '1px solid #eadecb', padding: '2px' }}>
+-                      <img src={item.img} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+-                    </div>
+-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+-                      <span style={{ fontSize: '16px', fontWeight: '500', color: '#111', fontFamily: '"Playfair Display", Georgia, serif' }}>{item.name}</span>
+-                      <span style={{ fontSize: '13px', color: '#888', fontWeight: '400' }}>{item.sold}</span>
+-                    </div>
+-                  </div>
+-                  <span style={{ fontSize: '14px', fontWeight: '500', color: '#111', letterSpacing: '0.5px' }}>{item.price}</span>
+-                </div>
+-              ))}
++                <div key={index} style={{ backgroundColor: '#ffffff', borderRadius: '16px', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
++                  <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
++                    <div style={{ width: '80px', height: '80px', borderRadius: '12px', overflow: 'hidden', backgroundColor: '#f5f5f5', flexShrink: 0 }}>
++                      <img src={item.img} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
++                    </div>
++                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
++                      <span style={{ fontSize: '17px', fontWeight: '600', color: '#111' }}>{item.name}</span>
++                      <span style={{ fontSize: '12px', color: '#8b6f4e', backgroundColor: '#fcf6eb', padding: '4px 10px', borderRadius: '16px', display: 'inline-block', width: 'fit-content', fontWeight: '500' }}>{item.sold} sold</span>
++                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
++                        <Star size={14} fill="#ffc107" color="#ffc107" />
++                        <span style={{ fontSize: '13px', fontWeight: '600', color: '#333' }}>{item.rating}</span>
++                        <span style={{ fontSize: '13px', color: '#888' }}>({item.reviews} reviews)</span>
++                      </div>
++                    </div>
++                  </div>
++                  
++                  <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
++                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
++                      <span style={{ fontSize: '18px', fontWeight: '600', color: '#111' }}>{item.price}</span>
++                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#4caf50' }}>
++                        <TrendingUp size={14} />
++                        <span style={{ fontSize: '13px', fontWeight: '600' }}>{item.increase}%</span>
++                      </div>
++                    </div>
++                    <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#fcf6eb', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#b48c4d', border: '1px solid #f2ecdf' }}>
++                      <BarChart2 size={18} />
++                    </div>
++                  </div>
++                </div>
++              ))}
++            </div>
++
++            <div style={{ marginTop: '24px', backgroundColor: '#fcf6eb', borderRadius: '12px', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
++              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
++                <Crown size={24} color="#b48c4d" />
++                <span style={{ fontSize: '14px', color: '#555', fontWeight: '500' }}>Total Revenue</span>
++              </div>
++              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
++                <span style={{ fontSize: '18px', fontWeight: '600', color: '#b48c4d' }}>₹6,74,000</span>
++                <div style={{ backgroundColor: '#e8f5e9', color: '#4caf50', padding: '4px 10px', borderRadius: '8px', fontSize: '12px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}>
++                  <TrendingUp size={12} />
++                  <span>15.7%</span>
++                </div>
++              </div>
+             </div>
+           </div>
+ 
+[diff_block_end]
+
+Please note that the above snippet only shows the MODIFIED lines from the last change. It shows up to 3 lines of unchanged lines before and after the modified lines. The actual file contents may have many more lines not shown.

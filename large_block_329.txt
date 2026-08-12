@@ -1,0 +1,84 @@
+Created At: 2026-08-06T05:30:59Z
+Completed At: 2026-08-06T05:31:02Z
+The following changes were made by the multi_replace_file_content tool to: d:\n\E-commrece-frontend\src\pages\admin\Dashboard.jsx. If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission.
+[diff_block_start]
+@@ -112,13 +112,11 @@
+ }));
+ 
+ const ordersOverviewBarData = [
+-  { name: 'May 18', count: 48, color: '#dca560' },
+-  { name: 'May 19', count: 38, color: '#efdcb3' },
+-  { name: 'May 20', count: 77, color: '#efdcb3' },
+-  { name: 'May 21', count: 62, color: '#efdcb3' },
+-  { name: 'May 22', count: 120, color: '#dca560' },
+-  { name: 'May 23', count: 91, color: '#efdcb3' },
+-  { name: 'May 24', count: 79, color: '#efdcb3' },
++  { name: 'Pending', count: 52, color: '#8c673d' },
++  { name: 'Processing', count: 28, color: '#1f1f1f' },
++  { name: 'Shipped', count: 36, color: '#dfbc88' },
++  { name: 'Delivered', count: 105, color: '#b98e54' },
++  { name: 'Cancelled', count: 25, color: '#eedda8' },
+ ];
+ 
+ const Dashboard = () => {
+@@ -439,44 +439,21 @@
+ 
+ 
+ 
+-          <div className="dashboard-card" style={{ padding: '24px', backgroundColor: '#fdfaf5', borderRadius: '24px', border: '1px solid #f2ecdf', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+-            <div className="card-header" style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+-                <div style={{ width: '48px', height: '48px', borderRadius: '50%', border: '1px solid #f0e6d2', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#fcf8f0', flexShrink: 0 }}>
+-                  <ShoppingBag size={20} color="#b78644" />
+-                </div>
+-                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600', color: '#1a1a1a', whiteSpace: 'nowrap' }}>Orders Overview</h3>
+-              </div>
+-            </div>
+-
+-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+-              <div>
+-                <div style={{ fontSize: '14px', color: '#444', marginBottom: '8px', fontWeight: '500' }}>Total Orders</div>
+-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+-                  <span style={{ fontSize: '32px', fontWeight: '700', color: '#111', lineHeight: 1 }}>1,245</span>
+-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+-                    <div style={{ color: '#4caf50', fontSize: '12px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '2px' }}>
+-                      <TrendingUp size={12} /> 18.5%
+-                    </div>
+-                    <span style={{ fontSize: '11px', color: '#888' }}>vs last 7 days</span>
+-                  </div>
+-                </div>
+-              </div>
+-              <div style={{ padding: '6px 12px', border: '1px solid #eadecb', borderRadius: '8px', fontSize: '13px', color: '#111', display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: '#fff', cursor: 'pointer' }}>
+-                Last 7 Days <ChevronDown size={14} color="#888" />
+-              </div>
+-            </div>
+-
+-            <div className="orders-overview-chart" style={{ width: '100%', height: '240px' }}>
+-              <ResponsiveContainer width="100%" height="100%">
+-                <BarChart data={ordersOverviewBarData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+-                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#888' }} axisLine={false} tickLine={false} />
+-                  <YAxis tick={{ fontSize: 11, fill: '#888' }} axisLine={false} tickLine={false} tickCount={5} domain={[0, 120]} />
++          <div className="dashboard-card" style={{ padding: '24px' }}>
++            <div className="card-header" style={{ marginBottom: '20px' }}>
++              <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '600', color: '#222' }}>Orders Overview</h3>
++            </div>
++            <div className="orders-overview-chart" style={{ width: '100%', height: '300px', marginTop: '10px' }}>
++              <ResponsiveContainer width="100%" height="100%">
++                <BarChart data={ordersOverviewBarData} margin={{ top: 20, right: 30, left: -10, bottom: 5 }}>
++                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#666' }} axisLine={{ stroke: '#ccc' }} tickLine={false} />
++                  <YAxis tick={{ fontSize: 11, fill: '#666' }} axisLine={{ stroke: '#ccc' }} tickLine={false} />
+                   <RechartsTooltip
+-                    cursor={{ fill: 'rgba(0,0,0,0.02)' }}
+-                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}
++                    formatter={(value) => [`${value} orders`, 'Orders']}
++                    labelStyle={{ color: '#333', fontWeight: 'bold' }}
++                    contentStyle={{ borderRadius: '8px', border: '1px solid #eee', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
+                   />
+-                  <Bar dataKey="count" radius={[4, 4, 0, 0]} barSize={24}>
++                  <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+                     {ordersOverviewBarData.map((entry, index) => (
+                       <Cell key={`cell-${index}`} fill={entry.color} />
+                     ))}
+[diff_block_end]
+
+Please note that the above snippet only shows the MODIFIED lines from the last change. It shows up to 3 lines of unchanged lines before and after the modified lines. The actual file contents may have many more lines not shown.

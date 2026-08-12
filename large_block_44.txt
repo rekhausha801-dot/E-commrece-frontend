@@ -1,0 +1,149 @@
+Created At: 2026-08-06T04:35:24Z
+Completed At: 2026-08-06T04:35:25Z
+File Path: `file:///d:/n/E-commrece-frontend/src/pages/admin/Dashboard.jsx`
+Total Lines: 681
+Total Bytes: 39979
+Showing lines 460 to 600
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+460:                     contentStyle={{ borderRadius: '8px', border: '1px solid #eee', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
+461:                   />
+462:                   <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+463:                     {ordersOverviewBarData.map((entry, index) => (
+464:                       <Cell key={`cell-${index}`} fill={entry.color} />
+465:                     ))}
+466:                   </Bar>
+467:                 </BarChart>
+468:               </ResponsiveContainer>
+469:             </div>
+470:           </div>
+471: 
+472: 
+473: 
+474:         
+475:           <div className="dashboard-card" style={{ padding: '24px', backgroundColor: '#fcfaf5', borderRadius: '16px', border: '1px solid #f2ecdf', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+476:             <div className="card-header" style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+477:               <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '600', color: '#1a1a1a', fontFamily: '"Playfair Display", Georgia, serif', whiteSpace: 'nowrap' }}>Top Selling Products</h3>
+478:               <button className="card-action" style={{ display: 'flex', alignItems: 'center', color: '#555', fontSize: '12px', fontWeight: '400', background: 'none', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}>View All</button>
+479:             </div>
+480:             <div className="top-selling-list" style={{ display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'space-between' }}>
+481:               {topSellingData.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase())).map((item, index) => (
+482:                 <div key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: index !== topSellingData.length - 1 ? '16px' : '0', marginBottom: index !== topSellingData.length - 1 ? '16px' : '0', borderBottom: index !== topSellingData.length - 1 ? '1px dashed #e6dec9' : 'none' }}>
+483:                   <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+484:                     <div style={{ width: '52px', height: '52px', borderRadius: '50%', overflow: 'hidden', backgroundColor: '#fff', flexShrink: 0, border: '1px solid #eadecb', padding: '2px' }}>
+485:                       <img src={item.img} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+486:                     </div>
+487:                     <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+488:                       <span style={{ fontSize: '16px', fontWeight: '500', color: '#111', fontFamily: '"Playfair Display", Georgia, serif' }}>{item.name}</span>
+489:                       <span style={{ fontSize: '13px', color: '#888', fontWeight: '400' }}>{item.sold}</span>
+490:                     </div>
+491:                   </div>
+492:                   <span style={{ fontSize: '14px', fontWeight: '500', color: '#111', letterSpacing: '0.5px' }}>{item.price}</span>
+493:                 </div>
+494:               ))}
+495:             </div>
+496:           </div>
+497: 
+498:         </div>
+499: 
+500: 
+501:         <div className="bottom-grid">
+502: 
+503:        
+504:           <div className="dashboard-card" style={{ padding: '24px' }}>
+505:             <div className="card-header" style={{ marginBottom: '24px' }}>
+506:               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+507:                 <div style={{ width: '40px', height: '40px', borderRadius: '12px', backgroundColor: '#fdf8ee', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(201,160,91,0.15)' }}>
+508:                   <ShoppingBag size={20} color="#c9a05b" />
+509:                 </div>
+510:                 <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '600', color: '#222' }}>Recent Orders</h3>
+511:               </div>
+512:               <button className="card-action" style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#c9a05b', fontWeight: '500' }}>View All <ArrowRight size={14} /></button>
+513:             </div>
+514:             <div className="recent-orders-list" style={{ display: 'flex', flexDirection: 'column' }}>
+515:               {recentOrdersData.filter(order => order.id.toLowerCase().includes(searchQuery.toLowerCase()) || order.customer.toLowerCase().includes(searchQuery.toLowerCase())).map((order, index) => (
+516:                 <div className="recent-order-item" key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '20px', marginBottom: index !== recentOrdersData.length - 1 ? '20px' : '0', borderBottom: index !== recentOrdersData.length - 1 ? '1px solid #f0eade' : 'none' }}>
+517:                   <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+518:                     <div style={{ width: '64px', height: '64px', borderRadius: '12px', overflow: 'hidden', backgroundColor: '#f5f5f5' }}>
+519:                       <img src={order.img} alt="Product" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+520:                     </div>
+521:                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+522:                       <span style={{ fontSize: '14px', fontWeight: '600', color: '#222' }}>{order.id}</span>
+523:                       <span style={{ fontSize: '12px', color: '#888' }}>{order.date}</span>
+524:                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
+525:                         <User size={12} color="#888" />
+526:                         <span style={{ fontSize: '12px', color: '#666' }}>{order.customer}</span>
+527:                       </div>
+528:                     </div>
+529:                   </div>
+530:                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '10px' }}>
+531:                     <span style={{ fontSize: '16px', fontWeight: '700', color: '#222' }}>{order.amount}</span>
+532:                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', borderRadius: '6px', backgroundColor: order.status === 'Delivered' ? '#e8f5e9' : order.status === 'Processing' ? '#e3f2fd' : '#fff4e5' }}>
+533:                       <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: order.status === 'Delivered' ? '#4caf50' : order.status === 'Processing' ? '#2196f3' : '#ff9800' }}></div>
+534:                       <span style={{ fontSize: '12px', fontWeight: '500', color: order.status === 'Delivered' ? '#4caf50' : order.status === 'Processing' ? '#2196f3' : '#ff9800' }}>{order.status}</span>
+535:                     </div>
+536:                   </div>
+537:                 </div>
+538:               ))}
+539:             </div>
+540:             <div style={{ marginTop: 'auto', paddingTop: '24px' }}>
+541:               <button style={{ width: '100%', padding: '14px', backgroundColor: '#fdf8ee', border: 'none', borderRadius: '8px', color: '#c9a05b', fontWeight: '600', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer', fontSize: '14px' }}>
+542:                 <ShoppingBag size={16} /> View All Orders <ArrowRight size={16} style={{ marginLeft: '4px' }} />
+543:               </button>
+544:             </div>
+545:           </div>
+546: 
+547: 
+548: 
+549:          
+550:           <div className="dashboard-card" style={{ padding: '24px' }}>
+551:             <div className="card-header" style={{ marginBottom: '24px' }}>
+552:               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+553:                 <div style={{ width: '40px', height: '40px', borderRadius: '12px', backgroundColor: '#fdf8ee', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(201,160,91,0.15)' }}>
+554:                   <Star size={20} color="#c9a05b" />
+555:                 </div>
+556:                 <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '600', color: '#222' }}>Recent Reviews</h3>
+557:               </div>
+558:               <button className="card-action" style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#c9a05b', fontWeight: '500' }}>View All <ArrowRight size={14} /></button>
+559:             </div>
+560:             <div className="recent-reviews-list" style={{ display: 'flex', flexDirection: 'column' }}>
+561:               {recentReviewsData.map((review, index) => (
+562:                 <div className="review-item" key={index} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '20px', marginBottom: index !== recentReviewsData.length - 1 ? '20px' : '0', borderBottom: index !== recentReviewsData.length - 1 ? '1px solid #f0eade' : 'none' }}>
+563:                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
+564:                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+565:                       <img src={review.avatar} alt="Reviewer" style={{ width: '40px', height: '40px', borderRadius: '50%' }} />
+566:                       <div style={{ display: 'flex', flexDirection: 'column' }}>
+567:                         <span style={{ fontSize: '14px', fontWeight: '600', color: '#222' }}>{review.author}</span>
+568:                         <span style={{ fontSize: '12px', color: '#888' }}>{review.time}</span>
+569:                       </div>
+570:                     </div>
+571:                     <div style={{ display: 'flex', alignItems: 'center', gap: '2px', marginTop: '2px' }}>
+572:                       {Array.from({ length: 5 }).map((_, i) => (
+573:                         <Star key={i} size={14} fill={i < review.rating ? "#ffc107" : "none"} color={i < review.rating ? "#ffc107" : "#e0e0e0"} />
+574:                       ))}
+575:                     </div>
+576:                     <p style={{ margin: 0, fontSize: '13px', color: '#222', fontStyle: 'italic' }}>{review.text}</p>
+577:                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
+578:                       <ThumbsUp size={14} color="#888" />
+579:                       <span style={{ fontSize: '12px', color: '#666' }}>Helpful ({review.helpful})</span>
+580:                     </div>
+581:                   </div>
+582:                   <div style={{ width: '64px', height: '64px', borderRadius: '12px', overflow: 'hidden', backgroundColor: '#f5f5f5', marginLeft: '16px' }}>
+583:                     <img src={review.productImg} alt="Product" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+584:                   </div>
+585:                 </div>
+586:               ))}
+587:             </div>
+588:             <div style={{ marginTop: 'auto', paddingTop: '24px' }}>
+589:               <button style={{ width: '100%', padding: '14px', backgroundColor: '#fdf8ee', border: 'none', borderRadius: '8px', color: '#c9a05b', fontWeight: '600', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer', fontSize: '14px' }}>
+590:                 <Star size={16} /> View All Reviews <ArrowRight size={16} style={{ marginLeft: '4px' }} />
+591:               </button>
+592:             </div>
+593:           </div>
+594:         </div>
+595: 
+596:       
+597:         <div className="footer-grid">
+598:          
+599:           <div className="dashboard-card">
+600:             <div className="card-header">
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

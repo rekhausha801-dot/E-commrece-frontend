@@ -22,7 +22,7 @@
 .customize-main-img-wrap {
   position: relative;
   background-color: #fff;
-  border-radius: 8px;
+  border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   margin-bottom: 20px;
@@ -73,7 +73,7 @@
 .customize-thumb {
   width: calc(25% - 12px);
   aspect-ratio: 1;
-  border-radius: 6px;
+  border-radius: 12px;
   overflow: hidden;
   cursor: pointer;
   border: 2px solid transparent;

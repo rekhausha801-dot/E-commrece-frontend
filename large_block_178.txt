@@ -1,0 +1,82 @@
+<USER_REQUEST>
+Dashboard.jsx?t=1785991773068:455 Uncaught ReferenceError: SearchIcon is not defined
+    at Dashboard (Dashboard.jsx?t=1785991773068:455:108)
+    at renderWithHooks (chunk-ZOGMERHZ.js?v=bd5338a1:11546:26)
+    at updateFunctionComponent (chunk-ZOGMERHZ.js?v=bd5338a1:14580:28)
+    at beginWork (chunk-ZOGMERHZ.js?v=bd5338a1:15922:22)
+    at HTMLUnknownElement.callCallback2 (chunk-ZOGMERHZ.js?v=bd5338a1:3672:22)
+    at Object.invokeGuardedCallbackDev (chunk-ZOGMERHZ.js?v=bd5338a1:3697:24)
+    at invokeGuardedCallback (chunk-ZOGMERHZ.js?v=bd5338a1:3731:39)
+    at beginWork$1 (chunk-ZOGMERHZ.js?v=bd5338a1:19763:15)
+    at performUnitOfWork (chunk-ZOGMERHZ.js?v=bd5338a1:19196:20)
+    at workLoopSync (chunk-ZOGMERHZ.js?v=bd5338a1:19135:13)
+chunk-ZOGMERHZ.js?v=bd5338a1:14030 The above error occurred in the <Dashboard> component:
+
+    at Dashboard (http://localhost:5173/src/pages/admin/Dashboard.jsx?t=1785991773068:455:108)
+    at RenderedRoute (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=bd5338a1:6667:26)
+    at Routes (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=bd5338a1:7602:3)
+    at AppContent (http://localhost:5173/src/App.jsx?t=1785991450372:55:20)
+    at Router (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=bd5338a1:7541:13)
+    at BrowserRouter (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=bd5338a1:10857:3)
+    at WishlistProvider (http://localhost:5173/src/context/WishlistContext.jsx:26:36)
+    at OrderProvider (http://localhost:5173/src/context/OrderContext.jsx:21:33)
+    at CartProvider (http://localhost:5173/src/context/CartContext.jsx:56:32)
+    at NotificationProvider (http://localhost:5173/src/context/NotificationContext.jsx:26:40)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+logCapturedError @ chunk-ZOGMERHZ.js?v=bd5338a1:14030
+Dashboard.jsx?t=1785991773068:455 Uncaught (in promise) ReferenceError: SearchIcon is not defined
+    at Dashboard (Dashboard.jsx?t=1785991773068:455:108)
+    at renderWithHooks (chunk-ZOGMERHZ.js?v=bd5338a1:11546:26)
+    at updateFunctionComponent (chunk-ZOGMERHZ.js?v=bd5338a1:14580:28)
+    at beginWork (chunk-ZOGMERHZ.js?v=bd5338a1:15922:22)
+    at beginWork$1 (chunk-ZOGMERHZ.js?v=bd5338a1:19751:22)
+    at performUnitOfWork (chunk-ZOGMERHZ.js?v=bd5338a1:19196:20)
+    at workLoopSync (chunk-ZOGMERHZ.js?v=bd5338a1:19135:13)
+    at renderRootSync (chunk-ZOGMERHZ.js?v=bd5338a1:19114:15)
+    at recoverFromConcurrentError (chunk-ZOGMERHZ.js?v=bd5338a1:18734:28)
+    at performSyncWorkOnRoot (chunk-ZOGMERHZ.js?v=bd5338a1:18877:28)
+2Dashboard.jsx:418 Uncaught TypeError: Cannot read properties of undefined (reading 'toLowerCase')
+    at Dashboard.jsx:418:62
+    at Array.filter (<anonymous>)
+    at Dashboard (Dashboard.jsx:418:34)
+    at renderWithHooks (chunk-ZOGMERHZ.js?v=bd5338a1:11546:26)
+    at mountIndeterminateComponent (chunk-ZOGMERHZ.js?v=bd5338a1:14924:21)
+    at beginWork (chunk-ZOGMERHZ.js?v=bd5338a1:15912:22)
+    at HTMLUnknownElement.callCallback2 (chunk-ZOGMERHZ.js?v=bd5338a1:3672:22)
+    at Object.invokeGuardedCallbackDev (chunk-ZOGMERHZ.js?v=bd5338a1:3697:24)
+    at invokeGuardedCallback (chunk-ZOGMERHZ.js?v=bd5338a1:3731:39)
+    at beginWork$1 (chunk-ZOGMERHZ.js?v=bd5338a1:19763:15)
+chunk-ZOGMERHZ.js?v=bd5338a1:14030 The above error occurred in the <Dashboard> component:
+
+    at Dashboard (http://localhost:5173/src/pages/admin/Dashboard.jsx?t=1785991833466:170:61)
+    at RenderedRoute (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=bd5338a1:6667:26)
+    at Routes (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=bd5338a1:7602:3)
+    at AppContent (http://localhost:5173/src/App.jsx?t=1785991450372:55:20)
+    at Router (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=bd5338a1:7541:13)
+    at BrowserRouter (http://localhost:5173/node_modules/.vite/deps/react-router-dom.js?v=bd5338a1:10857:3)
+    at WishlistProvider (http://localhost:5173/src/context/WishlistContext.jsx:26:36)
+    at OrderProvider (http://localhost:5173/src/context/OrderContext.jsx:21:33)
+    at CartProvider (http://localhost:5173/src/context/CartContext.jsx:56:32)
+    at NotificationProvider (http://localhost:5173/src/context/NotificationContext.jsx:26:40)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+logCapturedError @ chunk-ZOGMERHZ.js?v=bd5338a1:14030
+Dashboard.jsx:418 Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'toLowerCase')
+    at Dashboard.jsx:418:62
+    at Array.filter (<anonymous>)
+    at Dashboard (Dashboard.jsx:418:34)
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-08-06T10:21:14+05:30.
+
+The user's current state is as follows:
+Active Document: d:\n\E-commrece-frontend\src\pages\admin\Dashboard.jsx (LANGUAGE_JAVASCRIPT)
+Cursor is on line: 721
+Other open documents:
+- d:\n\E-commrece-frontend\src\pages\admin\Dashboard.jsx (LANGUAGE_JAVASCRIPT)
+</ADDITIONAL_METADATA>

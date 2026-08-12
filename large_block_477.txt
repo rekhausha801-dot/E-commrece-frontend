@@ -1,0 +1,126 @@
+Created At: 2026-08-06T06:10:20Z
+Completed At: 2026-08-06T06:10:22Z
+The following changes were made by the replace_file_content tool to: d:\n\E-commrece-frontend\src\pages\admin\Dashboard.jsx. If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission.
+[diff_block_start]
+@@ -438,63 +438,61 @@
+ 
+ 
+ 
+-          <div className="dashboard-card" style={{ padding: '24px' }}>
+-            <div className="card-header" style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+-                <div style={{ width: '48px', height: '48px', borderRadius: '50%', border: '1px solid #f0e6d2', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#fcf8f0', flexShrink: 0 }}>
+-                  <ShoppingBag size={20} color="#b78644" />
+-                </div>
+-                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600', color: '#1a1a1a', whiteSpace: 'nowrap' }}>Orders <span style={{ color: '#b78644' }}>Overview</span></h3>
+-              </div>
+-            </div>
+-            <div className="orders-overview-chart" style={{ width: '100%', height: '360px', marginTop: '10px' }}>
+-              <ResponsiveContainer width="100%" height="100%">
+-                <BarChart data={ordersOverviewBarData} margin={{ top: 20, right: 30, left: -10, bottom: 5 }}>
+-                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#666' }} axisLine={{ stroke: '#ccc' }} tickLine={false} />
+-                  <YAxis tick={{ fontSize: 11, fill: '#666' }} axisLine={{ stroke: '#ccc' }} tickLine={false} />
+-                  <RechartsTooltip
+-                    formatter={(value) => [`${value} orders`, 'Orders']}
+-                    labelStyle={{ color: '#333', fontWeight: 'bold' }}
+-                    contentStyle={{ borderRadius: '8px', border: '1px solid #eee', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
+-                  />
+-                  <Bar dataKey="count" radius={[4, 4, 0, 0]} barSize={32}>
+-                    {ordersOverviewBarData.map((entry, index) => (
+-                      <Cell key={`cell-${index}`} fill={entry.color} />
+-                    ))}
+-                  </Bar>
+-                </BarChart>
+-              </ResponsiveContainer>
+-            </div>
+-          </div>
+-
+-
+-
+-
+-          <div className="dashboard-card" style={{ padding: '24px', backgroundColor: '#fdfaf5', borderRadius: '24px', border: '1px solid #f2ecdf', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+-            <div className="card-header" style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+-                <div style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #f0e6d2', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#fcf8f0', flexShrink: 0 }}>
+-                  <Crown size={18} color="#b78644" />
+-                </div>
+-                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600', color: '#1a1a1a', whiteSpace: 'nowrap' }}>Top <span style={{ color: '#b78644' }}>Selling</span> Products</h3>
+-              </div>
+-            </div>
+-            <div className="top-selling-list" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+-              {topSellingData.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase())).map((item, index) => (
+-                <div key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#fff', borderRadius: '16px', padding: '16px', border: '1px solid #f5efdf' }}>
+-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+-                    <div style={{ width: '64px', height: '64px', borderRadius: '12px', overflow: 'hidden', backgroundColor: '#f5f5f5', flexShrink: 0 }}>
+-                      <img src={item.img} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+-                    </div>
+-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: 0 }}>
+-                      <span style={{ fontSize: '15px', fontWeight: '600', color: '#111', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.name}</span>
+-                      <span style={{ fontSize: '12px', color: '#888' }}>{item.sold} sold</span>
+-                      <span style={{ fontSize: '15px', fontWeight: '700', color: '#b78644', marginTop: '2px' }}>{item.price}</span>
+-                    </div>
+-                  </div>
+-
+-                </div>
+-              ))}
++          <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '20px' }}>
++            <div className="dashboard-card" style={{ padding: '24px', flex: '1.5' }}>
++              <div className="card-header" style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
++                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
++                  <div style={{ width: '48px', height: '48px', borderRadius: '50%', border: '1px solid #f0e6d2', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#fcf8f0', flexShrink: 0 }}>
++                    <ShoppingBag size={20} color="#b78644" />
++                  </div>
++                  <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600', color: '#1a1a1a', whiteSpace: 'nowrap' }}>Orders <span style={{ color: '#b78644' }}>Overview</span></h3>
++                </div>
++              </div>
++              <div className="orders-overview-chart" style={{ width: '100%', height: '360px', marginTop: '10px' }}>
++                <ResponsiveContainer width="100%" height="100%">
++                  <BarChart data={ordersOverviewBarData} margin={{ top: 20, right: 30, left: -10, bottom: 5 }}>
++                    <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#666' }} axisLine={{ stroke: '#ccc' }} tickLine={false} />
++                    <YAxis tick={{ fontSize: 11, fill: '#666' }} axisLine={{ stroke: '#ccc' }} tickLine={false} />
++                    <RechartsTooltip
++                      formatter={(value) => [`${value} orders`, 'Orders']}
++                      labelStyle={{ color: '#333', fontWeight: 'bold' }}
++                      contentStyle={{ borderRadius: '8px', border: '1px solid #eee', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
++                    />
++                    <Bar dataKey="count" radius={[4, 4, 0, 0]} barSize={32}>
++                      {ordersOverviewBarData.map((entry, index) => (
++                        <Cell key={`cell-${index}`} fill={entry.color} />
++                      ))}
++                    </Bar>
++                  </BarChart>
++                </ResponsiveContainer>
++              </div>
++            </div>
++
++            <div className="dashboard-card" style={{ padding: '24px', backgroundColor: '#fdfaf5', borderRadius: '24px', border: '1px solid #f2ecdf', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', flex: '1' }}>
++              <div className="card-header" style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
++                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
++                  <div style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #f0e6d2', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#fcf8f0', flexShrink: 0 }}>
++                    <Crown size={18} color="#b78644" />
++                  </div>
++                  <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600', color: '#1a1a1a', whiteSpace: 'nowrap' }}>Top <span style={{ color: '#b78644' }}>Selling</span> Products</h3>
++                </div>
++              </div>
++              <div className="top-selling-list" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
++                {topSellingData.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase())).map((item, index) => (
++                  <div key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#fff', borderRadius: '16px', padding: '16px', border: '1px solid #f5efdf' }}>
++                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
++                      <div style={{ width: '64px', height: '64px', borderRadius: '12px', overflow: 'hidden', backgroundColor: '#f5f5f5', flexShrink: 0 }}>
++                        <img src={item.img} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
++                      </div>
++                      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: 0 }}>
++                        <span style={{ fontSize: '15px', fontWeight: '600', color: '#111', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.name}</span>
++                        <span style={{ fontSize: '12px', color: '#888' }}>{item.sold} sold</span>
++                        <span style={{ fontSize: '15px', fontWeight: '700', color: '#b78644', marginTop: '2px' }}>{item.price}</span>
++                      </div>
++                    </div>
++                  </div>
++                ))}
++              </div>
+             </div>
+           </div>
+ 
+[diff_block_end]
+
+Please note that the above snippet only shows the MODIFIED lines from the last change. It shows up to 3 lines of unchanged lines before and after the modified lines. The actual file contents may have many more lines not shown.

@@ -30,6 +30,7 @@ const Summary = () => {
   const navigate = useNavigate();
   const { addOrder } = useOrders();
   const { cartItems, clearCart } = useCart();
+  const { addNotification } = useNotification();
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
   const [editQty, setEditQty] = useState(1);
   const [editSize, setEditSize] = useState('Free');
@@ -55,7 +56,7 @@ const Summary = () => {
   const handlePlaceOrder = () => {
     if (cartItems.length === 0) return;
 
-    // Create an order array from the actual cart items
+    
     const newOrder = cartItems.map(item => ({
       id: `ORD${Math.floor(100000 + Math.random() * 900000)}`,
       date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
@@ -73,22 +74,22 @@ const Summary = () => {
 
     addOrder(newOrder);
     clearCart();
+    
+    if (addNotification) {
+      addNotification({
+        title: "Order Confirmed",
+        message: "Your order has been confirmed successfully.",
+        time: "Just now",
+        type: "order"
+      });
+    }
+    
     navigate('/order-confirmed');
   };
 
   React.useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
-  const handlePlaceOrder = () => {
-    addNotification({
-      title: "Order Confirmed",
-      message: "Your order has been confirmed successfully.",
-      time: "Just now",
-      type: "order"
-    });
-    navigate('/order-confirmed');
-  };
 
   const handleUpdateItem = () => {
     setIsEditDrawerOpen(false);
@@ -317,7 +318,7 @@ const Summary = () => {
 
             <div className="ped-content">
               <div className="ped-product-preview">
-                <img src={sareeImage} alt="Product" className="ped-img" />
+                <img src={cartItems.length > 0 ? cartItems[0].image : ""} alt="Product" className="ped-img" />
                 <div className="ped-info">
                   <span className="ped-brand">SILKORA</span>
                   <h4>Georgette Embroidery Work Saree</h4>
