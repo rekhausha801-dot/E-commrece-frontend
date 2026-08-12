@@ -1,0 +1,79 @@
+Created At: 2026-08-06T06:09:47Z
+Completed At: 2026-08-06T06:09:48Z
+File Path: `file:///d:/n/E-commrece-frontend/src/pages/admin/Dashboard.jsx`
+Total Lines: 684
+Total Bytes: 40093
+Showing lines 430 to 500
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+430:                       </span>
+431:                     </div>
+432:                   </div>
+433:                 </div>
+434:               ))}
+435:             </div>
+436:           </div>
+437: 
+438: 
+439: 
+440: 
+441:           <div className="dashboard-card" style={{ padding: '24px' }}>
+442:             <div className="card-header" style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+443:               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+444:                 <div style={{ width: '48px', height: '48px', borderRadius: '50%', border: '1px solid #f0e6d2', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#fcf8f0', flexShrink: 0 }}>
+445:                   <ShoppingBag size={20} color="#b78644" />
+446:                 </div>
+447:                 <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600', color: '#1a1a1a', whiteSpace: 'nowrap' }}>Orders <span style={{ color: '#b78644' }}>Overview</span></h3>
+448:               </div>
+449:             </div>
+450:             <div className="orders-overview-chart" style={{ width: '100%', height: '360px', marginTop: '10px' }}>
+451:               <ResponsiveContainer width="100%" height="100%">
+452:                 <BarChart data={ordersOverviewBarData} margin={{ top: 20, right: 30, left: -10, bottom: 5 }}>
+453:                   <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#666' }} axisLine={{ stroke: '#ccc' }} tickLine={false} />
+454:                   <YAxis tick={{ fontSize: 11, fill: '#666' }} axisLine={{ stroke: '#ccc' }} tickLine={false} />
+455:                   <RechartsTooltip
+456:                     formatter={(value) => [`${value} orders`, 'Orders']}
+457:                     labelStyle={{ color: '#333', fontWeight: 'bold' }}
+458:                     contentStyle={{ borderRadius: '8px', border: '1px solid #eee', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
+459:                   />
+460:                   <Bar dataKey="count" radius={[4, 4, 0, 0]} barSize={32}>
+461:                     {ordersOverviewBarData.map((entry, index) => (
+462:                       <Cell key={`cell-${index}`} fill={entry.color} />
+463:                     ))}
+464:                   </Bar>
+465:                 </BarChart>
+466:               </ResponsiveContainer>
+467:             </div>
+468:           </div>
+469: 
+470: 
+471: 
+472: 
+473:           <div className="dashboard-card" style={{ padding: '24px', backgroundColor: '#fdfaf5', borderRadius: '24px', border: '1px solid #f2ecdf', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+474:             <div className="card-header" style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+475:               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+476:                 <div style={{ width: '40px', height: '40px', borderRadius: '50%', border: '1px solid #f0e6d2', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#fcf8f0', flexShrink: 0 }}>
+477:                   <Crown size={18} color="#b78644" />
+478:                 </div>
+479:                 <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600', color: '#1a1a1a', whiteSpace: 'nowrap' }}>Top <span style={{ color: '#b78644' }}>Selling</span> Products</h3>
+480:               </div>
+481:             </div>
+482:             <div className="top-selling-list" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+483:               {topSellingData.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase())).map((item, index) => (
+484:                 <div key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#fff', borderRadius: '16px', padding: '16px', border: '1px solid #f5efdf' }}>
+485:                   <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+486:                     <div style={{ width: '64px', height: '64px', borderRadius: '12px', overflow: 'hidden', backgroundColor: '#f5f5f5', flexShrink: 0 }}>
+487:                       <img src={item.img} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+488:                     </div>
+489:                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', minWidth: 0 }}>
+490:                       <span style={{ fontSize: '15px', fontWeight: '600', color: '#111', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.name}</span>
+491:                       <span style={{ fontSize: '12px', color: '#888' }}>{item.sold} sold</span>
+492:                       <span style={{ fontSize: '15px', fontWeight: '700', color: '#b78644', marginTop: '2px' }}>{item.price}</span>
+493:                     </div>
+494:                   </div>
+495: 
+496:                 </div>
+497:               ))}
+498:             </div>
+499:           </div>
+500: 
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

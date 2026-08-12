@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Heart, ShoppingCart, Check, Shield, Truck, RotateCcw, Award, Camera, Home, PenTool, Image as ImageIcon, Smile, Sun, Wind, Navigation, Headphones, Palmtree, Maximize } from 'lucide-react';
 import './CustomizeTShirt.css';
 
-// We import the main image for fallback, but we'll use state if available
+
 import defaultMainImage from '../assets/images/t-shirt8.png';
 
 const DESIGNS = [
@@ -31,7 +31,7 @@ export default function CustomizeTShirt() {
   return (
     <div className="customize-page">
       <div className="customize-container">
-        {/* Left Column: Image Gallery */}
+       
         <div className="customize-left">
           <div className="customize-main-img-wrap">
             <span className="customize-badge">20% OFF</span>
@@ -53,7 +53,7 @@ export default function CustomizeTShirt() {
           </div>
         </div>
 
-        {/* Right Column: Customization Wizard */}
+       
         <div className="customize-right">
           <h1 className="customize-page-title">Customise Your T-Shirt</h1>
           

@@ -1,0 +1,109 @@
+Created At: 2026-08-06T06:18:17Z
+Completed At: 2026-08-06T06:18:17Z
+File Path: `file:///d:/n/E-commrece-frontend/src/pages/admin/Dashboard.jsx`
+Total Lines: 684
+Total Bytes: 40138
+Showing lines 300 to 400
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+300:               <div className="stat-icon gold"><Package size={18} color="#c9a05b" /></div>
+301:               <div className="stat-info">
+302:                 <span className="stat-title">Total Products</span>
+303:                 <h2 className="stat-value gold-text">560</h2>
+304:                 <div className="stat-bottom">
+305:                   <span className="stat-change negative">12</span> <span className="stat-change-text">low stock items</span>
+306:                 </div>
+307:               </div>
+308:             </div>
+309:             <div className="stat-chart-sparkline">
+310:               <ResponsiveContainer width="100%" height="100%">
+311:                 <AreaChart data={sparklineTotalProducts}>
+312:                   <defs>
+313:                     <linearGradient id="glowDark" x1="0" y1="0" x2="0" y2="1">
+314:                       <stop offset="5%" stopColor="#c9a05b" stopOpacity={0.8} />
+315:                       <stop offset="95%" stopColor="#c9a05b" stopOpacity={0} />
+316:                     </linearGradient>
+317:                   </defs>
+318:                   <Area type="monotone" dataKey="v" stroke="#c9a05b" strokeWidth={2} fill="url(#glowDark)" dot={{ r: 2.5, fill: '#c9a05b', strokeWidth: 0 }} />
+319:                 </AreaChart>
+320:               </ResponsiveContainer>
+321:             </div>
+322:           </div>
+323:         </div>
+324: 
+325: 
+326:         <div className="middle-grid">
+327: 
+328:           <div className="dashboard-card">
+329:             <div className="card-header">
+330:               <h3>Revenue Overview</h3>
+331:               <button className="time-filter">Last 7 Days <ChevronDown size={14} /></button>
+332:             </div>
+333:             <div className="card-sub-header">
+334:               <h2>₹8,75,420 <span className="stat-change positive text-sm">↑ 12.5%</span></h2>
+335:             </div>
+336:             <div className="revenue-chart-container" style={{ height: '250px', marginTop: '20px' }}>
+337:               <ResponsiveContainer width="100%" height="100%">
+338:                 <AreaChart data={revenueData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+339:                   <defs>
+340:                     <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+341:                       <stop offset="5%" stopColor="#c9a05b" stopOpacity={0.6} />
+342:                       <stop offset="95%" stopColor="#c9a05b" stopOpacity={0} />
+343:                     </linearGradient>
+344:                   </defs>
+345:                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
+346:                   <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#888' }} dy={10} />
+347:                   <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#888' }} tickFormatter={(value) => `${value === 0 ? '0' : value / 1000 + 'K'}`} />
+348:                   <RechartsTooltip cursor={{ stroke: '#e0e0e0', strokeWidth: 1, strokeDasharray: '4 4' }} />
+349:                   <Area type="monotone" dataKey="revenue" stroke="#c9a05b" strokeWidth={2} fillOpacity={1} fill="url(#colorRevenue)" dot={{ r: 4, fill: '#c9a05b', strokeWidth: 0 }} activeDot={{ r: 6, fill: '#fff', stroke: '#c9a05b', strokeWidth: 2 }} />
+350:                 </AreaChart>
+351:               </ResponsiveContainer>
+352:             </div>
+353:           </div>
+354: 
+355: 
+356:           <div className="dashboard-card">
+357:             <div className="card-header">
+358:               <h3>Top Categories</h3>
+359:               <button className="card-action">View All</button>
+360:             </div>
+361:             <div className="donut-chart-wrapper" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '16px' }}>
+362: 
+363:               <div style={{ position: 'relative', width: '160px', height: '160px' }}>
+364:                 <ResponsiveContainer width="100%" height="100%">
+365:                   <RechartsPieChart>
+366:                     <Pie
+367:                       data={topCategoriesData}
+368:                       cx="50%"
+369:                       cy="50%"
+370:                       innerRadius={50}
+371:                       outerRadius={78}
+372:                       paddingAngle={2}
+373:                       dataKey="value"
+374:                       stroke="none"
+375:                     >
+376:                       {topCategoriesData.map((entry, index) => (
+377:                         <Cell key={`cell-${index}`} fill={entry.color} />
+378:                       ))}
+379:                     </Pie>
+380:                   </RechartsPieChart>
+381:                 </ResponsiveContainer>
+382: 
+383:                 <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
+384:                   <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#222', lineHeight: '1' }}>560</span>
+385:                   <span style={{ fontSize: '10px', color: '#888', marginTop: '4px', lineHeight: '1' }}>Products</span>
+386:                 </div>
+387:               </div>
+388: 
+389:               <div className="donut-legend-list" style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%', marginTop: '24px' }}>
+390:                 {topCategoriesData.map((item, index) => (
+391:                   <div className="legend-item" key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+392:                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+393:                       <div style={{ width: '8px', height: '8px', borderRadius: '2px', backgroundColor: item.color }}></div>
+394:                       <span style={{ fontSize: '12px', color: '#444' }}>{item.name}</span>
+395:                     </div>
+396:                     <span style={{ fontSize: '12px', fontWeight: '500', color: '#222' }}>{item.value}%</span>
+397:                   </div>
+398:                 ))}
+399:               </div>
+400: 
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

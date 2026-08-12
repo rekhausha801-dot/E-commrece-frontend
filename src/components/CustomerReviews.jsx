@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import './CustomerReviews.css';
 
-// Sample assets from the project for authentic visuals
+
 import mens1 from '../assets/images/mens1.png';
 import mens2 from '../assets/images/mens2.png';
 import shirtImg from '../assets/images/shirt.jpeg';
@@ -17,17 +17,17 @@ import poloImg from '../assets/images/polo.jpg';
 import cargoImg from '../assets/images/cargo.jpg';
 import sneakerImg from '../assets/images/sneaker.jpg';
 
-// Upscaled Original Images
+
 import hdMens1 from '../assets/images/hd_mens1.png';
 import hdShirt from '../assets/images/hd_shirt.png';
 import hdDress from '../assets/images/hd_dress.png';
 
 export default function CustomerReviews() {
-  // --- States ---
+ 
   const [selectedTag, setSelectedTag] = useState('All');
   const [sortBy, setSortBy] = useState('Most Recent');
   
-  // Interactive Write Review State
+ 
   const [newRating, setNewRating] = useState(5);
   const [hoverRating, setHoverRating] = useState(0);
   const [reviewText, setReviewText] = useState('');
@@ -38,11 +38,11 @@ export default function CustomerReviews() {
   const [isWriteReviewOpen, setIsWriteReviewOpen] = useState(true);
   const fileInputRef = useRef(null);
 
-  // Gallery Modal Lightbox
+ 
   const [activePhotoModal, setActivePhotoModal] = useState(null); // index or null
   const [showQAModal, setShowQAModal] = useState(false);
 
-  // Initial Customer Photos array matching screenshot
+
   const customerPhotos = [
     { id: 1, url: hdMens1, caption: 'Perfect fit for gym and casual wear', user: 'Rajesh K.' },
     { id: 2, url: hdShirt, caption: 'Top tier fabric and finish', user: 'Arun P.' },
@@ -54,7 +54,7 @@ export default function CustomerReviews() {
     { id: 8, url: sneakerImg, caption: 'Great overall build quality', user: 'Deepak V.' }
   ];
 
-  // Reviews Data List matching exact names & content from screenshot + extra
+
   const [reviews, setReviews] = useState([
     {
       id: 4,
@@ -86,7 +86,7 @@ export default function CustomerReviews() {
     }
   ]);
 
-  // Questions for Q&A Modal
+
   const questionsList = [
     {
       q: 'Is this true to size?',
@@ -106,7 +106,6 @@ export default function CustomerReviews() {
     }
   ];
 
-  // Rating distribution counts
   const ratingDistribution = [
     { star: 5, count: 1890, pct: '77%' },
     { star: 4, count: 420,  pct: '17%' },
@@ -115,7 +114,7 @@ export default function CustomerReviews() {
     { star: 1, count: 15,   pct: '1%' },
   ];
 
-  // Highlight tag pills
+
   const reviewHighlights = [
     { label: 'Good Quality', count: 820 },
     { label: 'Comfortable', count: 620 },
@@ -124,7 +123,7 @@ export default function CustomerReviews() {
     { label: 'Worth the Price', count: 345 }
   ];
 
-  // Handle Photo Upload in Review Form
+  
   const handlePhotoUpload = (e) => {
     const files = Array.from(e.target.files);
     if (files.length > 0) {
@@ -133,7 +132,7 @@ export default function CustomerReviews() {
     }
   };
 
-  // Handle Review Submission
+ 
   const handleSubmitReview = (e) => {
     e.preventDefault();
     if (!reviewText.trim()) return;
@@ -162,7 +161,7 @@ export default function CustomerReviews() {
     setTimeout(() => setShowSuccessToast(false), 4000);
   };
 
-  // Handle Helpful Up/Down Vote
+  
   const handleVote = (id, type) => {
     setReviews(prev => prev.map(rev => {
       if (rev.id === id) {
@@ -171,7 +170,7 @@ export default function CustomerReviews() {
         let newVote = type;
 
         if (rev.userVoted === type) {
-          // Toggle off
+        
           newVote = null;
           if (type === 'up') newUp -= 1;
           if (type === 'down') newDown -= 1;

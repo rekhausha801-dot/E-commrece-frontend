@@ -1,0 +1,142 @@
+The following changes were made by the USER to: d:\n\E-commrece-frontend\src\pages\admin\Dashboard.jsx. If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission.
+[diff_block_start]
+@@ -403,82 +403,63 @@
+           </div>
+ 
+ 
+-          <div className="dashboard-card" style={{ padding: '24px', backgroundColor: '#fdfaf5', borderRadius: '24px', border: '1px solid #f2ecdf', display: 'flex', flexDirection: 'column', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+-            <div className="card-header" style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+-                <div style={{ width: '48px', height: '48px', borderRadius: '50%', border: '1px solid #f0e6d2', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#fcf8f0', flexShrink: 0 }}>
+-                  <AlertTriangle size={20} color="#b78644" />
+-                </div>
+-                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600', color: '#1a1a1a', whiteSpace: 'nowrap' }}>Low Stock Alert</h3>
+-              </div>
+-              <button className="card-action" style={{ display: 'flex', alignItems: 'center', color: '#b78644', fontSize: '13px', fontWeight: '600', background: 'none', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap', gap: '4px' }}>View All <ArrowRight size={14} /></button>
+-            </div>
+-
+-            <div className="low-stock-list" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
++          <div className="dashboard-card" style={{ padding: '24px', backgroundColor: '#fcfaf5', borderRadius: '16px', border: '1px solid #f2ecdf', display: 'flex', flexDirection: 'column', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
++            <div className="card-header" style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
++              <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '600', color: '#1a1a1a', fontFamily: '"Playfair Display", Georgia, serif', whiteSpace: 'nowrap' }}>Low Stock Alert</h3>
++              <button className="card-action" style={{ display: 'flex', alignItems: 'center', color: '#555', fontSize: '12px', fontWeight: '400', background: 'none', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap' }}>View All</button>
++            </div>
++
++            <div className="low-stock-list" style={{ display: 'flex', flexDirection: 'column' }}>
+               {lowStockAlertData.filter(item => item.name.toLowerCase().includes(searchQuery.toLowerCase())).map((item, index) => (
+-                <div className="low-stock-item" key={index} style={{ display: 'flex', alignItems: 'center', backgroundColor: '#fff', borderRadius: '16px', padding: '16px', border: '1px solid #f5efdf' }}>
+-                  <div style={{ flexShrink: 0, marginRight: '16px' }}>
+-                    <div style={{ width: '64px', height: '64px', borderRadius: '12px', overflow: 'hidden', backgroundColor: '#f5f5f5' }}>
+-                      <img src={item.img} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+-                    </div>
+-                  </div>
+-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: '1', minWidth: 0 }}>
+-                    <span style={{ fontSize: '15px', fontWeight: '600', color: '#111', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.name}</span>
+-                    <span style={{ fontSize: '12px', color: '#888' }}>Size: {item.size}</span>
+-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '2px' }}>
+-                      <span style={{ fontSize: '13px', color: '#444' }}>Stock: {item.stock}</span>
+-                      <span style={{ fontSize: '11px', padding: '2px 10px', borderRadius: '6px', fontWeight: '600', backgroundColor: '#ffebee', color: '#f44336' }}>
+-                        Low
+-                      </span>
+-                    </div>
+-                  </div>
+-                </div>
+-              ))}
+-            </div>
+-          </div>
+-
+-
+-
+-
+-          <div className="dashboard-card" style={{ padding: '24px', backgroundColor: '#fdfaf5', borderRadius: '24px', border: '1px solid #f2ecdf', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+-            <div className="card-header" style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+-                <div style={{ width: '48px', height: '48px', borderRadius: '50%', border: '1px solid #f0e6d2', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#fcf8f0', flexShrink: 0 }}>
+-                  <ShoppingBag size={20} color="#b78644" />
+-                </div>
+-                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600', color: '#1a1a1a', whiteSpace: 'nowrap' }}>Orders Overview</h3>
+-              </div>
+-              <button className="card-action" style={{ display: 'flex', alignItems: 'center', color: '#b78644', fontSize: '13px', fontWeight: '600', background: 'none', border: 'none', cursor: 'pointer', whiteSpace: 'nowrap', gap: '4px' }}>View All <ArrowRight size={14} /></button>
+-            </div>
+-            
+-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
+-              <div>
+-                <div style={{ fontSize: '14px', color: '#444', marginBottom: '8px', fontWeight: '500' }}>Total Orders</div>
+-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+-                  <span style={{ fontSize: '32px', fontWeight: '700', color: '#111', lineHeight: 1 }}>1,245</span>
+-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+-                    <div style={{ color: '#4caf50', fontSize: '12px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '2px' }}>
+-                      <TrendingUp size={12} /> 18.5%
+-                    </div>
+-                    <span style={{ fontSize: '11px', color: '#888' }}>vs last 7 days</span>
+-                  </div>
+-                </div>
+-              </div>
+-              <div style={{ padding: '6px 12px', border: '1px solid #eadecb', borderRadius: '8px', fontSize: '13px', color: '#111', display: 'flex', alignItems: 'center', gap: '6px', backgroundColor: '#fff', cursor: 'pointer' }}>
+-                Last 7 Days <ChevronDown size={14} color="#888" />
+-              </div>
+-            </div>
+-
+-            <div className="orders-overview-chart" style={{ width: '100%', height: '240px' }}>
+-              <ResponsiveContainer width="100%" height="100%">
+-                <BarChart data={ordersOverviewBarData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+-                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#888' }} axisLine={false} tickLine={false} />
+-                  <YAxis tick={{ fontSize: 11, fill: '#888' }} axisLine={false} tickLine={false} tickCount={5} domain={[0, 120]} />
++                <div className="low-stock-item" key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '20px', marginBottom: index !== lowStockAlertData.length - 1 ? '20px' : '0', borderBottom: index !== lowStockAlertData.length - 1 ? '1px solid #f0e8db' : 'none' }}>
++
++
++                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: '1' }}>
++                    <span style={{ fontSize: '13px', fontWeight: '500', color: '#222' }}>{item.name}</span>
++                    <span style={{ fontSize: '11px', color: '#888' }}>Size: {item.size}</span>
++                  </div>
++
++                  <div style={{ flex: '1', display: 'flex', justifyContent: 'center' }}>
++                    <span style={{ fontSize: '13px', color: '#444' }}>Stock: {item.stock}</span>
++                  </div>
++
++
++                  <div style={{ display: 'flex', alignItems: 'center', flex: '1', justifyContent: 'flex-end' }}>
++                    <span style={{ fontSize: '11px', padding: '4px 10px', borderRadius: '4px', fontWeight: '500', backgroundColor: '#fcf0e3', color: '#d97b41' }}>
++                      Low
++                    </span>
++                  </div>
++
++                </div>
++              ))}
++            </div>
++
++            <div style={{ marginTop: 'auto', paddingTop: '24px' }}>
++              <button style={{ background: 'none', border: 'none', color: '#b98e54', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '13px', padding: 0 }}>
++                View All Products <ArrowRight size={14} />
++              </button>
++            </div>
++          </div>
++
++
++
++
++          <div className="dashboard-card" style={{ padding: '24px' }}>
++            <div className="card-header" style={{ marginBottom: '20px' }}>
++              <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '600', color: '#222' }}>Orders Overview</h3>
++              <button className="card-action" style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#888', fontWeight: '500' }}>View All</button>
++            </div>
++            <div className="orders-overview-chart" style={{ width: '100%', height: '300px', marginTop: '10px' }}>
++              <ResponsiveContainer width="100%" height="100%">
++                <BarChart data={ordersOverviewBarData} margin={{ top: 20, right: 30, left: -10, bottom: 5 }}>
++                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#666' }} axisLine={{ stroke: '#ccc' }} tickLine={false} />
++                  <YAxis tick={{ fontSize: 11, fill: '#666' }} axisLine={{ stroke: '#ccc' }} tickLine={false} />
+                   <RechartsTooltip
+-                    cursor={{ fill: 'rgba(0,0,0,0.02)' }}
+-                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}
++                    formatter={(value) => [`${value} orders`, 'Orders']}
++                    labelStyle={{ color: '#333', fontWeight: 'bold' }}
++                    contentStyle={{ borderRadius: '8px', border: '1px solid #eee', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
+                   />
+-                  <Bar dataKey="count" radius={[4, 4, 0, 0]} barSize={24}>
++                  <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+                     {ordersOverviewBarData.map((entry, index) => (
+                       <Cell key={`cell-${index}`} fill={entry.color} />
+                     ))}
+[diff_block_end]
+
+Please note that the above snippet only shows the MODIFIED lines from the last change. It shows up to 3 lines of unchanged lines before and after the modified lines. The actual file contents may have many more lines not shown.

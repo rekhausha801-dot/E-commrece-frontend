@@ -119,6 +119,15 @@ body {
   transition: transform 0.2s ease, color 0.2s ease;
 }
 
+.premium-glass-card {
+  background: rgba(247, 241, 230, 0.5) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+  box-shadow: 0 8px 32px rgba(139, 115, 85, 0.1), inset 0 4px 16px rgba(255, 255, 255, 0.9), inset 0 -4px 16px rgba(139, 115, 85, 0.1) !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
 .unified-wishlist-btn:hover {
   transform: scale(1.1);
 }
@@ -134,7 +143,7 @@ body {
   padding: 6px 14px;
   border-radius: 20px;
   z-index: 2;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
   letter-spacing: 0.5px;
 }
 
@@ -201,7 +210,8 @@ body {
   color: #00a388;
 }
 
-.unified-explore-btn, .unified-add-cart-btn {
+.unified-explore-btn,
+.unified-add-cart-btn {
   margin-top: auto;
   width: 100%;
   background: #C89953;
@@ -219,7 +229,8 @@ body {
   transition: background 0.3s;
 }
 
-.unified-explore-btn:hover, .unified-add-cart-btn:hover {
+.unified-explore-btn:hover,
+.unified-add-cart-btn:hover {
   background: #B68645;
 }
 
@@ -241,4 +252,87 @@ body {
   font-size: 12px;
   color: #888;
   margin-left: 4px;
+}
+
+@keyframes float1 {
+  0% {
+    transform: translate(0, 0);
+  }
+
+  33% {
+    transform: translate(-10px, 15px);
+  }
+
+  66% {
+    transform: translate(-20px, -5px);
+  }
+
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes float2 {
+  0% {
+    transform: translate(0, 0);
+  }
+
+  33% {
+    transform: translate(15px, -10px);
+  }
+
+  66% {
+    transform: translate(5px, 15px);
+  }
+
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes float3 {
+  0% {
+    transform: translate(0, 0);
+  }
+
+  33% {
+    transform: translate(10px, 10px);
+  }
+
+  66% {
+    transform: translate(-10px, -10px);
+  }
+
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+.rating-circle-1 {
+  animation: float1 4s ease-in-out infinite;
+}
+
+.rating-circle-2 {
+  animation: float2 5s ease-in-out infinite;
+}
+
+.rating-circle-3 {
+  animation: float3 3.5s ease-in-out infinite;
+}
+
+.rating-container:hover .rating-circle-1,
+.rating-container:hover .rating-circle-2,
+.rating-container:hover .rating-circle-3 {
+  animation-play-state: paused;
+}
+
+.flowing-chart path.recharts-area-curve {
+  stroke-dasharray: 8 8;
+  animation: flowLine 1.5s linear infinite;
+}
+
+@keyframes flowLine {
+  to {
+    stroke-dashoffset: -16;
+  }
 }

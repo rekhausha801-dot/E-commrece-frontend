@@ -1,0 +1,63 @@
+Created At: 2026-08-06T07:09:41Z
+Completed At: 2026-08-06T07:09:44Z
+The following changes were made by the multi_replace_file_content tool to: d:\n\E-commrece-frontend\src\pages\admin\Dashboard.jsx. If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission.
+[diff_block_start]
+@@ -404,13 +404,8 @@
+ 
+           <div className="dashboard-card" style={{ padding: '24px', backgroundColor: '#fafafa', borderRadius: '24px', border: '1px solid #f2ecdf', display: 'flex', flexDirection: 'column', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', height: '100%' }}>
+             <div className="card-header" style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+-                <div style={{ width: '48px', height: '48px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#feece6', flexShrink: 0 }}>
+-                  <Bell size={24} color="#e65100" />
+-                </div>
+-                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600', color: '#1a1a1a', whiteSpace: 'nowrap' }}>Low Stock Alert</h3>
+-              </div>
+-              <a href="#" style={{ fontSize: '14px', fontWeight: '500', color: '#666', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>View All <ArrowRight size={16} color="#e65100" /></a>
++              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600', color: '#1a1a1a', whiteSpace: 'nowrap' }}>Low Stock Alert</h3>
++              <a href="#" style={{ fontSize: '14px', fontWeight: '500', color: '#666', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>View All</a>
+             </div>
+ 
+             <div className="low-stock-list" style={{ display: 'flex', flexDirection: 'column' }}>
+@@ -450,20 +450,9 @@
+ 
+ 
+           <div className="dashboard-card" style={{ padding: '24px', backgroundColor: '#fafafa', borderRadius: '24px', border: '1px solid #f2ecdf', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', height: '100%' }}>
+-            <div className="card-header" style={{ marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+-                <div style={{ width: '48px', height: '48px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#fdfaf5', flexShrink: 0 }}>
+-                  <BarChart2 size={24} color="#b78644" />
+-                </div>
+-                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600', color: '#1a1a1a', whiteSpace: 'nowrap' }}>Orders Overview</h3>
+-              </div>
+-              <a href="#" style={{ fontSize: '14px', fontWeight: '500', color: '#b78644', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>View All <ArrowRight size={16} color="#b78644" /></a>
+-            </div>
+-
+-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+-              <button style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 12px', backgroundColor: '#fff', border: '1px solid #eee', borderRadius: '8px', fontSize: '13px', color: '#333', cursor: 'pointer' }}>
+-                Last 7 Days <ChevronDown size={14} />
+-              </button>
++            <div className="card-header" style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
++              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600', color: '#1a1a1a', whiteSpace: 'nowrap' }}>Order Overview</h3>
++              <a href="#" style={{ fontSize: '14px', fontWeight: '500', color: '#666', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>View All</a>
+             </div>
+ 
+             <div className="orders-overview-chart" style={{ width: '100%', flex: '1', minHeight: '280px' }}>
+@@ -489,13 +489,8 @@
+ 
+           <div className="dashboard-card" style={{ padding: '24px', backgroundColor: '#fafafa', borderRadius: '24px', border: '1px solid #f2ecdf', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', height: '100%' }}>
+             <div className="card-header" style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+-                <div style={{ width: '48px', height: '48px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#fdfaf5', flexShrink: 0 }}>
+-                  <Star size={24} color="#b78644" />
+-                </div>
+-                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600', color: '#1a1a1a', whiteSpace: 'nowrap' }}>Top Selling Products</h3>
+-              </div>
+-              <a href="#" style={{ fontSize: '14px', fontWeight: '500', color: '#b78644', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>View All <ArrowRight size={16} color="#b78644" /></a>
++              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600', color: '#1a1a1a', whiteSpace: 'nowrap' }}>Top Selling Products</h3>
++              <a href="#" style={{ fontSize: '14px', fontWeight: '500', color: '#666', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>View All</a>
+             </div>
+             
+             <div className="top-selling-list" style={{ display: 'flex', flexDirection: 'column' }}>
+[diff_block_end]
+
+Please note that the above snippet only shows the MODIFIED lines from the last change. It shows up to 3 lines of unchanged lines before and after the modified lines. The actual file contents may have many more lines not shown.

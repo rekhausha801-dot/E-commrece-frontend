@@ -1,0 +1,89 @@
+Created At: 2026-08-06T06:57:24Z
+Completed At: 2026-08-06T06:57:24Z
+File Path: `file:///d:/n/E-commrece-frontend/src/pages/admin/Dashboard.jsx`
+Total Lines: 672
+Total Bytes: 39184
+Showing lines 445 to 525
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+445:             <div style={{ marginTop: 'auto', paddingTop: '16px' }}>
+446:               <button style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px', backgroundColor: '#fdf5ef', border: 'none', borderRadius: '12px', color: '#d85c35', fontSize: '15px', fontWeight: '600', cursor: 'pointer' }}>
+447:                 <ShoppingBag size={18} /> View All Products <ArrowRight size={16} />
+448:               </button>
+449:             </div>
+450:           </div>
+451: 
+452: 
+453: 
+454: 
+455:           <div className="dashboard-card" style={{ padding: '24px 24px 0 24px', backgroundColor: '#fdfaf5', borderRadius: '24px', border: '1px solid #f2ecdf', boxShadow: '0 4px 20px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', height: '100%' }}>
+456:             <div className="card-header" style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+457:               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+458:                 <div style={{ width: '48px', height: '48px', borderRadius: '50%', border: '1px solid #f0e6d2', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#fcf8f0', flexShrink: 0 }}>
+459:                   <ShoppingBag size={20} color="#b78644" />
+460:                 </div>
+461:                 <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600', color: '#1a1a1a', whiteSpace: 'nowrap' }}>Orders <span style={{ color: '#b78644' }}>Overview</span></h3>
+462:               </div>
+463:             </div>
+464:             <div className="orders-overview-chart" style={{ width: '100%', flex: '1', minHeight: '260px', marginTop: '10px' }}>
+465:               <ResponsiveContainer width="100%" height="100%">
+466:                 <BarChart data={ordersOverviewBarData} margin={{ top: 20, right: 30, left: -10, bottom: 0 }}>
+467:                   <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#666' }} axisLine={{ stroke: '#ccc' }} tickLine={false} />
+468:                   <YAxis tick={{ fontSize: 11, fill: '#666' }} axisLine={{ stroke: '#ccc' }} tickLine={false} />
+469:                   <RechartsTooltip
+470:                     formatter={(value) => [`${value} orders`, 'Orders']}
+471:                     labelStyle={{ color: '#333', fontWeight: 'bold' }}
+472:                     contentStyle={{ borderRadius: '8px', border: '1px solid #eee', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
+473:                   />
+474:                   <Bar dataKey="count" radius={[4, 4, 0, 0]} barSize={32}>
+475:                     {ordersOverviewBarData.map((entry, index) => (
+476:                       <Cell key={`cell-${index}`} fill={entry.color} />
+477:                     ))}
+478:                   </Bar>
+479:                 </BarChart>
+480:               </ResponsiveContainer>
+481:             </div>
+482:           </div>
+483: 
+484: 
+485: 
+486: 
+487: 
+488: 
+489:         </div>
+490: 
+491: 
+492:         <div className="bottom-grid">
+493: 
+494: 
+495:           <div className="dashboard-card" style={{ padding: '24px' }}>
+496:             <div className="card-header" style={{ marginBottom: '24px' }}>
+497:               <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+498:                 <div style={{ width: '40px', height: '40px', borderRadius: '12px', backgroundColor: '#fdf8ee', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(201,160,91,0.15)' }}>
+499:                   <ShoppingBag size={20} color="#c9a05b" />
+500:                 </div>
+501:                 <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '600', color: '#222' }}>Recent Orders</h3>
+502:               </div>
+503:               <button className="card-action" style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#c9a05b', fontWeight: '500' }}>View All <ArrowRight size={14} /></button>
+504:             </div>
+505:             <div className="recent-orders-list" style={{ display: 'flex', flexDirection: 'column' }}>
+506:               {recentOrdersData.filter(order => order.id.toLowerCase().includes(searchQuery.toLowerCase()) || order.customer.toLowerCase().includes(searchQuery.toLowerCase())).map((order, index) => (
+507:                 <div className="recent-order-item" key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '20px', marginBottom: index !== recentOrdersData.length - 1 ? '20px' : '0', borderBottom: index !== recentOrdersData.length - 1 ? '1px solid #f0eade' : 'none' }}>
+508:                   <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+509:                     <div style={{ width: '64px', height: '64px', borderRadius: '12px', overflow: 'hidden', backgroundColor: '#f5f5f5' }}>
+510:                       <img src={order.img} alt="Product" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+511:                     </div>
+512:                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+513:                       <span style={{ fontSize: '14px', fontWeight: '600', color: '#222' }}>{order.id}</span>
+514:                       <span style={{ fontSize: '12px', color: '#888' }}>{order.date}</span>
+515:                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
+516:                         <User size={12} color="#888" />
+517:                         <span style={{ fontSize: '12px', color: '#666' }}>{order.customer}</span>
+518:                       </div>
+519:                     </div>
+520:                   </div>
+521:                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '10px' }}>
+522:                     <span style={{ fontSize: '16px', fontWeight: '700', color: '#222' }}>{order.amount}</span>
+523:                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 10px', borderRadius: '6px', backgroundColor: order.status === 'Delivered' ? '#e8f5e9' : order.status === 'Processing' ? '#e3f2fd' : '#fff4e5' }}>
+524:                       <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: order.status === 'Delivered' ? '#4caf50' : order.status === 'Processing' ? '#2196f3' : '#ff9800' }}></div>
+525:                       <span style={{ fontSize: '12px', fontWeight: '500', color: order.status === 'Delivered' ? '#4caf50' : order.status === 'Processing' ? '#2196f3' : '#ff9800' }}>{order.status}</span>
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

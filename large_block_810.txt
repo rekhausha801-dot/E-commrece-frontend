@@ -1,0 +1,68 @@
+Created At: 2026-08-06T07:41:17Z
+Completed At: 2026-08-06T07:41:19Z
+The following changes were made by the replace_file_content tool to: d:\n\E-commrece-frontend\src\pages\admin\Dashboard.jsx. If relevant, proactively run terminal commands to execute this code for the USER. Don't ask for permission.
+[diff_block_start]
+@@ -447,31 +447,35 @@
+               <a href="#" style={{ fontSize: '14px', fontWeight: '600', color: '#b78644', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '4px' }}>View All <ArrowRight size={16} color="#b78644" /></a>
+             </div>
+ 
+-            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+-              <button style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 12px', backgroundColor: '#fff', border: '1px solid #eee', borderRadius: '8px', fontSize: '13px', fontWeight: '500', color: '#333', cursor: 'pointer' }}>
+-                Last 7 Days <ChevronDown size={14} />
+-              </button>
+-            </div>
+-
+-            <div className="orders-overview-chart" style={{ width: '100%', flex: '1', minHeight: '200px' }}>
+-              <ResponsiveContainer width="100%" height="100%">
+-                <BarChart data={ordersOverviewBarData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+-                  <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#666' }} axisLine={false} tickLine={false} dy={10} />
+-                  <YAxis tick={{ fontSize: 11, fill: '#666' }} axisLine={false} tickLine={false} dx={-10} ticks={[0, 30, 60, 90, 120]} />
+-                  <RechartsTooltip
+-                    formatter={(value) => [`${value} orders`, 'Orders']}
+-                    labelStyle={{ color: '#333', fontWeight: 'bold' }}
+-                    contentStyle={{ borderRadius: '8px', border: '1px solid #eee', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}
+-                    cursor={{fill: 'transparent'}}
+-                  />
+-                  <Bar dataKey="count" radius={[4, 4, 0, 0]} barSize={24}>
+-                    {ordersOverviewBarData.map((entry, index) => (
+-                      <Cell key={`cell-${index}`} fill={entry.color} />
+-                    ))}
+-                  </Bar>
+-                </BarChart>
+-              </ResponsiveContainer>
++            <div className="orders-overview-content" style={{ display: 'flex', flexDirection: 'column', gap: '28px', flex: '1', padding: '16px 0', justifyContent: 'center' }}>
++              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
++                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
++                  <div style={{ width: '14px', height: '14px', backgroundColor: '#a66b3f', borderRadius: '3px' }}></div>
++                  <span style={{ fontSize: '16px', color: '#444', fontWeight: '500' }}>Pending</span>
++                </div>
++                <span style={{ fontSize: '16px', fontWeight: '600', color: '#222' }}>35% (436)</span>
++              </div>
++              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
++                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
++                  <div style={{ width: '14px', height: '14px', backgroundColor: '#d79e5d', borderRadius: '3px' }}></div>
++                  <span style={{ fontSize: '16px', color: '#444', fontWeight: '500' }}>Shipped</span>
++                </div>
++                <span style={{ fontSize: '16px', fontWeight: '600', color: '#222' }}>25% (311)</span>
++              </div>
++              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
++                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
++                  <div style={{ width: '14px', height: '14px', backgroundColor: '#e3a35d', borderRadius: '3px' }}></div>
++                  <span style={{ fontSize: '16px', color: '#444', fontWeight: '500' }}>Delivered</span>
++                </div>
++                <span style={{ fontSize: '16px', fontWeight: '600', color: '#222' }}>30% (374)</span>
++              </div>
++              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
++                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
++                  <div style={{ width: '14px', height: '14px', backgroundColor: '#a4363a', borderRadius: '3px' }}></div>
++                  <span style={{ fontSize: '16px', color: '#444', fontWeight: '500' }}>Cancelled</span>
++                </div>
++                <span style={{ fontSize: '16px', fontWeight: '600', color: '#222' }}>10% (124)</span>
++              </div>
+             </div>
+           </div>
+         </div>
+[diff_block_end]
+
+Please note that the above snippet only shows the MODIFIED lines from the last change. It shows up to 3 lines of unchanged lines before and after the modified lines. The actual file contents may have many more lines not shown.
