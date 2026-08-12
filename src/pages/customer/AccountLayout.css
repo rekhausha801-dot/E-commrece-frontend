@@ -1,7 +1,7 @@
 .account-layout {
   display: flex;
   max-width: 1400px;
-  margin: -10px auto 40px auto;
+  margin: 40px auto;
   padding: 0 40px;
   gap: 40px;
   min-height: 70vh;

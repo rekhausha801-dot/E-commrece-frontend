@@ -1,0 +1,808 @@
+Created At: 2026-08-07T05:17:16Z
+Completed At: 2026-08-07T05:17:17Z
+File Path: `file:///c:/Users/Devi/Downloads/E-Commerce/E-Commerce/server/client/src/pages/admin/ProductManagement.jsx`
+Total Lines: 1144
+Total Bytes: 61885
+Showing lines 1 to 800
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: import React, { useState, useRef } from 'react';
+2: import { useNavigate } from 'react-router-dom';
+3: import './ProductManagement.css';
+4: import { 
+5:   Plus, 
+6:   Download, 
+7:   Image as ImageIcon,
+8:   Grid,
+9:   Box,
+10:   Tag,
+11:   List,
+12:   Layout,
+13:   Globe,
+14:   Star,
+15:   HelpCircle,
+16:   FileText,
+17:   Save,
+18:   Pencil,
+19:   Trash2,
+20:   Eye,
+21:   Share2,
+22:   ChevronLeft,
+23:   ChevronRight,
+24:   MoreVertical,
+25:   CloudUpload,
+26:   Info,
+27:   Check,
+28:   X,
+29:   ChevronDown,
+30:   ShoppingBag,
+31:   ClipboardList,
+32:   ChevronUp,
+33:   Filter,
+34:   Upload,
+35:   Search,
+36:   Bell,
+37:   Bold,
+38:   Italic,
+39:   Underline,
+40:   ListOrdered,
+41:   AlignLeft,
+42:   ChevronsUpDown,
+43:   UploadCloud,
+44:   Link,
+45:   Lightbulb,
+46:   Camera,
+47:   Package,
+48:   FileSpreadsheet,
+49:   ArrowRight
+50: 
+51: 
+52: } from 'lucide-react';
+53: 
+54: 
+55: const mockProducts = [
+56:   { id: 1, name: "Classic Black T-Shirt", sku: "TSHIRT001", cat: "Men Clothing", brand: "Roadster", price: "₹699", oldPrice: "₹999", discount: "30% OFF", stock: 120, status: "In Stock", img: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600&q=90" },
+57:   { id: 2, name: "Blue Hoodie", sku: "HOODIE002", cat: "Men Clothing", brand: "Nike", price: "₹1,499", oldPrice: "₹1,999", discount: "25% OFF", stock: 35, status: "Low Stock", img: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600&q=90" },
+58:   { id: 3, name: "Women Rose Watch", sku: "WATCH003", cat: "Accessories", brand: "Fastrack", price: "₹2,399", oldPrice: "₹2,999", discount: "20% OFF", stock: 18, status: "Low Stock", img: "https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=600&q=90" },
+59:   { id: 4, name: "Running Shoes", sku: "SHOE004", cat: "Footwear", brand: "Adidas", price: "₹2,999", oldPrice: "₹3,499", discount: "15% OFF", stock: 50, status: "In Stock", img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=90" },
+60:   { id: 5, name: "Polarized Sunglasses", sku: "SUNG005", cat: "Accessories", brand: "Ray-Ban", price: "₹1,199", oldPrice: "₹1,599", discount: "25% OFF", stock: 0, status: "Out of Stock", img: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=600&q=90" }
+61: ];
+62: 
+63: const ProductManagement = () => {
+64:   const navigate = useNavigate();
+65:   const [products, setProducts] = useState(mockProducts);
+66:   const [currentPage, setCurrentPage] = useState(1);
+67:   const [editingProduct, setEditingProduct] = useState(null);
+68:   const [isEditing, setIsEditing] = useState(false);
+69:   const [currentStep, setCurrentStep] = useState(1);
+70:   const [activeDropdown, setActiveDropdown] = useState(null);
+71:   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+72:   const importFileInputRef = useRef(null);
+73: 
+74:   const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 5));
+75:   const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
+76: 
+77:   const toggleDropdown = (id) => {
+78:     setActiveDropdown(activeDropdown === id ? null : id);
+79:   };
+80:   
+81:   const initialFormState = {
+82:     name: '', sku: '', cat: '', brand: '',
+83:     shortDesc: '', fullDesc: '',
+84:     price: '', discount: '', salePrice: '', stock: '', lowStock: '10', status: 'Active',
+85:     seoTitle: '', seoDesc: '', seoKeywords: ''
+86:   };
+87:   const [formData, setFormData] = useState(initialFormState);
+88:   
+89:   const initialSpecs = [
+90:     { spec: 'Fabric', val: '' },
+91:     { spec: 'Fit', val: '' },
+92:     { spec: 'Sleeve', val: '' },
+93:     { spec: 'Occasion', val: '' }
+94:   ];
+95:   const [specs, setSpecs] = useState(initialSpecs);
+96: 
+97:   const [missingDetails, setMissingDetails] = useState([
+98:     { question: "Does this product have a size chart?", answer: "" },
+99:     { question: "Is Cash on Delivery available?", answer: "" },
+100:     { question: "Can I exchange the product if size doesn't fit?", answer: "" },
+101:     { question: "Is this product available in other colors?", answer: "" },
+102:     { question: "Is this product suitable for summer?", answer: "" }
+103:   ]);
+104:   const [answeringIndex, setAnsweringIndex] = useState(null);
+105:   const [tempAnswer, setTempAnswer] = useState("");
+106: 
+107:   const [adminReviewRating, setAdminReviewRating] = useState(0);
+108:   const [adminReviewHover, setAdminReviewHover] = useState(0);
+109:   const [adminReviewTitle, setAdminReviewTitle] = useState('');
+110:   const [adminReviewText, setAdminReviewText] = useState('');
+111:   const [adminReviewPhotos, setAdminReviewPhotos] = useState([]);
+112:   const adminReviewFileRef = useRef(null);
+113: 
+114:   const handleAdminReviewPhotoUpload = (e) => {
+115:     const files = Array.from(e.target.files);
+116:     if (files.length > 0) {
+117:       const newUrls = files.map(f => URL.createObjectURL(f));
+118:       setAdminReviewPhotos(prev => [...prev, ...newUrls]);
+119:     }
+120:   };
+121: 
+122:   const handleSpecChange = (index, field, value) => {
+123:     const newSpecs = [...specs];
+124:     newSpecs[index][field] = value;
+125:     setSpecs(newSpecs);
+126:   };
+127: 
+128:   const handleAddSpec = () => {
+129:     setSpecs([...specs, { spec: '', val: '' }]);
+130:   };
+131: 
+132:   const handleRemoveSpec = (idx) => {
+133:     setSpecs(specs.filter((_, i) => i !== idx));
+134:   };
+135: 
+136:   const initialSizeGuide = [
+137:     { size: 'S', bust: '', waist: '', length: '' },
+138:     { size: 'M', bust: '', waist: '', length: '' },
+139:     { size: 'L', bust: '', waist: '', length: '' },
+140:     { size: 'XL', bust: '', waist: '', length: '' }
+141:   ];
+142:   const [sizeGuide, setSizeGuide] = useState(initialSizeGuide);
+143: 
+144:   const handleSizeGuideChange = (index, field, value) => {
+145:     const newGuide = [...sizeGuide];
+146:     newGuide[index][field] = value;
+147:     setSizeGuide(newGuide);
+148:   };
+149: 
+150:   const handleAddSizeGuide = () => {
+151:     setSizeGuide([...sizeGuide, { size: '', bust: '', waist: '', length: '' }]);
+152:   };
+153: 
+154:   const handleRemoveSizeGuide = (idx) => {
+155:     setSizeGuide(sizeGuide.filter((_, i) => i !== idx));
+156:   };
+157: 
+158:   const handleInputChange = (e) => {
+159:     const { name, value } = e.target;
+160:     setFormData(prev => ({ ...prev, [name]: value }));
+161:   };
+162:   
+163:   const [coverImagePreview, setCoverImagePreview] = useState(null);
+164:   const fileInputRef = useRef(null);
+165:   
+166:   const [galleryImages, setGalleryImages] = useState([]);
+167:   const galleryInputRef = useRef(null);
+168: 
+169:   const handleGalleryUpload = (e) => {
+170:     const files = Array.from(e.target.files);
+171:     const newUrls = files.map(f => URL.createObjectURL(f));
+172:     setGalleryImages(prev => [...prev, ...newUrls]);
+173:   };
+174: 
+175:   const removeGalleryImage = (idx) => {
+176:     setGalleryImages(prev => prev.filter((_, i) => i !== idx));
+177:   };
+178:   
+179:   const [faqs, setFaqs] = useState([]);
+180: 
+181:   const handleAddFaq = () => {
+182:     setFaqs([...faqs, { question: '', answer: '', status: 'Active' }]);
+183:   };
+184: 
+185:   const handleFaqChange = (index, field, value) => {
+186:     const newFaqs = [...faqs];
+187:     newFaqs[index][field] = value;
+188:     setFaqs(newFaqs);
+189:   };
+190:   
+191:   const [sizes, setSizes] = useState(['S', 'M', 'L', 'XL', 'XXL']);
+192:   const [selectedSizes, setSelectedSizes] = useState([]);
+193:   const [colors, setColors] = useState([
+194:     { name: 'Black', hex: '#000' },
+195:     { name: 'White', hex: '#fff' },
+196:     { name: 'Blue', hex: '#3b82f6' },
+197:     { name: 'Green', hex: '#22c55e' },
+198:     { name: 'Grey', hex: '#9ca3af' },
+199:     { name: 'Red', hex: '#ef4444' }
+200:   ]);
+201:   const [selectedColors, setSelectedColors] = useState([]);
+202: 
+203:   const toggleSize = (size) => {
+204:     setSelectedSizes(prev => prev.includes(size) ? prev.filter(s => s !== size) : [...prev, size]);
+205:   };
+206: 
+207:   const toggleColor = (colorName) => {
+208:     setSelectedColors(prev => prev.includes(colorName) ? prev.filter(c => c !== colorName) : [...prev, colorName]);
+209:   };
+210: 
+211:   const handleAddSize = () => {
+212:     const size = prompt("Enter new size (e.g., 3XL):");
+213:     if (size && !sizes.includes(size.toUpperCase())) {
+214:       setSizes([...sizes, size.toUpperCase()]);
+215:     }
+216:   };
+217: 
+218:   const handleAddColor = () => {
+219:     const name = prompt("Enter color name (e.g., Purple):");
+220:     if (!name) return;
+221:     const hex = prompt("Enter color hex code (e.g., #8b5cf6):", "#000000");
+222:     if (name && hex) {
+223:       setColors([...colors, { name, hex }]);
+224:     }
+225:   };
+226:   
+227:   const handleRemoveColor = (nameToRemove) => {
+228:     setColors(colors.filter(c => c.name !== nameToRemove));
+229:   };
+230:   
+231:   const currentProducts = currentPage === 1 ? products : [];
+232:   
+233:   const handleEditClick = (product) => {
+234:     setEditingProduct(product);
+235:     setCoverImagePreview(null);
+236:     setFormData({
+237:       name: product.name || '',
+238:       sku: product.sku || '',
+239:       cat: product.cat || '',
+240:       brand: product.brand || '',
+241:       shortDesc: product.shortDesc || '',
+242:       fullDesc: product.fullDesc || '',
+243:       price: product.oldPrice?.replace(/[^0-9.]/g, '') || '',
+244:       discount: product.discount?.replace(/[^0-9.]/g, '') || '',
+245:       salePrice: product.price?.replace(/[^0-9.]/g, '') || '',
+246:       stock: product.stock ?? '',
+247:       lowStock: product.lowStock || '10',
+248:       status: product.status || 'Active',
+249:       seoTitle: product.seoTitle || '',
+250:       seoDesc: product.seoDesc || '',
+251:       seoKeywords: product.seoKeywords || ''
+252:     });
+253:     setSpecs(product.specs || initialSpecs);
+254:     setSizeGuide(product.sizeGuide || initialSizeGuide);
+255:     setSelectedSizes(product.sizes || []);
+256:     setSelectedColors(product.colors || []);
+257:     setGalleryImages(product.gallery || []);
+258:     setFaqs(product.faqs || []);
+259:     
+260:     setAdminReviewRating(product.adminReview?.rating || 0);
+261:     setAdminReviewTitle(product.adminReview?.title || '');
+262:     setAdminReviewText(product.adminReview?.text || '');
+263:     setAdminReviewPhotos(product.adminReview?.photos || []);
+264: 
+265:     setIsEditing(true);
+266:     setCurrentStep(1);
+267:     window.scrollTo(0, 0);
+268:   };
+269:   
+270:   const handleAddNew = () => {
+271:     setEditingProduct(null);
+272:     setCoverImagePreview(null);
+273:     setFormData(initialFormState);
+274:     setSpecs(initialSpecs);
+275:     setSizeGuide(initialSizeGuide);
+276:     setSelectedSizes([]);
+277:     setSelectedColors([]);
+278:     setGalleryImages([]);
+279:     setFaqs([]);
+280:     
+281:     setAdminReviewRating(0);
+282:     setAdminReviewTitle('');
+283:     setAdminReviewText('');
+284:     setAdminReviewPhotos([]);
+285: 
+286:     setIsEditing(true);
+287:     setCurrentStep(1);
+288:     window.scrollTo(0, 0);
+289:   };
+290: 
+291:   const handleSaveProduct = () => {
+292:     if (!formData.name || !formData.sku || !formData.price || !formData.cat) {
+293:       alert("Please fill in all the required fields (Name, SKU, Category, and Price) before saving.");
+294:       return;
+295:     }
+296: 
+297:     const updatedProduct = {
+298:       ...editingProduct,
+299:       id: editingProduct ? editingProduct.id : Date.now(),
+300:       name: formData.name,
+301:       sku: formData.sku,
+302:       cat: formData.cat,
+303:       brand: formData.brand,
+304:       shortDesc: formData.shortDesc,
+305:       fullDesc: formData.fullDesc,
+306:       price: `₹${formData.salePrice || formData.price}`,
+307:       oldPrice: `₹${formData.price}`,
+308:       discount: formData.discount ? `${formData.discount}% OFF` : '',
+309:       stock: parseInt(formData.stock) || 0,
+310:       lowStock: parseInt(formData.lowStock) || 10,
+311:       status: formData.status,
+312:       seoTitle: formData.seoTitle,
+313:       seoDesc: formData.seoDesc,
+314:       seoKeywords: formData.seoKeywords,
+315:       sizes: selectedSizes,
+316:       colors: selectedColors,
+317:       specs: specs,
+318:       sizeGuide: sizeGuide,
+319:       img: coverImagePreview || (editingProduct ? editingProduct.img : ''),
+320:       gallery: galleryImages,
+321:       faqs: faqs,
+322:       adminReview: {
+323:         rating: adminReviewRating,
+324:         title: adminReviewTitle,
+325:         text: adminReviewText,
+326:         photos: adminReviewPhotos
+327:       }
+328:     };
+329: 
+330:     if (editingProduct) {
+331:       setProducts(products.map(p => p.id === editingProduct.id ? updatedProduct : p));
+332:     } else {
+333:       setProducts([updatedProduct, ...products]);
+334:     }
+335:     
+336:     setIsEditing(false);
+337:     setCurrentStep(1);
+338:     window.scrollTo(0, 0);
+339:   };
+340: 
+341:   const handleCancel = () => {
+342:     setEditingProduct(null);
+343:     setCoverImagePreview(null);
+344:     setGalleryImages([]);
+345:     setFormData(initialFormState);
+346:     setSpecs(initialSpecs);
+347:     setSizeGuide(initialSizeGuide);
+348:     setSelectedSizes([]);
+349:     setSelectedColors([]);
+350:     
+351:     setAdminReviewRating(0);
+352:     setAdminReviewTitle('');
+353:     setAdminReviewText('');
+354:     setAdminReviewPhotos([]);
+355: 
+356:     setIsEditing(false);
+357:     setCurrentStep(1);
+358:     window.scrollTo(0, 0);
+359:   };
+360:   
+361:   const handleDeleteProduct = (productId) => {
+362:     if (window.confirm("Are you sure you want to delete this product?")) {
+363:       setProducts(products.filter(p => p.id !== productId));
+364:     }
+365:   };
+366:   
+367:   const handleImageUpload = (e) => {
+368:     const file = e.target.files[0];
+369:     if (file) {
+370:       setCoverImagePreview(URL.createObjectURL(file));
+371:     }
+372:   };
+373:   
+374:   return (
+375:     <div className="product-management-page">
+376:       
+377:       {/* List View */}
+378:       {!isEditing && (
+379:         <div className="list-view-container">
+380:           <div className="list-view-header">
+381:             <h2 className="page-title">
+382:               Product List <span className="title-badge">125 Products</span>
+383:             </h2>
+384:             <div className="header-actions" style={{ alignItems: 'center' }}>
+385:               <button className="btn-outline" style={{ border: '1px dashed #d37920', color: '#d37920' }} onClick={() => setIsImportModalOpen(true)}><Upload size={14} /> Import</button>
+386:               <button className="btn-outline" style={{ borderColor: '#d37920', color: '#d37920' }}><Download size={14} /> Export</button>
+387:               <button className="btn-outline"><Filter size={14} /> Filter</button>
+388:               <div className="dropdown-wrapper" style={{ width: 'auto' }}>
+389:                 <button className="btn-outline" style={{ borderColor: '#d37920', color: '#d37920', display: 'flex', alignItems: 'center', gap: '6px' }}>Bulk Actions <ChevronDown size={14} /></button>
+390:               </div>
+391:               <button className="btn-solid-orange" onClick={handleAddNew}><Plus size={14} /> Add Product</button>
+392:             </div>
+393:           </div>
+394: 
+395:           <div className="filters-row">
+396:             <div className="filter-dropdowns">
+397:               <div className="dropdown-wrapper">
+398:                 <select className="form-input custom-select">
+399:                   <option>All Categories</option>
+400:                 </select>
+401:                 <ChevronDown size={14} className="select-icon" />
+402:               </div>
+403:               <div className="dropdown-wrapper">
+404:                 <select className="form-input custom-select">
+405:                   <option>All Brands</option>
+406:                 </select>
+407:                 <ChevronDown size={14} className="select-icon" />
+408:               </div>
+409:               <div className="dropdown-wrapper">
+410:                 <select className="form-input custom-select">
+411:                   <option>All Status</option>
+412:                 </select>
+413:                 <ChevronDown size={14} className="select-icon" />
+414:               </div>
+415:             </div>
+416:             <div className="filter-actions">
+417:               <button className="btn-search"><Search size={14} /> Search</button>
+418:               <button className="btn-reset">Reset</button>
+419:             </div>
+420:           </div>
+421: 
+422:           <div className="product-table-wrapper">
+423:             <table className="product-table">
+424:               <thead>
+425:                 <tr>
+426:                   <th style={{ width: '40px', paddingLeft: '16px' }}><input type="checkbox" className="custom-checkbox" /></th>
+427:                   <th colSpan="2">Product <ChevronsUpDown size={12} color="#ccc" style={{ marginLeft: '4px', verticalAlign: 'middle' }} /></th>
+428:                   <th>Category <ChevronsUpDown size={12} color="#ccc" style={{ marginLeft: '4px', verticalAlign: 'middle' }} /></th>
+429:                   <th>Brand <ChevronsUpDown size={12} color="#ccc" style={{ marginLeft: '4px', verticalAlign: 'middle' }} /></th>
+430:                   <th>Price <ChevronsUpDown size={12} color="#ccc" style={{ marginLeft: '4px', verticalAlign: 'middle' }} /></th>
+431:                   <th>Stock <ChevronsUpDown size={12} color="#ccc" style={{ marginLeft: '4px', verticalAlign: 'middle' }} /></th>
+432:                   <th>Status <ChevronsUpDown size={12} color="#ccc" style={{ marginLeft: '4px', verticalAlign: 'middle' }} /></th>
+433:                   <th>Actions</th>
+434:                 </tr>
+435:               </thead>
+436:               <tbody>
+437:                 {currentProducts.length > 0 ? currentProducts.map((p) => (
+438:                   <tr key={p.id}>
+439:                     <td style={{ paddingLeft: '16px' }}><input type="checkbox" className="custom-checkbox" /></td>
+440:                     <td style={{ width: '48px', paddingRight: 0 }}>
+441:                       <img src={p.img} alt={p.name} className="table-img-placeholder" style={{ objectFit: 'cover' }} />
+442:                     </td>
+443:                     <td>
+444:                       <div className="table-product-name">{p.name}</div>
+445:                       <div className="table-sku">SKU: {p.sku}</div>
+446:                     </td>
+447:                     <td>{p.cat}</td>
+448:                     <td>{p.brand}</td>
+449:                     <td>
+450:                       <div className="table-price">
+451:                         <strong>{p.price}</strong> <span className="old-price">{p.oldPrice}</span>
+452:                       </div>
+453:                       <div className="table-discount">{p.discount}</div>
+454:                     </td>
+455:                     <td><span className={`stock-text ${p.stock > 0 ? (p.stock > 40 ? 'text-green' : 'text-orange') : 'text-red'}`}>{p.stock}</span></td>
+456:                     <td>
+457:                       <span className={`status-badge ${p.status === 'In Stock' ? 'success' : p.status === 'Low Stock' ? 'warning' : 'danger'}`}>
+458:                         {p.status}
+459:                       </span>
+460:                     </td>
+461:                     <td>
+462:                       <div className="table-actions action-menu-wrapper">
+463:                         <button className="btn-three-dot" onClick={() => toggleDropdown(p.id)}>
+464:                           <MoreVertical size={16} />
+465:                         </button>
+466:                         {activeDropdown === p.id && (
+467:                           <div className="action-menu-dropdown">
+468:                             <button className="action-btn-text" onClick={() => { setActiveDropdown(null); navigate(`/product/${p.id}`); }}><Eye size={12} /> View Product</button>
+469:                             <button className="action-btn-text" onClick={() => { handleEditClick(p); setActiveDropdown(null); }}><Pencil size={12} /> Edit Product</button>
+470:                             <button className="action-btn-text" onClick={() => { 
+471:                               navigator.clipboard.writeText(`${window.location.origin}/product/${p.id}`);
+472:                               alert('Product link copied to clipboard!');
+473:                               setActiveDropdown(null); 
+474:                             }}><Share2 size={12} /> Share Product</button>
+475:                             <button className="action-btn-text danger" onClick={() => { handleDeleteProduct(p.id); setActiveDropdown(null); }}><Trash2 size={12} /> Delete Product</button>
+476:                           </div>
+477:                         )}
+478:                       </div>
+479:                     </td>
+480:                   </tr>
+481:                 )) : (
+482:                   <tr>
+483:                     <td colSpan="9" style={{ textAlign: 'center', padding: '60px 20px' }}>
+484:                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+485:                         <div style={{ background: '#fcf8f2', padding: '16px', borderRadius: '50%' }}>
+486:                           <ShoppingBag size={48} color="#d3a763" />
+487:                         </div>
+488:                         <h4 style={{ margin: '8px 0 0 0', color: '#333', fontSize: '16px' }}>No products found</h4>
+489:                         <p style={{ margin: 0, color: '#888', fontSize: '13px' }}>Your product list is currently empty.</p>
+490:                       </div>
+491:                     </td>
+492:                   </tr>
+493:                 )}
+494:               </tbody>
+495:             </table>
+496:             
+497:             <div className="pagination-wrapper">
+498:               <span className="pagination-info">Showing {currentPage === 1 ? "1 to 5" : "0"} of 125 products</span>
+499:               <div className="pagination-controls-right">
+500:                 <div className="pagination-controls">
+501:                   <button className="page-btn" onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}><ChevronLeft size={14} /></button>
+502:                   <button className={`page-btn ${currentPage === 1 ? 'active' : ''}`} onClick={() => setCurrentPage(1)}>1</button>
+503:                   <button className={`page-btn ${currentPage === 2 ? 'active' : ''}`} onClick={() => setCurrentPage(2)}>2</button>
+504:                   <button className={`page-btn ${currentPage === 3 ? 'active' : ''}`} onClick={() => setCurrentPage(3)}>3</button>
+505:                   <span className="page-dots">...</span>
+506:                   <button className="page-btn">25</button>
+507:                   <button className="page-btn" onClick={() => setCurrentPage(Math.min(25, currentPage + 1))}><ChevronRight size={14} /></button>
+508:                 </div>
+509:                 <div className="items-per-page">
+510:                   <select className="form-input custom-select small-select">
+511:                     <option>5 / page</option>
+512:                     <option>10 / page</option>
+513:                     <option>20 / page</option>
+514:                   </select>
+515:                   <ChevronDown size={14} className="select-icon" />
+516:                 </div>
+517:               </div>
+518:             </div>
+519:           </div>
+520:           
+521:           {/* Quick Actions at the bottom */}
+522:           <div className="quick-actions-section">
+523:             <h4 className="section-title">Quick Actions</h4>
+524:             <div className="quick-actions-grid">
+525:               <button className="quick-action-card" onClick={handleAddNew}>
+526:                 <div className="icon-circle"><Plus size={18} /></div>
+527:                 <span>Add Product</span>
+528:               </button>
+529:               <button className="quick-action-card">
+530:                 <div className="icon-circle"><Grid size={18} /></div>
+531:                 <span>Add Category</span>
+532:               </button>
+533:               <button className="quick-action-card">
+534:                 <div className="icon-circle"><Tag size={18} /></div>
+535:                 <span>Add Brand</span>
+536:               </button>
+537:               <button className="quick-action-card">
+538:                 <div className="icon-circle"><Bell size={18} /></div>
+539:                 <span>Stock Alert</span>
+540:               </button>
+541:               <button className="quick-action-card" onClick={() => setIsImportModalOpen(true)}>
+542:                 <div className="icon-circle"><Upload size={18} /></div>
+543:                 <span>Import Products</span>
+544:               </button>
+545:               <button className="quick-action-card">
+546:                 <div className="icon-circle"><Download size={18} /></div>
+547:                 <span>Export Products</span>
+548:               </button>
+549:             </div>
+550:           </div>
+551:         </div>
+552:       )}
+553: 
+554: 
+555:       {/* Edit View */}
+556:       {isEditing && (
+557:         <div className="dashboard-add-product">
+558:           <div className="dash-header-simple">
+559:             <div className="breadcrumb">Dashboard &gt; Products &gt; <span>Add New Product</span></div>
+560:           </div>
+561:           <div className="dash-title-section-flex">
+562:             <div>
+563:               <h2>Add New Product</h2>
+564:               <p>Fill in the details below to add a new product to your store.</p>
+565:             </div>
+566:             <div className="dash-header-actions">
+567:               <button className="btn-dash-cancel" onClick={handleCancel}>Cancel</button>
+568:               <button className="btn-dash-save" onClick={handleSaveProduct}><Save size={16} /> Save Product</button>
+569:             </div>
+570:           </div>
+571: 
+572:           <div className="dashboard-grid">
+573:             {currentStep === 1 && (
+574:               <>
+575:             {/* Card 1: Basic Information */}
+576:             <div className="dash-card card-span-2">
+577:               <div className="dash-card-header">
+578:                 <span className="step-number">1</span>
+579:                 <h3>Basic Information</h3>
+580:               </div>
+581:               <div className="dash-card-content">
+582:                 <div className="form-row-2">
+583:                   <div className="form-group">
+584:                     <label>Product Name <span>*</span></label>
+585:                     <input type="text" name="name" className="form-input" placeholder="Enter product name" value={formData.name} onChange={handleInputChange} />
+586:                   </div>
+587:                   <div className="form-group">
+588:                     <label>SKU <span>*</span></label>
+589:                     <input type="text" name="sku" className="form-input" placeholder="Enter SKU" value={formData.sku} onChange={handleInputChange} />
+590:                   </div>
+591:                 </div>
+592:                 <div className="form-row-2">
+593:                   <div className="form-group">
+594:                     <label>Category <span>*</span></label>
+595:                     <div className="dropdown-wrapper">
+596:                       <select name="cat" className="form-input custom-select" value={formData.cat} onChange={handleInputChange}>
+597:                         <option value="">Select category</option>
+598:                         <option value="Men Clothing">Men Clothing</option>
+599:                         <option value="Accessories">Accessories</option>
+600:                         <option value="Footwear">Footwear</option>
+601:                       </select>
+602:                       <ChevronDown size={14} className="select-icon" />
+603:                     </div>
+604:                   </div>
+605:                   <div className="form-group">
+606:                     <label>Brand <span>*</span></label>
+607:                     <div className="dropdown-wrapper">
+608:                       <select name="brand" className="form-input custom-select" value={formData.brand} onChange={handleInputChange}>
+609:                         <option value="">Select brand</option>
+610:                         <option value="Roadster">Roadster</option>
+611:                         <option value="Nike">Nike</option>
+612:                         <option value="Fastrack">Fastrack</option>
+613:                         <option value="Adidas">Adidas</option>
+614:                         <option value="Ray-Ban">Ray-Ban</option>
+615:                       </select>
+616:                       <ChevronDown size={14} className="select-icon" />
+617:                     </div>
+618:                   </div>
+619:                 </div>
+620:                 <div className="form-group">
+621:                   <label>Short Description</label>
+622:                   <div className="input-with-count">
+623:                     <input type="text" name="shortDesc" className="form-input" placeholder="Enter short description" value={formData.shortDesc} onChange={handleInputChange} />
+624:                     <span className="char-count">0/150</span>
+625:                   </div>
+626:                 </div>
+627:                 <div className="form-group">
+628:                   <label>Full Description</label>
+629:                   <div className="rte-container">
+630:                     <div className="rte-toolbar">
+631:                       <div className="rte-group"><span className="rte-text">Paragraph</span><ChevronDown size={12} /></div>
+632:                       <div className="rte-divider"></div>
+633:                       <button className="rte-btn"><Bold size={14} /></button>
+634:                       <button className="rte-btn"><Italic size={14} /></button>
+635:                       <button className="rte-btn"><Underline size={14} /></button>
+636:                       <div className="rte-divider"></div>
+637:                       <button className="rte-btn"><List size={14} /></button>
+638:                       <button className="rte-btn"><ListOrdered size={14} /></button>
+639:                       <div className="rte-divider"></div>
+640:                       <button className="rte-btn"><AlignLeft size={14} /></button>
+641:                       <button className="rte-btn"><Link size={14} /></button>
+642:                       <button className="rte-btn"><ImageIcon size={14} /></button>
+643:                     </div>
+644:                     <div className="textarea-wrapper">
+645:                       <textarea name="fullDesc" className="form-input rte-textarea" rows="4" placeholder="Write full description here..." value={formData.fullDesc} onChange={handleInputChange}></textarea>
+646:                       <span className="char-count-bottom">0/2000</span>
+647:                     </div>
+648:                   </div>
+649:                 </div>
+650:               </div>
+651:             </div>
+652: 
+653:             {/* Card 2: Product Images */}
+654:             <div className="dash-card card-span-1">
+655:               <div className="dash-card-header">
+656:                 <span className="step-number">2</span>
+657:                 <h3>Product Images</h3>
+658:               </div>
+659:               <div className="dash-card-content">
+660:                 <div className="image-upload-layout">
+661:                   <div className={`cover-upload ${coverImagePreview || editingProduct?.img ? 'has-image' : ''}`} onClick={() => fileInputRef.current?.click()}>
+662:                     <input type="file" ref={fileInputRef} onChange={handleImageUpload} style={{ display: 'none' }} accept="image/*" />
+663:                     {(coverImagePreview || editingProduct?.img) ? (
+664:                       <>
+665:                         <img src={coverImagePreview || editingProduct.img} alt="Cover" className="cover-img-preview" />
+666:                         <div className="cover-img-overlay">
+667:                           <Pencil size={18} color="white" />
+668:                           <span>Change Image</span>
+669:                         </div>
+670:                       </>
+671:                     ) : (
+672:                       <>
+673:                         <CloudUpload size={32} color="#c28833" />
+674:                         <div className="upload-text">Upload Cover Image</div>
+675:                         <div className="upload-hint">JPG, PNG or WEBP<br/>(Max 2MB)</div>
+676:                       </>
+677:                     )}
+678:                   </div>
+679:                   <div className="gallery-upload">
+680:                     <div className="gallery-title">Gallery Images</div>
+681:                     <div className="gallery-grid">
+682:                       {galleryImages.map((img, idx) => (
+683:                         <div key={idx} className="gallery-box" style={{ position: 'relative' }}>
+684:                           <img src={img} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '6px' }} alt="Gallery" />
+685:                           <div style={{ position: 'absolute', top: -6, right: -6, background: '#ef4444', color: 'white', borderRadius: '50%', width: 16, height: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: 10 }} onClick={() => removeGalleryImage(idx)}>✕</div>
+686:                         </div>
+687:                       ))}
+688:                       {Array.from({ length: Math.max(0, 5 - galleryImages.length) }).map((_, i) => (
+689:                         <div key={`empty-${i}`} className="gallery-box"><Plus size={20} color="#ccc" /></div>
+690:                       ))}
+691:                     </div>
+692:                     <input type="file" multiple ref={galleryInputRef} onChange={handleGalleryUpload} style={{ display: 'none' }} accept="image/*" />
+693:                     <button className="btn-add-more-img" onClick={() => galleryInputRef.current?.click()}><Plus size={14}/> Add More Images</button>
+694:                   </div>
+695:                 </div>
+696:                 <div className="tips-box">
+697:                   <Lightbulb size={20} color="#d97706" />
+698:                   <div>
+699:                     <strong>Tips</strong>
+700:                     <p>Upload high quality images for better customer experience.<br/>Recommended size: 800 × 1000 px</p>
+701:                   </div>
+702:                 </div>
+703:               </div>
+704:             </div>
+705: 
+706:               </>
+707:             )}
+708:             {currentStep === 2 && (
+709:               <>
+710:             {/* Card 3: Pricing & Inventory */}
+711:             <div className="dash-card card-span-2">
+712:               <div className="dash-card-header">
+713:                 <span className="step-number">3</span>
+714:                 <h3>Pricing & Inventory</h3>
+715:               </div>
+716:               <div className="dash-card-content">
+717:                 <div className="form-row-3">
+718:                   <div className="form-group">
+719:                     <label>Price (₹) <span>*</span></label>
+720:                     <input type="text" name="price" className="form-input" placeholder="Enter price" value={formData.price} onChange={handleInputChange} />
+721:                   </div>
+722:                   <div className="form-group">
+723:                     <label>Discount (%)</label>
+724:                     <input type="text" name="discount" className="form-input" placeholder="Enter discount" value={formData.discount} onChange={handleInputChange} />
+725:                   </div>
+726:                   <div className="form-group">
+727:                     <label>Sale Price (₹)</label>
+728:                     <input type="text" name="salePrice" className="form-input bg-gray" placeholder="Auto calculated" readOnly value={formData.salePrice} />
+729:                   </div>
+730:                 </div>
+731:                 <div className="form-row-3">
+732:                   <div className="form-group">
+733:                     <label>Stock Quantity <span>*</span></label>
+734:                     <input type="text" name="stock" className="form-input" placeholder="Enter stock" value={formData.stock} onChange={handleInputChange} />
+735:                   </div>
+736:                   <div className="form-group">
+737:                     <label>Low Stock Alert</label>
+738:                     <input type="text" name="lowStock" className="form-input" placeholder="Enter alert quantity" value={formData.lowStock} onChange={handleInputChange} />
+739:                   </div>
+740:                   <div className="form-group">
+741:                     <label>Product Status <span>*</span></label>
+742:                     <div className="dropdown-wrapper">
+743:                       <select name="status" className="form-input custom-select" value={formData.status} onChange={handleInputChange}>
+744:                         <option value="Active">Active</option>
+745:                         <option value="In Stock">In Stock</option>
+746:                         <option value="Low Stock">Low Stock</option>
+747:                         <option value="Out of Stock">Out of Stock</option>
+748:                       </select>
+749:                       <ChevronDown size={14} className="select-icon" />
+750:                     </div>
+751:                   </div>
+752:                 </div>
+753:               </div>
+754:             </div>
+755: 
+756:             {/* Card 4: Product Variants */}
+757:             <div className="dash-card card-span-1">
+758:               <div className="dash-card-header">
+759:                 <span className="step-number">4</span>
+760:                 <h3>Product Variants</h3>
+761:               </div>
+762:               <div className="dash-card-content">
+763:                 <div className="form-group">
+764:                   <label>Size</label>
+765:                   <div className="variant-boxes">
+766:                     {sizes.map(sz => (
+767:                       <div key={sz} className={`v-box ${selectedSizes.includes(sz) ? 'active' : ''}`} onClick={() => toggleSize(sz)}>{sz}</div>
+768:                     ))}
+769:                     <button className="btn-add-variant-dash" onClick={handleAddSize}><Plus size={12}/> Add Size</button>
+770:                   </div>
+771:                 </div>
+772:                 <div className="form-group mt-16">
+773:                   <label>Color</label>
+774:                   <div className="color-boxes">
+775:                     {colors.map(c => (
+776:                       <div key={c.name} className={`c-box ${selectedColors.includes(c.name) ? 'active' : ''}`} onClick={() => toggleColor(c.name)}>
+777:                         <span className="c-dot" style={{ backgroundColor: c.hex }}></span> {c.name}
+778:                       </div>
+779:                     ))}
+780:                     <button className="btn-add-variant-dash" onClick={handleAddColor}><Plus size={12}/> Add Color</button>
+781:                   </div>
+782:                 </div>
+783:               </div>
+784:             </div>
+785: 
+786:               </>
+787:             )}
+788:             {currentStep === 3 && (
+789:               <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '20px' }}>
+790:             {/* Card 5: Specifications */}
+791:             <div className="dash-card" style={{ flex: 1, margin: 0 }}>
+792:               <div className="dash-card-header">
+793:                 <span className="step-number">5</span>
+794:                 <h3>Specifications</h3>
+795:               </div>
+796:               <div className="dash-card-content">
+797:                 <table className="dash-table">
+798:                   <thead>
+799:                     <tr><th>Specification</th><th>Value</th><th style={{width: '40px'}}></th></tr>
+800:                   </thead>
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

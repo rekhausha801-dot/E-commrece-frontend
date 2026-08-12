@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react'; // fix encoding
 import { 
   Star, Camera, ThumbsUp, ThumbsDown, CheckCircle2, 
   HelpCircle, Gift, X, ChevronRight, Tag, ShieldCheck, 
-  Smile, Award, MessageSquare, ChevronLeft, Image as ImageIcon
+  Smile, Award, MessageSquare, ChevronLeft, Image as ImageIcon,
+  ChevronUp, ChevronDown
 } from 'lucide-react';
 import './CustomerReviews.css';
 
@@ -34,6 +35,8 @@ export default function CustomerReviews() {
   const [reviewTitle, setReviewTitle] = useState('');
   const [uploadedPhotos, setUploadedPhotos] = useState([]);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [isWriteReviewOpen, setIsWriteReviewOpen] = useState(true);
+  const fileInputRef = useRef(null);
 
  
   const [activePhotoModal, setActivePhotoModal] = useState(null); // index or null
@@ -286,89 +289,99 @@ export default function CustomerReviews() {
         </div>
 
         {/* Write a Review Section */}
-        <div className="cr-write-section" id="write-review-form-section">
-          <div className="cr-write-header">
-            <div>
-              <h3 className="cr-write-title">Write a Review</h3>
-              <p className="cr-write-subtitle">Share your experience with this product</p>
-            </div>
-            {/* Interactive Rating Stars */}
-            <div className="cr-star-picker">
-              {[1, 2, 3, 4, 5].map(star => (
-                <Star
-                  key={star}
-                  size={26}
-                  className="cr-star-interactive"
-                  fill={(hoverRating || newRating) >= star ? "#8f7a5b" : "none"}
-                  color={(hoverRating || newRating) >= star ? "#8f7a5b" : "#d1d5db"}
-                  onMouseEnter={() => setHoverRating(star)}
-                  onMouseLeave={() => setHoverRating(0)}
-                  onClick={() => setNewRating(star)}
-                />
-              ))}
-            </div>
+        <div className="cr-write-section" id="write-review-form-section" style={{ padding: '24px', border: '1px solid #eee', borderRadius: '12px', marginBottom: '32px' }}>
+          <div 
+            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+            onClick={() => setIsWriteReviewOpen(!isWriteReviewOpen)}
+          >
+            <h3 style={{ fontSize: '24px', fontWeight: '600', color: '#111', margin: 0 }}>Write a Review</h3>
+            <button type="button" style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#f5f5f5', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+              {isWriteReviewOpen ? <ChevronUp size={20} color="#555" /> : <ChevronDown size={20} color="#555" />}
+            </button>
           </div>
 
-          <form onSubmit={handleSubmitReview} className="cr-write-form">
-            <div className="cr-form-inputs-row">
-              <input
-                type="text"
-                className="cr-input-text"
-                placeholder="Your Name (Optional)"
-                value={reviewerName}
-                onChange={(e) => setReviewerName(e.target.value)}
-              />
-              <input
-                type="text"
-                className="cr-input-text"
-                placeholder="Review Headline (e.g. Excellent Quality!)"
-                value={reviewTitle}
-                onChange={(e) => setReviewTitle(e.target.value)}
-              />
-            </div>
-
-            <textarea
-              className="cr-textarea"
-              rows={4}
-              placeholder="What did you like or dislike? Tell us more..."
-              value={reviewText}
-              onChange={(e) => setReviewText(e.target.value)}
-              required
-            />
-
-            {/* Uploaded Thumbnails Preview */}
-            {uploadedPhotos.length > 0 && (
-              <div className="cr-uploaded-preview-row">
-                {uploadedPhotos.map((url, i) => (
-                  <div key={i} className="cr-upload-thumb">
-                    <img src={url} alt={`Upload ${i}`} />
-                    <button type="button" onClick={() => setUploadedPhotos(uploadedPhotos.filter((_, idx) => idx !== i))}>
-                      <X size={12} />
-                    </button>
-                  </div>
-                ))}
+          {isWriteReviewOpen && (
+            <form onSubmit={handleSubmitReview} style={{ marginTop: '32px' }}>
+              <div style={{ marginBottom: '24px' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#333', marginBottom: '8px' }}>Overall Rating</label>
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  {[1, 2, 3, 4, 5].map(star => (
+                    <Star
+                      key={star}
+                      size={28}
+                      style={{ cursor: 'pointer' }}
+                      fill={(hoverRating || newRating) >= star ? "#ccc" : "transparent"}
+                      color="#ccc"
+                      onMouseEnter={() => setHoverRating(star)}
+                      onMouseLeave={() => setHoverRating(0)}
+                      onClick={() => setNewRating(star)}
+                    />
+                  ))}
+                </div>
               </div>
-            )}
 
-            <div className="cr-form-actions">
-              <label className="cr-add-photo-btn">
-                <Camera size={18} color="#b58349" />
-                <span>Add Photo or Video (Optional)</span>
-                <span className="cr-photo-hint">.JPG, PNG up to 5MB</span>
+              <div style={{ marginBottom: '24px' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#333', marginBottom: '8px' }}>Review Title</label>
+                <input
+                  type="text"
+                  placeholder="Summary of your experience"
+                  value={reviewTitle}
+                  onChange={(e) => setReviewTitle(e.target.value)}
+                  style={{ width: '100%', padding: '16px', background: '#f9f9f9', border: 'none', borderRadius: '12px', fontSize: '14px', outline: 'none' }}
+                  required
+                />
+              </div>
+
+              <div style={{ marginBottom: '24px' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#333', marginBottom: '8px' }}>Your Review</label>
+                <textarea
+                  rows={4}
+                  placeholder="Tell us what you liked or disliked..."
+                  value={reviewText}
+                  onChange={(e) => setReviewText(e.target.value)}
+                  style={{ width: '100%', padding: '16px', background: '#f9f9f9', border: 'none', borderRadius: '12px', fontSize: '14px', outline: 'none', resize: 'vertical' }}
+                  required
+                />
+              </div>
+
+              <div style={{ marginBottom: '24px' }}>
+                <label style={{ display: 'block', fontSize: '14px', fontWeight: '600', color: '#333', marginBottom: '8px' }}>Add a Photo</label>
                 <input 
                   type="file" 
                   accept="image/*" 
                   multiple 
                   style={{ display: 'none' }} 
+                  ref={fileInputRef}
                   onChange={handlePhotoUpload} 
                 />
-              </label>
+                
+                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                  {uploadedPhotos.length > 0 && uploadedPhotos.map((url, i) => (
+                    <div key={i} style={{ position: 'relative', width: '100px', height: '100px', borderRadius: '8px', overflow: 'hidden' }}>
+                      <img src={url} alt={`Upload ${i}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      <button type="button" onClick={() => setUploadedPhotos(uploadedPhotos.filter((_, idx) => idx !== i))} style={{ position: 'absolute', top: 4, right: 4, background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none', borderRadius: '50%', padding: '4px', cursor: 'pointer' }}>
+                        <X size={12} />
+                      </button>
+                    </div>
+                  ))}
+                  
+                  <div 
+                    onClick={() => fileInputRef.current?.click()}
+                    style={{ width: '100%', padding: '40px', border: '2px dashed #eaeaea', borderRadius: '12px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', background: '#fafafa', color: '#666' }}
+                  >
+                    <Camera size={24} style={{ marginBottom: '12px' }} color="#888" />
+                    <span style={{ fontSize: '14px' }}>Click to upload image</span>
+                  </div>
+                </div>
+              </div>
 
-              <button type="submit" className="cr-submit-review-btn">
-                Submit Review
-              </button>
-            </div>
-          </form>
+              <div style={{ display: 'flex', justifyContent: 'flex-start', marginTop: '24px' }}>
+                <button type="submit" className="cr-submit-review-btn" style={{ padding: '12px 32px', background: '#111', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600' }}>
+                  Submit Review
+                </button>
+              </div>
+            </form>
+          )}
         </div>
 
         {/* Main Content Split: Left (All Reviews) & Right (Sidebar Stats) */}
