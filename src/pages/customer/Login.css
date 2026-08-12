@@ -12,7 +12,7 @@
   display: flex;
   width: 100%;
   max-width: 450px;
-  background-color: #ffffff;
+  background-color: #fdf9f1;
   border-radius: 20px;
   box-shadow: 0 15px 35px rgba(0,0,0,0.1);
   overflow: hidden;
@@ -96,7 +96,7 @@
 .form-wrapper h2 {
   font-size: 24px;
   font-weight: 400;
-  color: #222;
+  color: #C89953;
   margin-bottom: 8px;
   text-align: center;
 }
@@ -120,7 +120,7 @@
 .split-input-group {
   display: flex;
   align-items: center;
-  border: 1px solid #e0e0e0;
+  border: 1px solid #C89953;
   border-radius: 4px;
   height: 48px;
   padding: 0 16px;
@@ -130,11 +130,11 @@
 }
 
 .split-input-group:focus-within {
-  border-color: #222;
+  border-color: #B68645;
 }
 
 .input-icon {
-  color: #666;
+  color: #C89953;
   margin-right: 12px;
 }
 
@@ -149,13 +149,14 @@
 }
 
 .split-input-group input::placeholder {
-  color: #999;
+  color: #C89953;
+  opacity: 0.8;
 }
 
 .password-toggle {
   background: none;
   border: none;
-  color: #666;
+  color: #C89953;
   cursor: pointer;
   padding: 0;
   display: flex;
@@ -165,7 +166,7 @@
 
 .split-submit-btn {
   width: 100%;
-  background-color: #282a32;
+  background-color: #C89953;
   color: #ffffff;
   border: none;
   height: 48px;
@@ -179,7 +180,7 @@
 }
 
 .split-submit-btn:hover {
-  background-color: #1a1c22;
+  background-color: #B68645;
 }
 
 .split-submit-btn:disabled {
@@ -236,7 +237,7 @@
 }
 
 .register-link {
-  color: #d13d56;
+  color: #C89953;
   text-decoration: none;
   font-weight: 600;
   margin-left: 4px;

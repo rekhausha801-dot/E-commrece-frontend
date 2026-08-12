@@ -66,7 +66,7 @@ body {
   justify-content: center;
   cursor: pointer;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  color: #333;
+  color: #C89953;
   z-index: 10;
   transition: all 0.2s ease;
   flex-shrink: 0;
@@ -76,7 +76,8 @@ body {
 }
 
 .scroll-button:hover {
-  background: #f8f9fa;
+  background: #C89953;
+  color: white;
   transform: translateY(-50%) scale(1.05);
 }
 
@@ -278,8 +279,8 @@ body {
   height: 32px;
   border-radius: 50%;
   background: transparent;
-  border: 1px solid #dcd3c6;
-  color: #8c7b68;
+  border: 1px solid #C89953;
+  color: #C89953;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -290,8 +291,9 @@ body {
 
 .category-new-card:hover .category-arrow-btn {
   transform: translateX(3px);
-  background: #f4ede4;
-  border-color: #c1aba1;
+  background: #C89953;
+  color: white;
+  border-color: #C89953;
 }
 
 @media (max-width: 1024px) {

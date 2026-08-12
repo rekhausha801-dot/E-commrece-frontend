@@ -1,0 +1,59 @@
+Created At: 2026-08-07T06:29:08Z
+Completed At: 2026-08-07T06:29:08Z
+File Path: `file:///c:/Users/Devi/Downloads/E-Commerce/E-Commerce/server/client/src/pages/admin/ProductManagement.jsx`
+Total Lines: 1131
+Total Bytes: 61094
+Showing lines 500 to 550
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+500:                   </select>
+501:                   <ChevronDown size={14} className="select-icon" />
+502:                 </div>
+503:               </div>
+504:             </div>
+505:           </div>
+506:           
+507:           {/* Quick Actions at the bottom */}
+508:           <div className="quick-actions-section">
+509:             <h4 className="section-title">Quick Actions</h4>
+510:             <div className="quick-actions-grid">
+511:               <button className="quick-action-card" onClick={handleAddNew}>
+512:                 <div className="icon-circle"><Plus size={18} /></div>
+513:                 <span>Add Product</span>
+514:               </button>
+515:               <button className="quick-action-card">
+516:                 <div className="icon-circle"><Grid size={18} /></div>
+517:                 <span>Add Category</span>
+518:               </button>
+519:               <button className="quick-action-card">
+520:                 <div className="icon-circle"><Tag size={18} /></div>
+521:                 <span>Add Brand</span>
+522:               </button>
+523:               <button className="quick-action-card">
+524:                 <div className="icon-circle"><Bell size={18} /></div>
+525:                 <span>Stock Alert</span>
+526:               </button>
+527:               <button className="quick-action-card" onClick={() => setIsImportModalOpen(true)}>
+528:                 <div className="icon-circle"><Upload size={18} /></div>
+529:                 <span>Import Products</span>
+530:               </button>
+531:               <button className="quick-action-card">
+532:                 <div className="icon-circle"><Download size={18} /></div>
+533:                 <span>Export Products</span>
+534:               </button>
+535:             </div>
+536:           </div>
+537:         </div>
+538:       )}
+539: 
+540: 
+541:       {/* Edit View */}
+542:       {isEditing && (
+543:         <div className="dashboard-add-product">
+544:           <div className="dash-header-simple">
+545:             <div className="breadcrumb">Dashboard &gt; Products &gt; <span>Add New Product</span></div>
+546:           </div>
+547:           <div className="dash-title-section-flex">
+548:             <div>
+549:               <h2>Add New Product</h2>
+550:               <p>Fill in the details below to add a new product to your store.</p>
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.
