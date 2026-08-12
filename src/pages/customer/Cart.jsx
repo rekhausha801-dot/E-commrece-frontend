@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import './Cart.css';
 import kurtiImg from '../../assets/images/kurti.png';
 import { useCart } from '../../context/CartContext';
+import CheckoutStepper from '../../components/CheckoutStepper';
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -26,30 +27,7 @@ const Cart = () => {
     <div className="lux-cart-page">
       <div className="lux-cart-container">
        
-        <div className="lux-stepper-container">
-          <div className="lux-step active">
-            <div className="lux-step-icon">1</div>
-            <span className="lux-step-label">Cart</span>
-          </div>
-          <div className="lux-step-line pending"></div>
-
-          <div className="lux-step pending">
-            <div className="lux-step-icon">2</div>
-            <span className="lux-step-label">Address</span>
-          </div>
-          <div className="lux-step-line pending"></div>
-
-          <div className="lux-step pending">
-            <div className="lux-step-icon">3</div>
-            <span className="lux-step-label">Payment</span>
-          </div>
-          <div className="lux-step-line pending"></div>
-
-          <div className="lux-step pending">
-            <div className="lux-step-icon">4</div>
-            <span className="lux-step-label">Summary</span>
-          </div>
-        </div>
+        <CheckoutStepper currentStep={1} />
 
 
         <div className="lux-page-header">

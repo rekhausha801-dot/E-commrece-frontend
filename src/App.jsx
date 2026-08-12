@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/customer/Home";
@@ -28,10 +28,13 @@ import { OrderProvider } from "./context/OrderContext";
 import { CartProvider } from "./context/CartContext";
 import { NotificationProvider } from "./context/NotificationContext";
 import ReturnRefund from "./pages/customer/ReturnRefund";
-import Support from "./pages/customer/Support";
+import Coupons from "./pages/customer/Coupons";
+import Register from "./pages/customer/Register";
 import Notifications from "./pages/customer/Notifications";
+import Support from "./pages/customer/Support";
 import Login from "./pages/customer/Login";
-
+import AdminLayout from "./components/admin/AdminLayout";
+import ProductManagement from "./pages/admin/ProductManagement";
 function App() {
   return (
     <NotificationProvider>
@@ -39,10 +42,21 @@ function App() {
         <OrderProvider>
           <WishlistProvider>
             <BrowserRouter>
-              <Navbar />
-              <main className="main-content" style={{ flex: 1, paddingBottom: "40px" }}>
-                <Routes>
-              <Route path="/" element={<Home />} />
+              <Routes>
+                {/* Admin Routes */}
+                <Route path="/admin" element={<AdminLayout />}>
+                  <Route path="products" element={<ProductManagement />} />
+                  <Route path="dashboard" element={<h1>Dashboard Placeholder</h1>} />
+                </Route>
+
+                {/* Customer Routes with Navbar and Footer */}
+                <Route path="/*" element={
+                  <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+                    <Navbar />
+                    <main className="main-content" style={{ flex: 1, paddingBottom: "40px" }}>
+                      <Routes>
+                        <Route path="/" element={<Home />} />
+              <Route path="/register" element={<Register />} />
               <Route path="/login" element={<Login />} />
               <Route path="/collection" element={<Collection />} />
               <Route path="/western" element={<WesternCollection />} />
@@ -56,9 +70,7 @@ function App() {
               <Route path="/payment" element={<Payment />} />
               <Route path="/summary" element={<Summary />} />
               <Route path="/order-confirmed" element={<OrderConfirmed />} />
-
-
-              <Route path="/account/my-orders" element={<MyOrders />} />
+              <Route path="/coupons" element={<Coupons />} />
 
               <Route path="/account/my-orders" element={<MyOrders />} />
 
@@ -68,7 +80,9 @@ function App() {
                 <Route path="settings" element={<AccountSettings />} />
                 <Route path="add-address" element={<AddAddress />} />
                 <Route path="orders" element={<AccountPlaceholder />} />
+                <Route path="track-order" element={<AccountPlaceholder />} />
                 <Route path="addresses" element={<SavedAddresses />} />
+                <Route path="saved-addresses" element={<SavedAddresses />} />
                 <Route path="payment-methods" element={<PaymentMethods />} />
                 <Route path="coupons" element={<AccountPlaceholder />} />
                 <Route path="notifications" element={<Notifications />} />
@@ -76,12 +90,14 @@ function App() {
                 <Route path="recently-viewed" element={<AccountPlaceholder />} />
                 <Route path="support" element={<Support />} />
                 <Route path="faqs" element={<AccountPlaceholder />} />
-                <Route path="settings" element={<AccountPlaceholder />} />
               </Route>
-            </Routes>
-          </main>
-          <Footer />
-        </BrowserRouter>
+                    </Routes>
+                  </main>
+                  <Footer />
+                  </div>
+                } />
+              </Routes>
+            </BrowserRouter>
           </WishlistProvider>
         </OrderProvider>
       </CartProvider>
