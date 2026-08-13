@@ -40,7 +40,6 @@ const OfferCarousel = () => {
     }
     return () => clearInterval(interval);
   }, [showCarousel, isPaused, carouselData.length]);
-
   useEffect(() => {
     const offerInterval = setInterval(() => {
       setCurrentOfferIndex((prev) => (prev + 1) % offers.length);
