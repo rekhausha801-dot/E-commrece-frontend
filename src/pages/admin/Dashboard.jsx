@@ -15,6 +15,9 @@ import {
   DollarSign, MoreHorizontal, Shirt
 } from 'lucide-react';
 import CategoryManagement from './CategoryManagement';
+import OrderManagement from './OrderManagement';
+import CouponManagement from './CouponManagement';
+import ReviewManagement from './ReviewManagement';
 import fashionnImage from '../../assets/banners/fashionn.png';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Area, AreaChart,
@@ -933,7 +936,11 @@ const Dashboard = () => {
           </>
         )}
 
+        {activeTab === 'Products' && <ProductManagement />}
         {activeTab === 'Categories' && <CategoryManagement />}
+        {activeTab === 'Orders' && <OrderManagement />}
+        {activeTab === 'Coupons' && <CouponManagement />}
+        {activeTab === 'Reviews' && <ReviewManagement />}
       </main>
     </div>
   );

@@ -1,91 +1,160 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { 
-  Search, Plus, Grid, ShieldCheck, MinusCircle, Tags, 
-  MoreVertical, Copy, GripVertical, Download, Settings2, 
-  RotateCcw, X, Edit2, Trash2, ChevronLeft, ChevronRight
+import { Table, Dropdown, Select, Button, Input, Space } from 'antd';
+import {
+  Search, Plus, Grid, ShieldCheck, MinusCircle, Tags,
+  MoreVertical, Copy, GripVertical, X, Edit2, Trash2, ChevronLeft, ChevronRight,
+  ArrowUpDown, ArrowUp, ArrowDown, Eye, CopyPlus, Package, Box, Database, FilterX,
+  Layers, Play, Pause
 } from 'lucide-react';
 import { AreaChart, Area, ResponsiveContainer } from 'recharts';
+import { useNavigate } from 'react-router-dom';
 import AddCategoryModal from './AddCategoryModal';
 
 const sparklineData = [{ v: 40 }, { v: 30 }, { v: 60 }, { v: 45 }, { v: 70 }, { v: 90 }, { v: 120 }];
 const sparklineData2 = [{ v: 10 }, { v: 15 }, { v: 12 }, { v: 22 }, { v: 18 }, { v: 28 }, { v: 25 }];
 
-
 const initialData = [
-  { 
-    id: 1, name: 'Kurtis', desc: 'Elegant & stylish kurtis collection', parent: 'Women', 
-    slug: '/kurtis', products: 48, subcategories: 8, status: 'Active', 
-    order: '01', visibility: 'Visible', created: '12 Aug 2026', updated: '12 Aug 2026',
-    img: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=100' 
+  {
+    id: 1, name: 'Women', desc: 'Women fashion collection', parent: '',
+    slug: 'women', products: 120, status: 'Active', productCreation: 'Enabled',
+    order: 1, created: '12 Aug 2026', updated: '12 Aug 2026',
+    img: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=100'
   },
-  { 
-    id: 2, name: 'Sarees', desc: 'Traditional and designer sarees', parent: 'Women', 
-    slug: '/sarees', products: 72, subcategories: 12, status: 'Active', 
-    order: '02', visibility: 'Visible', created: '10 Aug 2026', updated: '12 Aug 2026',
-    img: 'https://images.unsplash.com/photo-1583391733959-f1830687f8aa?w=100' 
+  {
+    id: 2, name: 'Kurtis', desc: 'Elegant & stylish kurtis collection', parent: 'Women',
+    slug: 'kurtis', products: 48, status: 'Active', productCreation: 'Enabled',
+    order: 2, created: '12 Aug 2026', updated: '12 Aug 2026',
+    img: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=100'
   },
-  { 
-    id: 3, name: 'Shirts', desc: 'Formal and casual shirts for men', parent: 'Men', 
-    slug: '/shirts', products: 120, subcategories: 5, status: 'Active', 
-    order: '03', visibility: 'Visible', created: '08 Aug 2026', updated: '11 Aug 2026',
-    img: 'https://images.unsplash.com/photo-1490578474895-699cd4e2cf59?w=100' 
+  {
+    id: 3, name: 'Sarees', desc: 'Traditional and designer sarees', parent: 'Women',
+    slug: 'sarees', products: 72, status: 'Active', productCreation: 'Enabled',
+    order: 3, created: '10 Aug 2026', updated: '12 Aug 2026',
+    img: 'https://images.unsplash.com/photo-1610189045763-7eb927233df8?w=100'
   },
-  { 
-    id: 4, name: 'Winter Wear', desc: 'Seasonal winter collection', parent: 'Kids', 
-    slug: '/winter-wear', products: 15, subcategories: 2, status: 'Inactive', 
-    order: '04', visibility: 'Hidden', created: '01 Aug 2026', updated: '10 Aug 2026',
-    img: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?w=100' 
+  {
+    id: 4, name: 'Men', desc: 'Men fashion collection', parent: '',
+    slug: 'men', products: 205, status: 'Active', productCreation: 'Enabled',
+    order: 4, created: '08 Aug 2026', updated: '11 Aug 2026',
+    img: 'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?w=100'
   },
-  { 
-    id: 5, name: 'Footwear', desc: 'Casual and sports shoes', parent: 'Men', 
-    slug: '/footwear', products: 85, subcategories: 4, status: 'Active', 
-    order: '05', visibility: 'Visible', created: '25 Jul 2026', updated: '05 Aug 2026',
-    img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100' 
+  {
+    id: 5, name: 'Shirts', desc: 'Formal and casual shirts for men', parent: 'Men',
+    slug: 'shirts', products: 120, status: 'Active', productCreation: 'Enabled',
+    order: 5, created: '08 Aug 2026', updated: '11 Aug 2026',
+    img: 'https://images.unsplash.com/photo-1490578474895-699cd4e2cf59?w=100'
+  },
+  {
+    id: 6, name: 'Footwear', desc: 'Casual and sports shoes', parent: 'Men',
+    slug: 'footwear', products: 85, status: 'Active', productCreation: 'Paused',
+    order: 6, created: '25 Jul 2026', updated: '05 Aug 2026',
+    img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100'
+  },
+  {
+    id: 7, name: 'Kids', desc: 'Kids collection', parent: '',
+    slug: 'kids', products: 15, status: 'Inactive', productCreation: 'Paused',
+    order: 7, created: '01 Aug 2026', updated: '10 Aug 2026',
+    img: 'https://images.unsplash.com/photo-1514090458221-65bb69cf63e6?w=100'
+  },
+  {
+    id: 8, name: 'Winter Wear', desc: 'Seasonal winter collection', parent: 'Kids',
+    slug: 'winter-wear', products: 15, status: 'Inactive', productCreation: 'Paused',
+    order: 8, created: '01 Aug 2026', updated: '10 Aug 2026',
+    img: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?w=100'
   }
 ];
 
 const CategoryManagement = () => {
+  const navigate = useNavigate();
   const [categories, setCategories] = useState(initialData);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  
+
   const [selectedItems, setSelectedItems] = useState([]);
   const [activeCategory, setActiveCategory] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [deleteCandidate, setDeleteCandidate] = useState(null);
   const [openDropdownId, setOpenDropdownId] = useState(null);
 
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(6);
+
   useEffect(() => {
     const handleClickOutside = () => setOpenDropdownId(null);
     document.addEventListener('click', handleClickOutside);
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
-  
+
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('All Status');
   const [parentFilter, setParentFilter] = useState('All Categories');
+  const [productCreationFilter, setProductCreationFilter] = useState('All');
+  const [sortFilter, setSortFilter] = useState('Newest');
 
   const totalCat = categories.length;
   const activeCat = categories.filter(c => c.status === 'Active').length;
   const inactiveCat = categories.filter(c => c.status === 'Inactive').length;
-  const totalSub = categories.reduce((acc, curr) => acc + curr.subcategories, 0);
+  const totalProducts = categories.reduce((acc, curr) => acc + curr.products, 0);
+
+  const getSubcategories = (parentName) => {
+    return categories.filter(c => c.parent === parentName);
+  };
 
   const filteredCategories = useMemo(() => {
-    return categories.filter(cat => {
-      const matchSearch = cat.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          cat.slug.toLowerCase().includes(searchQuery.toLowerCase());
+    let result = categories.filter(cat => {
+      const q = searchQuery.toLowerCase();
+      const matchSearch = cat.name.toLowerCase().includes(q) ||
+        cat.slug.toLowerCase().includes(q) ||
+        (cat.parent && cat.parent.toLowerCase().includes(q));
       const matchStatus = statusFilter === 'All Status' || cat.status === statusFilter;
       const matchParent = parentFilter === 'All Categories' || cat.parent === parentFilter;
-      return matchSearch && matchStatus && matchParent;
+      const matchCreation = productCreationFilter === 'All' || cat.productCreation === productCreationFilter;
+      return matchSearch && matchStatus && matchParent && matchCreation;
     });
-  }, [categories, searchQuery, statusFilter, parentFilter]);
+
+    result.sort((a, b) => {
+      if (sortFilter === 'Newest') return b.id - a.id;
+      if (sortFilter === 'Oldest') return a.id - b.id;
+      if (sortFilter === 'A-Z') return a.name.localeCompare(b.name);
+      if (sortFilter === 'Product Count') return b.products - a.products;
+      return 0;
+    });
+
+    return result;
+  }, [categories, searchQuery, statusFilter, parentFilter, productCreationFilter, sortFilter]);
+
+  const totalPages = Math.ceil(filteredCategories.length / rowsPerPage);
+  const paginatedCategories = filteredCategories.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
   const handleSelectAll = (e) => {
-    if(e.target.checked) setSelectedItems(filteredCategories.map(c => c.id));
+    if (e.target.checked) setSelectedItems(paginatedCategories.map(c => c.id));
     else setSelectedItems([]);
   };
 
   const handleSelectItem = (id) => {
     setSelectedItems(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+  };
+
+  const toggleStatus = (id, e) => {
+    e.stopPropagation();
+    setCategories(prev => prev.map(c => c.id === id ? { ...c, status: c.status === 'Active' ? 'Inactive' : 'Active' } : c));
+  };
+
+  const toggleProductCreation = (id, e) => {
+    if (e) e.stopPropagation();
+    setCategories(prev => prev.map(c => c.id === id ? { ...c, productCreation: c.productCreation === 'Enabled' ? 'Paused' : 'Enabled' } : c));
+    setOpenDropdownId(null);
+  };
+
+  const handleBulkAction = (action) => {
+    if (action === 'activate') {
+      setCategories(prev => prev.map(c => selectedItems.includes(c.id) ? { ...c, status: 'Active' } : c));
+    } else if (action === 'deactivate') {
+      setCategories(prev => prev.map(c => selectedItems.includes(c.id) ? { ...c, status: 'Inactive' } : c));
+    } else if (action === 'delete') {
+      setCategories(prev => prev.filter(c => !selectedItems.includes(c.id)));
+      setSelectedItems([]);
+    }
   };
 
   const openDrawer = (cat) => {
@@ -94,42 +163,253 @@ const CategoryManagement = () => {
   };
 
   const handleDeleteClick = (cat, e) => {
-    e.stopPropagation();
+    if (e) e.stopPropagation();
     setDeleteCandidate(cat);
+    setOpenDropdownId(null);
   };
 
   const confirmDelete = () => {
     setCategories(prev => prev.filter(c => c.id !== deleteCandidate.id));
     setDeleteCandidate(null);
-    if(activeCategory?.id === deleteCandidate.id) setIsDrawerOpen(false);
+    if (activeCategory?.id === deleteCandidate.id) setIsDrawerOpen(false);
   };
 
   const clearFilters = () => {
     setStatusFilter('All Status');
     setParentFilter('All Categories');
+    setProductCreationFilter('All');
     setSearchQuery('');
+    setSortFilter('Newest');
   };
+
+  const rowSelection = {
+    selectedRowKeys: selectedItems,
+    onChange: (newSelectedRowKeys) => {
+      setSelectedItems(newSelectedRowKeys);
+    },
+  };
+
+  const columns = [
+    {
+      title: 'Category',
+      dataIndex: 'name',
+      key: 'name',
+      sorter: (a, b) => a.name.localeCompare(b.name),
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+        <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
+          <Input
+            placeholder="Search category"
+            value={selectedKeys[0]}
+            onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+            onPressEnter={() => confirm()}
+            style={{ marginBottom: 8, display: 'block' }}
+          />
+          <Space>
+            <Button
+              type="primary"
+              onClick={() => confirm()}
+              icon={<Search size={14} />}
+              size="small"
+              style={{ width: 90, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#d97706', borderColor: '#d97706' }}
+            >
+              Search
+            </Button>
+            <Button
+              onClick={() => { clearFilters(); confirm(); }}
+              size="small"
+              style={{ width: 90 }}
+            >
+              Reset
+            </Button>
+          </Space>
+        </div>
+      ),
+      filterIcon: (filtered) => (
+        <Search size={14} style={{ color: filtered ? '#d97706' : undefined }} />
+      ),
+      onFilter: (value, record) => record.name.toLowerCase().includes(value.toLowerCase()),
+      render: (text, record) => (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <img src={record.img} alt={text} style={{ width: '32px', height: '32px', borderRadius: '6px', objectFit: 'cover' }} />
+          <div style={{ fontSize: '13px', fontWeight: '500', color: '#222' }}>{text}</div>
+        </div>
+      ),
+    },
+    {
+      title: 'Slug',
+      dataIndex: 'slug',
+      key: 'slug',
+      align: 'center',
+      render: (text) => (
+        <span style={{ fontSize: '12px', color: '#6b7280', background: '#f3f4f6', padding: '4px 10px', borderRadius: '12px', fontWeight: '500' }}>
+          /{text}
+        </span>
+      ),
+    },
+    {
+      title: 'Sub Categories',
+      key: 'subCat',
+      align: 'center',
+      filters: [
+        { text: 'Women', value: 'Women' },
+        { text: 'Men', value: 'Men' },
+        { text: 'Kids', value: 'Kids' },
+      ],
+      filterMultiple: false,
+      filteredValue: parentFilter === 'All Categories' ? null : [parentFilter],
+      render: (_, record) => (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '13px', color: '#374151', fontWeight: '600' }}>
+          <Layers size={15} color="#9ca3af" />
+          {getSubcategories(record.name).length}
+        </div>
+      ),
+    },
+    {
+      title: 'Products',
+      dataIndex: 'products',
+      key: 'products',
+      align: 'center',
+      sorter: (a, b) => a.products - b.products,
+      render: (text) => (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '13px', color: '#374151', fontWeight: '600' }}>
+          <Package size={15} color="#9ca3af" />
+          {text}
+        </div>
+      ),
+    },
+    {
+      title: 'Product Creation',
+      dataIndex: 'productCreation',
+      key: 'productCreation',
+      align: 'center',
+      filters: [
+        { text: 'Enabled', value: 'Enabled' },
+        { text: 'Paused', value: 'Paused' },
+      ],
+      filterMultiple: false,
+      filteredValue: productCreationFilter === 'All' ? null : [productCreationFilter],
+      render: (text) => (
+        <span style={{
+          display: 'inline-flex', alignItems: 'center', gap: '6px',
+          padding: '4px 12px', borderRadius: '20px',
+          background: text === 'Enabled' ? '#ecfdf5' : '#fef2f2',
+          color: text === 'Enabled' ? '#10b981' : '#ef4444',
+          fontSize: '12px', fontWeight: '600'
+        }}>
+          {text === 'Enabled' ? <Play size={10} fill="none" strokeWidth={3} /> : <span style={{ fontWeight: 900, fontSize: '11px', letterSpacing: '-1px' }}>||</span>}
+          {text}
+        </span>
+      ),
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      key: 'status',
+      align: 'center',
+      filters: [
+        { text: 'Active', value: 'Active' },
+        { text: 'Inactive', value: 'Inactive' },
+      ],
+      filterMultiple: false,
+      filteredValue: statusFilter === 'All Status' ? null : [statusFilter],
+      render: (text, record) => (
+        <span
+          onClick={e => toggleStatus(record.id, e)}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: '6px',
+            padding: '4px 12px', borderRadius: '20px',
+            background: text === 'Active' ? '#ecfdf5' : '#fef2f2',
+            color: text === 'Active' ? '#10b981' : '#ef4444',
+            fontSize: '12px', fontWeight: '600', cursor: 'pointer'
+          }}
+        >
+          <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: text === 'Active' ? '#10b981' : '#ef4444' }} />
+          {text}
+        </span>
+      ),
+    },
+
+    {
+      title: 'Actions',
+      key: 'actions',
+      align: 'center',
+      render: (_, record) => {
+        const items = [
+          {
+            key: 'view',
+            label: <span style={{ fontSize: '13px', fontWeight: '500', padding: '4px 8px', display: 'block' }}>View</span>,
+            onClick: ({ domEvent }) => { domEvent.stopPropagation(); openDrawer(record); setOpenDropdownId(null); }
+          },
+          {
+            key: 'edit',
+            label: <span style={{ fontSize: '13px', fontWeight: '500', padding: '4px 8px', display: 'block' }}>Edit</span>,
+            onClick: ({ domEvent }) => { domEvent.stopPropagation(); setIsAddModalOpen(true); setOpenDropdownId(null); }
+          },
+          {
+            key: 'product-creation',
+            label: <span style={{ fontSize: '13px', fontWeight: '500', padding: '4px 8px', display: 'block' }}>{record.productCreation === 'Enabled' ? 'Pause' : 'Enable'}</span>,
+            onClick: ({ domEvent }) => { domEvent.stopPropagation(); toggleProductCreation(record.id, domEvent); setOpenDropdownId(null); }
+          },
+          {
+            key: 'status',
+            label: <span style={{ fontSize: '13px', fontWeight: '500', padding: '4px 8px', display: 'block' }}>{record.status === 'Active' ? 'Deactivate' : 'Activate'}</span>,
+            onClick: ({ domEvent }) => { domEvent.stopPropagation(); toggleStatus(record.id, domEvent); setOpenDropdownId(null); }
+          },
+          {
+            key: 'delete',
+            danger: true,
+            label: <span style={{ fontSize: '13px', fontWeight: '500', padding: '4px 8px', display: 'block' }}>Delete</span>,
+            onClick: ({ domEvent }) => { domEvent.stopPropagation(); handleDeleteClick(record, domEvent); setOpenDropdownId(null); }
+          }
+        ];
+
+        return (
+          <div onClick={e => e.stopPropagation()} style={{ textAlign: 'center' }}>
+            <Dropdown menu={{ items }} trigger={['click']} placement="bottomRight">
+              <div
+                style={{ width: '32px', height: '32px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #e5e7eb', borderRadius: '8px', cursor: 'pointer', background: '#fff' }}
+              >
+                <MoreVertical size={16} color="#6b7280" />
+              </div>
+            </Dropdown>
+          </div>
+        );
+      },
+    },
+  ];
 
   return (
     <div style={{ padding: '0 8px 32px 8px' }}>
-      
+
       {/* Header Actions */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-        <div>
-          <h1 style={{ margin: 0, fontSize: '24px', fontWeight: '500', color: '#222' }}>Categories</h1>
-          {/* <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#666' }}>Manage, organize and optimize your product categories</p> */}
+      <div style={{
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        marginBottom: '20px', padding: '12px 20px', background: '#fff',
+        borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
+        border: '1px solid #f3f4f6'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={{
+            width: '48px', height: '48px', background: '#fff',
+            borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 4px 12px rgba(217, 119, 6, 0.08), 0 2px 4px rgba(0,0,0,0.02)', border: '1px solid #fef3c7'
+          }}>
+            <Copy size={22} color="#d97706" />
+          </div>
+          <div style={{ width: '3px', height: '20px', background: '#d97706', borderRadius: '4px' }}></div>
+          <div>
+            <h1 style={{ margin: 0, fontSize: '20px', fontWeight: '700', color: '#1f2937', letterSpacing: '-0.3px' }}>Category Management</h1>
+            {/* <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#6b7280', fontWeight: '500' }}>Manage your categories, sub categories and product settings</p> */}
+          </div>
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
-          {/* <button style={{ background: '#fff', border: '1px solid #e0e0e0', padding: '8px 16px', borderRadius: '8px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-            <Download size={14} /> Export
-          </button> */}
-          <button style={{ background: 'linear-gradient(90deg, #c9a05b 0%, #b08a4c 100%)', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }} onClick={() => setIsAddModalOpen(true)}>
-            <Plus size={14} /> Add Category
+          <button style={{ background: 'linear-gradient(90deg, #d97706 0%, #b45309 100%)', color: '#fff', border: 'none', padding: '10px 18px', borderRadius: '8px', fontSize: '13px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', boxShadow: '0 4px 6px -1px rgba(217, 119, 6, 0.2)' }} onClick={() => setIsAddModalOpen(true)}>
+            <Plus size={15} /> Add Category
           </button>
         </div>
       </div>
 
-      {/* KPI Cards using Dashboard CSS */}
+      {/* KPI Cards */}
       <div className="stats-grid" style={{ marginBottom: '32px' }}>
         <div className="stat-card dark" onClick={() => clearFilters()} style={{ cursor: 'pointer' }}>
           <div className="stat-top">
@@ -137,9 +417,6 @@ const CategoryManagement = () => {
             <div className="stat-info">
               <span className="stat-title">Total Categories</span>
               <h2 className="stat-value gold-text">{totalCat}</h2>
-              <div className="stat-bottom">
-                <span className="stat-change positive">↑ 3</span> <span className="stat-change-text">this month</span>
-              </div>
             </div>
           </div>
           <div className="stat-chart-sparkline">
@@ -157,15 +434,12 @@ const CategoryManagement = () => {
           </div>
         </div>
 
-        <div className="stat-card light" onClick={() => {clearFilters(); setStatusFilter('Active');}} style={{ cursor: 'pointer' }}>
+        <div className="stat-card light" onClick={() => { clearFilters(); setStatusFilter('Active'); }} style={{ cursor: 'pointer' }}>
           <div className="stat-top">
             <div className="stat-icon gold" style={{ color: '#4caf50', background: '#e8f5e9', border: 'none' }}><ShieldCheck size={18} /></div>
             <div className="stat-info">
               <span className="stat-title">Active Categories</span>
               <h2 className="stat-value">{activeCat}</h2>
-              <div className="stat-bottom">
-                <span className="stat-change-text">{Math.round((activeCat/totalCat)*100 || 0)}% of total</span>
-              </div>
             </div>
           </div>
           <div className="stat-chart-sparkline">
@@ -183,15 +457,12 @@ const CategoryManagement = () => {
           </div>
         </div>
 
-        <div className="stat-card light" onClick={() => {clearFilters(); setStatusFilter('Inactive');}} style={{ cursor: 'pointer' }}>
+        <div className="stat-card light" onClick={() => { clearFilters(); setStatusFilter('Inactive'); }} style={{ cursor: 'pointer' }}>
           <div className="stat-top">
             <div className="stat-icon gold" style={{ color: '#f44336', background: '#ffebee', border: 'none' }}><MinusCircle size={18} /></div>
             <div className="stat-info">
               <span className="stat-title">Inactive Categories</span>
               <h2 className="stat-value">{inactiveCat}</h2>
-              <div className="stat-bottom">
-                <span className="stat-change negative">Needs attention</span>
-              </div>
             </div>
           </div>
           <div className="stat-chart-sparkline">
@@ -211,13 +482,10 @@ const CategoryManagement = () => {
 
         <div className="stat-card light">
           <div className="stat-top">
-            <div className="stat-icon gold" style={{ color: '#2196f3', background: '#e3f2fd', border: 'none' }}><Tags size={18} /></div>
+            <div className="stat-icon gold" style={{ color: '#2196f3', background: '#e3f2fd', border: 'none' }}><Package size={18} /></div>
             <div className="stat-info">
-              <span className="stat-title">Total Subcategories</span>
-              <h2 className="stat-value">{totalSub}</h2>
-              <div className="stat-bottom">
-                <span className="stat-change positive">↑ 5</span> <span className="stat-change-text">new this month</span>
-              </div>
+              <span className="stat-title">Total Products</span>
+              <h2 className="stat-value">{totalProducts}</h2>
             </div>
           </div>
           <div className="stat-chart-sparkline">
@@ -236,166 +504,80 @@ const CategoryManagement = () => {
         </div>
       </div>
 
-      {/* Main Table Area */}
-      <div className="premium-glass-card" style={{ padding: '24px', borderRadius: '16px', background: '#fff', border: '1px solid #f0f0f0' }}>
-        
-        {/* Toolbar */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-          <div>
-            <h3 style={{ margin: '0 0 4px 0', fontSize: '15px', fontWeight: '600', color: '#222' }}>Category Management</h3>
-            {/* <span style={{ fontSize: '12px', color: '#888' }}>{filteredCategories.length} categories found</span> */}
+      <div className="premium-glass-card" style={{ padding: '0px', borderRadius: '16px', background: '#fff', border: '1px solid #f3f4f6', boxShadow: '0 10px 30px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.02)', overflow: 'hidden' }}>
+        <style>
+          {`
+            .premium-table .ant-table { background: transparent !important; }
+            .premium-table .ant-table-thead > tr > th { background: #fdfbf7 !important; border-bottom: 1px solid #f3f4f6 !important; color: #4b5563; font-weight: 700; padding: 16px 24px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap !important; word-break: keep-all !important; }
+            .premium-table .ant-table-tbody > tr > td { padding: 12px 24px !important; border-bottom: 1px solid #f3f4f6 !important; background: #fff !important; transition: all 0.2s ease; white-space: nowrap !important; }
+            .premium-table .ant-table-tbody > tr:hover > td { background: #fafafa !important; }
+            .premium-table .ant-table-thead > tr > th::before { display: none !important; }
+            .premium-table .ant-pagination { margin: 16px 24px !important; display: flex; align-items: center; justify-content: flex-end; }
+            .premium-table .ant-pagination-total-text { margin-right: auto !important; font-size: 13px; color: #6b7280; font-weight: 500; }
+            .premium-table .ant-pagination-item { border: 1px solid #e5e7eb !important; border-radius: 8px !important; background: #fff; font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,0.02); transition: all 0.2s ease; }
+            .premium-table .ant-pagination-item:hover { border-color: #d97706 !important; color: #d97706; box-shadow: 0 2px 4px rgba(217,119,6,0.1); }
+            .premium-table .ant-pagination-item a { color: #4b5563 !important; }
+            .premium-table .ant-pagination-item-active { border-color: #d97706 !important; background: #d97706 !important; box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25) !important; }
+            .premium-table .ant-pagination-item-active a { color: #fff !important; }
+            .premium-table .ant-pagination-prev .ant-pagination-item-link, .premium-table .ant-pagination-next .ant-pagination-item-link { border: 1px solid #e5e7eb !important; border-radius: 8px !important; background: #fff !important; color: #6b7280 !important; box-shadow: 0 1px 2px rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: center; }
+            .premium-table .ant-pagination-prev:hover .ant-pagination-item-link, .premium-table .ant-pagination-next:hover .ant-pagination-item-link { border-color: #d97706 !important; color: #d97706 !important; }
+            .premium-table .ant-pagination-options-size-changer.ant-select { border-radius: 8px !important; }
+            .premium-table .ant-pagination-options-size-changer .ant-select-selector { border-radius: 8px !important; border: 1px solid #e5e7eb !important; box-shadow: 0 1px 2px rgba(0,0,0,0.02) !important; font-weight: 500; color: #4b5563; }
+            .premium-table .ant-checkbox-checked .ant-checkbox-inner { background-color: #10b981; border-color: #10b981; }
+            .premium-table .ant-table-body::-webkit-scrollbar, .premium-table .ant-table-content::-webkit-scrollbar { display: none; }
+            .premium-table .ant-table-body, .premium-table .ant-table-content { -ms-overflow-style: none; scrollbar-width: none; }
+          `}
+        </style>
+
+
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px', marginBottom: '0', background: '#fdfbf7', borderBottom: '1px solid #f3f4f6' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+            <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '700', color: '#111827' }}>Category</h2>
           </div>
-          <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-            <div className="search-bar" style={{ width: '240px', background: '#fcfaf5', border: '1px solid #eadecb' }}>
-              <Search size={14} color="#c9a05b" />
-              <input 
-                type="text" 
-                placeholder="Search..." 
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                style={{ fontSize: '12px' }}
-              />
-            </div>
-            
-            <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid #eadecb', background: '#fff', fontSize: '12px', color: '#333', outline: 'none' }}>
-              <option value="All Status">All Status</option>
-              <option value="Active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
-            
-            <select value={parentFilter} onChange={e => setParentFilter(e.target.value)} style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid #eadecb', background: '#fff', fontSize: '12px', color: '#333', outline: 'none' }}>
-              <option value="All Categories">All Parents</option>
-              <option value="Women">Women</option>
-              <option value="Men">Men</option>
-              <option value="Kids">Kids</option>
-            </select>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <Button
+              type="text"
+              onClick={clearFilters}
+              style={{
+                color: '#d97706', fontSize: '13px', fontWeight: '600',
+                display: 'flex', alignItems: 'center', gap: '6px',
+                borderRadius: '8px', padding: '8px 16px', transition: 'all 0.2s',
+                border: '1px solid #fde68a', background: '#fff'
+              }}
+              onMouseOver={e => e.currentTarget.style.background = '#fef3c7'}
+              onMouseOut={e => e.currentTarget.style.background = '#fff'}
+            >
+              <FilterX size={15} />
+              Clear Filters
+            </Button>
           </div>
         </div>
 
-        {/* Active Filters */}
-        {(statusFilter !== 'All Status' || parentFilter !== 'All Categories') && (
-          <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', alignItems: 'center' }}>
-            {statusFilter !== 'All Status' && (
-              <span style={{ background: '#fdf7ee', border: '1px solid #f2e3c6', color: '#b08a4c', padding: '4px 10px', borderRadius: '16px', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                Status: {statusFilter} <X size={10} style={{ cursor: 'pointer' }} onClick={() => setStatusFilter('All Status')} />
-              </span>
-            )}
-            {parentFilter !== 'All Categories' && (
-              <span style={{ background: '#fdf7ee', border: '1px solid #f2e3c6', color: '#b08a4c', padding: '4px 10px', borderRadius: '16px', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                Parent: {parentFilter} <X size={10} style={{ cursor: 'pointer' }} onClick={() => setParentFilter('All Categories')} />
-              </span>
-            )}
-            <span onClick={clearFilters} style={{ fontSize: '11px', color: '#888', cursor: 'pointer', textDecoration: 'underline' }}>Clear all</span>
-          </div>
-        )}
+        {/* Ant Design Table */}
+        <Table
+          className="premium-table"
+          dataSource={filteredCategories}
+          columns={columns}
+          rowKey="id"
+          rowSelection={rowSelection}
+          onChange={(pagination, filters, sorter) => {
+            if (filters.subCat) setParentFilter(filters.subCat[0] || 'All Categories');
+            else setParentFilter('All Categories');
 
-        {/* Table */}
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr style={{ borderBottom: '1px solid #f0f0f0' }}>
-                <th style={{ padding: '12px 16px', textAlign: 'left' }}><input type="checkbox" onChange={handleSelectAll} checked={selectedItems.length === filteredCategories.length && filteredCategories.length > 0} /></th>
-                <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', color: '#888', fontWeight: '500' }}>CATEGORY</th>
-                <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', color: '#888', fontWeight: '500' }}>SLUG</th>
-                <th style={{ padding: '12px 16px', textAlign: 'center', fontSize: '12px', color: '#888', fontWeight: '500' }}>PRODUCTS</th>
-                <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', color: '#888', fontWeight: '500' }}>STATUS</th>
-                <th style={{ padding: '12px 16px', textAlign: 'left', fontSize: '12px', color: '#888', fontWeight: '500' }}>ORDER</th>
-                <th style={{ padding: '12px 16px', textAlign: 'right', fontSize: '12px', color: '#888', fontWeight: '500' }}>ACTIONS</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredCategories.length > 0 ? filteredCategories.map(cat => (
-                <tr key={cat.id} style={{ borderBottom: '1px solid #f9f9f9', cursor: 'pointer', background: selectedItems.includes(cat.id) ? '#fffbf5' : 'transparent' }} onClick={() => openDrawer(cat)}>
-                  <td style={{ padding: '16px' }} onClick={e => e.stopPropagation()}>
-                    <input type="checkbox" checked={selectedItems.includes(cat.id)} onChange={() => handleSelectItem(cat.id)} />
-                  </td>
-                  <td style={{ padding: '16px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <img src={cat.img} alt={cat.name} style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'cover' }} />
-                      <div>
-                        <div style={{ fontSize: '13px', fontWeight: '500', color: '#222' }}>{cat.name}</div>
-                        <div style={{ fontSize: '11px', color: '#888' }}>{cat.parent}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td style={{ padding: '16px', fontSize: '12px', color: '#555' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      {cat.slug}
-                      <Copy size={12} color="#c9a05b" style={{ cursor: 'pointer' }} onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(cat.slug); }} />
-                    </div>
-                  </td>
-                  <td style={{ padding: '16px', fontSize: '13px', fontWeight: '600', color: '#222', textAlign: 'center' }}>
-                    {cat.products}
-                  </td>
-                  <td style={{ padding: '16px' }}>
-                    <span style={{ 
-                      padding: '4px 8px', borderRadius: '4px', fontSize: '11px', fontWeight: '500',
-                      background: cat.status === 'Active' ? '#e8f5e9' : '#ffebee',
-                      color: cat.status === 'Active' ? '#4caf50' : '#f44336'
-                    }}>
-                      {cat.status}
-                    </span>
-                  </td>
-                  <td style={{ padding: '16px', fontSize: '13px', color: '#555' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      {cat.order} <GripVertical size={14} color="#ccc" />
-                    </div>
-                  </td>
-                  <td style={{ padding: '16px', textAlign: 'right' }} onClick={e => e.stopPropagation()}>
-                    <div style={{ position: 'relative', display: 'inline-block' }}>
-                      <div 
-                        style={{ padding: '4px', cursor: 'pointer', borderRadius: '4px' }}
-                        onClick={(e) => { e.stopPropagation(); setOpenDropdownId(openDropdownId === cat.id ? null : cat.id); }}
-                      >
-                        <MoreVertical size={16} color="#888" />
-                      </div>
-                      {openDropdownId === cat.id && (
-                        <div style={{ 
-                          position: 'absolute', right: 0, top: '28px', background: '#fff', 
-                          boxShadow: '0 4px 12px rgba(0,0,0,0.1)', borderRadius: '8px', padding: '4px',
-                          zIndex: 10, minWidth: '120px', border: '1px solid #eee', textAlign: 'left'
-                        }}>
-                          <div 
-                            style={{ padding: '8px 12px', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', color: '#333' }}
-                            onClick={(e) => { e.stopPropagation(); setIsAddModalOpen(true); setOpenDropdownId(null); }}
-                            onMouseOver={e => e.currentTarget.style.backgroundColor = '#f5f5f5'}
-                            onMouseOut={e => e.currentTarget.style.backgroundColor = 'transparent'}
-                          >
-                            <Edit2 size={14} /> Edit
-                          </div>
-                          <div 
-                            style={{ padding: '8px 12px', fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', color: '#f44336' }}
-                            onClick={(e) => { e.stopPropagation(); handleDeleteClick(cat, e); setOpenDropdownId(null); }}
-                            onMouseOver={e => e.currentTarget.style.backgroundColor = '#fce8e6'}
-                            onMouseOut={e => e.currentTarget.style.backgroundColor = 'transparent'}
-                          >
-                            <Trash2 size={14} /> Delete
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              )) : (
-                <tr>
-                  <td colSpan="7" style={{ textAlign: 'center', padding: '40px' }}>
-                    <div style={{ color: '#888', fontSize: '14px' }}>No categories found matching your criteria.</div>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+            if (filters.productCreation) setProductCreationFilter(filters.productCreation[0] || 'All');
+            else setProductCreationFilter('All');
 
-        {/* Footer */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '24px', paddingTop: '16px', borderTop: '1px solid #f0f0f0', fontSize: '12px', color: '#666' }}>
-          <div>Showing 1–{filteredCategories.length} of {categories.length} categories</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <button style={{ background: '#fff', border: '1px solid #eee', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer' }}><ChevronLeft size={14} /></button>
-            <span style={{ background: '#c9a05b', color: '#fff', padding: '4px 12px', borderRadius: '4px', fontWeight: '500' }}>1</span>
-            <button style={{ background: '#fff', border: '1px solid #eee', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer' }}><ChevronRight size={14} /></button>
-          </div>
-        </div>
+            if (filters.status) setStatusFilter(filters.status[0] || 'All Status');
+            else setStatusFilter('All Status');
+          }}
+          pagination={false}
+          onRow={(record) => ({
+            onClick: () => openDrawer(record),
+            style: { cursor: 'pointer' }
+          })}
+          scroll={{ x: 1000 }}
+        />
 
       </div>
 
@@ -408,72 +590,126 @@ const CategoryManagement = () => {
         }}>
           <div style={{ fontSize: '13px', fontWeight: '500' }}>{selectedItems.length} categories selected</div>
           <div style={{ display: 'flex', gap: '12px' }}>
-            <button style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer' }}>Activate</button>
-            <button style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer' }}>Deactivate</button>
-            <button style={{ background: 'rgba(244, 67, 54, 0.2)', color: '#ffcdd2', border: 'none', padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer' }}>Delete All</button>
+            <button onClick={() => handleBulkAction('activate')} style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer' }}>Activate</button>
+            <button onClick={() => handleBulkAction('deactivate')} style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer' }}>Deactivate</button>
+            <button onClick={() => handleBulkAction('delete')} style={{ background: 'rgba(244, 67, 54, 0.2)', color: '#ffcdd2', border: 'none', padding: '6px 12px', borderRadius: '6px', fontSize: '12px', cursor: 'pointer' }}>Delete</button>
           </div>
         </div>
       )}
 
-      {/* Right Drawer */}
+      {/* Right Drawer (Category Details) */}
       {isDrawerOpen && activeCategory && (
         <div style={{
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
           background: 'rgba(0,0,0,0.4)', zIndex: 1000, display: 'flex', justifyContent: 'flex-end'
         }} onClick={() => setIsDrawerOpen(false)}>
           <div style={{
-            width: '400px', background: '#fff', height: '100%',
+            width: '450px', background: '#fff', height: '100%',
             boxShadow: '-4px 0 24px rgba(0,0,0,0.1)', display: 'flex', flexDirection: 'column',
             animation: 'slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
           }} onClick={e => e.stopPropagation()}>
-            <div style={{ padding: '24px', borderBottom: '1px solid #f0f0f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
-                <h2 style={{ margin: 0, fontSize: '18px', color: '#222', fontWeight: '600' }}>{activeCategory.name}</h2>
-                <div style={{ fontSize: '12px', color: activeCategory.status === 'Active' ? '#4caf50' : '#f44336', marginTop: '4px' }}>{activeCategory.status}</div>
-              </div>
-              <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }} onClick={() => setIsDrawerOpen(false)}><X size={20}/></button>
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid #f0f0f0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h2 style={{ margin: 0, fontSize: '18px', color: '#222', fontWeight: '600' }}>Category Details</h2>
+              <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#888' }} onClick={() => setIsDrawerOpen(false)}><X size={20} /></button>
             </div>
-            
-            <div style={{ padding: '24px', overflowY: 'auto', flex: 1, display: 'flex', flexDirection: 'column', gap: '24px' }}>
-              <div>
-                <h3 style={{ fontSize: '13px', fontWeight: '600', color: '#888', marginBottom: '12px', textTransform: 'uppercase' }}>Overview</h3>
-                <div style={{ display: 'flex', gap: '16px' }}>
-                  <img src={activeCategory.img} style={{ width: '80px', height: '80px', borderRadius: '8px', objectFit: 'cover' }} alt="cat"/>
-                  <div style={{ fontSize: '13px', color: '#555', lineHeight: '1.6' }}>
-                    <p style={{ margin: '0 0 4px 0', color: '#222' }}>{activeCategory.desc}</p>
-                    <p style={{ margin: 0 }}><strong>Slug:</strong> {activeCategory.slug}</p>
-                    <p style={{ margin: 0 }}><strong>Parent:</strong> {activeCategory.parent}</p>
+
+            <div style={{ flex: 1, overflowY: 'auto' }}>
+              {/* Banner */}
+              <div style={{ height: '180px', width: '100%', position: 'relative' }}>
+                <img src={activeCategory.img} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Category Banner" />
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'linear-gradient(transparent, rgba(0,0,0,0.8))', padding: '24px' }}>
+                  <h2 style={{ color: '#fff', margin: 0, fontSize: '24px', fontWeight: '600' }}>{activeCategory.name}</h2>
+                  <div style={{ color: activeCategory.status === 'Active' ? '#4ade80' : '#f87171', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px', marginTop: '4px' }}>
+                    <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: activeCategory.status === 'Active' ? '#4ade80' : '#f87171' }} />
+                    {activeCategory.status}
                   </div>
                 </div>
               </div>
 
-              <div>
-                <h3 style={{ fontSize: '13px', fontWeight: '600', color: '#888', marginBottom: '12px', textTransform: 'uppercase' }}>Performance</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                  <div style={{ background: '#f9f9f9', padding: '16px', borderRadius: '8px', border: '1px solid #f0f0f0' }}>
-                    <div style={{ fontSize: '20px', fontWeight: '600', color: '#222' }}>{activeCategory.products}</div>
-                    <div style={{ fontSize: '12px', color: '#666' }}>Products</div>
-                  </div>
-                  <div style={{ background: '#f9f9f9', padding: '16px', borderRadius: '8px', border: '1px solid #f0f0f0' }}>
-                    <div style={{ fontSize: '20px', fontWeight: '600', color: '#222' }}>{activeCategory.subcategories}</div>
-                    <div style={{ fontSize: '12px', color: '#666' }}>Subcategories</div>
-                  </div>
+              {/* Details List */}
+              <div style={{ padding: '24px' }}>
+                <div style={{ marginBottom: '24px' }}>
+                  <div style={{ fontSize: '12px', color: '#888', marginBottom: '4px' }}>Description</div>
+                  <div style={{ fontSize: '14px', color: '#333', lineHeight: '1.5' }}>{activeCategory.desc}</div>
                 </div>
-              </div>
 
-              <div>
-                <h3 style={{ fontSize: '13px', fontWeight: '600', color: '#888', marginBottom: '12px', textTransform: 'uppercase' }}>SEO Preview</h3>
-                <div style={{ border: '1px solid #e0e0e0', padding: '16px', borderRadius: '8px', fontFamily: 'Arial, sans-serif' }}>
-                  <div style={{ color: '#006621', fontSize: '12px', marginBottom: '4px' }}>https://relietech.com{activeCategory.slug}</div>
-                  <div style={{ color: '#1a0dab', fontSize: '16px', marginBottom: '4px' }}>Buy {activeCategory.name} Online | RELIETECH</div>
-                  <div style={{ color: '#545454', fontSize: '12px', lineHeight: '1.4' }}>Shop our premium collection of {activeCategory.name.toLowerCase()}. Find the latest trends in {activeCategory.parent.toLowerCase()} fashion.</div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '32px' }}>
+                  <div>
+                    <div style={{ fontSize: '12px', color: '#888', marginBottom: '4px' }}>Slug</div>
+                    <div style={{ fontSize: '14px', color: '#222', fontWeight: '500' }}>{activeCategory.slug}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '12px', color: '#888', marginBottom: '4px' }}>Parent Category</div>
+                    <div style={{ fontSize: '14px', color: '#222', fontWeight: '500' }}>{activeCategory.parent || 'None'}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '12px', color: '#888', marginBottom: '4px' }}>Sub Categories</div>
+                    <div style={{ fontSize: '14px', color: '#222', fontWeight: '500' }}>{getSubcategories(activeCategory.name).length}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '12px', color: '#888', marginBottom: '4px' }}>Products</div>
+                    <div style={{ fontSize: '14px', color: '#222', fontWeight: '500' }}>{activeCategory.products}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '12px', color: '#888', marginBottom: '4px' }}>Product Creation</div>
+                    <div style={{ fontSize: '14px', color: activeCategory.productCreation === 'Enabled' ? '#10b981' : '#f59e0b', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: activeCategory.productCreation === 'Enabled' ? '#10b981' : '#f59e0b' }} />
+                      {activeCategory.productCreation}
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '12px', color: '#888', marginBottom: '4px' }}>Sort Order</div>
+                    <div style={{ fontSize: '14px', color: '#222', fontWeight: '500' }}>{activeCategory.order}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '12px', color: '#888', marginBottom: '4px' }}>Created</div>
+                    <div style={{ fontSize: '14px', color: '#222', fontWeight: '500' }}>{activeCategory.created}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '12px', color: '#888', marginBottom: '4px' }}>Last Updated</div>
+                    <div style={{ fontSize: '14px', color: '#222', fontWeight: '500' }}>{activeCategory.updated}</div>
+                  </div>
                 </div>
+
+                {/* Sub Categories Table */}
+                {getSubcategories(activeCategory.name).length > 0 && (
+                  <div style={{ marginBottom: '32px' }}>
+                    <h3 style={{ fontSize: '15px', color: '#222', fontWeight: '600', marginBottom: '12px' }}>Sub Categories</h3>
+                    <div style={{ border: '1px solid #f0f0f0', borderRadius: '8px', overflow: 'hidden' }}>
+                      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                        <thead>
+                          <tr style={{ background: '#fafafa', borderBottom: '1px solid #f0f0f0' }}>
+                            <th style={{ padding: '10px 12px', textAlign: 'left', fontSize: '12px', color: '#666', fontWeight: '500' }}>Sub Category</th>
+                            <th style={{ padding: '10px 12px', textAlign: 'center', fontSize: '12px', color: '#666', fontWeight: '500' }}>Products</th>
+                            <th style={{ padding: '10px 12px', textAlign: 'right', fontSize: '12px', color: '#666', fontWeight: '500' }}>Status</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {getSubcategories(activeCategory.name).map(sub => (
+                            <tr key={sub.id} style={{ borderBottom: '1px solid #f5f5f5' }}>
+                              <td style={{ padding: '10px 12px', fontSize: '13px', color: '#222', fontWeight: '500' }}>{sub.name}</td>
+                              <td style={{ padding: '10px 12px', fontSize: '13px', color: '#555', textAlign: 'center' }}>{sub.products}</td>
+                              <td style={{ padding: '10px 12px', textAlign: 'right' }}>
+                                <span style={{ fontSize: '11px', color: sub.status === 'Active' ? '#4caf50' : '#f44336', background: sub.status === 'Active' ? '#e8f5e9' : '#ffebee', padding: '2px 6px', borderRadius: '4px' }}>
+                                  {sub.status}
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
-            
-            <div style={{ padding: '24px', borderTop: '1px solid #f0f0f0' }}>
-              <button style={{ width: '100%', background: 'linear-gradient(90deg, #c9a05b 0%, #b08a4c 100%)', color: '#fff', border: 'none', padding: '12px', borderRadius: '8px', fontSize: '13px', fontWeight: '600', cursor: 'pointer' }} onClick={() => setIsAddModalOpen(true)}>
+
+            <div style={{ padding: '24px', borderTop: '1px solid #f0f0f0', display: 'flex', gap: '12px' }}>
+              <button style={{ flex: 1, background: '#fff', color: '#222', border: '1px solid #e0e0e0', padding: '10px', borderRadius: '8px', fontSize: '13px', fontWeight: '600', cursor: 'pointer' }} onClick={() => setIsAddModalOpen(true)}>
                 Edit Category
+              </button>
+              <button style={{ flex: 1, background: 'linear-gradient(90deg, #c9a05b 0%, #b08a4c 100%)', color: '#fff', border: 'none', padding: '10px', borderRadius: '8px', fontSize: '13px', fontWeight: '600', cursor: 'pointer' }} onClick={() => { setIsDrawerOpen(false); navigate(`/dashboard?category=${activeCategory.slug}`); }}>
+                View Products
               </button>
             </div>
           </div>
@@ -488,21 +724,20 @@ const CategoryManagement = () => {
         }}>
           <div style={{ background: '#fff', width: '400px', borderRadius: '16px', padding: '32px', textAlign: 'center', boxShadow: '0 10px 40px rgba(0,0,0,0.1)' }}>
             <div style={{ background: '#ffebee', width: '64px', height: '64px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f44336', margin: '0 auto 20px auto' }}>
-              <Trash2 size={32}/>
+              <Trash2 size={32} />
             </div>
-            <h2 style={{ fontSize: '20px', margin: '0 0 12px 0', color: '#222' }}>Delete Category?</h2>
-            <p style={{ color: '#666', marginBottom: '24px', fontSize: '14px' }}>Are you sure you want to delete <strong>{deleteCandidate.name}</strong>?</p>
-            
+            <h2 style={{ fontSize: '20px', margin: '0 0 12px 0', color: '#222' }}>Delete "{deleteCandidate.name}"?</h2>
+
             <div style={{ background: '#fffbf0', border: '1px solid #fef08a', padding: '16px', borderRadius: '8px', textAlign: 'left', marginBottom: '32px' }}>
               <p style={{ margin: 0, fontSize: '13px', color: '#854d0e', display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
-                <span>⚠️</span> 
+                <span>⚠️</span>
                 <span>This category contains <strong>{deleteCandidate.products} products</strong>. Deleting it may affect product organization.</span>
               </p>
             </div>
 
             <div style={{ display: 'flex', gap: '16px' }}>
               <button style={{ flex: 1, background: '#f5f5f5', color: '#333', border: 'none', padding: '12px', borderRadius: '8px', cursor: 'pointer', fontWeight: '500' }} onClick={() => setDeleteCandidate(null)}>Cancel</button>
-              <button style={{ flex: 1, background: '#f44336', color: '#fff', border: 'none', padding: '12px', borderRadius: '8px', cursor: 'pointer', fontWeight: '500' }} onClick={confirmDelete}>Delete</button>
+              <button style={{ flex: 1, background: '#f44336', color: '#fff', border: 'none', padding: '12px', borderRadius: '8px', cursor: 'pointer', fontWeight: '500' }} onClick={confirmDelete}>Delete Category</button>
             </div>
           </div>
         </div>
@@ -510,7 +745,7 @@ const CategoryManagement = () => {
 
       {/* Add/Edit Modal */}
       <AddCategoryModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} />
-      
+
       <style>{`
         @keyframes slideInRight {
           from { transform: translateX(100%); }
