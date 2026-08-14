@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ProductManagement.css';
 import AddNewProduct from './AddNewProduct';
+import AddNewBrand from './AddNewBrand';
 import { Popover, Select, Dropdown } from 'antd';
 import { 
   Plus, 
@@ -47,6 +48,7 @@ const ProductManagement = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [activeDropdown, setActiveDropdown] = useState(null);
+  const [isAddingBrand, setIsAddingBrand] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const importFileInputRef = useRef(null);
@@ -416,6 +418,18 @@ const ProductManagement = () => {
     document.body.removeChild(link);
   };
 
+  if (isAddingBrand) {
+    return (
+      <AddNewBrand 
+        onCancel={() => setIsAddingBrand(false)} 
+        onSave={(newBrand) => {
+          console.log('Saved brand from quick action:', newBrand);
+          setIsAddingBrand(false);
+        }} 
+      />
+    );
+  }
+
   return (
     <div className="product-management-page">
       
@@ -605,7 +619,7 @@ const ProductManagement = () => {
                 <Grid size={28} color="#cd873e" strokeWidth={1.5} className="qa-icon" />
                 <span>Add Category</span>
               </button>
-              <button className="quick-action-card">
+              <button className="quick-action-card" onClick={() => setIsAddingBrand(true)}>
                 <Tag size={28} color="#cd873e" strokeWidth={1.5} className="qa-icon" />
                 <span>Add Brand</span>
               </button>
