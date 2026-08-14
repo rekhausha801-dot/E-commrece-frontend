@@ -13,7 +13,6 @@
   gap: 24px;
   padding-bottom: 80px;
   overflow-y: auto;
-  height: 100vh;
 }
 
 /* Card Base */
@@ -59,9 +58,6 @@
   gap: 16px;
 }
 
-  color: #444;
-  white-space: nowrap;
-}
 
 .form-group label span {
   color: #ef4444;
@@ -1018,9 +1014,9 @@
 }
 
 .btn-solid-brown {
-  background: #b67431;
+  background: #d37920;
   color: white;
-  border: 1px solid #b67431;
+  border: 1px solid #d37920;
   padding: 10px 16px;
   border-radius: 6px;
   font-size: 13px;
@@ -1033,7 +1029,7 @@
 }
 
 .btn-solid-brown:hover {
-  background: #a36629;
+  background: #b96a1c;
 }
 
 /* Pagination */
@@ -1717,7 +1713,7 @@
   background: #ffebee;
 }
 
-.add-product-page { overflow-y: auto; height: 100vh; padding-bottom: 50px; }
+.add-product-page { overflow-y: auto; padding-bottom: 50px; }
 
 /* Quick Actions Section */
 .quick-actions-section {
