@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import './Payment.css';
 import CheckoutStepper from '../../components/CheckoutStepper';
+import { useCart } from '../../context/CartContext';
 
 const Payment = () => {
   const navigate = useNavigate();
@@ -22,6 +23,15 @@ const Payment = () => {
     window.scrollTo(0, 0);
   }, []);
   const [selectedMethod, setSelectedMethod] = useState('cod');
+
+  const { cartItems } = useCart();
+  const cartItemCount = cartItems.reduce((acc, item) => acc + item.qty, 0);
+  const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.qty), 0);
+  const productDiscount = cartItems.length > 0 ? 25.00 : 0;
+  const couponDiscount = cartItems.length > 0 ? 15.00 : 0;
+  const totalDiscount = productDiscount + couponDiscount;
+  const tax = subtotal * 0.041;
+  const grandTotal = Math.max(0, subtotal - totalDiscount + tax);
 
   return (
     <div className="lux-payment-page">
@@ -59,7 +69,7 @@ const Payment = () => {
                       <span className="po-name">Cash on Delivery</span>
                       <span className="cod-tag">COD</span>
                     </div>
-                    <span className="po-price">₹2183</span>
+                    <span className="po-price">₹{grandTotal.toFixed(2)}</span>
                   </div>
                   <p className="po-desc">Pay in cash when your order is delivered</p>
                 </div>
@@ -82,11 +92,11 @@ const Payment = () => {
                   <div className="po-top-row">
                     <div className="po-name-group">
                       <span className="po-name">Pay Online</span>
-                      <span className="save-tag">Save ₹237</span>
+                      <span className="save-tag">Save ₹{totalDiscount.toFixed(2)}</span>
                     </div>
                     <div className="po-price-group">
-                      <span className="po-old-price">₹2183</span>
-                      <span className="po-new-price">₹1946</span>
+                      <span className="po-old-price">₹{(subtotal + tax).toFixed(2)}</span>
+                      <span className="po-new-price">₹{grandTotal.toFixed(2)}</span>
                     </div>
                   </div>
                   <p className="po-desc">UPI, Cards, Net Banking &amp; Wallets</p>
@@ -112,27 +122,59 @@ const Payment = () => {
               <div
                 className={`payment-option-card ${selectedMethod === 'wallets' ? 'selected' : ''}`}
                 onClick={() => setSelectedMethod('wallets')}
+                style={{ flexDirection: 'column', alignItems: 'stretch' }}
               >
-                <div className="po-icon-box">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c99a53" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
-                    <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
-                    <path d="M18 12a2 2 0 0 0 0 4h4v-4Z" />
-                  </svg>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '20px' }}>
+                  <div className="po-icon-box">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#c99a53" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
+                      <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
+                      <path d="M18 12a2 2 0 0 0 0 4h4v-4Z" />
+                    </svg>
+                  </div>
+
+                  <div className="po-body">
+                    <div className="po-top-row">
+                      <div className="po-name-group">
+                        <span className="po-name">Wallets</span>
+                      </div>
+                    </div>
+                    <p className="po-desc">Pay using popular wallets</p>
+                  </div>
+
+                  <div className={`po-radio ${selectedMethod === 'wallets' ? 'checked' : ''}`}>
+                    {selectedMethod === 'wallets' && <Check size={14} color="#FFF" strokeWidth={3} />}
+                  </div>
                 </div>
 
-                <div className="po-body">
-                  <div className="po-top-row">
-                    <div className="po-name-group">
-                      <span className="po-name">Wallets</span>
+                {selectedMethod === 'wallets' && (
+                  <div className="wallet-sub-options" onClick={(e) => e.stopPropagation()}>
+                    <div className="wallet-item">
+                      <input type="radio" id="w-phonepe" name="wallet_type" defaultChecked />
+                      <label htmlFor="w-phonepe">
+                        <span style={{ fontWeight: 'bold', color: '#5f259f', fontSize: '15px' }}>PhonePe</span>
+                      </label>
+                    </div>
+                    <div className="wallet-item">
+                      <input type="radio" id="w-amazon" name="wallet_type" />
+                      <label htmlFor="w-amazon">
+                        <span style={{ fontWeight: 'bold', color: '#ff9900', fontSize: '15px' }}>Amazon Pay</span>
+                      </label>
+                    </div>
+                    <div className="wallet-item">
+                      <input type="radio" id="w-paytm" name="wallet_type" />
+                      <label htmlFor="w-paytm">
+                        <span style={{ fontWeight: 'bold', color: '#00baf2', fontSize: '15px' }}>Paytm</span>
+                      </label>
+                    </div>
+                    <div className="wallet-item">
+                      <input type="radio" id="w-mobikwik" name="wallet_type" />
+                      <label htmlFor="w-mobikwik">
+                        <span style={{ fontWeight: 'bold', color: '#002970', fontSize: '15px' }}>MobiKwik</span>
+                      </label>
                     </div>
                   </div>
-                  <p className="po-desc">Pay using popular wallets</p>
-                </div>
-
-                <div className={`po-radio ${selectedMethod === 'wallets' ? 'checked' : ''}`}>
-                  {selectedMethod === 'wallets' && <Check size={14} color="#FFF" strokeWidth={3} />}
-                </div>
+                )}
               </div>
 
               {/* EMI Options */}
@@ -197,18 +239,22 @@ const Payment = () => {
               <div className="price-items-banner">
                 <div className="items-count-badge">
                   <Lock size={16} color="#c99a53" />
-                  <span>10 Items in your cart</span>
+                  <span>{cartItemCount} Items in your cart</span>
                 </div>
               </div>
 
               <div className="price-body">
                 <div className="price-row">
-                  <span className="price-label">Subtotal (10 Items)</span>
-                  <span className="price-val">₹2144</span>
+                  <span className="price-label">Subtotal ({cartItemCount} Items)</span>
+                  <span className="price-val">₹{subtotal.toFixed(2)}</span>
                 </div>
                 <div className="price-row green-row">
                   <span className="price-label">Discounts</span>
-                  <span className="price-val">- ₹21</span>
+                  <span className="price-val">- ₹{totalDiscount.toFixed(2)}</span>
+                </div>
+                <div className="price-row">
+                  <span className="price-label">Tax</span>
+                  <span className="price-val">₹{tax.toFixed(2)}</span>
                 </div>
                 <div className="price-row green-row">
                   <span className="price-label">Delivery Charges</span>
@@ -219,13 +265,13 @@ const Payment = () => {
 
                 <div className="price-total-row">
                   <span className="total-label">Order Total</span>
-                  <span className="total-val">₹2183</span>
+                  <span className="total-val">₹{grandTotal.toFixed(2)}</span>
                 </div>
               </div>
 
               <div className="price-saving-banner">
                 <Tag size={16} />
-                <span>You saved ₹21 on this order!</span>
+                <span>You saved ₹{totalDiscount.toFixed(2)} on this order!</span>
               </div>
 
               <div className="price-footer">

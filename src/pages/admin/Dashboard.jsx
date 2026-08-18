@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Dropdown, Modal, message } from 'antd';
 import './Dashboard.css';
 import {
   LayoutDashboard, BarChart2, FileText, Settings, Users, PieChart,
@@ -12,12 +14,19 @@ import {
   SearchCodeIcon,
   SearchSlash,
   SearchIcon,
-  DollarSign, MoreHorizontal, Shirt
+  DollarSign, MoreHorizontal, Shirt, Lock, Shield, Activity, HelpCircle, LogOut, Globe, Headphones
 } from 'lucide-react';
+import ProductManagement from './ProductManagement';
 import CategoryManagement from './CategoryManagement';
 import OrderManagement from './OrderManagement';
 import CouponManagement from './CouponManagement';
 import ReviewManagement from './ReviewManagement';
+import WebsiteSetting from './WebsiteSetting';
+import ActivityLogManagement from './ActivityLogManagement';
+import HelpSupport from './HelpSupport';
+import NotificationManagement, { initialNotifications } from './NotificationManagement';
+import { mockProducts } from './ProductManagement';
+import { initialOrders } from './OrderManagement';
 import fashionnImage from '../../assets/banners/fashionn.png';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Area, AreaChart,
@@ -205,11 +214,91 @@ const LowStockCustomDot = (props) => {
 };
 
 const Dashboard = () => {
-  const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('Dashboard');
+  const [settingsTab, setSettingsTab] = useState('General');
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [globalSearch, setGlobalSearch] = useState('');
+  const [isLogoutModalVisible, setIsLogoutModalVisible] = useState(false);
+  const [notifications, setNotifications] = useState(initialNotifications);
+  const [revenueFilterLabel, setRevenueFilterLabel] = useState('Last 7 Days');
+  const [categoriesFilterLabel, setCategoriesFilterLabel] = useState('Last 6 Months');
+
+  const getRevenueValue = () => {
+    switch (revenueFilterLabel) {
+      case 'Today': return '₹1,24,500';
+      case 'Last 7 Days': return '₹8,75,420';
+      case 'Last 30 Days': return '₹34,12,000';
+      case 'This Year': return '₹4,12,50,000';
+      default: return '₹8,75,420';
+    }
+  };
+
+  const getRevenuePercentage = () => {
+    switch (revenueFilterLabel) {
+      case 'Today': return '↑ 5.2%';
+      case 'Last 7 Days': return '↑ 12.5%';
+      case 'Last 30 Days': return '↑ 8.4%';
+      case 'This Year': return '↑ 24.1%';
+      default: return '↑ 12.5%';
+    }
+  };
+
+  const unreadCount = notifications.filter(n => n.unread).length;
+
+  const adminProfile = {
+    name: 'Admin User',
+    role: 'Super Admin',
+    email: 'admin@relietech.com',
+    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100'
+  };
+
+  const adminMenu = {
+    items: [
+      {
+        key: 'header',
+        label: (
+          <div style={{ padding: '8px 4px', display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <img src={adminProfile.avatar} alt="Admin" style={{ width: '44px', height: '44px', borderRadius: '50%', objectFit: 'cover', boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.24)' }} />
+            <div>
+              <div style={{ fontWeight: '700', fontSize: '15px', color: '#111827', marginBottom: '2px' }}>{adminProfile.name}</div>
+              <div style={{ fontSize: '12px', color: '#c9a05b', fontWeight: '600', letterSpacing: '0.5px', textTransform: 'uppercase' }}>{adminProfile.role}</div>
+              <div style={{ fontSize: '13px', color: '#6b7280', marginTop: '2px' }}>{adminProfile.email}</div>
+            </div>
+          </div>
+        ),
+      },
+      { type: 'divider' },
+      { key: 'profile', label: <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '4px 0' }}><User size={16} color="#4b5563" /> <span style={{ fontWeight: 500, color: '#374151' }}>My Profile</span></div>, onClick: () => { setActiveTab('Settings'); setSettingsTab('Admin Profile'); } },
+      { key: 'password', label: <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '4px 0' }}><Lock size={16} color="#4b5563" /> <span style={{ fontWeight: 500, color: '#374151' }}>Change Password</span></div>, onClick: () => { setActiveTab('Settings'); setSettingsTab('Security'); } },
+      { key: 'settings', label: <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '4px 0' }}><Settings size={16} color="#4b5563" /> <span style={{ fontWeight: 500, color: '#374151' }}>Account Settings</span></div>, onClick: () => { setActiveTab('Settings'); setSettingsTab('General'); } },
+      { type: 'divider' },
+      {
+        key: 'notifications', label: <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '4px 0', justifyContent: 'space-between', width: '200px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}><Bell size={16} color="#4b5563" /> <span style={{ fontWeight: 500, color: '#374151' }}>Notifications</span></div>
+          {unreadCount > 0 && <span style={{ background: '#ef4444', color: '#fff', padding: '2px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: 'bold' }}>{unreadCount}</span>}
+        </div>,
+        onClick: () => setActiveTab('Notifications')
+      },
+      { key: 'security', label: <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '4px 0' }}><Shield size={16} color="#4b5563" /> <span style={{ fontWeight: 500, color: '#374151' }}>Security & Activity</span></div>, onClick: () => { setActiveTab('Settings'); setSettingsTab('Security'); } },
+      { key: 'activity', label: <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '4px 0' }}><Activity size={16} color="#4b5563" /> <span style={{ fontWeight: 500, color: '#374151' }}>Activity Log</span></div>, onClick: () => setActiveTab('ActivityLog') },
+      { type: 'divider' },
+      { key: 'help', label: <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '4px 0' }}><HelpCircle size={16} color="#4b5563" /> <span style={{ fontWeight: 500, color: '#374151' }}>Help & Support</span></div>, onClick: () => setActiveTab('HelpSupport') },
+      { type: 'divider' },
+      { key: 'logout', label: <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '4px 0', color: '#ef4444' }}><LogOut size={16} /> <span style={{ fontWeight: 600 }}>Logout</span></div>, onClick: () => setIsLogoutModalVisible(true) },
+    ]
+  };
+
+  const handleSearchChange = (e) => { setGlobalSearch(e.target.value) };
+
+  const searchResults = globalSearch.length > 0 ? {
+    products: mockProducts.filter(p => p.name.toLowerCase().includes(globalSearch.toLowerCase()) || p.sku.toLowerCase().includes(globalSearch.toLowerCase())).slice(0, 3),
+    orders: initialOrders.filter(o => o.id.toLowerCase().includes(globalSearch.toLowerCase()) || o.customer.toLowerCase().includes(globalSearch.toLowerCase())).slice(0, 3)
+  } : null;
 
   return (
-    <div className="dashboard-container">
+    <div className={`dashboard-container ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
       {/* Sidebar - KEEP UNCHANGED */}
       <aside className="dashboard-sidebar">
         <div className="sidebar-top">
@@ -222,26 +311,30 @@ const Dashboard = () => {
           </div>
 
           <nav className="sidebar-nav">
-            <button className={`nav-item ${activeTab === 'Dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('Dashboard')}><LayoutDashboard size={18} className="nav-icon" /> Dashboard</button>
-            <button className={`nav-item ${activeTab === 'Products' ? 'active' : ''}`} onClick={() => setActiveTab('Products')}><Package size={18} className="nav-icon" /> Products</button>
-            <button className={`nav-item ${activeTab === 'Categories' ? 'active' : ''}`} onClick={() => setActiveTab('Categories')}><Grid size={18} className="nav-icon" /> Categories</button>
-            <button className={`nav-item ${activeTab === 'Brands' ? 'active' : ''}`} onClick={() => setActiveTab('Brands')}><Zap size={18} className="nav-icon" /> Brands</button>
-            <button className={`nav-item ${activeTab === 'Orders' ? 'active' : ''}`} onClick={() => setActiveTab('Orders')}><ShoppingCart size={18} className="nav-icon" /> Orders</button>
-            <button className={`nav-item ${activeTab === 'Customers' ? 'active' : ''}`} onClick={() => setActiveTab('Customers')}><Users size={18} className="nav-icon" /> Customers</button>
-            <button className={`nav-item ${activeTab === 'Coupons' ? 'active' : ''}`} onClick={() => setActiveTab('Coupons')}><Zap size={18} className="nav-icon" /> Coupons</button>
-            <button className={`nav-item ${activeTab === 'Reviews' ? 'active' : ''}`} onClick={() => setActiveTab('Reviews')}><Settings size={18} className="nav-icon" /> Reviews</button>
-            <button className={`nav-item ${activeTab === 'Banners' ? 'active' : ''}`} onClick={() => setActiveTab('Banners')}><FileText size={18} className="nav-icon" /> Banners</button>
-            <button className={`nav-item ${activeTab === 'Reports' ? 'active' : ''}`} onClick={() => setActiveTab('Reports')}><PieChart size={18} className="nav-icon" /> Reports</button>
-            <button className={`nav-item ${activeTab === 'Notifications' ? 'active' : ''}`} onClick={() => setActiveTab('Notifications')}><Bell size={18} className="nav-icon" /> Notifications</button>
-            <button className={`nav-item ${activeTab === 'Settings' ? 'active' : ''}`} onClick={() => setActiveTab('Settings')}><Settings size={18} className="nav-icon" /> Settings</button>
+            <button className={`nav-item ${activeTab === 'Dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('Dashboard')}><LayoutDashboard size={18} className="nav-icon" /> <span className="nav-text">Dashboard</span></button>
+            <button className={`nav-item ${activeTab === 'Products' ? 'active' : ''}`} onClick={() => setActiveTab('Products')}><Package size={18} className="nav-icon" /> <span className="nav-text">Products</span></button>
+            <button className={`nav-item ${activeTab === 'Categories' ? 'active' : ''}`} onClick={() => setActiveTab('Categories')}><Grid size={18} className="nav-icon" /> <span className="nav-text">Categories</span></button>
+            <button className={`nav-item ${activeTab === 'Brands' ? 'active' : ''}`} onClick={() => setActiveTab('Brands')}><Zap size={18} className="nav-icon" /> <span className="nav-text">Brands</span></button>
+            <button className={`nav-item ${activeTab === 'Orders' ? 'active' : ''}`} onClick={() => setActiveTab('Orders')}><ShoppingCart size={18} className="nav-icon" /> <span className="nav-text">Orders</span></button>
+            <button className={`nav-item ${activeTab === 'Customers' ? 'active' : ''}`} onClick={() => setActiveTab('Customers')}><Users size={18} className="nav-icon" /> <span className="nav-text">Customers</span></button>
+            <button className={`nav-item ${activeTab === 'Coupons' ? 'active' : ''}`} onClick={() => setActiveTab('Coupons')}><Zap size={18} className="nav-icon" /> <span className="nav-text">Coupons</span></button>
+            <button className={`nav-item ${activeTab === 'Reviews' ? 'active' : ''}`} onClick={() => setActiveTab('Reviews')}><Settings size={18} className="nav-icon" /> <span className="nav-text">Reviews</span></button>
+            <button className={`nav-item ${activeTab === 'Banners' ? 'active' : ''}`} onClick={() => setActiveTab('Banners')}><FileText size={18} className="nav-icon" /> <span className="nav-text">Banners</span></button>
+            <button className={`nav-item ${activeTab === 'Reports' ? 'active' : ''}`} onClick={() => setActiveTab('Reports')}><PieChart size={18} className="nav-icon" /> <span className="nav-text">Reports</span></button>
+            <button className={`nav-item ${activeTab === 'Notifications' ? 'active' : ''}`} onClick={() => setActiveTab('Notifications')}><Bell size={18} className="nav-icon" /> <span className="nav-text">Notifications</span></button>
+            <button className={`nav-item ${activeTab === 'WebsiteSettings' ? 'active' : ''}`} onClick={() => setActiveTab('WebsiteSettings')}><Globe size={18} className="nav-icon" /> <span className="nav-text">Website Setting</span></button>
+            <button className={`nav-item ${activeTab === 'HelpSupport' ? 'active' : ''}`} onClick={() => setActiveTab('HelpSupport')}><Headphones size={18} className="nav-icon" /> <span className="nav-text">Help Support</span></button>
+            <button className={`nav-item ${activeTab === 'Settings' ? 'active' : ''}`} onClick={() => setActiveTab('Settings')}><Settings size={18} className="nav-icon" /> <span className="nav-text">Settings</span></button>
           </nav>
         </div>
 
-        <div className="sidebar-bottom">
-          <div className="elevate-card">
-            <h4>Elevate<br />Your Store</h4>
-            <p>Manage. Grow.<br />Succeed.</p>
-            <button className="elevate-btn">View Insights →</button>
+        <div>
+          <div className="sidebar-bottom">
+            <div className="elevate-card">
+              <h4>Elevate<br />Your Store</h4>
+              <p>Manage. Grow.<br />Succeed.</p>
+              <button className="elevate-btn" onClick={() => setActiveTab('Reports')}>View Insights →</button>
+            </div>
           </div>
           <div className="sidebar-footer">
             <p style={{ fontSize: '10px', color: '#666', textAlign: 'center' }}>© 2024 RELIETECH. All rights reserved.</p>
@@ -254,7 +347,7 @@ const Dashboard = () => {
 
         <header className="dashboard-header">
           <div className="header-left">
-            <button className="menu-toggle"><Menu size={20} color="#a07d4b" /></button>
+            <button className="menu-toggle" onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}><Menu size={20} color="#a07d4b" /></button>
             <div className="header-title-wrap">
               <h2>Dashboard</h2>
               <div className="breadcrumbs">
@@ -264,27 +357,67 @@ const Dashboard = () => {
           </div>
 
           <div className="header-right">
-            <div className="search-bar">
+            <div className="search-bar" style={{ position: 'relative' }}>
               <Search size={16} color="#c9a05b" className="search-icon" />
-              <input type="text" placeholder="Search products, orders..." />
-              <div className="search-shortcut">
-                <SearchIcon></SearchIcon>
-              </div>
+              <input
+                type="text"
+                placeholder="Search products, orders..."
+                value={globalSearch}
+                onChange={(e) => setGlobalSearch(e.target.value)}
+              />
+
+              {globalSearch && searchResults && (
+                <div style={{ position: 'absolute', top: '100%', left: 0, width: '100%', background: '#fff', borderRadius: '12px', boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.24)', border: '1px solid #e5e7eb', zIndex: 100, marginTop: '8px', padding: '12px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  {searchResults.products.length > 0 && (
+                    <div>
+                      <div style={{ fontSize: '11px', fontWeight: '700', color: '#9ca3af', textTransform: 'uppercase', marginBottom: '8px', paddingLeft: '8px' }}>Products</div>
+                      {searchResults.products.map(p => (
+                        <div key={p.id} onClick={() => { setGlobalSearch(''); setActiveTab('Products'); }} style={{ padding: '8px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px', transition: 'background 0.2s' }} onMouseOver={e => e.currentTarget.style.background = '#f9fafb'} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>
+                          <Package size={14} color="#6b7280" />
+                          <div>
+                            <div style={{ fontSize: '13px', fontWeight: '600', color: '#111827' }}>{p.name}</div>
+                            <div style={{ fontSize: '11px', color: '#6b7280' }}>{p.sku}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {searchResults.orders.length > 0 && (
+                    <div>
+                      <div style={{ fontSize: '11px', fontWeight: '700', color: '#9ca3af', textTransform: 'uppercase', marginBottom: '8px', paddingLeft: '8px' }}>Orders</div>
+                      {searchResults.orders.map(o => (
+                        <div key={o.id} onClick={() => { setGlobalSearch(''); setActiveTab('Orders'); }} style={{ padding: '8px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px', transition: 'background 0.2s' }} onMouseOver={e => e.currentTarget.style.background = '#f9fafb'} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>
+                          <ShoppingCart size={14} color="#6b7280" />
+                          <div>
+                            <div style={{ fontSize: '13px', fontWeight: '600', color: '#111827' }}>{o.id} - {o.customer}</div>
+                            <div style={{ fontSize: '11px', color: '#6b7280' }}>{o.amount}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {searchResults.products.length === 0 && searchResults.orders.length === 0 && (
+                    <div style={{ padding: '16px', textAlign: 'center', color: '#6b7280', fontSize: '13px' }}>No results found for "{globalSearch}"</div>
+                  )}
+                </div>
+              )}
             </div>
 
-            <div className="notification-icon">
+            <div className="notification-icon" onClick={() => setActiveTab('Notifications')} style={{ cursor: 'pointer' }}>
               <Bell size={20} color="#333" />
-              <span className="notification-badge">8</span>
+              {unreadCount > 0 && <span className="notification-badge">{unreadCount}</span>}
             </div>
 
-            <div className="admin-profile">
-              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100" alt="Admin" />
-              <div className="admin-info">
-                <span className="admin-name">Admin User</span>
-                <span className="admin-role">Super Admin</span>
+            <Dropdown menu={adminMenu} trigger={['click']} placement="bottomRight" arrow={{ pointAtCenter: true }}>
+              <div className="admin-profile" style={{ cursor: 'pointer', padding: '6px 12px', borderRadius: '30px', transition: 'background 0.2s' }} onMouseOver={e => e.currentTarget.style.background = '#f9fafb'} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>
+                <img src={adminProfile.avatar} alt="Admin" />
+                <div className="admin-info">
+                  <span className="admin-name">{adminProfile.name}</span>
+                  <span className="admin-role">{adminProfile.role}</span>
+                </div>
+                <ChevronDown size={16} color="#888" />
               </div>
-              <ChevronDown size={16} color="#888" />
-            </div>
+            </Dropdown>
           </div>
         </header>
 
@@ -292,7 +425,7 @@ const Dashboard = () => {
         {activeTab === 'Dashboard' && (
           <>
             {/* Welcome Banner */}
-            <div style={{ position: 'relative', width: '100%', height: '480px', borderRadius: '32px', overflow: 'hidden', backgroundColor: '#eaddce', marginBottom: '32px', boxShadow: '0 12px 32px rgba(0,0,0,0.06)' }}>
+            <div style={{ position: 'relative', width: '100%', height: '480px', borderRadius: '32px', overflow: 'hidden', backgroundColor: '#eaddce', marginBottom: '32px', boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.24)' }}>
 
               {/* The Girl Image (Positioned on the right) */}
               <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: '60%', backgroundImage: `url(${fashionnImage})`, backgroundSize: 'cover', backgroundPosition: 'right center', backgroundRepeat: 'no-repeat', borderTopLeftRadius: '400px 240px', borderBottomLeftRadius: '400px 240px' }}></div>
@@ -306,7 +439,7 @@ const Dashboard = () => {
                 {/* Top row */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <div style={{ width: '48px', height: '48px', backgroundColor: '#1a1614', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 16px rgba(0,0,0,0.1)' }}>
+                    <div style={{ width: '48px', height: '48px', backgroundColor: '#1a1614', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.24)' }}>
                       <Shirt size={22} color="#c8a883" />
                     </div>
                     <span style={{ fontSize: '14px', fontWeight: '600', color: '#a08561', letterSpacing: '2px' }}>FASHION STORE</span>
@@ -331,7 +464,7 @@ const Dashboard = () => {
                 {/* Bottom Section */}
                 <div style={{ display: 'flex', gap: '32px', alignItems: 'flex-end', marginTop: 'auto' }}>
                   {/* Stats Card */}
-                  <div style={{ backgroundColor: '#211d1b', borderRadius: '24px', padding: '24px 32px', display: 'flex', gap: '32px', boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}>
+                  <div style={{ backgroundColor: '#211d1b', borderRadius: '24px', padding: '24px 32px', display: 'flex', gap: '32px', boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.24)' }}>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                       <div style={{ width: '48px', height: '48px', borderRadius: '50%', border: '1px solid rgba(200,168,131,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -381,7 +514,7 @@ const Dashboard = () => {
                   </div>
 
                   {/* View Dashboard Button */}
-                  <button style={{ background: 'linear-gradient(90deg, #d8ab79 0%, #c4945d 100%)', color: '#211d1b', border: 'none', padding: '18px 28px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', boxShadow: '0 8px 24px rgba(216,171,121,0.3)', fontWeight: '600', fontSize: '15px', height: 'fit-content', marginBottom: '8px' }}>
+                  <button style={{ background: 'linear-gradient(90deg, #d8ab79 0%, #c4945d 100%)', color: '#211d1b', border: 'none', padding: '18px 28px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.24)', fontWeight: '600', fontSize: '15px', height: 'fit-content', marginBottom: '8px' }} onClick={() => setActiveTab('Reports')}>
                     <Grid size={18} />
                     View Dashboard
                     <ArrowRight size={18} />
@@ -391,7 +524,7 @@ const Dashboard = () => {
               </div>
 
               {/* Floating Total Sales Chart Card */}
-              <div style={{ position: 'absolute', right: '48px', bottom: '48px', backgroundColor: '#f0e6d8', borderRadius: '24px', padding: '24px', width: '320px', boxShadow: '0 24px 48px rgba(0,0,0,0.15)', zIndex: 2 }}>
+              <div style={{ position: 'absolute', right: '48px', bottom: '48px', backgroundColor: '#f0e6d8', borderRadius: '24px', padding: '24px', width: '320px', boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.24)', zIndex: 2 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                   <span style={{ fontSize: '14px', color: '#8a7d73', fontWeight: '500' }}>Total Sales</span>
                   <MoreHorizontal size={20} color="#8a7d73" />
@@ -533,10 +666,15 @@ const Dashboard = () => {
               <div className="dashboard-card premium-glass-card">
                 <div className="card-header">
                   <h3>Revenue Overview</h3>
-                  <button style={{ background: 'linear-gradient(180deg, #2a2a2a 0%, #111 100%)', border: '1px solid #444', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '500', color: '#e5c07b', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer', boxShadow: '0 2px 6px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.1)', whiteSpace: 'nowrap', flexShrink: 0, letterSpacing: '0.5px' }}>Last 7 Days <ChevronDown size={12} /></button>
+                  <Dropdown trigger={['click']} menu={{
+                    items: [{ key: 'Today', label: 'Today' }, { key: 'Last 7 Days', label: 'Last 7 Days' }, { key: 'Last 30 Days', label: 'Last 30 Days' }, { key: 'This Year', label: 'This Year' }],
+                    onClick: ({ key }) => setRevenueFilterLabel(key)
+                  }}>
+                    <button style={{ background: 'linear-gradient(180deg, #2a2a2a 0%, #111 100%)', border: '1px solid #444', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '500', color: '#e5c07b', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer', boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.24)', whiteSpace: 'nowrap', flexShrink: 0, letterSpacing: '0.5px' }}>{revenueFilterLabel} <ChevronDown size={12} /></button>
+                  </Dropdown>
                 </div>
                 <div className="card-sub-header">
-                  <h2>₹8,75,420 <span className="stat-change positive text-sm">↑ 12.5%</span></h2>
+                  <h2>{getRevenueValue()} <span className="stat-change positive text-sm">{getRevenuePercentage()}</span></h2>
                 </div>
                 <div className="revenue-chart-container" style={{ height: '250px', marginTop: '20px' }}>
                   <ResponsiveContainer width="100%" height="100%">
@@ -561,7 +699,7 @@ const Dashboard = () => {
               <div className="dashboard-card premium-glass-card">
                 <div className="card-header">
                   <h3>Orders Overview</h3>
-                  <button style={{ background: 'transparent', border: '1px solid #d5b97d', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '600', color: '#9c7324', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0, letterSpacing: '0.5px' }} onClick={() => alert('View All clicked!')}>View All <ArrowRight size={12} /></button>
+                  <button style={{ background: 'transparent', border: '1px solid #d5b97d', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '600', color: '#9c7324', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0, letterSpacing: '0.5px' }} onClick={() => setActiveTab('Orders')}>View All <ArrowRight size={12} /></button>
                 </div>
                 <div className="donut-chart-wrapper" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '16px' }}>
 
@@ -629,7 +767,7 @@ const Dashboard = () => {
               {/* Recent Orders (Span 8) */}
               <div style={{ gridColumn: 'span 8', display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 {/* Low Stock Alert Custom Bar Chart */}
-                <div className="premium-glass-card" style={{ backgroundColor: 'transparent', padding: '24px', borderRadius: '16px', border: '1px solid #eaeaea', display: 'flex', flexDirection: 'column', boxShadow: '0 8px 24px rgba(0,0,0,0.03)' }}>
+                <div className="premium-glass-card" style={{ backgroundColor: '#fff', padding: '24px', borderRadius: '16px', border: '1px solid #eaeaea', display: 'flex', flexDirection: 'column', boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.24)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
                     <h3 style={{ fontSize: '15px', fontWeight: '700', margin: 0, color: '#222', letterSpacing: '-0.3px' }}>Low Stock Alert</h3>
                   </div>
@@ -652,13 +790,13 @@ const Dashboard = () => {
                       return (
                         <div key={idx} className="floating-lite" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2, height: '100%', justifyContent: 'flex-end', position: 'relative', animationDelay: `${idx * 0.3}s` }}>
                           {/* Top Badge */}
-                          <div className="premium-glass-card" style={{ backgroundColor: 'transparent', border: '1px solid #f0f0f0', borderRadius: '12px', padding: '6px 14px', display: 'flex', flexDirection: 'column', alignItems: 'center', boxShadow: '0 8px 16px rgba(0,0,0,0.06)', zIndex: 3, marginBottom: '-12px', position: 'relative' }}>
+                          <div className="premium-glass-card" style={{ backgroundColor: '#fff', border: '1px solid #f0f0f0', borderRadius: '12px', padding: '6px 14px', display: 'flex', flexDirection: 'column', alignItems: 'center', boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.24)', zIndex: 3, marginBottom: '-12px', position: 'relative' }}>
                             <span style={{ fontSize: '15px', fontWeight: '800', color: isLow ? '#c84b41' : '#b98e54', lineHeight: '1' }}>{item.count}</span>
                             <span style={{ fontSize: '9px', color: '#888', marginTop: '3px', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: '600' }}>Units</span>
                           </div>
 
                           {/* Bar Background Container */}
-                          <div style={{ position: 'relative', width: '44px', height: '140px', backgroundColor: '#f9f9f9', borderRadius: '22px', overflow: 'hidden', border: '1px solid #f0f0f0', boxShadow: 'inset 0 4px 10px rgba(0,0,0,0.02)' }}>
+                          <div style={{ position: 'relative', width: '44px', height: '140px', backgroundColor: '#f9f9f9', borderRadius: '22px', overflow: 'hidden', border: '1px solid #f0f0f0', boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.24)' }}>
                             {/* Fill */}
                             <div style={{ position: 'absolute', bottom: 0, left: 0, width: '100%', height: `${percent}%`, background: themeBarColor, borderRadius: '22px', transition: 'height 0.4s cubic-bezier(0.4, 0, 0.2, 1)', boxShadow: `0 0 15px ${glowColor}` }}>
                               {/* Inner Highlight */}
@@ -682,7 +820,7 @@ const Dashboard = () => {
                   </div>
                 </div>
 
-                <div style={{ backgroundColor: '#fdfbf7', padding: '24px', borderRadius: '16px', border: '1px solid #f5eee3', display: 'flex', flexDirection: 'column', boxShadow: '0 4px 20px rgba(0,0,0,0.04), inset 0 4px 16px rgba(0,0,0,0.04)' }}>
+                <div style={{ backgroundColor: '#fdfbf7', padding: '24px', borderRadius: '16px', border: '1px solid #f5eee3', display: 'flex', flexDirection: 'column', boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.24)' }}>
                   {/* Header */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
@@ -691,7 +829,7 @@ const Dashboard = () => {
                       </div>
                       <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#111', margin: 0 }}>Recent Orders</h3>
                     </div>
-                    <button style={{ background: '#fff', border: '1px solid #eaeaea', padding: '8px 16px', borderRadius: '24px', fontSize: '13px', fontWeight: '600', color: '#444', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0 1px 2px rgba(0,0,0,0.02)' }}>
+                    <button onClick={() => setActiveTab('Orders')} style={{ background: '#fff', border: '1px solid #eaeaea', padding: '8px 16px', borderRadius: '24px', fontSize: '13px', fontWeight: '600', color: '#444', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', transition: 'all 0.2s', boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.24)' }}>
                       View All <ArrowRight size={14} color="#888" />
                     </button>
                   </div>
@@ -745,17 +883,22 @@ const Dashboard = () => {
               </div>
 
               <div style={{ gridColumn: 'span 4', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                <div className="premium-glass-card" style={{ backgroundColor: 'transparent', padding: '20px', borderRadius: '16px', border: '1px solid #f0f0f0', display: 'flex', flexDirection: 'column', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
+                <div className="premium-glass-card" style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '16px', border: '1px solid #f0f0f0', display: 'flex', flexDirection: 'column', boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.24)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                     <h3 style={{ fontSize: '15px', fontWeight: '700', margin: 0, color: '#333' }}>Top Categories</h3>
-                    <button style={{ background: '#fff', border: '1px solid #eee', padding: '4px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: '600', color: '#555', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>Last 6 Months <ChevronDown size={12} /></button>
+                    <Dropdown trigger={['click']} menu={{
+                      items: [{ key: 'Last 7 Days', label: 'Last 7 Days' }, { key: 'Last 30 Days', label: 'Last 30 Days' }, { key: 'Last 6 Months', label: 'Last 6 Months' }, { key: 'This Year', label: 'This Year' }],
+                      onClick: ({ key }) => setCategoriesFilterLabel(key)
+                    }}>
+                      <button style={{ background: '#fff', border: '1px solid #eee', padding: '4px 8px', borderRadius: '6px', fontSize: '11px', fontWeight: '600', color: '#555', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>{categoriesFilterLabel} <ChevronDown size={12} /></button>
+                    </Dropdown>
                   </div>
                   <div style={{ height: '220px', width: '100%', marginTop: '16px' }}>
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={topCategoriesData.slice(0, 4)} margin={{ top: 25, right: 0, left: 0, bottom: 0 }}>
                         <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#aaa' }} dy={10} />
                         <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#aaa' }} tickFormatter={(val) => `${val}%`} />
-                        <RechartsTooltip cursor={{ fill: 'transparent' }} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
+                        <RechartsTooltip cursor={{ fill: 'transparent' }} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.24)' }} />
                         <Bar dataKey="value" radius={[4, 4, 0, 0]} barSize={36}>
                           {topCategoriesData.slice(0, 4).map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={['#c9a05b', '#8c673d', '#1f1f1f'][index % 3]} />
@@ -766,42 +909,73 @@ const Dashboard = () => {
                   </div>
                 </div>
 
-                {/* Notifications Premium Design */}
-                <div style={{ flex: 1, backgroundColor: '#f9f5f0', border: '1px solid #f0ead6', padding: '24px 16px', borderRadius: '32px', display: 'flex', flexDirection: 'column', boxShadow: '0 8px 30px rgba(0,0,0,0.03)' }}>
-
+                {/* Notifications Premium Design - Light Theme */}
+                <div style={{ flex: 1, backgroundColor: '#fff', border: '1px solid #f0ead6', padding: '24px', borderRadius: '24px', display: 'flex', flexDirection: 'column', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+                  
                   {/* Header */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', padding: '0 8px' }}>
-                    <h3 style={{ fontSize: '20px', fontWeight: '600', fontFamily: '"Inter", sans-serif', margin: 0, color: '#222' }}>Notifications</h3>
-                    <ArrowUpRight size={20} color="#555" style={{ cursor: 'pointer' }} />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                    <h3 style={{ fontSize: '18px', fontWeight: '700', fontFamily: '"Inter", sans-serif', margin: 0, color: '#111', letterSpacing: '-0.3px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <Bell size={18} color="#c9a05b" /> Notifications
+                    </h3>
+                    <button onClick={() => setActiveTab('Notifications')} style={{ background: '#fffcf6', border: '1px solid #f4e8d3', padding: '6px 14px', borderRadius: '20px', color: '#c9a05b', fontSize: '12px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.3s' }}>
+                      View All
+                    </button>
                   </div>
 
                   {/* List */}
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {notificationsData.map((notif, index) => {
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {notificationsData.slice(0, 4).map((notif, index) => {
                       const Icon = notif.icon;
 
-                      let StatusIcon = ChevronRight;
+                      let iconColor = '#6b7280';
+                      let bgColor = '#f3f4f6';
+                      let dotColor = '#6b7280';
                       const titleLower = notif.title.toLowerCase();
-                      if (titleLower.includes('completed') || titleLower.includes('processed') || titleLower.includes('received')) {
-                        StatusIcon = CheckCircle2;
-                      } else if (titleLower.includes('alert') || titleLower.includes('warning')) {
-                        StatusIcon = AlertCircle;
+                      
+                      if (titleLower.includes('order') || titleLower.includes('received')) {
+                        iconColor = '#c9a05b'; 
+                        bgColor = '#fffbf2';
+                        dotColor = '#c9a05b';
+                      } else if (titleLower.includes('alert') || titleLower.includes('warning') || titleLower.includes('return')) {
+                        iconColor = '#ef4444'; 
+                        bgColor = '#fef2f2';
+                        dotColor = '#ef4444';
                       } else if (titleLower.includes('registered')) {
-                        StatusIcon = CheckCircle2;
+                        iconColor = '#8b5cf6'; 
+                        bgColor = '#f5f3ff';
+                        dotColor = '#8b5cf6';
+                      } else if (titleLower.includes('payment')) {
+                        iconColor = '#10b981';
+                        bgColor = '#ecfdf5';
+                        dotColor = '#10b981';
                       }
 
                       return (
-                        <div key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', backgroundColor: 'transparent', borderRadius: '50px', cursor: 'pointer', transition: 'all 0.3s ease' }}>
+                        <div key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', backgroundColor: '#fff', borderRadius: '16px', cursor: 'pointer', transition: 'all 0.3s ease', border: '1px solid #f3f4f6', position: 'relative', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.01)' }} className="dashboard-notif-card">
+                          
+
                           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                            <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#fff', color: '#c9a05b', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 2px 8px rgba(0,0,0,0.04)', border: '1px solid #f0ead6' }}>
-                              <Icon size={22} strokeWidth={1.5} />
+                            <div style={{ width: '42px', height: '42px', borderRadius: '12px', backgroundColor: bgColor, color: iconColor, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                              <Icon size={18} strokeWidth={2} />
                             </div>
                             <div style={{ display: 'flex', flexDirection: 'column' }}>
-                              <span style={{ fontSize: '15px', fontWeight: '600', fontFamily: '"Inter", sans-serif', color: '#111' }}>{notif.title}</span>
-                              <span style={{ fontSize: '12px', color: '#888', fontWeight: '400', marginTop: '2px' }}>{notif.time}</span>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                {index < 2 && <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: dotColor }}></div>}
+                                <span style={{ fontSize: '14px', fontWeight: index < 2 ? '700' : '600', fontFamily: '"Inter", sans-serif', color: '#111', letterSpacing: '-0.2px' }}>{notif.title}</span>
+                              </div>
+                              <span style={{ fontSize: '12px', color: '#888', fontWeight: '500', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <Clock size={10} color="#aaa" /> {notif.time}
+                              </span>
                             </div>
                           </div>
-                          <StatusIcon size={18} color="#c9a05b" style={{ marginRight: '8px', opacity: 0.6 }} />
+                          
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            {index === 0 && <span style={{ fontSize: '11px', fontWeight: '600', padding: '2px 8px', borderRadius: '12px', background: '#fef3dd', color: '#d97706' }}>Medium</span>}
+                            {index === 1 && <span style={{ fontSize: '11px', fontWeight: '600', padding: '2px 8px', borderRadius: '12px', background: '#fce8eb', color: '#e75b75' }}>High</span>}
+                            <div style={{ width: '28px', height: '28px', borderRadius: '50%', backgroundColor: '#f9fafb', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s' }} className="arrow-btn">
+                              <ArrowUpRight size={14} color="#6b7280" />
+                            </div>
+                          </div>
                         </div>
                       );
                     })}
@@ -809,17 +983,17 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              <div style={{ gridColumn: 'span 12', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '24px', marginTop: '4px' }}>
+              <div style={{ gridColumn: 'span 12', display: 'grid', gridTemplateColumns: '1fr 1fr 0.7fr', gap: '24px', marginTop: '4px' }}>
                 {/* New Arrivals */}
-                <div className="premium-glass-card" style={{ backgroundColor: 'transparent', padding: '24px', borderRadius: '16px', border: '1px solid #f0f0f0', display: 'flex', flexDirection: 'column', boxShadow: '0 2px 10px rgba(0,0,0,0.02)', height: '100%' }}>
+                <div className="premium-glass-card" style={{ backgroundColor: '#fff', padding: '24px', borderRadius: '16px', border: '1px solid #f0f0f0', display: 'flex', flexDirection: 'column', boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.24)', height: '100%' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                     <h3 style={{ fontSize: '15px', fontWeight: '700', margin: 0, color: '#333' }}>New Arrivals</h3>
                     <button className="premium-view-btn">View All <ArrowRight size={14} /></button>
                   </div>
 
-                  <div className="hide-scrollbar" style={{ display: 'flex', flexDirection: 'column', height: '160px', overflowY: 'auto' }}>
-                    {newArrivalsData.map((item, index, arr) => (
-                      <div key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 0', borderBottom: index !== arr.length - 1 ? '1px solid #f5f5f5' : 'none' }}>
+                  <div className="hide-scrollbar" style={{ display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
+                    {newArrivalsData.slice(0, 3).map((item, index, arr) => (
+                      <div key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: index !== arr.length - 1 ? '1px solid #f5f5f5' : 'none' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: 0 }}>
                           <div style={{ width: '40px', height: '40px', borderRadius: '8px', overflow: 'hidden', backgroundColor: '#f9f9f9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                             <img src={item.img} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -846,13 +1020,13 @@ const Dashboard = () => {
                 </div>
 
                 {/* Middle: Rating */}
-                <div className="premium-glass-card" style={{ backgroundColor: 'transparent', padding: '24px', borderRadius: '16px', border: '1px solid #f0f0f0', display: 'flex', flexDirection: 'column', boxShadow: '0 2px 10px rgba(0,0,0,0.02)' }}>
+                <div className="premium-glass-card" style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '16px', border: '1px solid #f0f0f0', display: 'flex', flexDirection: 'column', boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.24)' }}>
                   <h3 style={{ fontSize: '15px', fontWeight: '700', color: '#333', margin: '0 0 4px 0' }}>Your Rating</h3>
-                  <p style={{ fontSize: '12px', color: '#888', margin: '0 0 24px 0' }}>What people feel and comment</p>
-                  <div className="rating-container" style={{ position: 'relative', height: '160px', width: '100%' }}>
+                  <p style={{ fontSize: '12px', color: '#888', margin: '0 0 16px 0' }}>What people feel and comment</p>
+                  <div className="rating-container" style={{ position: 'relative', height: '140px', width: '100%' }}>
                     {/* Large Circle */}
-                    <div className="rating-circle-1" style={{ position: 'absolute', right: '5px', top: '20px', width: '130px', height: '130px', borderRadius: '50%', backgroundColor: '#5c3a21', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff', zIndex: 1 }}>
-                      <span style={{ fontSize: '26px', fontWeight: '500' }}>85%</span>
+                    <div className="rating-circle-1" style={{ position: 'absolute', right: '5px', top: '10px', width: '110px', height: '110px', borderRadius: '50%', backgroundColor: '#5c3a21', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff', zIndex: 1 }}>
+                      <span style={{ fontSize: '22px', fontWeight: '500' }}>85%</span>
                       <span style={{ fontSize: '11px', fontWeight: '400' }}>Fabric Quality</span>
                     </div>
                     {/* Medium Circle */}
@@ -874,7 +1048,7 @@ const Dashboard = () => {
                   overflow: 'hidden',
                   display: 'flex',
                   flexDirection: 'column',
-                  boxShadow: '0 12px 30px rgba(0,0,0,0.15)',
+                  boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.24)',
                   height: '100%',
                   backgroundColor: '#0a0a0a',
                   border: '1px solid #222',
@@ -884,15 +1058,15 @@ const Dashboard = () => {
                   <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: '#0f0f0f', zIndex: 0 }}></div>
 
                   {/* Top Right Blob */}
-                  <div style={{ position: 'absolute', top: '-15%', right: '-25%', width: '70%', height: '55%', background: 'linear-gradient(145deg, #e3c498, #967551)', borderRadius: '40% 40% 60% 40%', boxShadow: '-2px 4px 15px rgba(255, 230, 180, 0.4), inset 15px 15px 30px rgba(0,0,0,0.2)', pointerEvents: 'none', zIndex: 1 }}></div>
+                  <div style={{ position: 'absolute', top: '-15%', right: '-25%', width: '70%', height: '55%', background: 'linear-gradient(145deg, #e3c498, #967551)', borderRadius: '40% 40% 60% 40%', boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.24)', pointerEvents: 'none', zIndex: 1 }}></div>
 
                   {/* Bottom Right Blob */}
-                  <div style={{ position: 'absolute', bottom: '-20%', right: '-35%', width: '100%', height: '80%', background: 'linear-gradient(145deg, #c4a17a, #876847)', borderRadius: '60% 30% 20% 60%', boxShadow: '-3px -4px 20px rgba(255, 230, 180, 0.3), inset 20px 20px 40px rgba(0,0,0,0.3)', pointerEvents: 'none', zIndex: 1 }}></div>
+                  <div style={{ position: 'absolute', bottom: '-20%', right: '-35%', width: '100%', height: '80%', background: 'linear-gradient(145deg, #c4a17a, #876847)', borderRadius: '60% 30% 20% 60%', boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.24)', pointerEvents: 'none', zIndex: 1 }}></div>
 
                   {/* Left/Bottom Flowing Dark Shape (creates the central black path) */}
-                  <div style={{ position: 'absolute', bottom: '-40%', left: '-30%', width: '90%', height: '90%', background: '#0a0a0a', borderRadius: '40% 60% 40% 50%', boxShadow: '3px -3px 15px rgba(255, 230, 180, 0.35)', pointerEvents: 'none', zIndex: 1 }}></div>
+                  <div style={{ position: 'absolute', bottom: '-40%', left: '-30%', width: '90%', height: '90%', background: '#0a0a0a', borderRadius: '40% 60% 40% 50%', boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.24)', pointerEvents: 'none', zIndex: 1 }}></div>
 
-                  <div style={{ padding: '28px 24px', position: 'relative', zIndex: 2, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  <div style={{ padding: '20px 20px', position: 'relative', zIndex: 2, flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                     <h3 style={{
                       margin: '0',
                       fontSize: '24px',
@@ -905,7 +1079,7 @@ const Dashboard = () => {
                       Analyze<br />trends<br />and forecast<br />your<br />collection<br />success
                     </h3>
 
-                    <div style={{ marginTop: '20px' }}>
+                    <div style={{ marginTop: '12px' }}>
                       <button style={{
                         background: 'linear-gradient(135deg, #b58d5e 0%, #e3c498 50%, #c49f70 100%)',
                         color: '#000',
@@ -936,12 +1110,49 @@ const Dashboard = () => {
           </>
         )}
 
-        {activeTab === 'Products' && <ProductManagement />}
+        {activeTab === 'Products' && <ProductManagement globalSearch={globalSearch} />}
         {activeTab === 'Categories' && <CategoryManagement />}
-        {activeTab === 'Orders' && <OrderManagement />}
+        {activeTab === 'Orders' && <OrderManagement globalSearch={globalSearch} />}
         {activeTab === 'Coupons' && <CouponManagement />}
         {activeTab === 'Reviews' && <ReviewManagement />}
+        {activeTab === 'Settings' && <WebsiteSetting initialTab={settingsTab} />}
+        {activeTab === 'Notifications' && <NotificationManagement setActiveTab={setActiveTab} notifications={notifications} setNotifications={setNotifications} />}
+        {activeTab === 'ActivityLog' && <ActivityLogManagement />}
+        {activeTab === 'HelpSupport' && <HelpSupport />}
       </main>
+
+      <Modal
+        title={null}
+        visible={isLogoutModalVisible}
+        onCancel={() => setIsLogoutModalVisible(false)}
+        footer={null}
+        width={400}
+        centered
+        styles={{ body: { padding: '32px 24px', textAlign: 'center' } }}
+        closeIcon={<XCircle size={20} color="#9ca3af" />}
+      >
+        <div style={{ display: 'inline-flex', alignItems: 'center', justifyItems: 'center', width: '56px', height: '56px', background: '#fef2f2', borderRadius: '50%', marginBottom: '20px' }}>
+          <LogOut size={28} color="#ef4444" style={{ margin: 'auto' }} />
+        </div>
+        <h3 style={{ margin: '0 0 12px 0', fontSize: '20px', fontWeight: 700, color: '#111827' }}>Logout</h3>
+        <p style={{ margin: '0 0 32px 0', fontSize: '14px', color: '#6b7280', lineHeight: 1.5 }}>
+          Are you sure you want to logout from your admin account? You will need to re-enter your credentials to access the dashboard.
+        </p>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <button
+            onClick={() => setIsLogoutModalVisible(false)}
+            style={{ flex: 1, padding: '12px', background: '#fff', border: '1px solid #d1d5db', borderRadius: '10px', fontSize: '14px', fontWeight: 600, color: '#374151', cursor: 'pointer' }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => navigate('/')}
+            style={{ flex: 1, padding: '12px', background: '#ef4444', border: 'none', borderRadius: '10px', fontSize: '14px', fontWeight: 600, color: '#fff', cursor: 'pointer', boxShadow: '0 4px 12px rgba(239, 68, 68, 0.2)' }}
+          >
+            Logout
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 };

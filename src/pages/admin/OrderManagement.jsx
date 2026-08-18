@@ -9,7 +9,7 @@ const { RangePicker } = DatePicker;
 const sparklineData = [{ v: 40 }, { v: 30 }, { v: 60 }, { v: 45 }, { v: 70 }, { v: 90 }, { v: 120 }];
 const sparklineData2 = [{ v: 10 }, { v: 15 }, { v: 12 }, { v: 22 }, { v: 18 }, { v: 28 }, { v: 25 }];
 
-const initialOrders = [
+export const initialOrders = [
   { id: '#ORD12540', customer: 'Priya Kumar', avatar: 'https://i.pravatar.cc/150?img=5', email: 'priya.k@example.com', phone: '+91 9876543210', address: '123, Anna Nagar, Chennai, Tamil Nadu 600040', items: 2, amount: '₹2,180', paymentMethod: 'COD', paymentStatus: 'Pending', status: 'Return Requested', date: '13 Aug 2026', time: '10:32 AM', products: [{ id: 'P1', image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=150', name: 'Premium Wireless Headphones', sku: 'AUDIO-WH-001', size: 'Standard', color: 'Matte Black', quantity: 1, unitPrice: '₹1,500', total: '₹1,500' }, { id: 'P2', image: 'https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=150', name: 'Smart Fitness Watch', sku: 'WEAR-FW-023', size: 'Dial: 44mm', color: 'Silver', quantity: 1, unitPrice: '₹680', total: '₹680' }] },
   { id: '#ORD12541', customer: 'Rahul S', avatar: 'https://i.pravatar.cc/150?img=11', email: 'rahul.s@example.com', phone: '+91 9876543211', address: '45, MG Road, Bangalore, Karnataka 560001', items: 5, amount: '₹4,650', paymentMethod: 'UPI', paymentStatus: 'Paid', status: 'Processing', date: '13 Aug 2026', time: '09:15 AM', products: [{ id: 'P3', image: 'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=150', name: 'Bluetooth Speaker', sku: 'AUDIO-BS-012', size: 'Portable', color: 'Blue', quantity: 5, unitPrice: '₹930', total: '₹4,650' }] },
   { id: '#ORD12542', customer: 'Anitha R', avatar: 'https://i.pravatar.cc/150?img=9', email: 'anitha.r@example.com', phone: '+91 9876543212', address: '78, Jubilee Hills, Hyderabad, Telangana 500033', items: 2, amount: '₹1,299', paymentMethod: 'Card', paymentStatus: 'Paid', status: 'Shipped', date: '12 Aug 2026', time: '07:45 PM', products: [{ id: 'P4', image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=150', name: 'Noise Cancelling Earbuds', sku: 'AUDIO-EB-004', size: 'Standard', color: 'White', quantity: 2, unitPrice: '₹649.50', total: '₹1,299' }] },
@@ -33,8 +33,9 @@ const getProductImage = (product) => {
   return `${baseUrl}${cleanPath}`;
 };
 
-const OrderManagement = () => {
+const OrderManagement = ({ globalSearch = '' }) => {
   const [orders, setOrders] = useState(initialOrders);
+  const [activeTab, setActiveTab] = useState('All');
   const [searchText, setSearchText] = useState('');
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -103,9 +104,6 @@ const OrderManagement = () => {
     } else {
       filename += '.pdf';
     }
-    
-    // For front-end mockup, downloading as CSV (with correct headers) works for testing.
-    // Real implementation would use xlsx or jsPDF for correct binary formats.
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
@@ -664,11 +662,15 @@ const OrderManagement = () => {
 
         <Table
           className="premium-table"
-          dataSource={orders.filter(o =>
-            o.id.toLowerCase().includes(searchText.toLowerCase()) ||
-            o.customer.toLowerCase().includes(searchText.toLowerCase()) ||
-            o.products.some(p => p.name.toLowerCase().includes(searchText.toLowerCase()))
-          )}
+          dataSource={orders.filter(o => {
+            const finalSearchText = globalSearch || searchText;
+            const matchesSearch = 
+                o.id.toLowerCase().includes(finalSearchText.toLowerCase()) ||
+                o.customer.toLowerCase().includes(finalSearchText.toLowerCase()) ||
+                o.products.some(p => p.name.toLowerCase().includes(finalSearchText.toLowerCase()));
+
+            return matchesSearch;
+          })}
           columns={columns}
           rowKey="id"
           loading={isLoading}

@@ -10,8 +10,10 @@ import './MyOrders.css';
 import img1 from '../../assets/Maroon.png';
 import img2 from '../../assets/Baggy.png';
 import img3 from '../../assets/Shoes.png';
+import { useOrders } from '../../context/OrderContext';
 
 const MyOrders = () => {
+  const { orders } = useOrders();
   const [activeStatus, setActiveStatus] = useState('All Orders');
   const [activeTime, setActiveTime] = useState('Today');
   const [searchQuery, setSearchQuery] = useState('');
@@ -19,158 +21,15 @@ const MyOrders = () => {
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [expandedOrder, setExpandedOrder] = useState(null);
 
-  const initialOrders = [
-    {
-      id: 'ORD102455',
-      date: '10 Aug, 2026',
-      total: '1,468',
-      status: 'Delivered',
-      statusColor: 'green',
-      image: img1,
-      title: 'Georgette Embroidery Work Saree',
-      size: 'Free Size',
-      color: 'Maroon',
-      qty: 1,
-      deliveryText: 'Delivered on 11 Aug, 2026'
-    },
-    {
-      id: 'ORD10221',
-      date: '08 Aug, 2026',
-      total: '2,349',
-      status: 'Shipped',
-      statusColor: 'blue',
-      image: img2,
-      title: 'PU Leather Tote Bag',
-      color: 'Tan Brown',
-      qty: 1,
-      deliveryText: 'Expected delivery: 12 Aug, 2026'
-    },
-    {
-      id: 'ORD101987',
-      date: '05 Aug, 2026',
-      total: '999',
-      status: 'Processing',
-      statusColor: 'purple',
-      image: img3,
-      title: 'Gold Plated Jhumka Earrings',
-      color: 'Gold',
-      qty: 1,
-      deliveryText: 'Preparing your order'
-    },
-    {
-      id: 'ORD101986',
-      date: '02 Aug, 2026',
-      total: '1,299',
-      status: 'Shipped',
-      statusColor: 'blue',
-      image: img1,
-      title: 'Cotton Silk Blend Kurta',
-      size: 'M',
-      color: 'Blue',
-      qty: 2,
-      deliveryText: 'Expected delivery: 10 Aug, 2026'
-    },
-    {
-      id: 'ORD101985',
-      date: '18 Jul, 2025',
-      total: '3,499',
-      status: 'Confirmed',
-      statusColor: 'blue',
-      image: img2,
-      title: 'Designer Evening Gown',
-      size: 'L',
-      color: 'Black',
-      qty: 1,
-      deliveryText: 'Order Confirmed'
-    },
-    {
-      id: 'ORD101984',
-      date: '15 Jul, 2025',
-      total: '899',
-      status: 'Processing',
-      statusColor: 'purple',
-      image: img3,
-      title: 'Silver Oxidized Necklace',
-      color: 'Silver',
-      qty: 1,
-      deliveryText: 'Preparing your order'
-    },
-    {
-      id: 'ORD101983',
-      date: '10 Jul, 2025',
-      total: '2,100',
-      status: 'Shipped',
-      statusColor: 'blue',
-      image: img1,
-      title: 'Men Casual Sneakers',
-      size: '9',
-      color: 'White',
-      qty: 1,
-      deliveryText: 'Expected delivery: 01 Aug, 2025'
-    },
-    {
-      id: 'ORD101982',
-      date: '08 Jul, 2025',
-      total: '450',
-      status: 'Confirmed',
-      statusColor: 'blue',
-      image: img2,
-      title: 'Printed Ceramic Coffee Mug',
-      color: 'Multicolor',
-      qty: 2,
-      deliveryText: 'Order Confirmed'
-    },
-    {
-      id: 'ORD101981',
-      date: '05 Jul, 2025',
-      total: '1,750',
-      status: 'Out for Delivery',
-      statusColor: 'purple',
-      image: img3,
-      title: 'Wireless Bluetooth Earbuds',
-      color: 'Black',
-      qty: 1,
-      deliveryText: 'Arriving today by 9 PM'
-    },
-    {
-      id: 'ORD101980',
-      date: '02 Jul, 2025',
-      total: '3,200',
-      status: 'Out for Delivery',
-      statusColor: 'purple',
-      image: img1,
-      title: 'Smart Fitness Watch',
-      color: 'Rose Gold',
-      qty: 1,
-      deliveryText: 'Arriving today by 7 PM'
-    },
-    {
-      id: 'ORD101979',
-      date: '28 Jun, 2025',
-      total: '6,400',
-      status: 'Shipped',
-      statusColor: 'blue',
-      image: img2,
-      title: 'Luxury Leather Jacket',
-      size: 'XL',
-      color: 'Brown',
-      qty: 1,
-      deliveryText: 'Expected delivery: 10 Jul, 2025'
-    },
-    {
-      id: 'ORD101978',
-      date: '25 Jun, 2025',
-      total: '1,100',
-      status: 'Confirmed',
-      statusColor: 'blue',
-      image: img3,
-      title: 'Yoga Mat with Alignment Lines',
-      color: 'Purple',
-      qty: 1,
-      deliveryText: 'Order Confirmed'
-    }
-  ];
-
+  const normalizedOrders = orders.map(o => ({
+    ...o,
+    title: o.title || o.product || 'Unknown Product',
+    total: String(o.total || o.amount || 0).replace(/[^0-9.-]+/g, ''),
+    statusColorClass: o.statusColor && !o.statusColor.startsWith('#') ? o.statusColor : '',
+    statusColorHex: o.statusColor && o.statusColor.startsWith('#') ? o.statusColor : '',
+    qty: o.qty || 1,
+    deliveryText: o.deliveryText || (o.status === 'Delivered' ? 'Delivered' : 'Expected soon')
+  }));
   const statuses = [
     { name: 'All Orders', count: 12, icon: <ShoppingBag size={18} /> },
     { name: 'Confirmed', count: 3, icon: <CheckCircle size={18} /> },
@@ -189,7 +48,7 @@ const MyOrders = () => {
     { name: 'Custom Range', count: null, icon: <Calendar size={18} /> }
   ];
 
-  let filteredOrders = initialOrders.filter(order => {
+  let filteredOrders = normalizedOrders.filter(order => {
     const searchLower = searchQuery.toLowerCase();
     const matchesSearch = order.title.toLowerCase().includes(searchLower) ||
       order.id.toLowerCase().includes(searchLower);
@@ -342,7 +201,7 @@ const MyOrders = () => {
                         </div>
                         <div className="mo-ch-right">
                           <span className="mo-ch-total">Total: ₹{order.total}</span>
-                          <div className={`mo-status-pill ${order.statusColor}`}>
+                          <div className={`mo-status-pill ${order.statusColorClass}`} style={order.statusColorHex ? { color: order.statusColorHex, backgroundColor: order.statusBg || '#fef3c7' } : {}}>
                             {order.status === 'Delivered' && <Check size={14} />}
                             {order.status === 'Shipped' && <Truck size={14} />}
                             {order.status === 'Processing' && <RotateCcw size={14} />}
@@ -366,7 +225,7 @@ const MyOrders = () => {
                             <span>Qty: {order.qty}</span> <span className="mo-divider-pipe">|</span> <span>Price: ₹{order.total}</span>
                           </div>
 
-                          <div className={`mo-delivery-status ${order.statusColor}`}>
+                          <div className={`mo-delivery-status ${order.statusColorClass}`} style={order.statusColorHex ? { color: order.statusColorHex } : {}}>
                             {order.status === 'Delivered' && <Truck size={14} />}
                             {order.status === 'Shipped' && <Truck size={14} />}
                             {order.status === 'Processing' && <RotateCcw size={14} />}

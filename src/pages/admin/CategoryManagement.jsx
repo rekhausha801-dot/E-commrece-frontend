@@ -90,6 +90,7 @@ const CategoryManagement = () => {
   const [parentFilter, setParentFilter] = useState('All Categories');
   const [productCreationFilter, setProductCreationFilter] = useState('All');
   const [sortFilter, setSortFilter] = useState('Newest');
+  const [categorySearchFilter, setCategorySearchFilter] = useState(null);
 
   const totalCat = categories.length;
   const activeCat = categories.filter(c => c.status === 'Active').length;
@@ -180,6 +181,7 @@ const CategoryManagement = () => {
     setProductCreationFilter('All');
     setSearchQuery('');
     setSortFilter('Newest');
+    setCategorySearchFilter(null);
   };
 
   const rowSelection = {
@@ -195,6 +197,7 @@ const CategoryManagement = () => {
       dataIndex: 'name',
       key: 'name',
       sorter: (a, b) => a.name.localeCompare(b.name),
+      filteredValue: categorySearchFilter ? [categorySearchFilter] : null,
       filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
         <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
           <Input
@@ -240,6 +243,7 @@ const CategoryManagement = () => {
       dataIndex: 'slug',
       key: 'slug',
       align: 'center',
+      filteredValue: null,
       render: (text) => (
         <span style={{ fontSize: '12px', color: '#6b7280', background: '#f3f4f6', padding: '4px 10px', borderRadius: '12px', fontWeight: '500' }}>
           /{text}
@@ -270,6 +274,7 @@ const CategoryManagement = () => {
       key: 'products',
       align: 'center',
       sorter: (a, b) => a.products - b.products,
+      filteredValue: null,
       render: (text) => (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '13px', color: '#374151', fontWeight: '600' }}>
           <Package size={15} color="#9ca3af" />
@@ -333,6 +338,7 @@ const CategoryManagement = () => {
       title: 'Actions',
       key: 'actions',
       align: 'center',
+      filteredValue: null,
       render: (_, record) => {
         const items = [
           {
@@ -562,6 +568,9 @@ const CategoryManagement = () => {
           rowKey="id"
           rowSelection={rowSelection}
           onChange={(pagination, filters, sorter) => {
+            if (filters.name) setCategorySearchFilter(filters.name[0]);
+            else setCategorySearchFilter(null);
+
             if (filters.subCat) setParentFilter(filters.subCat[0] || 'All Categories');
             else setParentFilter('All Categories');
 

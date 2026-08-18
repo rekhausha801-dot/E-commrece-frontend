@@ -1,0 +1,209 @@
+.settings-container {
+  display: flex;
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 8px 32px 8px;
+}
+
+.settings-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #f3f4f6;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04), 0 2px 4px rgba(0, 0, 0, 0.02);
+  padding: 20px 0;
+  height: fit-content;
+}
+
+.settings-sidebar h3 {
+  font-size: 13px;
+  font-weight: 700;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 24px 12px;
+}
+
+.settings-nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #4b5563;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+}
+
+.settings-nav-item:hover {
+  background: #f9fafb;
+  color: #1f2937;
+}
+
+.settings-nav-item.active {
+  background: #fffbeb;
+  color: #d97706;
+  border-left-color: #d97706;
+  font-weight: 600;
+}
+
+.settings-content {
+  flex: 1;
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #f3f4f6;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04), 0 2px 4px rgba(0, 0, 0, 0.02);
+  padding: 32px;
+  min-height: 700px;
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-content form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-header {
+  border-bottom: 1px solid #f3f4f6;
+  padding-bottom: 20px;
+  margin-bottom: 24px;
+}
+
+.settings-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.3px;
+}
+
+.settings-header p {
+  margin: 4px 0 0 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.settings-form-row {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.settings-form-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.settings-form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.settings-form-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #111827;
+  transition: all 0.2s;
+  background: #fff;
+}
+
+.settings-form-input:focus {
+  outline: none;
+  border-color: #d97706;
+  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
+}
+
+.settings-form-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.settings-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 24px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.settings-btn-save {
+  background: #d97706;
+  color: #fff;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.settings-btn-save:hover {
+  background: #b45309;
+}
+
+.settings-btn-cancel {
+  background: #fff;
+  color: #4b5563;
+  border: 1px solid #d1d5db;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.settings-btn-cancel:hover {
+  background: #f9fafb;
+}
+
+/* Switch styling overrides for Antd */
+.ant-switch.ant-switch-checked {
+  background: #d97706 !important;
+}
+
+.settings-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 32px 0 16px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+/* Custom Settings UI */
+.custom-setting-select .ant-select-selector {
+  border-radius: 8px !important;
+  border: 1px solid #e5e7eb !important;
+  padding: 0 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  box-shadow: none !important;
+}
+.custom-setting-select.ant-select-focused .ant-select-selector {
+  border-color: #c08933 !important;
+}
+

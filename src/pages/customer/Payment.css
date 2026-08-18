@@ -276,6 +276,37 @@
   border-color: #c99a53;
 }
 
+.wallet-sub-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e8e3dc;
+  padding-left: 74px;
+}
+
+.wallet-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.wallet-item input[type="radio"] {
+  accent-color: #c99a53;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  margin: 0;
+}
+
+.wallet-item label {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
 /* Trust Badges - Left side */
 .left-trust-badges {
   display: flex;

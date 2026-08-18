@@ -7,6 +7,8 @@ import '../../components/Collection.css';
 import bannerImg from "../../assets/banners/list.png";
 import { useWishlist } from '../../context/WishlistContext';
 import { useCart } from '../../context/CartContext';
+import { handleFlyingCartAnimation } from '../../utils/cartAnimation';
+import { motion, AnimatePresence } from 'framer-motion';
 import westren3Img from '../../assets/images/westren3.png';
 import kurtiImg from '../../assets/images/kurti.png';
 import westren4Img from '../../assets/images/westren4.png';
@@ -70,14 +72,15 @@ const Wishlist = () => {
   const [viewMode, setViewMode] = useState('grid');
   const [addedToCart, setAddedToCart] = useState({});
 
-  const handleCartClick = (e, product) => {
+  const handleCartClick = async (e, product) => {
     e.stopPropagation();
     if (addedToCart[product.id]) {
       navigate('/cart');
     } else {
-      addToCart(product);
+      await handleFlyingCartAnimation(e);
       setAddedToCart(prev => ({ ...prev, [product.id]: true }));
-      message.success(`${product.title || 'Product'} added to cart!`);
+      addToCart(product);
+      message.success(`${product.title || 'Item'} added to cart!`);
     }
   };
 
@@ -239,8 +242,13 @@ const Wishlist = () => {
                 No items match your search or filter.
               </div>
             ) : displayedItems.map(product => (
-              <div
+              <motion.div
                 key={product.id}
+                layout
+                initial={{ opacity: 0, scale: 0.8, y: 30 }}
+                whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+                transition={{ type: "spring", damping: 20, stiffness: 300 }}
                 className="unified-product-card"
                 onClick={() => navigate(`/product/${product.id}`, { state: { product } })}
               >
@@ -290,7 +298,7 @@ const Wishlist = () => {
                     {addedToCart[product.id] ? "GO TO CART" : "ADD TO CART"}
                   </button>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         )}

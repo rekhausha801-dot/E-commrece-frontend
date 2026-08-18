@@ -31,7 +31,7 @@ import {
 } from 'lucide-react';
 
 
-const mockProducts = [
+export const mockProducts = [
   { id: 1, name: "Classic Black T-Shirt", sku: "TSHIRT001", cat: "Men Clothing", brand: "Roadster", price: "₹699", oldPrice: "₹999", discount: "30% OFF", stock: 120, status: "In Stock", img: "https://pngimg.com/uploads/tshirt/tshirt_PNG5448.png" },
   { id: 2, name: "Blue Hoodie", sku: "HOODIE002", cat: "Men Clothing", brand: "Nike", price: "₹1,499", oldPrice: "₹1,999", discount: "25% OFF", stock: 35, status: "Low Stock", img: "/blue-hoodie.jpg" },
   { id: 3, name: "Women Rose Watch", sku: "WATCH003", cat: "Accessories", brand: "Fastrack", price: "₹2,399", oldPrice: "₹2,999", discount: "20% OFF", stock: 18, status: "Low Stock", img: "https://pngimg.com/uploads/watches/watches_PNG9859.png" },
@@ -39,7 +39,7 @@ const mockProducts = [
   { id: 5, name: "Polarized Sunglasses", sku: "SUNG005", cat: "Accessories", brand: "Ray-Ban", price: "₹1,199", oldPrice: "₹1,599", discount: "25% OFF", stock: 0, status: "Out of Stock", img: "https://pngimg.com/uploads/sunglasses/sunglasses_PNG72.png" }
 ];
 
-const ProductManagement = () => {
+const ProductManagement = ({ globalSearch = '' }) => {
   const navigate = useNavigate();
   const [products, setProducts] = useState(mockProducts);
   const [currentPage, setCurrentPage] = useState(1);
@@ -374,7 +374,8 @@ const ProductManagement = () => {
   const [statusFilter, setStatusFilter] = useState('All Status');
 
   const filteredProducts = products.filter(p => {
-    const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.sku.toLowerCase().includes(searchQuery.toLowerCase());
+    const finalSearchQuery = globalSearch || searchQuery;
+    const matchesSearch = p.name.toLowerCase().includes(finalSearchQuery.toLowerCase()) || p.sku.toLowerCase().includes(finalSearchQuery.toLowerCase());
     const matchesCategory = categoryFilter === 'All Categories' || p.cat === categoryFilter;
     const matchesBrand = brandFilter === 'All Brands' || p.brand === brandFilter;
     const matchesStatus = statusFilter === 'All Status' || p.status === statusFilter;
