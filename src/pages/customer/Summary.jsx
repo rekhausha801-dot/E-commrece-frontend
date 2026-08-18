@@ -50,8 +50,12 @@ const Summary = () => {
 
   const totalItems = cartItems.reduce((acc, item) => acc + item.qty, 0);
   const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.qty), 0);
-  const addFees = totalItems > 0 ? 60 : 0;
-  const orderTotal = subtotal + addFees - couponDiscount;
+  const productDiscount = totalItems > 0 ? 25.00 : 0;
+  const tax = subtotal * 0.041;
+  const deliveryCharges = 0;
+  
+  const totalDiscount = productDiscount + couponDiscount;
+  const orderTotal = Math.max(0, subtotal - totalDiscount + tax + deliveryCharges);
 
   const handlePlaceOrder = () => {
     if (cartItems.length === 0) return;
@@ -257,8 +261,8 @@ const Summary = () => {
                   <span className="sp-val">₹{subtotal.toFixed(2)}</span>
                 </div>
                 <div className="sp-row">
-                  <span className="sp-label">Additional Fees</span>
-                  <span className="sp-val">₹{addFees.toFixed(2)}</span>
+                  <span className="sp-label">Product Discount</span>
+                  <span className="sp-val" style={{ color: '#2a7e4f' }}>-₹{productDiscount.toFixed(2)}</span>
                 </div>
                 <div className="sp-row sp-coupon-row">
                   <span className="sp-label">Coupon Discount</span>
@@ -271,6 +275,14 @@ const Summary = () => {
                     <button className="sp-apply-coupon" onClick={() => setIsCouponModalOpen(true)}>Apply Coupon</button>
                   )}
                 </div>
+                <div className="sp-row">
+                  <span className="sp-label">Tax</span>
+                  <span className="sp-val">₹{tax.toFixed(2)}</span>
+                </div>
+                <div className="sp-row">
+                  <span className="sp-label">Delivery Charges</span>
+                  <span className="sp-val" style={{ color: '#2a7e4f' }}>FREE</span>
+                </div>
               </div>
 
               <div className="sp-divider sp-divider-bottom"></div>
@@ -282,7 +294,7 @@ const Summary = () => {
 
               <div className="sp-savings-banner">
                 <ShieldCheck size={16} />
-                <span>You are saving ₹237 on this order</span>
+                <span>You are saving ₹{totalDiscount.toFixed(2)} on this order</span>
               </div>
 
               <button className="sp-place-order-btn" onClick={handlePlaceOrder}>

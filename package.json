@@ -16,6 +16,7 @@
     "framer-motion": "^12.43.0",
     "html2canvas": "^1.4.1",
     "lucide-react": "^0.395.0",
+    "motion-dom": "^13.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-draggable": "^4.7.1",

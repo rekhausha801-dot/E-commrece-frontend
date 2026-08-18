@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Search, ShoppingBag, User, Heart, Menu, Bell, ChevronDown, X, ShoppingCart, Shirt, Footprints, Watch } from 'lucide-react';
+import { motion, useScroll, useMotionValueEvent } from "framer-motion";
+import { useCart } from '../context/CartContext';
 import './Navbar.css';
 
 const megaMenus = [
@@ -72,6 +74,22 @@ const Navbar = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const searchRef = useRef(null);
+
+  const { scrollY } = useScroll();
+  const [hidden, setHidden] = useState(false);
+
+  useMotionValueEvent(scrollY, "change", (current) => {
+    const previous = scrollY.getPrevious() ?? 0;
+    if (current > previous && current > 150) {
+      setHidden(true);
+    } else {
+      setHidden(false);
+    }
+  });
+
+  const { cartItems } = useCart();
+  const cartCount = cartItems.reduce((total, item) => total + (item.qty || 1), 0);
+
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -108,7 +126,14 @@ const Navbar = () => {
 
   return (
     <div className="premium-navbar-wrapper">
-      <header className="premium-navbar">
+      <motion.header 
+        className="premium-navbar"
+        animate={{
+          y: hidden ? -140 : 0,
+          opacity: hidden ? 0 : 1,
+        }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
+      >
         <div className="navbar-left">
           {/* Mobile Menu Button */}
           <button className="mobile-menu-toggle" onClick={toggleMobileMenu}>
@@ -258,10 +283,10 @@ const Navbar = () => {
             </div>
 
             {/* Cart Link */}
-            <Link to="/cart" className="icon-btn action-item" style={{ textDecoration: 'none', color: 'inherit' }}>
-              <div className="icon-badge-wrapper">
+            <Link to="/cart" className="icon-btn action-item" style={{ textDecoration: 'none', color: 'inherit' }} id="navbar-cart-icon">
+              <div className="icon-badge-wrapper" id="navbar-cart-badge">
                 <ShoppingBag size={22} />
-                <span className="nav-alert-badge cart-badge">2</span>
+                {cartCount > 0 && <span className="nav-alert-badge cart-badge">{cartCount}</span>}
               </div>
               <span className="icon-label">Cart</span>
             </Link>
@@ -290,7 +315,7 @@ const Navbar = () => {
             </div>
           </div>
         </div>
-      </header>
+      </motion.header>
 
       {/* Mobile Sidebar */}
       <div className={`mobile-sidebar-overlay ${isMobileMenuOpen ? 'open' : ''}`} onClick={toggleMobileMenu}></div>

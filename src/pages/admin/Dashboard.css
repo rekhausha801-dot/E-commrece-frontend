@@ -289,20 +289,19 @@
 .search-bar {
   display: flex;
   align-items: center;
-  background-color: #fcfaf5;
+  background-color: #fff;
   border-radius: 30px;
-  padding: 8px 16px 8px 20px;
-  box-shadow: 0 2px 10px rgba(201, 160, 91, 0.05);
+  padding: 10px 18px 10px 22px;
+  box-shadow: 0 4px 20px rgba(201, 160, 91, 0.08);
   width: 280px;
-  border: 1px solid #f2ecdf;
+  border: 1px solid #eaddce;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .search-bar:focus-within {
-  box-shadow: 0 4px 15px rgba(201, 160, 91, 0.15);
-  border-color: #eadecb;
-  background-color: #fff;
-  width: 320px;
+  box-shadow: 0 8px 30px rgba(201, 160, 91, 0.15);
+  border-color: #c9a05b;
+  width: 340px;
 }
 
 .search-bar input {
@@ -326,15 +325,18 @@
 .search-shortcut {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 4px;
-  background-color: #f0e8db;
-  padding: 4px 8px;
-  border-radius: 12px;
-  color: #8b6f4e;
+  background: linear-gradient(135deg, #f8f3ec 0%, #fcfaf5 100%);
+  padding: 4px 10px;
+  border-radius: 8px;
+  color: #a07d4b;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   margin-left: 8px;
   border: 1px solid #eadecb;
+  box-shadow: 0 2px 4px rgba(201, 160, 91, 0.1);
+  letter-spacing: 0.5px;
 }
 
 .notification-icon {
@@ -1057,7 +1059,10 @@
   margin-right: 0;
 }
 
-.sidebar-collapsed .sidebar-bottom {}
+.sidebar-collapsed .sidebar-bottom,
+.sidebar-collapsed .sidebar-footer {
+  display: none;
+}
 
 .premium-btn,
 .time-filter,
@@ -1125,7 +1130,42 @@
 .stat-card,
 .elevate-card,
 .premium-glass-card {
+<<<<<<< HEAD
+  box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.24) !important;
+}
+
+/* Unified Box Shadow for all cards */
+.premium-glass-card, .stat-card, .dashboard-card, .stat-card.dark, .stat-card.light, .stats-grid > div, .middle-grid > div {
+  box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.24) !important;
+}
+
+
+/* Premium Notif Card Hover Styles */
+.premium-notif-card:hover {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  transform: translateY(-2px);
+}
+.premium-notif-card:hover .notif-arrow-btn {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  transform: rotate(45deg);
+}
+
+
+
+/* Dashboard Light Notif Card Hover */
+.dashboard-notif-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
+  border-color: #e5e7eb !important;
+}
+.dashboard-notif-card:hover .arrow-btn {
+  background-color: #f3f4f6 !important;
+}
+
+=======
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px !important;
   height: 100%;
   flex: 1;
 }
+>>>>>>> 18ef50130343d4fbe1500235de333a1d5733004b

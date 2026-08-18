@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import './Home.css';
 import l1 from '../../assets/banners/l1.jpeg';
 import j1 from '../../assets/banners/j1.jpeg';
@@ -109,8 +110,13 @@ const Home = () => {
             { id: 3, title: 'Cotton Daily Wear Kurti', image: kurthi4Img, price: '₹649', originalPrice: '₹899', discount: '28% off', rating: 4, reviews: 31 },
             { id: 4, title: 'Indo Western Kurti', image: kurtiImg, price: '₹899', originalPrice: '₹1199', discount: '25% off', rating: 5, reviews: 42 }
           ].map(product => (
-            <div
+            <motion.div
               key={product.id}
+              layout
+              initial={{ opacity: 0, scale: 0.8, y: 30 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+              transition={{ type: "spring", damping: 20, stiffness: 300 }}
               className="unified-product-card"
               onClick={() => navigate(`/product/${product.id}`, { state: { product } })}
             >
@@ -170,7 +176,7 @@ const Home = () => {
                   <span style={{ fontSize: '16px' }}>→</span>
                 </button>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
@@ -198,8 +204,13 @@ const Home = () => {
             { id: 7, title: 'Men Casual Shirt', image: menCasualShirtImg, price: '₹1,299', rating: 4, reviews: 213, badge: 'NEW', color: '#4b7b9d' },
             { id: 8, title: 'Trendy Sneakers', image: trendySneakersImg, price: '₹2,199', rating: 4, reviews: 176, badge: 'NEW', color: '#5a774c' }
           ].map(product => (
-            <div
+            <motion.div
               key={product.id}
+              layout
+              initial={{ opacity: 0, scale: 0.8, y: 30 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+              transition={{ type: "spring", damping: 20, stiffness: 300 }}
               className="unified-product-card"
               onClick={() => navigate(`/product/${product.id}`, { state: { product } })}
             >
@@ -241,7 +252,7 @@ const Home = () => {
                   <span style={{ fontSize: '16px' }}>→</span>
                 </button>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
@@ -256,7 +267,14 @@ const Home = () => {
         <div className="brands-marquee-container">
           <div className="brands-marquee">
             {[...BRANDS, ...BRANDS, ...BRANDS].map((brand, index) => (
-              <div className={`brand-card ${brand.bgClass}`} key={index}>
+              <motion.div 
+                className={`brand-card ${brand.bgClass}`} 
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.05 }}
+                viewport={{ once: true, margin: "-50px" }}
+              >
                 <div className="brand-content-centered">
                   <div className="brand-logo-elegant">
                     {brand.name}
@@ -267,7 +285,7 @@ const Home = () => {
                     <span className="floral-line"></span>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>

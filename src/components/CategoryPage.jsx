@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { message } from 'antd';
+import { motion, AnimatePresence } from 'framer-motion';
 import './Collection.css';
 import { 
   Filter, Heart, ShoppingBag, Eye, LayoutGrid, Menu, ChevronDown, ChevronUp, X, SlidersHorizontal, Check, Star, ArrowRight, Shirt
@@ -121,7 +122,7 @@ const CATEGORY_DATA = {
     images: [tshirt8Img, tshirt1Img, tshirt2Img, tshirt3Img, tshirt6Img, tshirt7Img, tShirtImg, wmodel1, wmodel2, wmodel3, wmodel4, wmodel5, wtshirt1, wtshirt2, wtshirt3, tshirtWhite, topImg, top2Img, top3Img, tshirtBlack, tshirtRed]
   },
   'womenswear': {
-    title: "Womenswear Collection",
+    title: "Womenswear Collections",
     banner: banner0Img,
     images: [beautyImg, bannerImg, imgImg, manImg]
   },
@@ -759,14 +760,20 @@ export default function CategoryPage() {
             </div>
           </div>
 
-          <div className={`unified-products-grid ${isMobileFilterOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
-
-            {sortedProducts.map(product => (
-              <div 
-                key={product.id} 
-                className="unified-product-card"
-                onClick={() => navigate(`/product/${product.id}`, { state: { product } })}
-              >
+          <motion.div layout className={`unified-products-grid ${isMobileFilterOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
+            <AnimatePresence mode="popLayout">
+              {sortedProducts.map(product => (
+                <motion.div
+                  key={product.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.8, y: 30 }}
+                  whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                  viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ type: "spring", damping: 20, stiffness: 300 }}
+                  className="unified-product-card"
+                  onClick={() => navigate(`/product/${product.id}`, { state: { product } })}
+                >
                 <div className="unified-card-image-wrap">
                   {product.badge && (
                     <div className="unified-badge" style={{ background: product.badgeClass === 'badge-new' ? '#1a1d20' : '#c0a07c' }}>{product.badge}</div>
@@ -809,9 +816,10 @@ export default function CategoryPage() {
                     {addedToCart[product.id] ? "GO TO CART" : "ADD TO CART"}
                   </button>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+            </AnimatePresence>
+          </motion.div>
         </div>
       </div>
     </div>

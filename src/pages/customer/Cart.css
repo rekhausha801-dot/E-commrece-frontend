@@ -669,3 +669,105 @@
   font-size: 12px;
   color: var(--text-muted);
 }
+
+/* Edit Modal Styles */
+.cart-edit-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.cart-edit-modal {
+  background: var(--white);
+  padding: 30px;
+  border-radius: var(--radius);
+  width: 400px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+.modal-body .form-group {
+  margin-bottom: 15px;
+}
+
+.modal-body label {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 5px;
+  color: var(--text-muted);
+}
+
+.modal-body select,
+.modal-body input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  box-sizing: border-box;
+}
+
+.modal-qty-control {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.modal-qty-control button {
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.cancel-btn {
+  padding: 10px 20px;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.save-btn {
+  padding: 10px 20px;
+  background: var(--gold);
+  color: var(--white);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}

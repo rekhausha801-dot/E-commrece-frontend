@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { animate, stagger, inView, motion } from 'framer-motion';
 import { message } from 'antd';
 import { FaFire, FaStar, FaRegStar, FaStarHalfAlt, FaRegHeart, FaHeart, FaTag, FaMagic, FaShoppingBag, FaTshirt, FaPalette, FaArrowRight, FaLeaf, FaShoePrints } from 'react-icons/fa';
+import { useCart } from '../context/CartContext';
 import './TrendyCollection.css';
 
 import dressImg from '../assets/images/dress.jpg';
@@ -131,17 +133,88 @@ function FeatureIcon({ name }) {
 const TrendyCollection = () => {
   const [activeTab, setActiveTab] = useState('trending');
   const [likedIds, setLikedIds] = useState([]);
-  const [addedToCart, setAddedToCart] = useState({});
+  // We no longer need the local state: const [addedToCart, setAddedToCart] = useState({});
+  const { cartItems, addToCart } = useCart();
   const navigate = useNavigate();
 
-  const handleCartClick = (e, product) => {
+  const handleCartClick = async (e, product) => {
     e.stopPropagation();
-    if (addedToCart[product.id]) {
+    
+    // Check global cart state
+    const isAdded = cartItems.some(item => item.id === product.id);
+    
+    if (isAdded) {
       navigate('/cart');
-    } else {
-      setAddedToCart(prev => ({ ...prev, [product.id]: true }));
-      message.success(`${product.title || 'Product'} added to cart!`);
+      return;
     }
+
+    const button = e.currentTarget;
+    const card = button.closest('.unified-product-card');
+    const img = card ? card.querySelector('img') : null;
+    const basket = document.getElementById('navbar-cart-badge');
+    
+    if (img && basket) {
+      // Temporarily disable the button to prevent spamming
+      button.disabled = true;
+
+      const from = img.getBoundingClientRect();
+      const to = basket.getBoundingClientRect();
+
+      // Create a flying clone of the image
+      const clone = img.cloneNode(true);
+      clone.style.position = 'fixed';
+      clone.style.top = `${from.top}px`;
+      clone.style.left = `${from.left}px`;
+      clone.style.width = `${from.width}px`;
+      clone.style.height = `${from.height}px`;
+      clone.style.borderRadius = '12px';
+      clone.style.zIndex = '999999';
+      clone.style.pointerEvents = 'none';
+      clone.style.objectFit = 'cover';
+      clone.style.boxShadow = '0 10px 25px rgba(0,0,0,0.2)';
+      document.body.appendChild(clone);
+
+      const dx = to.left + to.width / 2 - (from.left + from.width / 2);
+      const dy = to.top + to.height / 2 - (from.top + from.height / 2);
+
+      const FLY_SCALE = to.width / from.width;
+      const duration = 0.55;
+
+      // Create a ring element on the basket for the ripple effect
+      const ring = document.createElement('div');
+      ring.style.position = 'absolute';
+      ring.style.inset = '-4px';
+      ring.style.border = '2px solid #C89953';
+      ring.style.borderRadius = '50%';
+      ring.style.opacity = '0';
+      ring.style.pointerEvents = 'none';
+      ring.style.zIndex = '0';
+      if (basket.style.position !== 'absolute') basket.style.position = 'relative';
+      basket.appendChild(ring);
+
+      // Animate button press
+      animate(button, { scale: [1, 0.95, 1] }, { duration: 0.2 });
+
+      // Simulate a beautiful parabolic arc by mixing linear X with ease-in Y
+      await Promise.all([
+        animate(clone, { x: dx }, { duration, ease: "linear" }),
+        animate(clone, { y: dy, scale: FLY_SCALE, opacity: [1, 1, 0] }, { duration, ease: "easeIn" })
+      ]);
+
+      // Remove the flying clone
+      clone.remove();
+
+      // Knock the basket with a spring bounce
+      animate(basket, { y: [0, 6, -3, 0], scale: [1, 0.9, 1.1, 1] }, { type: "spring", stiffness: 400, damping: 10 });
+      
+      // Ripple the ring out
+      animate(ring, { scale: [1, 2.5], opacity: [0.8, 0] }, { duration: 0.5, ease: "easeOut" }).then(() => ring.remove());
+      
+      button.disabled = false;
+    }
+
+    addToCart(product);
+    message.success(`${product.title || 'Product'} added to cart!`);
   };
 
   const toggleLike = (e, id) => {
@@ -156,6 +229,8 @@ const TrendyCollection = () => {
   };
 
   const displayedProducts = getDisplayedProducts();
+
+  // The observer is replaced by Framer Motion's whileInView
 
   return (
     <section className="trendy-section">
@@ -176,10 +251,14 @@ const TrendyCollection = () => {
 
       <div className="unified-products-grid" style={{ marginTop: '30px', marginBottom: '10px' }}>
         {displayedProducts.map((product) => (
-          <div
+          <motion.div
             className="unified-product-card"
             key={product.id}
             onClick={() => navigate(`/product/${product.id}`, { state: { product } })}
+            initial={{ opacity: 0, scale: 0.8, y: 30 }}
+            whileInView={{ opacity: 1, scale: 1, y: 0 }}
+            viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+            transition={{ type: "spring", damping: 20, stiffness: 300 }}
             style={{ cursor: 'pointer' }}
           >
             <div className="unified-card-image-wrap">
@@ -222,10 +301,10 @@ const TrendyCollection = () => {
                 className="unified-add-cart-btn"
                 onClick={(e) => handleCartClick(e, product)}
               >
-                <FaShoppingBag style={{ marginRight: '8px' }} /> {addedToCart[product.id] ? "Go to Cart" : "Add to Cart"}
+                <FaShoppingBag style={{ marginRight: '8px' }} /> {cartItems.some(item => item.id === product.id) ? "Go to Cart" : "Add to Cart"}
               </button>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </section>

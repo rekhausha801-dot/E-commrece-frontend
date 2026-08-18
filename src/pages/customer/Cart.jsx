@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShoppingBag, MapPin, CreditCard, Receipt, Star, Trash2, Truck, Minus, Plus, RefreshCw, ShieldCheck, Headphones, Tag, Edit2, Lock, ArrowRight, Heart, Check, Leaf } from 'lucide-react';
+import { ShoppingBag, MapPin, CreditCard, Receipt, Star, Trash2, Truck, Minus, Plus, RefreshCw, ShieldCheck, Headphones, Tag, Edit2, Lock, ArrowRight, Heart, Check, Leaf, X } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Cart.css';
 import kurtiImg from '../../assets/images/kurti.png';
@@ -12,7 +12,26 @@ const Cart = () => {
   React.useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-  const { cartItems, updateQty, removeItem } = useCart();
+  const { cartItems, updateQty, removeItem, updateItemDetails } = useCart();
+
+  const [editingItem, setEditingItem] = useState(null);
+  const [editForm, setEditForm] = useState({ size: '', color: '', qty: 1 });
+
+  const handleEditClick = (item) => {
+    setEditingItem(item);
+    setEditForm({ size: item.size || '', color: item.color || '', qty: item.qty || 1 });
+  };
+
+  const closeEditModal = () => {
+    setEditingItem(null);
+  };
+
+  const saveEdit = () => {
+    if (editingItem) {
+      updateItemDetails(editingItem.id, editForm);
+      closeEditModal();
+    }
+  };
 
   const cartItemCount = cartItems.reduce((acc, item) => acc + item.qty, 0);
   const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.qty), 0);
@@ -107,7 +126,7 @@ const Cart = () => {
 
                     <div className="lux-ci-footer">
                       <div className="lux-ci-actions-left">
-                        <button className="lux-ci-action-text-btn">
+                        <button className="lux-ci-action-text-btn" onClick={() => handleEditClick(item)}>
                           <Edit2 size={14} color="#B58D4E" /> Edit
                         </button>
                         <span className="lux-divider-light">|</span>
@@ -223,6 +242,47 @@ const Cart = () => {
           <span>Crafted for a Seamless Experience</span>
           <div className="line"></div>
         </div>
+
+        {/* EDIT MODAL */}
+        {editingItem && (
+          <div className="cart-edit-modal-overlay">
+            <div className="cart-edit-modal">
+              <div className="modal-header">
+                <h3>Edit Item</h3>
+                <button onClick={closeEditModal} className="close-btn"><X size={20} /></button>
+              </div>
+              <div className="modal-body">
+                <div className="form-group">
+                  <label>Size</label>
+                  <select value={editForm.size} onChange={(e) => setEditForm({...editForm, size: e.target.value})}>
+                    <option value="S">S</option>
+                    <option value="M">M</option>
+                    <option value="L">L</option>
+                    <option value="XL">XL</option>
+                    <option value="One Size">One Size</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Color</label>
+                  <input type="text" value={editForm.color} onChange={(e) => setEditForm({...editForm, color: e.target.value})} />
+                </div>
+                <div className="form-group">
+                  <label>Quantity</label>
+                  <div className="modal-qty-control">
+                    <button onClick={() => setEditForm({...editForm, qty: Math.max(1, editForm.qty - 1)})}>-</button>
+                    <span>{editForm.qty}</span>
+                    <button onClick={() => setEditForm({...editForm, qty: editForm.qty + 1})}>+</button>
+                  </div>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button className="cancel-btn" onClick={closeEditModal}>Cancel</button>
+                <button className="save-btn" onClick={saveEdit}>Save Changes</button>
+              </div>
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );

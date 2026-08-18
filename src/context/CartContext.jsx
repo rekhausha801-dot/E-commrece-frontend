@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 import kurtiImg from '../assets/images/kurti.png';
 import mens1Img from '../assets/images/mens1.png';
 
@@ -40,7 +40,21 @@ const initialCart = [
 ];
 
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState(initialCart);
+  const [cartItems, setCartItems] = useState(() => {
+    const saved = localStorage.getItem('cartItems');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error("Failed to parse cart items", e);
+      }
+    }
+    return initialCart;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+  }, [cartItems]);
 
   const updateQty = (id, delta) => {
     setCartItems(prev => prev.map(item => {
@@ -75,8 +89,17 @@ export const CartProvider = ({ children }) => {
     });
   };
 
+  const updateItemDetails = (id, newDetails) => {
+    setCartItems(prev => prev.map(item => {
+      if (item.id === id) {
+        return { ...item, ...newDetails };
+      }
+      return item;
+    }));
+  };
+
   return (
-    <CartContext.Provider value={{ cartItems, updateQty, removeItem, clearCart, addToCart }}>
+    <CartContext.Provider value={{ cartItems, updateQty, removeItem, clearCart, addToCart, updateItemDetails }}>
       {children}
     </CartContext.Provider>
   );

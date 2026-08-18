@@ -3,6 +3,7 @@ import './ShopByOccasion.css';
 import { FaHeart, FaRegHeart, FaStar, FaArrowRight } from 'react-icons/fa';
 import { Briefcase, Leaf, Martini, Gem } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 // Import images (using existing ones that match the vibe)
 import officeWearImg from '../assets/images/occasion.png';
@@ -95,8 +96,13 @@ const ShopByOccasion = () => {
 
       <div className="occasion-grid">
         {occasions.map((product) => (
-          <div 
+          <motion.div 
             key={product.id} 
+            layout
+            initial={{ opacity: 0, scale: 0.8, y: 30 }}
+            whileInView={{ opacity: 1, scale: 1, y: 0 }}
+            viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+            transition={{ type: "spring", damping: 20, stiffness: 300 }}
             className="unified-product-card"
             onClick={() => navigate(product.link)}
           >
@@ -147,7 +153,7 @@ const ShopByOccasion = () => {
                 Explore Collection <FaArrowRight style={{ marginLeft: '8px' }} />
               </button>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </section>

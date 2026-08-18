@@ -1,4 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { flushSync } from 'react-dom';
+import { animate, stagger, inView, scroll, motion, useScroll, useTransform } from 'framer-motion';
+import { animateView } from 'motion-dom';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { message } from 'antd';
 import {
@@ -28,11 +31,29 @@ import westren5Img from '../assets/images/westren5.png';
 
 import { GLOBAL_PRODUCTS, getSimilarProducts, determineProductCategory, customizableDesigns } from '../data/mockProducts';
 import { useWishlist } from '../context/WishlistContext';
+import { useCart } from '../context/CartContext';
+import { handleFlyingCartAnimation } from '../utils/cartAnimation';
+
+function ParallaxHighlightCard({ children }) {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"]
+  });
+  const y = useTransform(scrollYProgress, [0, 1], [40, -40]);
+
+  return (
+    <motion.div ref={ref} className="pdp-highlight-card" style={{ y }}>
+      {children}
+    </motion.div>
+  );
+}
 
 function SimilarProductCard({ product, onQuickView }) {
   const navigate = useNavigate();
   const { toggleWishlist, isInWishlist } = useWishlist();
-  const [isAdded, setIsAdded] = useState(false);
+  const { cartItems, addToCart } = useCart();
+  const isAdded = cartItems.some(item => item.id === product.id);
   // Use product colors if available, otherwise just use its main image
   const [activeColor, setActiveColor] = useState(product.colors ? product.colors[0].name : '');
   const activeColorObj = product.colors?.find(c => c.name === activeColor);
@@ -40,9 +61,14 @@ function SimilarProductCard({ product, onQuickView }) {
   const isOutOfStock = activeColorObj ? !activeColorObj.inStock : false;
 
   return (
-    <div
+    <motion.div
       className={`pdp-lo-card unified-product-card ${isOutOfStock ? 'out-of-stock-card' : ''}`}
       onClick={() => onQuickView(product)}
+      layout
+      initial={{ opacity: 0, scale: 0.8, y: 30 }}
+      whileInView={{ opacity: 1, scale: 1, y: 0 }}
+      viewport={{ once: true, margin: "0px 0px -50px 0px" }}
+      transition={{ type: "spring", damping: 20, stiffness: 300 }}
     >
       <div className="unified-card-image-wrap">
         {isOutOfStock && <div className="out-of-stock-overlay">Out of Stock</div>}
@@ -116,20 +142,21 @@ function SimilarProductCard({ product, onQuickView }) {
             Notify Me
           </button>
         ) : (
-          <button className="unified-add-cart-btn" onClick={(e) => {
+          <button className="unified-add-cart-btn" style={{ background: '#fce4e4', color: '#d32f2f' }} onClick={async (e) => {
             e.stopPropagation();
             if (isAdded) {
               navigate('/cart');
             } else {
-              setIsAdded(true);
+              await handleFlyingCartAnimation(e);
+              addToCart(product);
               message.success(`${product.title || 'Product'} added to cart!`);
             }
           }}>
-            <ShoppingBag size={14} style={{ marginRight: '8px' }} /> {isAdded ? "Go to Cart" : "Add to Cart"}
+            {isAdded ? "Go to Cart" : "Add to Cart"}
           </button>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -138,11 +165,12 @@ export default function ProductDetail() {
   const navigate = useNavigate();
   const location = useLocation();
   const { toggleWishlist, isInWishlist } = useWishlist();
+  const { cartItems, addToCart } = useCart();
   let baseProduct = location.state?.product || GLOBAL_PRODUCTS.find(p => p.id === parseInt(productId)) || null;
 
   // Dynamically attach customization ONLY for the specific White T-Shirt (ID 100) or t-shirt7 or t-shirt8
   const isCustomizableTShirt = baseProduct?.id === 100 || (baseProduct?.image && (baseProduct.image.includes('t-shirt7') || baseProduct.image.includes('t-shirt8')));
-  
+
   const product = baseProduct ? {
     ...baseProduct,
     customizable: isCustomizableTShirt ? true : baseProduct.customizable,
@@ -155,8 +183,9 @@ export default function ProductDetail() {
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('description');
   const [showSizeGuide, setShowSizeGuide] = useState(false);
-  const [isAdded, setIsAdded] = useState(false);
   const [activeDesign, setActiveDesign] = useState(product?.designs ? product.designs[0] : null);
+
+  const isAdded = product ? cartItems.some(item => item.id === product.id) : false;
 
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [reviewForm, setReviewForm] = useState({ rating: 0, title: '', content: '', image: null });
@@ -362,7 +391,7 @@ export default function ProductDetail() {
 
         <div className="pdp-main-container">
           {/* Left Column Wrapper */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', position: 'sticky', top: '24px', height: 'max-content' }}>
             {/* Gallery */}
             <div className="pdp-gallery-section">
               <div className="pdp-thumbnails">
@@ -374,9 +403,11 @@ export default function ProductDetail() {
                     style={{ position: 'relative' }}
                   >
                     <img src={img} alt={`Thumbnail ${idx}`} />
-                    {product?.customizable && activeDesign?.icon && !activeDesign?.isBaseImage && (
-                      <div style={{ position: 'absolute', top: '55%', left: '56%', transform: 'translate(-50%, -50%)', width: '40%', height: '40%', mixBlendMode: 'multiply', pointerEvents: 'none' }}>
-                        <img src={activeDesign.icon} alt={activeDesign.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                    {product?.customizable && (
+                      <div style={{ position: 'absolute', top: '55%', left: '56%', transform: 'translate(-50%, -50%)', width: '40%', height: '40%', mixBlendMode: 'multiply', pointerEvents: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                        {activeDesign?.icon && !activeDesign?.isBaseImage && (
+                          <img src={activeDesign.icon} alt={activeDesign.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                        )}
                       </div>
                     )}
                   </div>
@@ -401,9 +432,11 @@ export default function ProductDetail() {
                   <button className="pdp-nav-btn pdp-prev" onClick={prevImage}><ChevronLeft size={20} /></button>
                   <div style={{ width: '100%', height: '100%', transition: 'transform 0.1s ease-out', ...zoomStyle }}>
                     <img src={displayImages[activeImage]} alt="Main Product" className="pdp-main-image" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                    {product?.customizable && activeDesign?.icon && !activeDesign?.isBaseImage && (
-                      <div style={{ position: 'absolute', top: '65%', left: '56%', transform: 'translate(-50%, -50%)', width: '35%', height: '35%', mixBlendMode: 'multiply', pointerEvents: 'none' }}>
-                        <img src={activeDesign.icon} alt={activeDesign.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                    {product?.customizable && (
+                      <div style={{ position: 'absolute', top: '65%', left: '56%', transform: 'translate(-50%, -50%)', width: '35%', height: '35%', mixBlendMode: 'multiply', pointerEvents: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                        {activeDesign?.icon && !activeDesign?.isBaseImage && (
+                          <img src={activeDesign.icon} alt={activeDesign.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                        )}
                       </div>
                     )}
                   </div>
@@ -496,17 +529,17 @@ export default function ProductDetail() {
                 <span className="pdp-status-dot-new"></span> In Stock
               </div>
               {/* Product Description or Customizer */}
-              {product?.customizable && product?.designs ? (
+              {product?.customizable ? (
                 <div className="pdp-right-col-customizer" style={{ marginTop: '20px' }}>
                   <div className="pdp-customizer-header" style={{ padding: '0', marginBottom: '12px' }}>
                     <h3 style={{ fontSize: '13px', fontWeight: '700', letterSpacing: '0.5px' }}>CHOOSE YOUR DESIGN</h3>
                   </div>
                   <div className="pdp-customizer-designs" style={{ padding: '16px 0', display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <button className="pdp-customizer-nav" onClick={() => scrollCustomizer('left')} style={{ background: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', border: 'none', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}><ChevronLeft size={16}/></button>
+                    <button className="pdp-customizer-nav" onClick={() => scrollCustomizer('left')} style={{ background: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', border: 'none', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}><ChevronLeft size={16} /></button>
                     <div ref={customizerScrollRef} className="pdp-customizer-designs-scroll" style={{ display: 'flex', gap: '16px', overflowX: 'auto', scrollbarWidth: 'none', flex: 1, padding: '4px' }}>
                       {product.designs.map((design, idx) => (
-                        <div 
-                          key={design.id} 
+                        <div
+                          key={design.id}
                           className={`pdp-design-option-full ${activeDesign?.id === design.id ? 'active' : ''}`}
                           onClick={() => setActiveDesign(design)}
                           style={{
@@ -554,7 +587,7 @@ export default function ProductDetail() {
                         </div>
                       ))}
                     </div>
-                    <button className="pdp-customizer-nav" onClick={() => scrollCustomizer('right')} style={{ background: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', border: 'none', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}><ChevronRight size={16}/></button>
+                    <button className="pdp-customizer-nav" onClick={() => scrollCustomizer('right')} style={{ background: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', border: 'none', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}><ChevronRight size={16} /></button>
                   </div>
                 </div>
               ) : (
@@ -576,9 +609,40 @@ export default function ProductDetail() {
                         key={color.name}
                         className={`pdp-color-swatch-new ${activeColor === color.name ? 'active' : ''}`}
                         style={{ backgroundColor: color.hex }}
-                        onClick={() => {
-                          setActiveColor(color.name);
-                          setActiveImage(0);
+                        onClick={async (e) => {
+                          if (activeColor === color.name) return;
+
+                          const pageX = e.clientX;
+                          const pageY = e.clientY;
+
+                          const update = () => {
+                            flushSync(() => {
+                              setActiveColor(color.name);
+                              setActiveImage(0);
+                            });
+                          };
+
+                          if (!document.startViewTransition) {
+                            update();
+                            return;
+                          }
+
+                          try {
+                            const animation = await animateView(update, {
+                              duration: 0.4,
+                              ease: [0.28, 0.02, 0.1, 0.99],
+                            }).new(
+                              {
+                                clipPath: [
+                                  `circle(0% at ${pageX}px ${pageY}px)`,
+                                  `circle(150% at ${pageX}px ${pageY}px)`,
+                                ],
+                              },
+                              { duration: 0.6, ease: "easeIn" }
+                            );
+                          } catch (err) {
+                            update();
+                          }
                         }}
                       ></div>
                     ))}
@@ -626,53 +690,54 @@ export default function ProductDetail() {
 
             <div className="pdp-options-horizontal-divider" style={{ marginTop: '0' }}></div>
 
-              <div className="pdp-action-buttons" style={{ marginTop: '24px', display: 'flex', gap: '12px' }}>
-                <button 
-                  className="pdp-btn-wishlist-large" 
-                  onClick={() => {
-                    if (product) {
-                      toggleWishlist(product);
-                    }
-                  }}
-                  style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px 0', background: '#fff', border: '1px solid #ddd', borderRadius: '4px', color: '#8B4513', fontWeight: '600', cursor: 'pointer' }}
-                >
-                  <Heart size={16} fill={isInWishlist(product?.id) ? '#8B4513' : 'none'} color="#8B4513" /> Wishlist
-                </button>
-                {activeColorObj.inStock ? (
-                  <>
-                    <button 
-                      className="pdp-btn-add-cart" 
-                      onClick={() => {
-                        if (isAdded) {
-                          navigate('/cart');
-                        } else {
-                          setIsAdded(true);
-                          message.success(`${product?.title || 'Product'} added to cart!`);
-                        }
-                      }}
-                      style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px 0', background: '#8B4513', border: 'none', borderRadius: '4px', color: '#fff', fontWeight: '600', cursor: 'pointer' }}
-                    >
-                      <ShoppingCart size={16} /> {isAdded ? "Go to Cart" : "Add to Cart"}
-                    </button>
-                    <button 
-                      className="pdp-btn-buy-now"
-                      onClick={() => navigate('/cart')}
-                      style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '14px 0', background: '#000', border: 'none', borderRadius: '4px', color: '#fff', fontWeight: '600', cursor: 'pointer' }}
-                    >
-                      Buy Now
-                    </button>
-                  </>
-                ) : (
-                  <button 
-                    className="pdp-btn-notify-me"
-                    style={{ flex: 2, padding: '14px 0', background: '#f5f5f5', border: '1px solid #ddd', borderRadius: '4px', color: '#333', fontWeight: '600', cursor: 'pointer' }}
+            <div className="pdp-action-buttons" style={{ marginTop: '24px', display: 'flex', gap: '12px' }}>
+              <button
+                className="pdp-btn-wishlist-large"
+                onClick={() => {
+                  if (product) {
+                    toggleWishlist(product);
+                  }
+                }}
+                style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px 0', background: '#fff', border: '1px solid #ddd', borderRadius: '4px', color: '#8B4513', fontWeight: '600', cursor: 'pointer' }}
+              >
+                <Heart size={16} fill={isInWishlist(product?.id) ? '#8B4513' : 'none'} color="#8B4513" /> Wishlist
+              </button>
+              {activeColorObj.inStock ? (
+                <>
+                  <button
+                    className="pdp-btn-add-cart"
+                    onClick={async (e) => {
+                      if (isAdded) {
+                        navigate('/cart');
+                      } else {
+                        await handleFlyingCartAnimation(e, 'img', '.pdp-image-section');
+                        addToCart({ ...product, selectedColor: activeColor, selectedSize: activeSize, quantity, selectedDesign: activeDesign });
+                        message.success(`${product?.title || 'Product'} added to cart!`);
+                      }
+                    }}
+                    style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px 0', background: '#8B4513', border: 'none', borderRadius: '4px', color: '#fff', fontWeight: '600', cursor: 'pointer' }}
                   >
-                    Notify Me When Available
+                    <ShoppingCart size={16} /> {isAdded ? "Go to Cart" : "Add to Cart"}
                   </button>
-                )}
-              </div>
+                  <button
+                    className="pdp-btn-buy-now"
+                    onClick={() => navigate('/cart')}
+                    style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '14px 0', background: '#000', border: 'none', borderRadius: '4px', color: '#fff', fontWeight: '600', cursor: 'pointer' }}
+                  >
+                    Buy Now
+                  </button>
+                </>
+              ) : (
+                <button
+                  className="pdp-btn-notify-me"
+                  style={{ flex: 2, padding: '14px 0', background: '#f5f5f5', border: '1px solid #ddd', borderRadius: '4px', color: '#333', fontWeight: '600', cursor: 'pointer' }}
+                >
+                  Notify Me When Available
+                </button>
+              )}
             </div>
           </div>
+        </div>
 
         {/* Removed Full Width Customizer Section */}
 
@@ -728,41 +793,41 @@ export default function ProductDetail() {
                 <div className="pdp-desc-right">
                   <h3 className="pdp-highlights-title">Product Highlights</h3>
                   <div className="pdp-highlights-grid">
-                    <div className="pdp-highlight-card">
+                    <ParallaxHighlightCard>
                       <div className="pdp-hc-icon"><Leaf size={24} color="#E26A2C" strokeWidth={1.5} /></div>
                       <div className="pdp-hc-info">
                         <strong>Fabric</strong>
                         <span>Premium Rayon</span>
                       </div>
-                    </div>
-                    <div className="pdp-highlight-card">
+                    </ParallaxHighlightCard>
+                    <ParallaxHighlightCard>
                       <div className="pdp-hc-icon"><Box size={24} color="#E26A2C" strokeWidth={1.5} /></div>
                       <div className="pdp-hc-info">
                         <strong>Fit</strong>
                         <span>Regular Fit</span>
                       </div>
-                    </div>
-                    <div className="pdp-highlight-card">
+                    </ParallaxHighlightCard>
+                    <ParallaxHighlightCard>
                       <div className="pdp-hc-icon"><Box size={24} color="#E26A2C" strokeWidth={1.5} /></div>
                       <div className="pdp-hc-info">
                         <strong>Sleeve Length</strong>
                         <span>Three-Quarter Sleeves</span>
                       </div>
-                    </div>
-                    <div className="pdp-highlight-card">
+                    </ParallaxHighlightCard>
+                    <ParallaxHighlightCard>
                       <div className="pdp-hc-icon"><Star size={24} color="#E26A2C" strokeWidth={1.5} /></div>
                       <div className="pdp-hc-info">
                         <strong>Occasion</strong>
                         <span>Casual, Office, Festive</span>
                       </div>
-                    </div>
-                    <div className="pdp-highlight-card">
+                    </ParallaxHighlightCard>
+                    <ParallaxHighlightCard>
                       <div className="pdp-hc-icon"><RefreshCcw size={24} color="#E26A2C" strokeWidth={1.5} /></div>
                       <div className="pdp-hc-info">
                         <strong>Care</strong>
                         <span>Machine Wash</span>
                       </div>
-                    </div>
+                    </ParallaxHighlightCard>
                   </div>
                 </div>
               </div>
@@ -783,20 +848,20 @@ export default function ProductDetail() {
                 <div className="pdp-desc-right" style={{ flex: 1 }}>
                   <h3 className="pdp-highlights-title">Additional Info</h3>
                   <div className="pdp-highlights-grid" style={{ gridTemplateColumns: '1fr', marginTop: '24px' }}>
-                    <div className="pdp-highlight-card">
+                    <ParallaxHighlightCard>
                       <div className="pdp-hc-icon"><Shield size={24} color="#E26A2C" strokeWidth={1.5} /></div>
                       <div className="pdp-hc-info">
                         <strong>Quality Assurance</strong>
                         <span>100% Original Products</span>
                       </div>
-                    </div>
-                    <div className="pdp-highlight-card">
+                    </ParallaxHighlightCard>
+                    <ParallaxHighlightCard>
                       <div className="pdp-hc-icon"><RefreshCcw size={24} color="#E26A2C" strokeWidth={1.5} /></div>
                       <div className="pdp-hc-info">
                         <strong>Easy Returns</strong>
                         <span>7 Days Return Policy</span>
                       </div>
-                    </div>
+                    </ParallaxHighlightCard>
                   </div>
                 </div>
               </div>

@@ -6,6 +6,7 @@ import imgNew from '../assets/banners/image.png';
 import girlsImg from '../assets/banners/girls.png';
 import wearImg from '../assets/banners/wear.png';
 import { X } from 'lucide-react';
+import { motion } from 'framer-motion';
 import '../pages/customer/Home.css';
 
 const OfferCarousel = () => {

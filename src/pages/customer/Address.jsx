@@ -25,17 +25,20 @@ const Address = () => {
     landmark: '',
   });
 
-  // Existing saved address (would normally come from state/API)
-  const savedAddress = {
-    name: 'Elumalai',
-    phone: '6379380743',
-    house: 'No 294 murungan nagar kilmurungai',
-    road: 'Mc road, Murungan nagar',
-    pincode: '635812',
-    city: 'Vellore',
-    state: 'Tamil Nadu',
-    landmark: '',
-  };
+  const [addresses, setAddresses] = useState([
+    {
+      id: 1,
+      name: 'Elumalai',
+      phone: '6379380743',
+      house: 'No 294 murungan nagar kilmurungai',
+      road: 'Mc road, Murungan nagar',
+      pincode: '635812',
+      city: 'Vellore',
+      state: 'Tamil Nadu',
+      landmark: '',
+    }
+  ]);
+  const [selectedAddressId, setSelectedAddressId] = useState(1);
 
   const openAddDrawer = () => {
     setIsEditing(false);
@@ -52,10 +55,21 @@ const Address = () => {
     setIsDrawerOpen(true);
   };
 
-  const openEditDrawer = () => {
+  const openEditDrawer = (addr) => {
     setIsEditing(true);
-    setAddressForm(savedAddress);
+    setAddressForm(addr);
     setIsDrawerOpen(true);
+  };
+
+  const saveAddress = () => {
+    if (isEditing) {
+      setAddresses(prev => prev.map(a => a.id === addressForm.id ? { ...addressForm } : a));
+    } else {
+      const newAddress = { ...addressForm, id: Date.now() };
+      setAddresses(prev => [...prev, newAddress]);
+      setSelectedAddressId(newAddress.id);
+    }
+    setIsDrawerOpen(false);
   };
 
   const handleFieldChange = (field) => (e) => {
@@ -78,20 +92,32 @@ const Address = () => {
         </div>
 
         <div className="lux-address-cards-container">
-          <div className="lux-address-card selected">
-            <div className="card-top-row">
-              <div className="radio-circle selected"><div className="inner-dot"></div></div>
-              <span className="address-name">{savedAddress.name}</span>
-              <button className="edit-text-btn" onClick={openEditDrawer}>EDIT</button>
-            </div>
-            <div className="address-details">
-              {savedAddress.house}, {savedAddress.road},<br />
-              {savedAddress.city}, {savedAddress.state}, {savedAddress.pincode}
-            </div>
-            <div className="address-phone">
-              {savedAddress.phone}
-            </div>
-            <button className="deliver-btn" onClick={() => navigate('/payment')}>Deliver to this Address</button>
+          <div className="lux-address-list">
+            {addresses.map(addr => (
+              <div 
+                key={addr.id} 
+                className={`lux-address-card ${selectedAddressId === addr.id ? 'selected' : ''}`}
+                onClick={() => setSelectedAddressId(addr.id)}
+              >
+                <div className="card-top-row">
+                  <div className={`radio-circle ${selectedAddressId === addr.id ? 'selected' : ''}`}>
+                    <div className="inner-dot"></div>
+                  </div>
+                  <span className="address-name">{addr.name}</span>
+                  <button className="edit-text-btn" onClick={(e) => { e.stopPropagation(); openEditDrawer(addr); }}>EDIT</button>
+                </div>
+                <div className="address-details">
+                  {addr.house}, {addr.road},<br />
+                  {addr.city}, {addr.state}, {addr.pincode}
+                </div>
+                <div className="address-phone">
+                  {addr.phone}
+                </div>
+                {selectedAddressId === addr.id && (
+                  <button className="deliver-btn" onClick={(e) => { e.stopPropagation(); navigate('/payment'); }}>Deliver to this Address</button>
+                )}
+              </div>
+            ))}
           </div>
 
           <div className="addr-price-details-card">
@@ -196,7 +222,7 @@ const Address = () => {
             </div>
 
             <div className="drawer-footer">
-              <button className="save-address-btn" onClick={() => setIsDrawerOpen(false)}>
+              <button className="save-address-btn" onClick={saveAddress}>
                 {isEditing ? 'Save Changes' : 'Save Address and Continue'}
               </button>
             </div>
