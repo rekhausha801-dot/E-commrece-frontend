@@ -156,6 +156,7 @@
   background-color: var(--nav-gold);
 }
 
+
 /* -------------------------------------
  * MEGA MENU
  * ------------------------------------- */
@@ -517,15 +518,17 @@
   gap: 4px;
 }
 
+.icon-btn:hover {
+  color: var(--nav-gold);
+}
+
 .icon-label {
   font-size: 11px;
   font-weight: 600;
   color: var(--nav-text-main);
 }
 
-.icon-btn:hover {
-  color: var(--nav-gold);
-}
+
 
 .icon-badge-wrapper {
   position: relative;

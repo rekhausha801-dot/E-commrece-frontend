@@ -12,14 +12,16 @@ import {
   SearchCodeIcon,
   SearchSlash,
   SearchIcon,
-  DollarSign, MoreHorizontal, Shirt
+  DollarSign, MoreHorizontal, Shirt, IndianRupee, ArrowUp, ArrowDown
 } from 'lucide-react';
 import CategoryManagement from './CategoryManagement';
 import ProductManagement from './ProductManagement';
 import BrandManagement from './BrandManagement';
 import CustomerManagement from './CustomerManagement';
 import BannerManagement from './BannerManagement';
+import ReportsAnalytics from './ReportsAnalytics';
 import fashionnImage from '../../assets/banners/fashionn.png';
+import './ReportsAnalytics.css';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Area, AreaChart,
   PieChart as RechartsPieChart, Pie, Cell, BarChart, Bar, LabelList
@@ -943,6 +945,7 @@ const Dashboard = () => {
         {activeTab === 'Brands' && <BrandManagement setActiveTab={setActiveTab} />}
         {activeTab === 'Customers' && <CustomerManagement />}
         {activeTab === 'Banners' && <BannerManagement />}
+        {activeTab === 'Reports' && <ReportsAnalytics />}
       </main>
     </div>
   );

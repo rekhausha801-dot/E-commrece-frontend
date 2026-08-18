@@ -1,7 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Plus, MoreVertical, ChevronDown, ChevronLeft, ChevronRight, CheckCircle2, XCircle, Tag, Package, Eye, Edit, PauseCircle, Trash2, MinusCircle } from 'lucide-react';
+import { ResponsiveContainer, AreaChart, Area } from 'recharts';
 import './BrandManagement.css';
+import './Dashboard.css';
 import AddNewBrand from './AddNewBrand';
+
+const sparklineTotalBrands = [{ v: 20 }, { v: 22 }, { v: 25 }, { v: 24 }, { v: 26 }, { v: 27 }, { v: 28 }];
+const sparklineActiveBrands = [{ v: 15 }, { v: 18 }, { v: 20 }, { v: 22 }, { v: 23 }, { v: 23 }, { v: 24 }];
+const sparklineInactiveBrands = [{ v: 5 }, { v: 4 }, { v: 5 }, { v: 2 }, { v: 3 }, { v: 4 }, { v: 4 }];
+const sparklineTotalProducts = [{ v: 300 }, { v: 310 }, { v: 330 }, { v: 340 }, { v: 345 }, { v: 350 }, { v: 356 }];
+
+const renderCustomDot = (props) => {
+  const { cx, cy, index } = props;
+  if (index === 5) {
+    return <circle cx={cx} cy={cy} r={4} stroke="#c9a05b" strokeWidth={2} fill="#fff" key={`dot-${index}`} />;
+  }
+  return null;
+};
 
 const initialBrands = [
   { id: 1, name: 'Nike', category: 'Sports Wear', products: 45, discount: '10%', status: 'Active', createdAt: '12 May 2024', logo: 'https://upload.wikimedia.org/wikipedia/commons/a/a6/Logo_NIKE.svg' },
@@ -80,48 +95,108 @@ const BrandManagement = ({ setActiveTab }) => {
       </div>
 
       {/* Stats Cards */}
-      <div className="bm-stats-grid">
-        <div className="bm-stat-card">
-          <div className="bm-stat-icon-wrapper" style={{ background: '#f5efe6', color: '#8a6e45' }}>
-            <Tag size={20} />
+      <div className="stats-grid" style={{ marginBottom: '24px' }}>
+        <div className="stat-card dark">
+          <div className="stat-top">
+            <div className="stat-icon gold"><Tag size={18} color="#c9a05b" /></div>
+            <div className="stat-info">
+              <span className="stat-title">Total Brands</span>
+              <h2 className="stat-value gold-text">28</h2>
+              <div className="stat-bottom">
+                <span className="stat-change positive">↑ 2</span> <span className="stat-change-text">new today</span>
+              </div>
+            </div>
           </div>
-          <div className="bm-stat-content">
-            <div className="bm-stat-title">Total Brands</div>
-            <div className="bm-stat-value">28</div>
-            <div className="bm-stat-desc">All Registered Brands</div>
-          </div>
-        </div>
-        
-        <div className="bm-stat-card">
-          <div className="bm-stat-icon-wrapper" style={{ background: '#f5efe6', color: '#8a6e45' }}>
-            <CheckCircle2 size={20} />
-          </div>
-          <div className="bm-stat-content">
-            <div className="bm-stat-title">Active Brands</div>
-            <div className="bm-stat-value">24</div>
-            <div className="bm-stat-desc">Currently Active</div>
-          </div>
-        </div>
-
-        <div className="bm-stat-card">
-          <div className="bm-stat-icon-wrapper" style={{ background: '#f5efe6', color: '#8a6e45' }}>
-            <XCircle size={20} />
-          </div>
-          <div className="bm-stat-content">
-            <div className="bm-stat-title">Inactive Brands</div>
-            <div className="bm-stat-value">4</div>
-            <div className="bm-stat-desc">Currently Inactive</div>
+          <div className="stat-chart-sparkline">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={sparklineTotalBrands}>
+                <defs>
+                  <linearGradient id="glowDarkBr1" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#c9a05b" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#c9a05b" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <Area type="monotone" dataKey="v" stroke="#c9a05b" strokeWidth={2} fill="url(#glowDarkBr1)" dot={{ r: 2.5, fill: '#c9a05b', strokeWidth: 0 }} />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
         </div>
 
-        <div className="bm-stat-card">
-          <div className="bm-stat-icon-wrapper" style={{ background: '#f5efe6', color: '#8a6e45' }}>
-            <Package size={20} />
+        <div className="stat-card light">
+          <div className="stat-top">
+            <div className="stat-icon gold"><CheckCircle2 size={18} color="#554422" /></div>
+            <div className="stat-info">
+              <span className="stat-title">Active Brands</span>
+              <h2 className="stat-value">24</h2>
+              <div className="stat-bottom">
+                <span className="stat-change positive">↑ 1</span> <span className="stat-change-text">new today</span>
+              </div>
+            </div>
           </div>
-          <div className="bm-stat-content">
-            <div className="bm-stat-title">Total Products</div>
-            <div className="bm-stat-value">356</div>
-            <div className="bm-stat-desc">Across All Brands</div>
+          <div className="stat-chart-sparkline">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={sparklineActiveBrands}>
+                <defs>
+                  <linearGradient id="glowLightBr1" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#c9a05b" stopOpacity={0.5} />
+                    <stop offset="95%" stopColor="#c9a05b" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <Area type="monotone" dataKey="v" stroke="#c9a05b" strokeWidth={2} fill="url(#glowLightBr1)" dot={{ r: 2.5, fill: '#c9a05b', strokeWidth: 0 }} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        <div className="stat-card light">
+          <div className="stat-top">
+            <div className="stat-icon gold"><XCircle size={18} color="#554422" /></div>
+            <div className="stat-info">
+              <span className="stat-title">Inactive Brands</span>
+              <h2 className="stat-value">4</h2>
+              <div className="stat-bottom">
+                <span className="stat-change negative">1</span> <span className="stat-change-text">require attention</span>
+              </div>
+            </div>
+          </div>
+          <div className="stat-chart-sparkline">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={sparklineInactiveBrands}>
+                <defs>
+                  <linearGradient id="glowLightBr2" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#c9a05b" stopOpacity={0.5} />
+                    <stop offset="95%" stopColor="#c9a05b" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <Area type="monotone" dataKey="v" stroke="#c9a05b" strokeWidth={2} fill="url(#glowLightBr2)" dot={{ r: 2.5, fill: '#c9a05b', strokeWidth: 0 }} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        <div className="stat-card dark">
+          <div className="stat-top">
+            <div className="stat-icon gold"><Package size={18} color="#c9a05b" /></div>
+            <div className="stat-info">
+              <span className="stat-title">Total Products</span>
+              <h2 className="stat-value gold-text">356</h2>
+              <div className="stat-bottom">
+                <span className="stat-change positive">↑ 12</span> <span className="stat-change-text">across all brands</span>
+              </div>
+            </div>
+          </div>
+          <div className="stat-chart-sparkline">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={sparklineTotalProducts}>
+                <defs>
+                  <linearGradient id="glowDarkBr2" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#c9a05b" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#c9a05b" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <Area type="monotone" dataKey="v" stroke="#c9a05b" strokeWidth={2} fill="url(#glowDarkBr2)" dot={{ r: 2.5, fill: '#c9a05b', strokeWidth: 0 }} />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
         </div>
       </div>
@@ -202,12 +277,7 @@ const BrandManagement = ({ setActiveTab }) => {
                     {activeDropdown === brand.id && (
                       <div className="bm-dropdown-menu">
                         <button className="bm-dropdown-item" onClick={() => { alert('No Brand selected'); setActiveDropdown(null); }}><MinusCircle size={14} /> No Brand</button>
-                        <button className="bm-dropdown-item" onClick={() => { setViewingBrand(brand); setActiveDropdown(null); }}><Eye size={14} /> View Brand</button>
                         <button className="bm-dropdown-item" onClick={() => { setEditingBrand(brand); setActiveDropdown(null); }}><Edit size={14} /> Edit Brand</button>
-                        <button className="bm-dropdown-item" onClick={() => { 
-                          if(setActiveTab) setActiveTab('Products'); 
-                          setActiveDropdown(null); 
-                        }}><Package size={14} /> View Products</button>
                         <button className="bm-dropdown-item" onClick={() => {
                           setBrands(brands.map(b => b.id === brand.id ? { ...b, status: b.status === 'Active' ? 'Inactive' : 'Active' } : b));
                           setActiveDropdown(null);
