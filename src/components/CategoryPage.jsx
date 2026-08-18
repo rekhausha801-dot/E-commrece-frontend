@@ -122,7 +122,7 @@ const CATEGORY_DATA = {
     images: [tshirt8Img, tshirt1Img, tshirt2Img, tshirt3Img, tshirt6Img, tshirt7Img, tShirtImg, wmodel1, wmodel2, wmodel3, wmodel4, wmodel5, wtshirt1, wtshirt2, wtshirt3, tshirtWhite, topImg, top2Img, top3Img, tshirtBlack, tshirtRed]
   },
   'womenswear': {
-    title: "Womenswear Collection",
+    title: "Womenswear Collections",
     banner: banner0Img,
     images: [beautyImg, bannerImg, imgImg, manImg]
   },
