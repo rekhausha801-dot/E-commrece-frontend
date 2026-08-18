@@ -23,7 +23,7 @@ import './AdminLayout.css';
 
 const AdminLayout = () => {
   const [isProductsOpen, setIsProductsOpen] = useState(true);
-
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
   return (
     <div className="admin-layout">
 
@@ -148,10 +148,47 @@ const AdminLayout = () => {
               <Search size={16} className="search-icon" />
             </div>
             
-            <button className="notification-btn">
-              <Bell size={20} />
-              <span className="badge">5</span>
-            </button>
+            <div className="notification-wrapper" style={{ position: 'relative' }}>
+              <button className="notification-btn" onClick={() => setIsNotifOpen(!isNotifOpen)}>
+                <Bell size={20} />
+                <span className="badge">5</span>
+              </button>
+              
+              {isNotifOpen && (
+                <div className="notification-dropdown">
+                  <div className="notif-header">
+                    <h4>Notifications</h4>
+                    <span className="notif-mark-read">Mark all as read</span>
+                  </div>
+                  <div className="notif-list">
+                    <div className="notif-item unread">
+                      <div className="notif-icon order"><ShoppingCart size={14}/></div>
+                      <div className="notif-content">
+                        <p>New order <strong>#1047</strong> received.</p>
+                        <span>2 min ago</span>
+                      </div>
+                    </div>
+                    <div className="notif-item unread">
+                      <div className="notif-icon alert"><Package size={14}/></div>
+                      <div className="notif-content">
+                        <p>Product "Women's Jacket" is low in stock.</p>
+                        <span>15 min ago</span>
+                      </div>
+                    </div>
+                    <div className="notif-item">
+                      <div className="notif-icon user"><User size={14}/></div>
+                      <div className="notif-content">
+                        <p>New customer registered.</p>
+                        <span>1 hr ago</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="notif-footer">
+                    View all notifications
+                  </div>
+                </div>
+              )}
+            </div>
 
             <div className="admin-profile">
               <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150" alt="Admin" />

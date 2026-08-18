@@ -37,7 +37,7 @@ export default function Cards() {
   };
 
   return (
-    <div className="collection-section">
+    <div id="categories" className="collection-section">
       <div className="trendy-header">
         <div className="trendy-eyebrow">
           <span className="eyebrow-line" />

@@ -79,7 +79,7 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
   };
 
   return (
-    <div className="add-product-page" style={{ background: '#fff', borderRadius: '12px', padding: '24px', border: '1px solid #f0f0f0', boxShadow: '0 2px 6px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
+    <div className="add-product-page" style={{ background: '#fff', borderRadius: '12px', padding: '24px', border: '1px solid #f0f0f0', boxShadow: '0 2px 6px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', minHeight: '100%', flex: 1, overflowY: 'auto' }}>
       {/* Header */}
       <div className="add-product-header" style={{ marginBottom: '24px' }}>
         <div className="header-breadcrumbs" style={{ fontSize: '12px', color: '#6b7280', marginBottom: '16px' }}>

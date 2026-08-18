@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Search, Filter, Plus, MoreVertical, LayoutTemplate, CheckCircle2, Calendar, UserX, ChevronLeft, ChevronRight, Image as ImageIcon, X, Type, Image as ImageOnlyIcon, UploadCloud, Link as LinkIcon, Calendar as CalendarIcon, CalendarDays, CalendarClock, Eye, Edit2, Copy, RefreshCw, ArrowUpDown, Trash2 } from 'lucide-react';
+import { ResponsiveContainer, AreaChart, Area } from 'recharts';
+import { Search, Filter, Plus, MoreVertical, LayoutTemplate, CheckCircle2, Calendar, UserX, ChevronLeft, ChevronRight, Image as ImageIcon, X, Type, Image as ImageOnlyIcon, UploadCloud, Link as LinkIcon, Calendar as CalendarIcon, CalendarDays, CalendarClock, Eye, Edit2, Copy, RefreshCw, ArrowUpDown, Trash2, ShoppingBag, Users, Package } from 'lucide-react';
 import fashionnImg from '../../assets/banners/fashionn.png';
 import newArrivalsImg from '../../assets/banners/new_arrivals_bg.png';
 import couponImg from '../../assets/banners/coupon.png';
@@ -7,6 +8,20 @@ import modelImg from '../../assets/banners/model.png';
 import gloImg from '../../assets/banners/glo.png';
 import wearImg from '../../assets/banners/wear.png';
 import './BannerManagement.css';
+import './Dashboard.css';
+
+const sparklineTotalBanners = [{ v: 10 }, { v: 15 }, { v: 12 }, { v: 22 }, { v: 18 }, { v: 28 }, { v: 24 }];
+const sparklineActiveBanners = [{ v: 5 }, { v: 8 }, { v: 10 }, { v: 12 }, { v: 15 }, { v: 16 }, { v: 18 }];
+const sparklineScheduledBanners = [{ v: 1 }, { v: 2 }, { v: 2 }, { v: 3 }, { v: 4 }, { v: 4 }, { v: 4 }];
+const sparklineInactiveBanners = [{ v: 4 }, { v: 3 }, { v: 2 }, { v: 2 }, { v: 3 }, { v: 2 }, { v: 2 }];
+
+const renderCustomDot = (props) => {
+  const { cx, cy, index } = props;
+  if (index === 5) {
+    return <circle cx={cx} cy={cy} r={4} stroke="#c9a05b" strokeWidth={2} fill="#fff" key={`dot-${index}`} />;
+  }
+  return null;
+};
 
 const mockBanners = [
   {
@@ -115,37 +130,108 @@ const BannerManagement = () => {
       </div>
 
       {/* Stats Grid */}
-      <div className="bam-stats-grid">
-        <div className="bam-stat-card">
-          <div className="bam-stat-icon total"><LayoutTemplate size={24} /></div>
-          <div className="bam-stat-info">
-            <span className="bam-stat-title">Total Banners</span>
-            <span className="bam-stat-value">24</span>
-            <span className="bam-stat-desc">All banners</span>
+      <div className="stats-grid" style={{ marginBottom: '24px' }}>
+        <div className="stat-card dark">
+          <div className="stat-top">
+            <div className="stat-icon gold"><LayoutTemplate size={18} color="#c9a05b" /></div>
+            <div className="stat-info">
+              <span className="stat-title">Total Banners</span>
+              <h2 className="stat-value gold-text">24</h2>
+              <div className="stat-bottom">
+                <span className="stat-change positive">↑ 4</span> <span className="stat-change-text">new today</span>
+              </div>
+            </div>
+          </div>
+          <div className="stat-chart-sparkline">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={sparklineTotalBanners}>
+                <defs>
+                  <linearGradient id="glowDarkBam1" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#c9a05b" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#c9a05b" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <Area type="monotone" dataKey="v" stroke="#c9a05b" strokeWidth={2} fill="url(#glowDarkBam1)" dot={renderCustomDot} />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
         </div>
-        <div className="bam-stat-card">
-          <div className="bam-stat-icon active"><CheckCircle2 size={24} /></div>
-          <div className="bam-stat-info">
-            <span className="bam-stat-title">Active Banners</span>
-            <span className="bam-stat-value">18</span>
-            <span className="bam-stat-desc green">Currently active</span>
+
+        <div className="stat-card light">
+          <div className="stat-top">
+            <div className="stat-icon gold"><CheckCircle2 size={18} color="#554422" /></div>
+            <div className="stat-info">
+              <span className="stat-title">Active Banners</span>
+              <h2 className="stat-value">18</h2>
+              <div className="stat-bottom">
+                <span className="stat-change positive">↑ 3</span> <span className="stat-change-text">new today</span>
+              </div>
+            </div>
+          </div>
+          <div className="stat-chart-sparkline">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={sparklineActiveBanners}>
+                <defs>
+                  <linearGradient id="glowLightBam1" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#c9a05b" stopOpacity={0.5} />
+                    <stop offset="95%" stopColor="#c9a05b" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <Area type="monotone" dataKey="v" stroke="#c9a05b" strokeWidth={2} fill="url(#glowLightBam1)" dot={{ r: 2.5, fill: '#c9a05b', strokeWidth: 0 }} />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
         </div>
-        <div className="bam-stat-card">
-          <div className="bam-stat-icon scheduled"><Calendar size={24} /></div>
-          <div className="bam-stat-info">
-            <span className="bam-stat-title">Scheduled Banners</span>
-            <span className="bam-stat-value">4</span>
-            <span className="bam-stat-desc">Scheduled to show</span>
+
+        <div className="stat-card light">
+          <div className="stat-top">
+            <div className="stat-icon gold"><Calendar size={18} color="#554422" /></div>
+            <div className="stat-info">
+              <span className="stat-title">Scheduled Banners</span>
+              <h2 className="stat-value">4</h2>
+              <div className="stat-bottom">
+                <span className="stat-change positive">↑ 2</span> <span className="stat-change-text">new today</span>
+              </div>
+            </div>
+          </div>
+          <div className="stat-chart-sparkline">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={sparklineScheduledBanners}>
+                <defs>
+                  <linearGradient id="glowLightBam2" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#c9a05b" stopOpacity={0.5} />
+                    <stop offset="95%" stopColor="#c9a05b" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <Area type="monotone" dataKey="v" stroke="#c9a05b" strokeWidth={2} fill="url(#glowLightBam2)" dot={{ r: 2.5, fill: '#c9a05b', strokeWidth: 0 }} />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
         </div>
-        <div className="bam-stat-card">
-          <div className="bam-stat-icon inactive"><UserX size={24} /></div>
-          <div className="bam-stat-info">
-            <span className="bam-stat-title">Inactive Banners</span>
-            <span className="bam-stat-value">2</span>
-            <span className="bam-stat-desc">Not active</span>
+
+        <div className="stat-card dark">
+          <div className="stat-top">
+            <div className="stat-icon gold"><UserX size={18} color="#c9a05b" /></div>
+            <div className="stat-info">
+              <span className="stat-title">Inactive Banners</span>
+              <h2 className="stat-value gold-text">2</h2>
+              <div className="stat-bottom">
+                <span className="stat-change negative">2</span> <span className="stat-change-text">require attention</span>
+              </div>
+            </div>
+          </div>
+          <div className="stat-chart-sparkline">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={sparklineInactiveBanners}>
+                <defs>
+                  <linearGradient id="glowDarkBam2" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#c9a05b" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#c9a05b" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <Area type="monotone" dataKey="v" stroke="#c9a05b" strokeWidth={2} fill="url(#glowDarkBam2)" dot={{ r: 2.5, fill: '#c9a05b', strokeWidth: 0 }} />
+              </AreaChart>
+            </ResponsiveContainer>
           </div>
         </div>
       </div>
