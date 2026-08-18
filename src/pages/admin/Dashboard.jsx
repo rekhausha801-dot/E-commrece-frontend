@@ -322,7 +322,6 @@ const Dashboard = () => {
             <button className={`nav-item ${activeTab === 'Banners' ? 'active' : ''}`} onClick={() => setActiveTab('Banners')}><FileText size={18} className="nav-icon" /> <span className="nav-text">Banners</span></button>
             <button className={`nav-item ${activeTab === 'Reports' ? 'active' : ''}`} onClick={() => setActiveTab('Reports')}><PieChart size={18} className="nav-icon" /> <span className="nav-text">Reports</span></button>
             <button className={`nav-item ${activeTab === 'Notifications' ? 'active' : ''}`} onClick={() => setActiveTab('Notifications')}><Bell size={18} className="nav-icon" /> <span className="nav-text">Notifications</span></button>
-            <button className={`nav-item ${activeTab === 'WebsiteSettings' ? 'active' : ''}`} onClick={() => setActiveTab('WebsiteSettings')}><Globe size={18} className="nav-icon" /> <span className="nav-text">Website Setting</span></button>
             <button className={`nav-item ${activeTab === 'HelpSupport' ? 'active' : ''}`} onClick={() => setActiveTab('HelpSupport')}><Headphones size={18} className="nav-icon" /> <span className="nav-text">Help Support</span></button>
             <button className={`nav-item ${activeTab === 'Settings' ? 'active' : ''}`} onClick={() => setActiveTab('Settings')}><Settings size={18} className="nav-icon" /> <span className="nav-text">Settings</span></button>
           </nav>
