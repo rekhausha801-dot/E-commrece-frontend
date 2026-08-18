@@ -1,9 +1,781 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Search, Filter, RotateCcw, MoreVertical, X, Mail, Phone, MapPin, Home, Edit, Ban, MessageSquare, Users, UserCheck, UserMinus, UserPlus, ChevronLeft, ChevronRight, Plus, User, Calendar, Hash, FileText, Lock, EyeOff, Globe, Map, FileSignature, UploadCloud, Save, RefreshCw, ArrowLeft, ChevronDown, Heart, Bell, Image, ShieldCheck, Info, Check } from 'lucide-react';
+import { ResponsiveContainer, AreaChart, Area } from 'recharts';
+import './CustomerManagement.css';
+import './Dashboard.css';
+
+const sparklineTotalCustomers = [{ v: 11000 }, { v: 11200 }, { v: 11500 }, { v: 11800 }, { v: 12000 }, { v: 12200 }, { v: 12450 }];
+const sparklineActiveCustomers = [{ v: 9800 }, { v: 10000 }, { v: 10200 }, { v: 10400 }, { v: 10600 }, { v: 10700 }, { v: 10820 }];
+const sparklineInactiveCustomers = [{ v: 1500 }, { v: 1450 }, { v: 1400 }, { v: 1350 }, { v: 1300 }, { v: 1250 }, { v: 1230 }];
+const sparklineNewCustomers = [{ v: 200 }, { v: 250 }, { v: 280 }, { v: 320 }, { v: 350 }, { v: 380 }, { v: 400 }];
+
+const renderCustomDot = (props) => {
+  const { cx, cy, index } = props;
+  if (index === 5) {
+    return <circle cx={cx} cy={cy} r={4} stroke="#c9a05b" strokeWidth={2} fill="#fff" key={`dot-${index}`} />;
+  }
+  return null;
+};
+
+const mockCustomers = [
+  { id: '#CUST1001', name: 'Priya Kumar', email: 'priya.kumar@gmail.com', phone: '+91 98765 43210', orders: 12, totalSpent: '₹24,500', joined: '12 Aug 2026', status: 'Active', avatar: 'https://randomuser.me/api/portraits/women/44.jpg' },
+  { id: '#CUST1002', name: 'Rahul S', email: 'rahul.singh@gmail.com', phone: '+91 91234 56789', orders: 5, totalSpent: '₹8,200', joined: '08 Aug 2026', status: 'Active', avatar: 'https://randomuser.me/api/portraits/men/32.jpg' },
+  { id: '#CUST1003', name: 'Anitha R', email: 'anitha.r@gmail.com', phone: '+91 99887 76655', orders: 0, totalSpent: '₹0', joined: '02 Aug 2026', status: 'Inactive', avatar: 'https://randomuser.me/api/portraits/women/68.jpg' },
+  { id: '#CUST1004', name: 'Vikram J', email: 'vikram.j@gmail.com', phone: '+91 97865 11122', orders: 8, totalSpent: '₹15,300', joined: '28 Jul 2026', status: 'Active', avatar: 'https://randomuser.me/api/portraits/men/46.jpg' },
+  { id: '#CUST1005', name: 'Sneha M', email: 'sneha.m@gmail.com', phone: '+91 96789 43210', orders: 3, totalSpent: '₹4,750', joined: '24 Jul 2026', status: 'Blocked', avatar: 'https://randomuser.me/api/portraits/women/12.jpg' },
+  { id: '#CUST1006', name: 'Arun Kumar', email: 'arun.kumar@gmail.com', phone: '+91 90011 22334', orders: 15, totalSpent: '₹31,600', joined: '20 Jul 2026', status: 'Active', avatar: 'https://randomuser.me/api/portraits/men/22.jpg' },
+  { id: '#CUST1007', name: 'Meena Patel', email: 'meena.patel@gmail.com', phone: '+91 98980 66554', orders: 2, totalSpent: '₹3,250', joined: '18 Jul 2026', status: 'Inactive', avatar: 'https://randomuser.me/api/portraits/women/29.jpg' },
+];
+
+const mockRecentOrders = [
+  { id: '#ORD12540', date: '12 Aug 2026', amount: '₹2,450', status: 'Delivered' },
+  { id: '#ORD12510', date: '05 Aug 2026', amount: '₹1,299', status: 'Delivered' },
+  { id: '#ORD12450', date: '28 Jul 2026', amount: '₹3,650', status: 'Shipped' },
+  { id: '#ORD12390', date: '20 Jul 2026', amount: '₹2,199', status: 'Delivered' },
+];
 
 const CustomerManagement = () => {
+  const [customers, setCustomers] = useState(mockCustomers);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All Status');
+  const [isAddingCustomer, setIsAddingCustomer] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  
+  const [formData, setFormData] = useState({
+    name: '', email: '', phone: '', status: 'Active', 
+    joined: new Date().toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'}), 
+    avatar: 'https://randomuser.me/api/portraits/lego/1.jpg'
+  });
+
+  const filteredCustomers = customers.filter(c => {
+    const matchesSearch = c.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          c.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          c.id.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesStatus = statusFilter === 'All Status' || c.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage);
+  const currentCustomers = filteredCustomers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   return (
-    <div>
-      <h1>Customer Management</h1>
+    <div className="customer-management-page">
+      {/* Header Section */}
+      <div className="cm-header-section">
+        <div className="bm-breadcrumbs" style={{ marginBottom: '8px' }}>
+          <span className="bm-breadcrumb-item">Dashboard</span>
+          <span className="bm-breadcrumb-separator">&gt;</span>
+          <span className="bm-breadcrumb-item">Customers</span>
+          {isAddingCustomer && (
+            <>
+              <span className="bm-breadcrumb-separator">&gt;</span>
+              <span className="bm-breadcrumb-item active">{selectedCustomer ? 'Edit Customer Details' : 'Add Customer'}</span>
+            </>
+          )}
+        </div>
+        
+        <div className="bm-header-title-row">
+          <div>
+            <h1 className="bm-page-title">{isAddingCustomer ? (selectedCustomer ? 'Edit Customer Details' : 'Add New Customer') : 'Customer Management'}</h1>
+            {!isAddingCustomer && (
+              <>
+                <div className="bm-ornate-divider">
+                   <span className="bm-divider-line"></span>
+                   <span className="bm-divider-icon">⚜</span>
+                   <span className="bm-divider-line"></span>
+                </div>
+                <p className="bm-page-subtitle">Manage and organize your customers.</p>
+              </>
+            )}
+            {isAddingCustomer && <p style={{ fontSize: '13px', color: '#4b5563', margin: '4px 0 0 0' }}>{selectedCustomer ? 'Update the details for this customer account.' : 'Create a new customer account and add customer details.'}</p>}
+          </div>
+          {isAddingCustomer ? (
+            <button className="cm-btn-outline-action" onClick={() => { setIsAddingCustomer(false); setSelectedCustomer(null); }}>
+              <ArrowLeft size={16} /> Back to Customers
+            </button>
+          ) : (
+            <button className="bm-btn-add" onClick={() => { setSelectedCustomer(null); setFormData({name: '', email: '', phone: '', status: 'Active', joined: new Date().toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'}), avatar: 'https://randomuser.me/api/portraits/lego/1.jpg'}); setIsAddingCustomer(true); }}>
+              <Plus size={16} /> Add Customer
+            </button>
+          )}
+        </div>
+      </div>
+
+      {!isAddingCustomer ? (
+        <>
+      {/* Stat Cards */}
+      <div className="stats-grid" style={{ marginBottom: '24px' }}>
+        <div className="stat-card dark">
+          <div className="stat-top">
+            <div className="stat-icon gold"><Users size={18} color="#c9a05b" /></div>
+            <div className="stat-info">
+              <span className="stat-title">Total Customers</span>
+              <h2 className="stat-value gold-text">12,450</h2>
+              <div className="stat-bottom">
+                <span className="stat-change positive">↑ 12.5%</span> <span className="stat-change-text">from last month</span>
+              </div>
+            </div>
+          </div>
+          <div className="stat-chart-sparkline">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={sparklineTotalCustomers}>
+                <defs>
+                  <linearGradient id="glowDarkCu1" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#c9a05b" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#c9a05b" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <Area type="monotone" dataKey="v" stroke="#c9a05b" strokeWidth={2} fill="url(#glowDarkCu1)" dot={{ r: 2.5, fill: '#c9a05b', strokeWidth: 0 }} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        <div className="stat-card light">
+          <div className="stat-top">
+            <div className="stat-icon gold"><UserCheck size={18} color="#554422" /></div>
+            <div className="stat-info">
+              <span className="stat-title">Active Customers</span>
+              <h2 className="stat-value">10,820</h2>
+              <div className="stat-bottom">
+                <span className="stat-change positive">↑ 8.3%</span> <span className="stat-change-text">from last month</span>
+              </div>
+            </div>
+          </div>
+          <div className="stat-chart-sparkline">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={sparklineActiveCustomers}>
+                <defs>
+                  <linearGradient id="glowLightCu1" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#c9a05b" stopOpacity={0.5} />
+                    <stop offset="95%" stopColor="#c9a05b" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <Area type="monotone" dataKey="v" stroke="#c9a05b" strokeWidth={2} fill="url(#glowLightCu1)" dot={{ r: 2.5, fill: '#c9a05b', strokeWidth: 0 }} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        <div className="stat-card light">
+          <div className="stat-top">
+            <div className="stat-icon gold"><UserMinus size={18} color="#554422" /></div>
+            <div className="stat-info">
+              <span className="stat-title">Inactive Customers</span>
+              <h2 className="stat-value">1,230</h2>
+              <div className="stat-bottom">
+                <span className="stat-change negative">4.1%</span> <span className="stat-change-text">from last month</span>
+              </div>
+            </div>
+          </div>
+          <div className="stat-chart-sparkline">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={sparklineInactiveCustomers}>
+                <defs>
+                  <linearGradient id="glowLightCu2" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#c9a05b" stopOpacity={0.5} />
+                    <stop offset="95%" stopColor="#c9a05b" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <Area type="monotone" dataKey="v" stroke="#c9a05b" strokeWidth={2} fill="url(#glowLightCu2)" dot={{ r: 2.5, fill: '#c9a05b', strokeWidth: 0 }} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        <div className="stat-card dark">
+          <div className="stat-top">
+            <div className="stat-icon gold"><UserPlus size={18} color="#c9a05b" /></div>
+            <div className="stat-info">
+              <span className="stat-title">New Customers</span>
+              <h2 className="stat-value gold-text">400</h2>
+              <div className="stat-bottom">
+                <span className="stat-change positive">↑ 15.2%</span> <span className="stat-change-text">from last month</span>
+              </div>
+            </div>
+          </div>
+          <div className="stat-chart-sparkline">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={sparklineNewCustomers}>
+                <defs>
+                  <linearGradient id="glowDarkCu2" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#c9a05b" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#c9a05b" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <Area type="monotone" dataKey="v" stroke="#c9a05b" strokeWidth={2} fill="url(#glowDarkCu2)" dot={{ r: 2.5, fill: '#c9a05b', strokeWidth: 0 }} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Layout */}
+      <div className="cm-main-layout">
+        
+        {/* Left Column: List */}
+        <div className="cm-list-section">
+          <div className="cm-filters-bar">
+            <div className="cm-search-box">
+              <Search size={18} />
+              <input 
+                type="text" 
+                placeholder="Search customers by name, email, phone or ID..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <div className="cm-filter-actions">
+              <div className="cm-filter-dropdown">
+                <span>Status</span>
+                <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+                  <option value="All Status">All Status</option>
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                  <option value="Blocked">Blocked</option>
+                </select>
+              </div>
+              <button className="cm-btn-clear" onClick={() => {setSearchQuery(''); setStatusFilter('All Status');}}><RotateCcw size={16} /> Clear Filters</button>
+            </div>
+          </div>
+
+          <div className="cm-table-container">
+            <table className="cm-table">
+              <thead>
+                <tr>
+                  <th style={{ width: '40px' }}><input type="checkbox" /></th>
+                  <th>CUSTOMER</th>
+                  <th>EMAIL</th>
+                  <th>PHONE</th>
+                  <th>ORDERS</th>
+                  <th>TOTAL SPENT</th>
+                  <th>JOINED DATE</th>
+                  <th>STATUS</th>
+                  <th>ACTION</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentCustomers.length === 0 && (
+                  <tr><td colSpan="9" style={{textAlign: 'center', padding: '24px'}}>No customers found.</td></tr>
+                )}
+                {currentCustomers.map((customer, index) => (
+                  <tr key={customer.id} onClick={() => setSelectedCustomer(customer)} style={{ cursor: 'pointer', background: selectedCustomer?.id === customer.id ? '#fdfaf6' : 'transparent' }}>
+                    <td><input type="checkbox" onClick={(e) => e.stopPropagation()} /></td>
+                    <td className="customer-cell">
+                      <img src={customer.avatar} alt="" className="cm-avatar" />
+                      <div>
+                        <div className="cm-customer-name">{customer.name}</div>
+                        <div className="cm-customer-id">{customer.id}</div>
+                      </div>
+                    </td>
+                    <td>{customer.email}</td>
+                    <td>{customer.phone}</td>
+                    <td>{customer.orders}</td>
+                    <td>{customer.totalSpent}</td>
+                    <td>{customer.joined}</td>
+                    <td><span className={`cm-tag ${customer.status.toLowerCase()}`}>{customer.status}</span></td>
+                    <td style={{ position: 'relative' }}>
+                      <button className="cm-action-btn" onClick={(e) => { e.stopPropagation(); setActiveDropdown(activeDropdown === customer.id ? null : customer.id); }}>
+                        <MoreVertical size={16} />
+                      </button>
+                      {activeDropdown === customer.id && (
+                        <div className="bm-dropdown-menu" style={{ top: '100%', right: '0', zIndex: 99 }}>
+                          <button className="bm-dropdown-item" onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedCustomer(customer);
+                            setFormData({...customer});
+                            setIsAddingCustomer(true);
+                            setActiveDropdown(null);
+                          }}>
+                            <Edit size={14} /> Edit
+                          </button>
+                          <button className="bm-dropdown-item" onClick={(e) => {
+                            e.stopPropagation();
+                            setCustomers(customers.map(c => c.id === customer.id ? { ...c, status: c.status === 'Blocked' ? 'Active' : 'Blocked' } : c));
+                            setActiveDropdown(null);
+                          }}>
+                            <Ban size={14} /> {customer.status === 'Blocked' ? 'Unblock' : 'Block'}
+                          </button>
+                          <button className="bm-dropdown-item text-danger" onClick={(e) => {
+                            e.stopPropagation();
+                            if(window.confirm(`Delete customer ${customer.name}?`)) {
+                              setCustomers(customers.filter(c => c.id !== customer.id));
+                              if (selectedCustomer?.id === customer.id) setSelectedCustomer(null);
+                            }
+                            setActiveDropdown(null);
+                          }}>
+                            <X size={14} /> Delete
+                          </button>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="cm-pagination">
+            <div className="cm-page-info">Showing {filteredCustomers.length === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredCustomers.length)} of {filteredCustomers.length} customers</div>
+            <div className="cm-page-controls">
+              <button className="cm-page-btn" disabled={currentPage === 1} onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}><ChevronLeft size={16} /></button>
+              {[...Array(totalPages)].map((_, i) => (
+                <button key={i} className={`cm-page-btn ${currentPage === i + 1 ? 'active' : ''}`} onClick={() => setCurrentPage(i + 1)}>{i + 1}</button>
+              ))}
+              <button className="cm-page-btn" disabled={currentPage === totalPages || totalPages === 0} onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}><ChevronRight size={16} /></button>
+            </div>
+            <div className="cm-per-page">
+              <select><option>10 / page</option></select>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column: Customer Details */}
+        {selectedCustomer && (
+          <div className="cm-details-sidebar">
+            <div className="cm-profile-header">
+              <div className="cm-profile-header-left">
+                <h2>{selectedCustomer.name}</h2>
+                <span className={`cm-tag ${selectedCustomer.status.toLowerCase()}`}>{selectedCustomer.status}</span>
+                <div className="cm-profile-meta">
+                  {selectedCustomer.id} &bull; Joined {selectedCustomer.joined}
+                </div>
+              </div>
+              <button className="cm-close-btn" onClick={() => setSelectedCustomer(null)}><X size={20} /></button>
+            </div>
+
+            <div className="cm-profile-contact">
+              <img src={selectedCustomer.avatar} alt="" className="cm-profile-avatar" />
+              <div className="cm-contact-list">
+                <div className="cm-contact-item"><Mail size={14} /> {selectedCustomer.email}</div>
+                <div className="cm-contact-item"><Phone size={14} /> {selectedCustomer.phone}</div>
+                <div className="cm-contact-item"><MapPin size={14} /> Chennai, Tamil Nadu</div>
+              </div>
+            </div>
+
+
+
+            <div className="cm-section-title">
+              Recent Orders <span>View All</span>
+            </div>
+            <div className="cm-recent-orders">
+              {mockRecentOrders.map(order => (
+                <div key={order.id} className="cm-ro-item">
+                  <div className="cm-ro-id">{order.id}</div>
+                  <div className="cm-ro-date">{order.date}</div>
+                  <div className="cm-ro-amount">{order.amount}</div>
+                  <span className={`cm-tag ${order.status.toLowerCase()}`}>{order.status}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="cm-section-title">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Home size={16} /> Default Address
+              </div>
+            </div>
+            <div className="cm-address-card">
+              <div className="cm-address-text">
+                No. 45, 2nd Street,<br />
+                Anna Nagar West,<br />
+                Chennai - 600040,<br />
+                Tamil Nadu, India
+              </div>
+              <button className="cm-btn-block">View All Addresses</button>
+            </div>
+
+            <div className="cm-section-title">Actions</div>
+            <div className="cm-actions-group">
+              <button className="cm-btn-action" onClick={() => setIsAddingCustomer(true)}><Edit size={16} /> Edit</button>
+              <button className="cm-btn-action" onClick={() => alert('Messaging feature coming soon!')}><MessageSquare size={16} /> Message</button>
+            </div>
+
+          </div>
+        )}
+
+      </div>
+      </>
+      ) : (
+        <div className="cm-add-view">
+          <div className="cm-form-grid">
+            
+            {/* Left Column */}
+            <div className="cm-form-grid-col">
+              
+              {/* Personal Information */}
+              <div className="cm-card">
+                <div className="cm-card-title">
+                  <div className="cm-card-title-icon"><User size={18} /></div>
+                  Personal Information
+                </div>
+                
+                <div className="cm-form-row-2" style={{ marginBottom: 0 }}>
+                  <div className="cm-form-group">
+                    <label className="cm-label">Full Name <span className="req">*</span></label>
+                    <div className="cm-input-wrapper with-icon">
+                      <User size={16} className="cm-input-icon" />
+                      <input type="text" className="cm-input" placeholder="Enter full name" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
+                    </div>
+                  </div>
+                  <div className="cm-form-group">
+                    <label className="cm-label">Email Address <span className="req">*</span></label>
+                    <div className="cm-input-wrapper with-icon">
+                      <Mail size={16} className="cm-input-icon" />
+                      <input type="email" className="cm-input" placeholder="Enter email address" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
+                    </div>
+                  </div>
+
+                  <div className="cm-form-group">
+                    <label className="cm-label">Phone Number <span className="req">*</span></label>
+                    <div className="cm-phone-input">
+                      <div className="cm-phone-prefix">
+                        <span>🇮🇳</span> <ChevronDown size={14} /> +91
+                      </div>
+                      <input type="text" placeholder="Enter phone number" value={formData.phone?.replace('+91 ', '') || ''} onChange={(e) => setFormData({...formData, phone: '+91 ' + e.target.value})} />
+                    </div>
+                  </div>
+                  <div className="cm-form-group">
+                    <label className="cm-label">Marital Status</label>
+                    <div className="cm-input-wrapper with-icon">
+                      <Heart size={16} className="cm-input-icon" />
+                      <select className="cm-select"><option>Select marital status</option></select>
+                    </div>
+                  </div>
+
+                  <div className="cm-form-group">
+                    <label className="cm-label">Date of Birth</label>
+                    <div className="cm-input-wrapper with-icon">
+                      <Calendar size={16} className="cm-input-icon" />
+                      <input type="text" className="cm-input" placeholder="Select date of birth" />
+                    </div>
+                  </div>
+                  <div className="cm-form-group">
+                    <label className="cm-label">Gender</label>
+                    <div className="cm-input-wrapper with-icon">
+                      <Users size={16} className="cm-input-icon" />
+                      <select className="cm-select"><option>Select gender</option></select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Address Information */}
+              <div className="cm-card">
+                <div className="cm-card-title">
+                  <div className="cm-card-title-icon"><MapPin size={18} /></div>
+                  Address Information
+                </div>
+
+                <div className="cm-form-row-2" style={{ marginBottom: 0 }}>
+                  <div className="cm-form-group">
+                    <label className="cm-label">Address Line 1 <span className="req">*</span></label>
+                    <div className="cm-input-wrapper with-icon">
+                      <Home size={16} className="cm-input-icon" />
+                      <input type="text" className="cm-input" placeholder="Enter address line 1" />
+                    </div>
+                  </div>
+                  <div className="cm-form-group">
+                    <label className="cm-label">Address Line 2 (Optional)</label>
+                    <div className="cm-input-wrapper with-icon">
+                      <FileText size={16} className="cm-input-icon" />
+                      <input type="text" className="cm-input" placeholder="Enter address line 2" />
+                    </div>
+                  </div>
+                  <div className="cm-form-group">
+                    <label className="cm-label">Landmark (Optional)</label>
+                    <div className="cm-input-wrapper with-icon">
+                      <MapPin size={16} className="cm-input-icon" />
+                      <input type="text" className="cm-input" placeholder="Enter landmark" />
+                    </div>
+                  </div>
+
+                  <div className="cm-form-group">
+                    <label className="cm-label">Country <span className="req">*</span></label>
+                    <div className="cm-input-wrapper with-icon">
+                      <Globe size={16} className="cm-input-icon" />
+                      <select className="cm-select"><option>Select country</option></select>
+                    </div>
+                  </div>
+                  <div className="cm-form-group">
+                    <label className="cm-label">State <span className="req">*</span></label>
+                    <div className="cm-input-wrapper with-icon">
+                      <Map size={16} className="cm-input-icon" />
+                      <select className="cm-select"><option>Select state</option></select>
+                    </div>
+                  </div>
+
+                  <div className="cm-form-group">
+                    <label className="cm-label">City <span className="req">*</span></label>
+                    <div className="cm-input-wrapper with-icon">
+                      <Home size={16} className="cm-input-icon" />
+                      <select className="cm-select"><option>Select city</option></select>
+                    </div>
+                  </div>
+                  <div className="cm-form-group">
+                    <label className="cm-label">District <span className="req">*</span></label>
+                    <div className="cm-input-wrapper with-icon">
+                      <Map size={16} className="cm-input-icon" />
+                      <select className="cm-select"><option>Select district</option></select>
+                    </div>
+                  </div>
+
+                  <div className="cm-form-group">
+                    <label className="cm-label">Pincode <span className="req">*</span></label>
+                    <div className="cm-input-wrapper with-icon">
+                      <Mail size={16} className="cm-input-icon" />
+                      <input type="text" className="cm-input" placeholder="Enter pincode" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            {/* Right Column */}
+            <div className="cm-form-grid-col">
+              
+              {/* Account Information */}
+              <div className="cm-card">
+                <div className="cm-card-title">
+                  <div className="cm-card-title-icon"><Lock size={18} /></div>
+                  Account Information
+                </div>
+
+                <div className="cm-form-group">
+                  <label className="cm-label">Status <span className="req">*</span></label>
+                  <div className="cm-input-wrapper with-icon">
+                    <div className="cm-input-icon" style={{ display: 'flex', alignItems: 'center' }}>
+                      <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#16a34a' }}></div>
+                    </div>
+                    <select className="cm-select"><option>Active</option></select>
+                  </div>
+                </div>
+
+                <div className="cm-form-group">
+                  <label className="cm-label">Password <span className="req">*</span></label>
+                  <div className="cm-input-wrapper with-icon">
+                    <Lock size={16} className="cm-input-icon" />
+                    <input type="password" className="cm-input" placeholder="Enter password" />
+                    <EyeOff size={16} className="cm-input-icon right" />
+                  </div>
+                </div>
+
+                <div className="cm-form-group">
+                  <label className="cm-label">Confirm Password <span className="req">*</span></label>
+                  <div className="cm-input-wrapper with-icon">
+                    <Lock size={16} className="cm-input-icon" />
+                    <input type="password" className="cm-input" placeholder="Confirm password" />
+                    <EyeOff size={16} className="cm-input-icon right" />
+                  </div>
+                </div>
+
+                <div className="cm-form-group" style={{ marginBottom: 0 }}>
+                  <label className="cm-label">Account Type</label>
+                  <div className="cm-radio-group">
+                    <label className="cm-radio-label"><input type="radio" name="acc-type" defaultChecked /> Individual</label>
+                    <label className="cm-radio-label"><input type="radio" name="acc-type" /> Business</label>
+                  </div>
+                </div>
+              </div>
+
+              {/* Additional Information */}
+              <div className="cm-card">
+                <div className="cm-card-title">
+                  <div className="cm-card-title-icon"><FileSignature size={18} /></div>
+                  Additional Information
+                </div>
+
+                <div className="cm-form-group">
+                  <label className="cm-label">Joined Date</label>
+                  <div className="cm-input-wrapper with-icon">
+                    <Calendar size={16} className="cm-input-icon" />
+                    <input type="text" className="cm-input" placeholder="Select joined date" />
+                  </div>
+                </div>
+                
+                <div className="cm-form-group">
+                  <label className="cm-label">Referral Code (Optional)</label>
+                  <div className="cm-input-wrapper with-icon">
+                    <FileText size={16} className="cm-input-icon" />
+                    <input type="text" className="cm-input" placeholder="Enter referral code" />
+                  </div>
+                </div>
+
+                <div className="cm-form-group">
+                  <label className="cm-label">Source</label>
+                  <div className="cm-input-wrapper with-icon">
+                    <Users size={16} className="cm-input-icon" />
+                    <select className="cm-select"><option>Select source</option></select>
+                  </div>
+                </div>
+
+                <div className="cm-form-group" style={{ marginBottom: 0 }}>
+                  <label className="cm-label">Notes (Optional)</label>
+                  <div className="cm-input-wrapper with-icon" style={{ position: 'relative' }}>
+                    <Edit size={16} className="cm-input-icon" style={{ top: '16px' }} />
+                    <textarea className="cm-textarea" placeholder="Enter notes about customer..." rows="5" style={{ paddingLeft: '40px', minHeight: '120px' }}></textarea>
+                    <div className="cm-textarea-hint" style={{ position: 'absolute', bottom: '10px', right: '12px', fontSize: '12px', color: '#888', pointerEvents: 'none', background: 'transparent' }}>0 / 250</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          
+          {/* Profile & Verification (Full Width) */}
+          <div className="cm-pv-container">
+            
+            <div className="cm-pv-header">
+              <div className="cm-pv-icon-container">
+                <User size={32} strokeWidth={2.5} className="cm-pv-header-icon" />
+              </div>
+              <div className="cm-pv-header-text">
+                <h3>Profile & Verification</h3>
+                <p>Manage your profile information and verification status</p>
+              </div>
+            </div>
+
+            <div className="cm-pv-line-divider"></div>
+
+            <div className="cm-pv-grid">
+              
+              {/* Column 1: Profile Picture */}
+              <div className="cm-pv-col">
+                <div className="cm-pv-col-header">
+                  <div className="cm-pv-col-icon"><Image size={24} strokeWidth={2.5} /></div>
+                  <div className="cm-pv-col-title">Profile Picture (Optional)</div>
+                </div>
+
+                <div className="cm-pv-upload-box">
+                  <div className="cm-pv-upload-circle">
+                    <UploadCloud size={36} strokeWidth={2.5} />
+                  </div>
+                  <div className="cm-pv-upload-text">
+                    <b>Drag & drop image here</b>
+                    <br />or <span className="cm-pv-highlight">click to browse</span>
+                  </div>
+                  <div className="cm-pv-upload-subtext">
+                    PNG, JPG or WEBP<br />(Max 2MB)
+                  </div>
+                </div>
+
+                <div className="cm-pv-info-box">
+                  <div className="cm-pv-info-icon"><Info size={20} strokeWidth={2.5} /></div>
+                  <div className="cm-pv-info-text">For best results, use a square image with clear visibility.</div>
+                </div>
+              </div>
+
+              {/* Column 2: Verification */}
+              <div className="cm-pv-col">
+                <div className="cm-pv-verify-section">
+                  <div className="cm-pv-verify-top">
+                    <div className="cm-pv-col-icon"><Mail size={24} strokeWidth={2.5} /></div>
+                    <div className="cm-pv-verify-text">
+                      <div className="cm-pv-col-title">Email Verified</div>
+                      <div className="cm-pv-verify-subtitle">Your email verification status</div>
+                    </div>
+                  </div>
+                  <div className="cm-pv-radio-group">
+                    <label className="cm-pv-radio-label">
+                      <input type="radio" name="pv-email" defaultChecked /> <span className="cm-pv-radio-custom"></span> Verified
+                    </label>
+                    <label className="cm-pv-radio-label">
+                      <input type="radio" name="pv-email" /> <span className="cm-pv-radio-custom"></span> Not Verified
+                    </label>
+                  </div>
+                </div>
+
+                <div className="cm-pv-verify-divider"></div>
+
+                <div className="cm-pv-verify-section">
+                  <div className="cm-pv-verify-top">
+                    <div className="cm-pv-col-icon"><Phone size={24} strokeWidth={2.5} /></div>
+                    <div className="cm-pv-verify-text">
+                      <div className="cm-pv-col-title">Phone Verified</div>
+                      <div className="cm-pv-verify-subtitle">Your phone verification status</div>
+                    </div>
+                  </div>
+                  <div className="cm-pv-radio-group">
+                    <label className="cm-pv-radio-label">
+                      <input type="radio" name="pv-phone" defaultChecked /> <span className="cm-pv-radio-custom"></span> Verified
+                    </label>
+                    <label className="cm-pv-radio-label">
+                      <input type="radio" name="pv-phone" /> <span className="cm-pv-radio-custom"></span> Not Verified
+                    </label>
+                  </div>
+                </div>
+
+                <div className="cm-pv-info-box alert">
+                  <div className="cm-pv-info-icon alert-icon">
+                    <ShieldCheck size={24} strokeWidth={2.5} />
+                  </div>
+                  <div className="cm-pv-info-text">Verified contact information helps us keep your account secure.</div>
+                </div>
+              </div>
+
+              {/* Column 3: Notifications */}
+              <div className="cm-pv-col">
+                <div className="cm-pv-verify-top">
+                  <div className="cm-pv-col-icon"><Bell size={24} strokeWidth={2.5} /></div>
+                  <div className="cm-pv-verify-text">
+                    <div className="cm-pv-col-title">SMS/Email Notifications</div>
+                    <div className="cm-pv-verify-subtitle">Receive important updates via SMS or Email</div>
+                  </div>
+                </div>
+                
+                <div className="cm-pv-toggle-container">
+                  <label className="cm-pv-toggle-switch">
+                    <input type="checkbox" defaultChecked />
+                    <span className="cm-pv-slider"></span>
+                  </label>
+                </div>
+
+                <div className="cm-pv-success-box">
+                  <div className="cm-pv-success-icon">
+                    <Check size={12} strokeWidth={3} />
+                  </div>
+                  <div className="cm-pv-success-content">
+                    <div className="cm-pv-success-title">Notifications are enabled</div>
+                    <div className="cm-pv-success-text">You will receive important updates and alerts.</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          
+          <div className="cm-action-footer">
+            <button className="cm-btn-outline-action" style={{ color: '#b88645', borderColor: '#e0d5c1', background: '#fdfaf6' }} onClick={() => setFormData({name: '', email: '', phone: '', status: 'Active', joined: new Date().toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'}), avatar: 'https://randomuser.me/api/portraits/lego/1.jpg'})}>
+              <RefreshCw size={16} /> Reset
+            </button>
+            <div className="cm-footer-right">
+              <button className="cm-btn-outline-action" style={{ color: '#b88645', borderColor: '#e0d5c1', background: '#fff' }} onClick={() => {
+                const newId = '#CUST' + Math.floor(1000 + Math.random() * 9000);
+                setCustomers([{...formData, id: newId, orders: 0, totalSpent: '₹0'}, ...customers]);
+                setFormData({name: '', email: '', phone: '', status: 'Active', joined: new Date().toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'}), avatar: 'https://randomuser.me/api/portraits/lego/1.jpg'});
+              }}>
+                <Plus size={16} /> Save & Add Another
+              </button>
+              <button className="cm-btn-primary-action" onClick={() => {
+                if(selectedCustomer) {
+                  setCustomers(customers.map(c => c.id === selectedCustomer.id ? {...c, ...formData} : c));
+                } else {
+                  const newId = '#CUST' + Math.floor(1000 + Math.random() * 9000);
+                  setCustomers([{...formData, id: newId, orders: 0, totalSpent: '₹0'}, ...customers]);
+                }
+                setIsAddingCustomer(false);
+                setSelectedCustomer(null);
+              }}>
+                <Save size={16} /> Save Customer
+              </button>
+            </div>
+          </div>
+
+        </div>
+      )}
     </div>
   );
 };

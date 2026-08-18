@@ -1,11 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   ArrowRight, Search, Plus, Image as ImageIcon, 
   Lightbulb, Bold, Italic, Underline, List, Link,
-  Check, X, Upload, Copy, Eye, Save,
+  Check, X, Upload, Copy, Eye, Save, CloudUpload,
   Truck, Settings, Wallet, ArrowLeftRight, Home, Star, Info, ChevronDown,
   Hash, Shirt, Calendar, Trash2, Ruler, Puzzle, Tag, Package
 } from 'lucide-react';
+
+const CustomSelect = ({ value, onChange, options, placeholder, disabled }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const selectRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (selectRef.current && !selectRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  return (
+    <div className="custom-select-container" ref={selectRef} style={{ position: 'relative', width: '100%' }}>
+      <div 
+        onClick={() => !disabled && setIsOpen(!isOpen)}
+        style={{ padding: '10px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: disabled ? 'default' : 'pointer', width: '100%', fontSize: '14px', color: value ? '#111827' : '#6b7280', border: '1px solid #e5e7eb', borderRadius: '6px', background: '#fff' }}
+      >
+        {value || placeholder}
+        <ChevronDown size={14} style={{ color: '#6b7280' }} />
+      </div>
+      {isOpen && (
+        <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: '#fff', border: '1px solid #e0d5c1', borderRadius: '8px', marginTop: '4px', zIndex: 100, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
+          {options.map((opt) => (
+            <div 
+              key={opt}
+              className="custom-select-option"
+              onClick={() => { if (onChange) onChange(opt); setIsOpen(false); }}
+            >
+              {opt}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
   const [productName, setProductName] = useState(editingProduct?.name || '');
@@ -39,7 +79,7 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
   };
 
   return (
-    <div className="add-product-page" style={{ background: '#fff', borderRadius: '12px', padding: '24px', border: '1px solid #f0f0f0', boxShadow: '0 2px 6px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
+    <div className="add-product-page" style={{ background: '#fff', borderRadius: '12px', padding: '24px', border: '1px solid #f0f0f0', boxShadow: '0 2px 6px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', minHeight: '100%', flex: 1, overflowY: 'auto' }}>
       {/* Header */}
       <div className="add-product-header" style={{ marginBottom: '24px' }}>
         <div className="header-breadcrumbs" style={{ fontSize: '12px', color: '#6b7280', marginBottom: '16px' }}>
@@ -86,23 +126,21 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
                     <div className="form-row">
                       <div className="form-group">
                         <label>Category <span className="req">*</span></label>
-                        <select value={category} onChange={(e) => setCategory(e.target.value)}>
-                          <option value="">Select category</option>
-                          <option value="Men Clothing">Men Clothing</option>
-                          <option value="Accessories">Accessories</option>
-                          <option value="Footwear">Footwear</option>
-                        </select>
+                        <CustomSelect 
+                          value={category} 
+                          onChange={setCategory} 
+                          options={['Men Clothing', 'Accessories', 'Footwear']} 
+                          placeholder="Select category" 
+                        />
                       </div>
                       <div className="form-group">
                         <label>Brand <span className="req">*</span></label>
-                        <select value={brand} onChange={(e) => setBrand(e.target.value)}>
-                          <option value="">Select brand</option>
-                          <option value="Roadster">Roadster</option>
-                          <option value="Nike">Nike</option>
-                          <option value="Fastrack">Fastrack</option>
-                          <option value="Adidas">Adidas</option>
-                          <option value="Ray-Ban">Ray-Ban</option>
-                        </select>
+                        <CustomSelect 
+                          value={brand} 
+                          onChange={setBrand} 
+                          options={['Roadster', 'Nike', 'Fastrack', 'Adidas', 'Ray-Ban']} 
+                          placeholder="Select brand" 
+                        />
                       </div>
                     </div>
                     <div className="form-group">
@@ -134,59 +172,124 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
                     <h3>Product Images</h3>
                   </div>
                   <div className="card-body">
-                    <div className="cover-image-upload" style={{ marginBottom: '24px' }}>
-                      <label style={{ fontSize: '12px', fontWeight: '700', marginBottom: '8px', display: 'block', color: '#111827' }}>Cover Image <span className="req" style={{ color: '#dc2626' }}>*</span></label>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        <input 
-                          type="file" 
-                          accept="image/*" 
-                          onChange={(e) => {
-                            const file = e.target.files[0];
-                            if (file) {
-                              const reader = new FileReader();
-                              reader.onloadend = () => {
-                                setCoverImage(reader.result);
-                              };
-                              reader.readAsDataURL(file);
-                            }
-                          }} 
-                          style={{ padding: '8px', border: '1px solid #d1d5db', borderRadius: '6px', fontSize: '13px', width: '100%', boxSizing: 'border-box' }}
-                        />
-                        {coverImage && (
-                          <div style={{ width: '160px', height: '160px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e5e7eb', position: 'relative' }}>
-                            <img src={coverImage} alt="Cover preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                          </div>
-                        )}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: '32px', marginBottom: '24px' }}>
+                      {/* Cover Image */}
+                      <div className="cover-image-upload">
+                        <label style={{ fontSize: '12px', fontWeight: '700', marginBottom: '12px', display: 'block', color: '#111827' }}>Cover Image <span className="req" style={{ color: '#dc2626' }}>*</span></label>
+                        <div style={{ 
+                          border: '1px dashed #d1d5db', 
+                          borderRadius: '8px', 
+                          padding: '32px 16px', 
+                          display: 'flex', 
+                          flexDirection: 'column', 
+                          alignItems: 'center', 
+                          justifyContent: 'center', 
+                          background: '#fcfcfc',
+                          cursor: 'pointer',
+                          position: 'relative',
+                          minHeight: '160px'
+                        }} onClick={() => document.getElementById('cover-upload').click()}>
+                          <input 
+                            id="cover-upload"
+                            type="file" 
+                            accept="image/*" 
+                            onChange={(e) => {
+                              const file = e.target.files[0];
+                              if (file) {
+                                const reader = new FileReader();
+                                reader.onloadend = () => setCoverImage(reader.result);
+                                reader.readAsDataURL(file);
+                              }
+                            }} 
+                            style={{ display: 'none' }}
+                          />
+                          {coverImage ? (
+                            <img src={coverImage} alt="Cover preview" style={{ width: '100%', height: '160px', objectFit: 'contain', borderRadius: '4px' }} />
+                          ) : (
+                            <>
+                              <CloudUpload size={36} color="#6b7280" strokeWidth={1.5} style={{ marginBottom: '16px' }} />
+                              <span style={{ fontSize: '13px', fontWeight: '600', color: '#4b5563', marginBottom: '8px' }}>Drag & drop or click to upload</span>
+                              <span style={{ fontSize: '11px', color: '#9ca3af' }}>JPG, PNG or WEBP (Max 2MB)</span>
+                            </>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                    
-                    <div className="gallery-images-upload" style={{ marginBottom: '24px' }}>
-                      <label style={{ fontSize: '12px', fontWeight: '700', marginBottom: '8px', display: 'block', color: '#111827' }}>Gallery Images</label>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        <input 
-                          type="file" 
-                          accept="image/*"
-                          multiple
-                          onChange={(e) => {
-                            const files = Array.from(e.target.files).slice(0, 4);
-                            
-                            files.forEach((file, index) => {
-                              const reader = new FileReader();
-                              reader.onloadend = () => {
-                                setGalleryImages(prev => ({ ...prev, [index + 1]: reader.result }));
-                              };
-                              reader.readAsDataURL(file);
-                            });
-                          }} 
-                          style={{ padding: '8px', border: '1px solid #d1d5db', borderRadius: '6px', fontSize: '13px', width: '100%', boxSizing: 'border-box' }}
-                        />
-                        <div className="gallery-grid" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-                          {[1, 2, 3, 4].map(i => galleryImages[i] && (
-                            <div key={i} style={{ width: '70px', height: '70px', border: '1px solid #e5e7eb', borderRadius: '6px', overflow: 'hidden' }}>
-                              <img src={galleryImages[i]} alt={`Gallery ${i}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      
+                      {/* Gallery Images */}
+                      <div className="gallery-images-upload">
+                        <label style={{ fontSize: '12px', fontWeight: '700', marginBottom: '12px', display: 'block', color: '#111827' }}>Gallery Images</label>
+                        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '16px' }}>
+                          {[1, 2, 3, 4].map(i => (
+                            <div key={i} style={{ 
+                              width: '80px', 
+                              height: '80px', 
+                              border: '1px dashed #d1d5db', 
+                              borderRadius: '8px', 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              justifyContent: 'center',
+                              background: '#fcfcfc',
+                              cursor: 'pointer',
+                              position: 'relative',
+                              overflow: 'hidden'
+                            }} onClick={() => document.getElementById(`gallery-upload-${i}`).click()}>
+                              <input 
+                                id={`gallery-upload-${i}`}
+                                type="file" 
+                                accept="image/*"
+                                onChange={(e) => {
+                                  const file = e.target.files[0];
+                                  if (file) {
+                                    const reader = new FileReader();
+                                    reader.onloadend = () => setGalleryImages(prev => ({ ...prev, [i]: reader.result }));
+                                    reader.readAsDataURL(file);
+                                  }
+                                }} 
+                                style={{ display: 'none' }}
+                              />
+                              {galleryImages[i] ? (
+                                <img src={galleryImages[i]} alt={`Gallery ${i}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                              ) : (
+                                <Plus size={20} color="#6b7280" />
+                              )}
                             </div>
                           ))}
                         </div>
+                        <button style={{ 
+                          padding: '8px 16px', 
+                          border: '1px solid #fde68a', 
+                          background: '#fff', 
+                          color: '#d97706', 
+                          borderRadius: '6px', 
+                          fontSize: '13px', 
+                          fontWeight: '600', 
+                          cursor: 'pointer', 
+                          display: 'inline-flex', 
+                          alignItems: 'center', 
+                          gap: '6px' 
+                        }}>
+                          <Plus size={14} /> Add More Images
+                        </button>
+                      </div>
+                    </div>
+                    
+                    {/* Tips Box */}
+                    <div style={{ 
+                      background: '#fffaf0', 
+                      border: '1px solid #ffedd5', 
+                      borderRadius: '8px', 
+                      padding: '16px', 
+                      display: 'flex', 
+                      alignItems: 'flex-start', 
+                      gap: '12px' 
+                    }}>
+                      <div style={{ padding: '8px', background: 'transparent' }}>
+                        <Lightbulb size={24} color="#d97706" />
+                      </div>
+                      <div>
+                        <h4 style={{ margin: '0 0 6px 0', fontSize: '13px', fontWeight: '700', color: '#111827' }}>Tips</h4>
+                        <p style={{ margin: '0 0 4px 0', fontSize: '12px', color: '#4b5563' }}>Upload high-quality images for better customer experience.</p>
+                        <p style={{ margin: 0, fontSize: '12px', color: '#6b7280' }}>Recommended size: 800 x 1000 px</p>
                       </div>
                     </div>
                   </div>
@@ -237,12 +340,12 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
                       </div>
                       <div className="form-group">
                         <label style={{ fontSize: '11px', fontWeight: '700', marginBottom: '8px', display: 'block', color: '#111827' }}>Product Status <span className="req" style={{ color: '#dc2626' }}>*</span></label>
-                        <select value={status} onChange={e => setStatus(e.target.value)} style={{ width: '100%', boxSizing: 'border-box' }}>
-                          <option value="In Stock">In Stock</option>
-                          <option value="Low Stock">Low Stock</option>
-                          <option value="Out of Stock">Out of Stock</option>
-                          <option value="Draft">Draft</option>
-                        </select>
+                        <CustomSelect 
+                          value={status} 
+                          onChange={setStatus} 
+                          options={['Active', 'Draft', 'Out of Stock']} 
+                          placeholder="Select status" 
+                        />
                       </div>
                     </div>
                   </div>
@@ -633,21 +736,19 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
                       </div>
                       <div className="form-group">
                         <label style={{ fontSize: '13px', fontWeight: '700', color: '#111827', marginBottom: '8px', display: 'block' }}>Shipping Class <span style={{ color: '#ef4444' }}>*</span></label>
-                        <div style={{ position: 'relative' }}>
-                          <select style={{ width: '100%', padding: '10px 12px', fontSize: '13px', border: '1px solid #e5e7eb', borderRadius: '6px', outline: 'none', appearance: 'none', background: '#fff', color: '#4b5563' }}>
-                            <option>Select class</option>
-                          </select>
-                          <ChevronDown size={16} color="#6b7280" style={{ position: 'absolute', right: '12px', top: '10px', pointerEvents: 'none' }} />
-                        </div>
+                        <CustomSelect 
+                          value={""} 
+                          options={['Standard', 'Express', 'Next Day']} 
+                          placeholder="Select class" 
+                        />
                       </div>
                       <div className="form-group">
                         <label style={{ fontSize: '13px', fontWeight: '700', color: '#111827', marginBottom: '8px', display: 'block' }}>Free Shipping</label>
-                        <div style={{ position: 'relative' }}>
-                          <select style={{ width: '100%', padding: '10px 12px', fontSize: '13px', border: '1px solid #e5e7eb', borderRadius: '6px', outline: 'none', appearance: 'none', background: '#fff', color: '#4b5563' }}>
-                            <option>Select</option>
-                          </select>
-                          <ChevronDown size={16} color="#6b7280" style={{ position: 'absolute', right: '12px', top: '10px', pointerEvents: 'none' }} />
-                        </div>
+                        <CustomSelect 
+                          value={""} 
+                          options={['Yes', 'No']} 
+                          placeholder="Select" 
+                        />
                       </div>
                     </div>
                     

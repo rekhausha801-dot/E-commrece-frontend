@@ -194,7 +194,7 @@ const Home = () => {
         </h2>
       </div>
       <SummerBanner />
-      <div className="new-arrival-section" style={{ padding: '10px 0 10px', background: '#faf9f6', textAlign: 'center' }}>
+      <div id="new-arrivals" className="new-arrival-section" style={{ padding: '10px 0 10px', background: '#faf9f6', textAlign: 'center' }}>
         <SectionHeader eyebrowText="SEASON SPECIAL" titleDark="New" titleGold="Arrivals" />
 
         <div className="unified-products-grid" style={{ padding: '0 5vw', textAlign: 'left' }}>
@@ -261,7 +261,7 @@ const Home = () => {
       {/* <VirtualTryOn /> */}
 
 
-      <div className="brands-section" style={{ marginTop: '30px', marginBottom: '60px', width: '100%' }}>
+      <div id="top-brands" className="brands-section" style={{ marginTop: '30px', marginBottom: '60px', width: '100%' }}>
         <SectionHeader eyebrowText="EXCLUSIVE BRANDS" titleDark="Top" titleGold="Brands" />
 
         <div className="brands-marquee-container">

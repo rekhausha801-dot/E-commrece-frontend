@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './Footer.css';
 import { 
   FiHeadphones, FiTruck, FiShield,
@@ -45,14 +46,14 @@ const Footer = () => {
         <div className="footer-col">
           <h4>SHOP</h4>
           <ul>
-            <li><a href="#">All Products</a></li>
-            <li><a href="#">New Arrivals</a></li>
-            <li><a href="#">Best Sellers</a></li>
-            <li><a href="#">Deals & Discounts</a></li>
-            <li><a href="#">Top Brands</a></li>
-            <li><a href="#">Categories</a></li>
-            <li><a href="#">Gift Cards</a></li>
-            <li><a href="#">Clearance Sale</a></li>
+            <li><Link to="/collection">All Products</Link></li>
+            <li><a href="/#new-arrivals">New Arrivals</a></li>
+            <li><Link to="/category/best-sellers">Best Sellers</Link></li>
+            <li><Link to="/coupons">Deals & Discounts</Link></li>
+            <li><a href="/#top-brands">Top Brands</a></li>
+            <li><a href="/#categories">Categories</a></li>
+            <li><Link to="/coupons">Gift Cards</Link></li>
+            <li><Link to="/category/clearance-sale">Clearance Sale</Link></li>
           </ul>
         </div>
 
@@ -60,14 +61,14 @@ const Footer = () => {
         <div className="footer-col">
           <h4>CUSTOMER CARE</h4>
           <ul>
-            <li><a href="#">Help Center</a></li>
-            <li><a href="#">Track Order</a></li>
-            <li><a href="#">Returns & Refunds</a></li>
-            <li><a href="#">Shipping Policy</a></li>
-            <li><a href="#">Payment Methods</a></li>
-            <li><a href="#">FAQ</a></li>
-            <li><a href="#">Terms & Conditions</a></li>
-            <li><a href="#">Privacy Policy</a></li>
+            <li><Link to="/account/support">Help Center</Link></li>
+            <li><Link to="/account/my-orders">Track Order</Link></li>
+            <li><Link to="/account/returns">Returns & Refunds</Link></li>
+            <li><Link to="/shop">Shipping Policy</Link></li>
+            <li><Link to="/account/payment-methods">Payment Methods</Link></li>
+            <li><Link to="/account/faqs">FAQ</Link></li>
+            <li><Link to="/shop">Terms & Conditions</Link></li>
+            <li><Link to="/shop">Privacy Policy</Link></li>
           </ul>
         </div>
 
@@ -75,13 +76,13 @@ const Footer = () => {
         <div className="footer-col">
           <h4>COMPANY</h4>
           <ul>
-            <li><a href="#">About Us</a></li>
-            <li><a href="#">Our Blog</a></li>
-            <li><a href="#">Careers</a></li>
-            <li><a href="#">Press & Media</a></li>
-            <li><a href="#">Become a Seller</a></li>
-            <li><a href="#">Affiliate Program</a></li>
-            <li><a href="#">Contact Us</a></li>
+            <li><Link to="/shop">About Us</Link></li>
+            <li><Link to="/shop">Our Blog</Link></li>
+            <li><Link to="/shop">Careers</Link></li>
+            <li><Link to="/shop">Press & Media</Link></li>
+            <li><Link to="/shop">Become a Seller</Link></li>
+            <li><Link to="/shop">Affiliate Program</Link></li>
+            <li><Link to="/account/support">Contact Us</Link></li>
           </ul>
         </div>
 
@@ -128,11 +129,11 @@ const Footer = () => {
           </div>
           
           <div className="bottom-links">
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms</a>
-            <a href="#">Cookies</a>
-            <a href="#">Careers</a>
-            <a href="#">Sitemap</a>
+            <Link to="/shop">Privacy Policy</Link>
+            <Link to="/shop">Terms</Link>
+            <Link to="/shop">Cookies</Link>
+            <Link to="/shop">Careers</Link>
+            <Link to="/shop">Sitemap</Link>
           </div>
         </div>
       </div>

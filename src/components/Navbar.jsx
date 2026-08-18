@@ -9,6 +9,7 @@ const megaMenus = [
   { title: "Home", path: "/" },
   {
     title: "Men",
+    path: "/category/men",
     categories: [
       { title: "Clothing", items: ["T-Shirts", "Shirts", "Polo T-Shirts", "Jeans", "Trousers", "Cargo Pants", "Hoodies", "Sweatshirts", "Jackets", "Blazers", "Ethnic Wear", "Innerwear"] },
       { title: "Footwear", items: ["Sneakers", "Casual Shoes", "Formal Shoes", "Sandals", "Sports Shoes"] },
@@ -17,6 +18,7 @@ const megaMenus = [
   },
   {
     title: "Women",
+    path: "/category/women",
     categories: [
       { title: "Clothing", items: ["Kurtis", "Sarees", "Dresses", "Tops", "Women T-Shirts", "Shirts", "Jeans", "Leggings", "Palazzo", "Co-ords", "Ethnic Sets"] },
       { title: "Accessories", items: ["Handbags", "Jewellery", "Watches", "Sunglasses", "Dupattas"] },
@@ -25,18 +27,21 @@ const megaMenus = [
   },
   {
     title: "Kids",
+    path: "/category/kids",
     categories: [
       { title: "Categories", items: ["Boys Clothing", "Girls Clothing", "Girls T-Shirts", "Baby Clothing", "Footwear", "Toys", "School Essentials", "Accessories", "Newborn Essentials"] }
     ]
   },
   {
     title: "Beauty",
+    path: "/category/beauty",
     categories: [
       { title: "Categories", items: ["Makeup", "Skincare", "Haircare", "Fragrances", "Bath & Body", "Personal Care", "Men's Grooming", "Beauty Tools"] }
     ]
   },
   {
     title: "Home & Living",
+    path: "/category/home-living",
     categories: [
       { title: "Categories", items: ["Bedsheets", "Curtains", "Cushions", "Blankets", "Kitchen Essentials", "Cookware", "Dinner Sets", "Storage", "Home Decor", "Wall Art", "Lighting", "Bathroom Accessories"] }
     ]
