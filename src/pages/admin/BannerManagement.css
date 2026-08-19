@@ -1,10 +1,17 @@
 .banner-management-page {
-  padding-bottom: 0;
+  padding: 0 24px 48px 24px;
+  background-color: #fdfbf7;
+  min-height: 100vh;
 }
 
 /* Header */
 .bam-header-section {
   margin-bottom: 24px;
+  background: #fff;
+  padding: 16px 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+  border: 1px solid #f0e6d8;
 }
 
 .bam-header-title-row {

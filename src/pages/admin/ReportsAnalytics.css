@@ -1,5 +1,5 @@
 /* ReportsAnalytics.css */
-.ra-container { padding: 24px 24px 48px 24px; background-color: #fdfbf7; min-height: 100vh; font-family: 'Inter', sans-serif; color: #111827; }
+.ra-container { padding: 0 24px 48px 24px; background-color: #fdfbf7; min-height: 100vh; font-family: 'Inter', sans-serif; color: #111827; }
 .ra-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; background: #fff; padding: 16px 24px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); border: 1px solid #f0e6d8; }
 .ra-header-left h2 { font-size: 24px; font-weight: 700; margin: 0 0 4px 0; color: #111827; }
 .ra-breadcrumbs { font-size: 13px; color: #6b7280; }
