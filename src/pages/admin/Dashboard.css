@@ -1130,8 +1130,9 @@
 .stat-card,
 .elevate-card,
 .premium-glass-card {
-<<<<<<< HEAD
   box-shadow: 0px 3px 8px rgba(0, 0, 0, 0.24) !important;
+  height: 100%;
+  flex: 1;
 }
 
 /* Unified Box Shadow for all cards */
@@ -1162,10 +1163,3 @@
 .dashboard-notif-card:hover .arrow-btn {
   background-color: #f3f4f6 !important;
 }
-
-=======
-  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px !important;
-  height: 100%;
-  flex: 1;
-}
->>>>>>> 18ef50130343d4fbe1500235de333a1d5733004b
