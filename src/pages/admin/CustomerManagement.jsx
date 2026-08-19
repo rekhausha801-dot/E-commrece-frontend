@@ -65,31 +65,9 @@ const CustomerManagement = () => {
     <div className="customer-management-page">
       {/* Header Section */}
       <div className="cm-header-section">
-        <div className="bm-breadcrumbs" style={{ marginBottom: '8px' }}>
-          <span className="bm-breadcrumb-item">Dashboard</span>
-          <span className="bm-breadcrumb-separator">&gt;</span>
-          <span className="bm-breadcrumb-item">Customers</span>
-          {isAddingCustomer && (
-            <>
-              <span className="bm-breadcrumb-separator">&gt;</span>
-              <span className="bm-breadcrumb-item active">{selectedCustomer ? 'Edit Customer Details' : 'Add Customer'}</span>
-            </>
-          )}
-        </div>
-        
         <div className="bm-header-title-row">
           <div>
             <h1 className="bm-page-title">{isAddingCustomer ? (selectedCustomer ? 'Edit Customer Details' : 'Add New Customer') : 'Customer Management'}</h1>
-            {!isAddingCustomer && (
-              <>
-                <div className="bm-ornate-divider">
-                   <span className="bm-divider-line"></span>
-                   <span className="bm-divider-icon">⚜</span>
-                   <span className="bm-divider-line"></span>
-                </div>
-                <p className="bm-page-subtitle">Manage and organize your customers.</p>
-              </>
-            )}
             {isAddingCustomer && <p style={{ fontSize: '13px', color: '#4b5563', margin: '4px 0 0 0' }}>{selectedCustomer ? 'Update the details for this customer account.' : 'Create a new customer account and add customer details.'}</p>}
           </div>
           {isAddingCustomer ? (
@@ -389,7 +367,7 @@ const CustomerManagement = () => {
 
             <div className="cm-section-title">Actions</div>
             <div className="cm-actions-group">
-              <button className="cm-btn-action" onClick={() => setIsAddingCustomer(true)}><Edit size={16} /> Edit</button>
+              <button className="cm-btn-action" onClick={() => { setFormData({...selectedCustomer}); setIsAddingCustomer(true); }}><Edit size={16} /> Edit</button>
               <button className="cm-btn-action" onClick={() => alert('Messaging feature coming soon!')}><MessageSquare size={16} /> Message</button>
             </div>
 

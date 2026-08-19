@@ -72,21 +72,10 @@ const BrandManagement = ({ setActiveTab }) => {
     <div className="brand-management-page">
       {/* Header Section */}
       <div className="bm-header-section">
-        <div className="bm-breadcrumbs">
-          <span className="bm-breadcrumb-item">Dashboard</span>
-          <span className="bm-breadcrumb-separator">&gt;</span>
-          <span className="bm-breadcrumb-item active">Brands</span>
-        </div>
         
         <div className="bm-header-title-row">
           <div>
             <h1 className="bm-page-title">Brand Management</h1>
-            <div className="bm-ornate-divider">
-               <span className="bm-divider-line"></span>
-               <span className="bm-divider-icon">⚜</span>
-               <span className="bm-divider-line"></span>
-            </div>
-            <p className="bm-page-subtitle">Manage and organize your product brands.</p>
           </div>
           <button className="bm-btn-add" onClick={() => setIsAdding(true)}>
             <Plus size={16} /> Add Brand

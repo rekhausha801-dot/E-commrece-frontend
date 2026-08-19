@@ -55,10 +55,6 @@ const AddReportForm = ({ reportType, setReportType }) => {
               </div>
             ))}
           </div>
-          <div className="ra-rt-info">
-            <h4><Info size={16} /> About Reports</h4>
-            <p>Generate comprehensive reports based on your selected criteria. You can export or schedule reports as per your requirement.</p>
-          </div>
         </div>
       </div>
 

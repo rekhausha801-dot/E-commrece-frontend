@@ -110,18 +110,9 @@ const BannerManagement = () => {
     <div className="banner-management-page">
       {/* Header */}
       <div className="bam-header-section">
-        <div className="bm-breadcrumbs" style={{ marginBottom: '8px' }}>
-          <span className="bm-breadcrumb-item">Dashboard</span>
-          <span className="bm-breadcrumb-separator">&gt;</span>
-          <span className="bm-breadcrumb-item">Banners</span>
-          <span className="bm-breadcrumb-separator">&gt;</span>
-          <span className="bm-breadcrumb-item active">Banner Management</span>
-        </div>
-        
         <div className="bam-header-title-row">
           <div>
             <h1 className="bm-page-title">Banner Management</h1>
-            <p style={{ fontSize: '13px', color: '#4b5563', margin: '4px 0 0 0' }}>Manage all banners displayed on your website.</p>
           </div>
           <button className="bam-btn-primary" onClick={() => setIsAddingBanner(true)}>
             <Plus size={16} /> Add Banner
