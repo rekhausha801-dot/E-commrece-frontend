@@ -14,15 +14,10 @@ import {
   SearchCodeIcon,
   SearchSlash,
   SearchIcon,
-<<<<<<< HEAD
-  DollarSign, MoreHorizontal, Shirt, Lock, Shield, Activity, HelpCircle, LogOut, Globe, Headphones
-=======
-  DollarSign, MoreHorizontal, Shirt, IndianRupee, ArrowUp, ArrowDown
->>>>>>> 18ef50130343d4fbe1500235de333a1d5733004b
+  DollarSign, MoreHorizontal, Shirt, Lock, Shield, Activity, HelpCircle, LogOut, Globe, Headphones, IndianRupee, ArrowUp, ArrowDown
 } from 'lucide-react';
 import ProductManagement from './ProductManagement';
 import CategoryManagement from './CategoryManagement';
-<<<<<<< HEAD
 import OrderManagement from './OrderManagement';
 import CouponManagement from './CouponManagement';
 import ReviewManagement from './ReviewManagement';
@@ -32,13 +27,10 @@ import HelpSupport from './HelpSupport';
 import NotificationManagement, { initialNotifications } from './NotificationManagement';
 import { mockProducts } from './ProductManagement';
 import { initialOrders } from './OrderManagement';
-=======
-import ProductManagement from './ProductManagement';
 import BrandManagement from './BrandManagement';
 import CustomerManagement from './CustomerManagement';
 import BannerManagement from './BannerManagement';
 import ReportsAnalytics from './ReportsAnalytics';
->>>>>>> 18ef50130343d4fbe1500235de333a1d5733004b
 import fashionnImage from '../../assets/banners/fashionn.png';
 import './ReportsAnalytics.css';
 import {
@@ -1124,7 +1116,6 @@ const Dashboard = () => {
 
         {activeTab === 'Products' && <ProductManagement globalSearch={globalSearch} />}
         {activeTab === 'Categories' && <CategoryManagement />}
-<<<<<<< HEAD
         {activeTab === 'Orders' && <OrderManagement globalSearch={globalSearch} />}
         {activeTab === 'Coupons' && <CouponManagement />}
         {activeTab === 'Reviews' && <ReviewManagement />}
@@ -1132,13 +1123,10 @@ const Dashboard = () => {
         {activeTab === 'Notifications' && <NotificationManagement setActiveTab={setActiveTab} notifications={notifications} setNotifications={setNotifications} />}
         {activeTab === 'ActivityLog' && <ActivityLogManagement />}
         {activeTab === 'HelpSupport' && <HelpSupport />}
-=======
-        {activeTab === 'Products' && <ProductManagement />}
         {activeTab === 'Brands' && <BrandManagement setActiveTab={setActiveTab} />}
         {activeTab === 'Customers' && <CustomerManagement />}
         {activeTab === 'Banners' && <BannerManagement />}
         {activeTab === 'Reports' && <ReportsAnalytics />}
->>>>>>> 18ef50130343d4fbe1500235de333a1d5733004b
       </main>
 
       <Modal
