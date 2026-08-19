@@ -87,14 +87,14 @@ const Cart = () => {
                     <div className="lux-ci-top-row">
                       <div className="lux-ci-brand">{item.brand}</div>
                       <div className="lux-ci-price-top">
-                        {item.oldPrice && <span className="lux-old-price">${item.oldPrice.toFixed(2)}</span>}
+                        {item.oldPrice && <span className="lux-old-price">₹{item.oldPrice.toFixed(2)}</span>}
                         <span className="lux-discount-badge">{item.discount}</span>
                       </div>
                     </div>
 
                     <div className="lux-ci-title-row">
                       <h3 className="lux-ci-title">{item.title}</h3>
-                      <span className="lux-current-price">${item.price.toFixed(2)}</span>
+                      <span className="lux-current-price">₹{item.price.toFixed(2)}</span>
                     </div>
 
                     <div className="lux-ci-rating">
@@ -145,7 +145,7 @@ const Cart = () => {
                 <Truck size={24} className="feature-icon-gold" />
                 <div className="feature-text-dark">
                   <strong>Free Shipping</strong>
-                  <span>On orders above $50</span>
+                  <span>On orders above ₹50</span>
                 </div>
               </div>
               <div className="feature-divider"></div>
@@ -183,15 +183,15 @@ const Cart = () => {
               <div className="lux-summary-rows">
                 <div className="lux-summary-row">
                   <span>Subtotal</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span>₹{subtotal.toFixed(2)}</span>
                 </div>
                 <div className="lux-summary-row green-text">
                   <span>Product Discount</span>
-                  <span>-${productDiscount.toFixed(2)}</span>
+                  <span>-₹{productDiscount.toFixed(2)}</span>
                 </div>
                 <div className="lux-summary-row green-text">
                   <span>Coupon Discount</span>
-                  <span>-${couponDiscount.toFixed(2)}</span>
+                  <span>-₹{couponDiscount.toFixed(2)}</span>
                 </div>
                 <div className="lux-summary-row">
                   <span>Shipping Fee</span>
@@ -199,7 +199,7 @@ const Cart = () => {
                 </div>
                 <div className="lux-summary-row">
                   <span>Tax</span>
-                  <span>${tax.toFixed(2)}</span>
+                  <span>₹{tax.toFixed(2)}</span>
                 </div>
               </div>
 
@@ -207,12 +207,12 @@ const Cart = () => {
 
               <div className="lux-summary-total">
                 <span>Grand Total</span>
-                <span>${grandTotal.toFixed(2)}</span>
+                <span>₹{grandTotal.toFixed(2)}</span>
               </div>
 
               <div className="lux-success-banner">
                 <Check size={16} color="#2A7E4F" className="check-icon-filled" />
-                <span>You Saved ${totalSavings.toFixed(2)} Today!</span>
+                <span>You Saved ₹{totalSavings.toFixed(2)} Today!</span>
               </div>
 
               <button className="lux-proceed-btn-dark" onClick={() => navigate('/address')}>
