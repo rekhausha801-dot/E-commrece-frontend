@@ -4,9 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import './Address.css';
 import './Cart.css'; // Reusing some base styles like stepper
 import CheckoutStepper from '../../components/CheckoutStepper';
+import { useCart } from '../../context/CartContext';
 
 const Address = () => {
   const navigate = useNavigate();
+  const { cartItems } = useCart();
   
   React.useEffect(() => {
     window.scrollTo(0, 0);
@@ -76,6 +78,13 @@ const Address = () => {
     setAddressForm((prev) => ({ ...prev, [field]: e.target.value }));
   };
 
+  const cartItemCount = cartItems.reduce((acc, item) => acc + item.qty, 0);
+  const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.qty), 0);
+  const productDiscount = cartItems.length > 0 ? 25.00 : 0;
+  const couponDiscount = cartItems.length > 0 ? 15.00 : 0;
+  const tax = subtotal * 0.041;
+  const grandTotal = Math.max(0, subtotal - productDiscount - couponDiscount + tax);
+
   return (
     <div className="lux-address-page">
       <div className="lux-cart-container">
@@ -121,19 +130,23 @@ const Address = () => {
           </div>
 
           <div className="addr-price-details-card">
-            <h3>Price Details (10 Items)</h3>
+            <h3>Price Details ({cartItemCount} Items)</h3>
             <div className="addr-price-row">
               <span>Product Price</span>
-              <span>+ ₹2138</span>
+              <span>₹{subtotal.toFixed(2)}</span>
             </div>
             <div className="addr-price-row">
-              <span>Additional Fees</span>
-              <span>+ ₹60</span>
+              <span>Discounts</span>
+              <span className="green-text">-₹{(productDiscount + couponDiscount).toFixed(2)}</span>
+            </div>
+            <div className="addr-price-row">
+              <span>Tax</span>
+              <span>₹{tax.toFixed(2)}</span>
             </div>
             <div className="addr-price-divider"></div>
             <div className="addr-price-total-row">
               <span>Order Total</span>
-              <span>₹2198</span>
+              <span>₹{grandTotal.toFixed(2)}</span>
             </div>
           </div>
         </div>

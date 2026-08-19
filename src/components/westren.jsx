@@ -7,6 +7,8 @@ import {
   Filter, Minus, Heart, ShoppingBag, Eye, LayoutGrid, Menu, ChevronDown, ChevronUp, X, SlidersHorizontal, Check, Star, Shirt, ArrowRight
 } from 'lucide-react';
 import { useWishlist } from '../context/WishlistContext';
+import { useCart } from '../context/CartContext';
+import { handleFlyingCartAnimation } from '../utils/cartAnimation';
 
 import bannerImg from '../assets/images/westrenwear.png';
 import westren2Img from '../assets/images/westren2.png';
@@ -48,107 +50,105 @@ const products = [
     price: '₹879',
     originalPrice: '₹1099',
     rating: 4,
-    reviews: 19,
-    badge: '20% OFF',
-    badgeClass: 'discount',
-    image: westren4Img,
-    colors: ['#798cb3', '#e2a3b7', '#a1c29b']
-  },
-  {
-    id: 4,
-    title: 'Off-Shoulder Dress',
-    price: '₹949',
-    originalPrice: '₹1299',
-    rating: 5,
     reviews: 22,
     badge: null,
     image: westren5Img,
-    colors: ['#e4cdb5', '#c39580', '#2a2a2a']
+    colors: ['#93adc6', '#222222', '#cfb489']
+  },
+  {
+    id: 4,
+    title: 'Polka Dot Wrap Dress',
+    price: '₹749',
+    originalPrice: '₹999',
+    rating: 5,
+    reviews: 48,
+    badge: 'TRENDING',
+    badgeClass: 'trending',
+    image: westren2Img,
+    colors: ['#222222', '#e0dfdf', '#cfb489']
   },
   {
     id: 5,
-    title: 'Puff Sleeve Dress',
-    price: '₹849',
-    originalPrice: '₹999',
-    rating: 5,
-    reviews: 17,
+    title: 'Pink Ruffle Hem Dress',
+    price: '₹699',
+    originalPrice: '₹899',
+    rating: 4,
+    reviews: 15,
     badge: '15% OFF',
     badgeClass: 'discount',
     image: westren6Img,
-    colors: ['#7f9e8a', '#c1c1c1', '#a38d7c']
+    colors: ['#e1b6bd', '#e0dfdf']
   },
   {
     id: 6,
-    title: 'Shirt Dress',
-    price: '₹799',
-    originalPrice: '₹999',
-    rating: 4,
-    reviews: 14,
+    title: 'Emerald Green Slip Dress',
+    price: '₹1199',
+    originalPrice: '₹1599',
+    rating: 5,
+    reviews: 29,
     badge: null,
     image: westren7Img,
-    colors: ['#8f402c', '#1a1a1a', '#e8d4b8']
+    colors: ['#1b4332', '#cfb489']
   },
   {
     id: 7,
-    title: 'Lavender Tier Dress',
-    price: '₹999',
-    originalPrice: '₹1399',
-    rating: 5,
-    reviews: 23,
+    title: 'White Lace Shift Dress',
+    price: '₹1099',
+    originalPrice: '₹1499',
+    rating: 4,
+    reviews: 19,
     badge: null,
     image: westren8Img,
-    colors: ['#a69cc4', '#cfba99', '#c1897c']
+    colors: ['#e0dfdf', '#93adc6']
   },
   {
     id: 8,
-    title: 'Stripes Jumpsuit',
-    price: '₹949',
-    originalPrice: '₹1199',
-    rating: 4,
-    reviews: 18,
-    badge: null,
-    image: westren3Img,
-    colors: ['#222222', '#ffffff', '#ba9375']
+    title: 'Burgundy Velvet Dress',
+    price: '₹1499',
+    originalPrice: '₹1999',
+    rating: 5,
+    reviews: 42,
+    badge: 'PREMIUM',
+    badgeClass: 'premium',
+    image: bannerImg,
+    colors: ['#8c1616', '#222222', '#cfb489']
   }
 ];
 
 const CATEGORIES = [
-  { label: "Dresses", count: 56 },
-  { label: "Maxi Dresses", count: 24 },
-  { label: "Midi Dresses", count: 18 },
-  { label: "Bodycon Dresses", count: 16 },
-  { label: "Skater Dresses", count: 20 },
-  { label: "Off-Shoulder", count: 14 },
-  { label: "Jumpsuits", count: 10 },
+  { label: "New Arrivals", count: 56 },
+  { label: "Bestsellers", count: 24 },
+  { label: "Trending", count: 18 },
+  { label: "Discounted", count: 16 }
 ];
 
 const FABRICS = [
-  { label: "Cotton", count: 56 },
-  { label: "Rayon", count: 34 },
-  { label: "Georgette", count: 28 },
-  { label: "Silk", count: 16 },
-  { label: "Linen", count: 12 },
+  { label: "Cotton Blend", count: 42 },
+  { label: "Polyester", count: 38 },
+  { label: "Satin", count: 15 },
+  { label: "Velvet", count: 8 },
 ];
 
-const SIZES = ["XS", "S", "M", "L", "XL", "XXL", "3XL"];
+const SIZES = ["XS", "S", "M", "L", "XL"];
 
 const COLORS = [
-  { name: "Pink", hex: "#e1b6bd" },
-  { name: "Purple", hex: "#a69cc4" },
-  { name: "Blue", hex: "#798cb3" },
-  { name: "Green", hex: "#7f9e8a" },
-  { name: "Beige", hex: "#e4cdb5" },
   { name: "Black", hex: "#222222" },
+  { name: "White", hex: "#e0dfdf" },
+  { name: "Red", hex: "#8c1616" },
+  { name: "Blue", hex: "#93adc6" },
+  { name: "Pink", hex: "#e1b6bd" },
+  { name: "Green", hex: "#1b4332" },
+  { name: "Gold", hex: "#cfb489" }
 ];
 
 const RATINGS = [5, 4, 3];
 
 const DISCOUNTS = [
-  { label: "10% and above", value: 10, count: 64 },
-  { label: "20% and above", value: 20, count: 47 },
-  { label: "30% and above", value: 30, count: 29 },
-  { label: "40% and above", value: 40, count: 15 },
-  { label: "50% and above", value: 50, count: 8 },
+  { label: "10% and above", value: 10, count: 42 },
+  { label: "20% and above", value: 20, count: 28 },
+  { label: "30% and above", value: 30, count: 15 },
+  { label: "40% and above", value: 40, count: 7 },
+  { label: "50% and above", value: 50, count: 3 },
 ];
 
 function Section({ title, children, defaultOpen = true }) {
@@ -174,14 +174,17 @@ function Section({ title, children, defaultOpen = true }) {
 export default function WesternCollection() {
   const navigate = useNavigate();
   const { wishlistItems, toggleWishlist, isInWishlist } = useWishlist();
+  const { addToCart } = useCart();
   const [addedToCart, setAddedToCart] = useState({});
 
-  const handleCartClick = (e, product) => {
+  const handleCartClick = async (e, product) => {
     e.stopPropagation();
     if (addedToCart[product.id]) {
       navigate('/cart');
     } else {
+      await handleFlyingCartAnimation(e);
       setAddedToCart(prev => ({ ...prev, [product.id]: true }));
+      addToCart(product);
       message.success(`${product.title || 'Product'} added to cart!`);
     }
   };
