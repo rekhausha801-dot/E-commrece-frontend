@@ -270,7 +270,7 @@ export default function Collection() {
             <div className="filter-sidebar-top">
               <div className="filter-sidebar-title">
                 <SlidersHorizontal size={20} />
-                <span>Refine Results</span>
+                <span>Refine Result</span>
                 {totalFilters > 0 && <span className="filter-count-badge">{totalFilters}</span>}
               </div>
               {totalFilters > 0 && (

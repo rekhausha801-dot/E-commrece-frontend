@@ -29,7 +29,7 @@ export default function Cards() {
   const scroll = (direction) => {
     if (scrollRef.current) {
       const { scrollLeft } = scrollRef.current;
-      // Scroll by roughly the container width; CSS scroll snapping will ensure perfect alignment
+      
       const step = scrollRef.current.clientWidth;
       const scrollTo = direction === 'left' ? scrollLeft - step : scrollLeft + step;
       scrollRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
