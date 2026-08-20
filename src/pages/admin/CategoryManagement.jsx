@@ -9,7 +9,7 @@ import {
 import { AreaChart, Area, ResponsiveContainer } from 'recharts';
 import { useNavigate } from 'react-router-dom';
 import AddCategoryModal from './AddCategoryModal';
-import { getCategories, deleteCategory, updateCategoryStatus } from '../../services/categoryApi';
+import { getCategories, deleteCategory, updateCategoryStatus } from '../../services/api';
 import { message } from 'antd';
 
 const sparklineData = [{ v: 40 }, { v: 30 }, { v: 60 }, { v: 45 }, { v: 70 }, { v: 90 }, { v: 120 }];

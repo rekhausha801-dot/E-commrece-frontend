@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Form, Input, Select, Switch, Row, Col, Upload, Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { createCategory, updateCategory } from '../../services/categoryApi';
+import { createCategory, updateCategory } from '../../services/api';
 
 const { TextArea } = Input;
 const { Option } = Select;
