@@ -7,6 +7,8 @@ import {
   Filter, Minus, Heart, ShoppingBag, Eye, LayoutGrid, Menu, ChevronDown, ChevronUp, X, SlidersHorizontal, Check, Star, Shirt
 } from 'lucide-react';
 import { useWishlist } from '../context/WishlistContext';
+import { useCart } from '../context/CartContext';
+import { handleFlyingCartAnimation } from '../utils/cartAnimation';
 import KurtiBanner from './KurtiBanner';
 
 import kurthi5Img from '../assets/images/kurthi5.png';
@@ -25,57 +27,57 @@ import kurti2BannerImg from '../assets/images/kurti2.png';
 const products = [
   {
     id: 1,
-    title: 'Embroidered Anarkali Kurti',
+    title: 'Yellow Floral Kurti',
     price: '₹899',
     originalPrice: '₹1299',
-    rating: 5,
+    rating: 4,
     reviews: 24,
     badge: 'NEW',
     badgeClass: 'new',
-    image: kurtiImg,
-    colors: ['#9f3653', '#6d4c41', '#212121']
+    image: kurthi5Img,
+    colors: ['#ffb703', '#fb8500', '#023047']
   },
   {
     id: 2,
-    title: 'Printed Straight Kurti',
-    price: '698',
-    originalPrice: '₹999',
+    title: 'Blue Printed Kurti',
+    price: '₹799',
+    originalPrice: '₹1099',
     rating: 5,
-    reviews: 18,
+    reviews: 32,
     badge: 'BESTSELLER',
     badgeClass: 'bestseller',
-    image: kurthi5Img,
-    colors: ['#c62828', '#b71c1c', '#2e7d32']
+    image: kurthi2Img,
+    colors: ['#219ebc', '#023047', '#8ecaef']
   },
   {
     id: 3,
-    title: 'Floral A-Line Kurti',
-    price: '₹799',
-    originalPrice: '₹999',
+    title: 'White Embroidered Kurti',
+    price: '₹1199',
+    originalPrice: '₹1499',
     rating: 4,
-    reviews: 31,
-    badge: '20% OFF',
-    badgeClass: 'discount',
-    image: kurthi2Img,
-    colors: ['#00838f', '#f06292', '#ffb300']
+    reviews: 18,
+    badge: null,
+    image: kurthi4Img,
+    colors: ['#ffffff', '#f8edeb', '#fae1dd']
   },
   {
     id: 4,
-    title: 'Cotton Daily Wear Kurti',
-    price: '₹649',
-    originalPrice: '₹899',
-    rating: 4,
-    reviews: 26,
-    badge: null,
-    image: kurthi4Img,
-    colors: ['#9f3653', '#37474f', '#283593']
+    title: 'Red Festive Kurti',
+    price: '₹999',
+    originalPrice: '₹1399',
+    rating: 5,
+    reviews: 45,
+    badge: 'TRENDING',
+    badgeClass: 'trending',
+    image: kurtiImg,
+    colors: ['#d62828', '#f77f00', '#fcbf49']
   },
   {
     id: 5,
-    title: 'Rayon Printed Kurti',
-    price: '₹749',
-    originalPrice: '₹999',
-    rating: 4,
+    title: 'Green Cotton Kurti',
+    price: '₹699',
+    originalPrice: '₹899',
+    rating: 3,
     reviews: 17,
     badge: '15% OFF',
     badgeClass: 'discount',
@@ -106,14 +108,15 @@ const products = [
   },
   {
     id: 8,
-    title: 'Embroidered Top',
-    price: '₹999',
-    originalPrice: '₹1499',
+    title: 'Designer Silk Kurti',
+    price: '₹1599',
+    originalPrice: '₹2199',
     rating: 5,
-    reviews: 19,
-    badge: null,
-    image: kurthi3Img,
-    colors: ['#827717', '#e6c200']
+    reviews: 56,
+    badge: 'PREMIUM',
+    badgeClass: 'premium',
+    image: top3Img,
+    colors: ['#d4af37', '#800000', '#000000']
   }
 ];
 
@@ -126,27 +129,22 @@ const CATEGORIES = [
 ];
 
 const FABRICS = [
-  { label: "Cotton", count: 56 },
-  { label: "Rayon", count: 34 },
-  { label: "Georgette", count: 28 },
-  { label: "Silk", count: 16 },
-  { label: "Linen", count: 12 },
+  { label: "Cotton", count: 124 },
+  { label: "Silk", count: 45 },
+  { label: "Georgette", count: 32 },
+  { label: "Chiffon", count: 18 },
 ];
 
 const SIZES = ["XS", "S", "M", "L", "XL", "XXL", "3XL"];
 
 const COLORS = [
-  { name: "Maroon", hex: "#7C2D3B" },
-  { name: "Rose", hex: "#D8607A" },
-  { name: "Blush", hex: "#E8B7C4" },
-  { name: "Coral", hex: "#E86A4E" },
-  { name: "Mustard", hex: "#E3A62B" },
-  { name: "Forest", hex: "#3B6B4A" },
-  { name: "Olive", hex: "#6B7A3A" },
-  { name: "Navy", hex: "#2A3A5C" },
-  { name: "Camel", hex: "#B4855A" },
-  { name: "Rust", hex: "#B45535" },
-  { name: "Ivory", hex: "#F1EAE0" },
+  { name: "Blue", hex: "#000080" },
+  { name: "White", hex: "#FFFFFF" },
+  { name: "Pink", hex: "#FFC0CB" },
+  { name: "Green", hex: "#008000" },
+  { name: "Red", hex: "#FF0000" },
+  { name: "Yellow", hex: "#FFFF00" },
+  { name: "Black", hex: "#000000" },
   { name: "Charcoal", hex: "#2B2B2E" },
 ];
 
@@ -183,14 +181,17 @@ function Section({ title, children, defaultOpen = true }) {
 export default function Collection() {
   const navigate = useNavigate();
   const { wishlistItems, toggleWishlist, isInWishlist } = useWishlist();
+  const { addToCart } = useCart();
   const [addedToCart, setAddedToCart] = useState({});
 
-  const handleCartClick = (e, product) => {
+  const handleCartClick = async (e, product) => {
     e.stopPropagation();
     if (addedToCart[product.id]) {
       navigate('/cart');
     } else {
+      await handleFlyingCartAnimation(e);
       setAddedToCart(prev => ({ ...prev, [product.id]: true }));
+      addToCart(product);
       message.success(`${product.title || 'Product'} added to cart!`);
     }
   };
@@ -277,7 +278,7 @@ export default function Collection() {
               )}
             </div>
 
-            {/* Active Filter Pills */}
+           
             {totalFilters > 0 && (
               <div className="active-filters-container">
                 {selectedCategories.map(cat => (

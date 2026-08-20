@@ -8,6 +8,7 @@ import WesternCollection from "./components/westren";
 import CategoryPage from "./components/CategoryPage";
 import ProductDetail from "./components/ProductDetail";
 import CustomizeTShirt from "./components/CustomizeTShirt";
+import SearchResults from "./pages/customer/SearchResults";
 
 import Wishlist from "./pages/customer/Wishlist";
 import Cart from "./pages/customer/Cart";
@@ -53,6 +54,7 @@ const AppContent = () => {
         <Route path="/category/:categoryId" element={<CategoryPage />} />
         <Route path="/product/:productId" element={<ProductDetail />} />
         <Route path="/customize/:productId" element={<CustomizeTShirt />} />
+        <Route path="/search" element={<SearchResults />} />
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/shop" element={<h1 style={{ padding: "120px 20px", textAlign: "center" }}>Shop Page - Coming Soon!</h1>} />

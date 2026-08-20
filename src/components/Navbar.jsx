@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Search, ShoppingBag, User, Heart, Menu, Bell, ChevronDown, X, ShoppingCart, Shirt, Footprints, Watch } from 'lucide-react';
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { useCart } from '../context/CartContext';
+import useDebounce from '../hooks/useDebounce';
 import './Navbar.css';
 
 const megaMenus = [
@@ -73,7 +74,30 @@ const Navbar = () => {
   const [expandedMenus, setExpandedMenus] = useState({});
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
   const searchRef = useRef(null);
+  
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
+
+  // Fetch suggestions when debounced query changes
+  useEffect(() => {
+    if (debouncedSearchQuery.trim().length >= 2) {
+      setIsSearching(true);
+      // Simulating API call for suggestions
+      setTimeout(() => {
+        setSuggestions([
+          { type: 'product', name: debouncedSearchQuery + ' Premium T-Shirt', price: '₹499', img: 'https://placehold.co/40x40' },
+          { type: 'product', name: 'Luxe ' + debouncedSearchQuery, price: '₹1299', img: 'https://placehold.co/40x40' },
+          { type: 'category', name: debouncedSearchQuery + ' for Men' },
+          { type: 'brand', name: 'Relie ' + debouncedSearchQuery }
+        ]);
+        setIsSearching(false);
+      }, 500);
+    } else {
+      setSuggestions([]);
+    }
+  }, [debouncedSearchQuery]);
 
   const { scrollY } = useScroll();
   const [hidden, setHidden] = useState(false);
@@ -93,10 +117,68 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  const executeSearch = (query) => {
+    if (!query.trim()) return;
+    setIsSearchOpen(false);
+    
+    const lowerQuery = query.toLowerCase().trim();
+    
+    // Direct category mapping for smart routing
+    const routeMap = {
+      'kurtis': '/collection',
+      'kurti': '/collection',
+      'shirts': '/category/shirts',
+      'shirt': '/category/shirts',
+      't-shirts': '/category/t-shirts',
+      'tshirt': '/category/t-shirts',
+      'tshirts': '/category/t-shirts',
+      'jeans': '/category/jeans',
+      'men': '/category/men',
+      'women': '/category/women',
+      'kids': '/category/kids-fashion',
+      'western': '/western',
+      'customization': '/category/women-t-shirts',
+      'customize': '/category/women-t-shirts',
+      
+      // Universal Page Routing
+      'cart': '/cart',
+      'shopping cart': '/cart',
+      'bag': '/cart',
+      'wishlist': '/wishlist',
+      'wish list': '/wishlist',
+      'favorites': '/wishlist',
+      'login': '/login',
+      'log in': '/login',
+      'signin': '/login',
+      'sign in': '/login',
+      'register': '/register',
+      'signup': '/register',
+      'sign up': '/register',
+      'account': '/account/profile',
+      'profile': '/account/profile',
+      'orders': '/account/my-orders',
+      'my orders': '/account/my-orders',
+      'home': '/',
+      'dashboard': '/dashboard',
+      'support': '/account/support',
+      'help': '/account/support',
+      'contact': '/account/support',
+      'coupons': '/coupons',
+      'address': '/account/addresses',
+      'addresses': '/account/addresses',
+      'returns': '/account/returns'
+    };
+
+    if (routeMap[lowerQuery]) {
+      navigate(routeMap[lowerQuery]);
+    } else {
+      navigate(`/search?q=${encodeURIComponent(query)}`);
+    }
+  };
+
   const handleSearchSubmit = (e) => {
-    if (e.key === 'Enter' && searchQuery.trim()) {
-      setIsSearchOpen(false);
-      navigate('/collection');
+    if (e.key === 'Enter') {
+      executeSearch(searchQuery);
     }
   };
 
@@ -155,7 +237,7 @@ const Navbar = () => {
           <ul className="nav-menu">
             {megaMenus.map((item, index) => (
               <li key={index} className="nav-item has-mega-menu">
-                {item.path ? (
+                {item.path && !item.categories ? (
                   <Link to={item.path} className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}>
                     {item.title} {item.categories && <ChevronDown size={14} style={{ marginLeft: '4px' }} />}
                   </Link>
@@ -231,20 +313,64 @@ const Navbar = () => {
                     size={18}
                     className="search-icon-expanded"
                     onClick={() => {
-                      if (searchQuery.trim()) {
-                        setIsSearchOpen(false);
-                        navigate('/collection');
-                      }
+                      executeSearch(searchQuery);
                     }}
                     style={{ cursor: 'pointer' }}
                   />
                   <button className="close-search-btn" onClick={(e) => {
                     e.stopPropagation();
                     setIsSearchOpen(false);
+                    setSearchQuery('');
                   }}>
                     <X size={16} />
                   </button>
                 </div>
+                
+                {/* Search Suggestions Dropdown */}
+                {searchQuery.trim().length >= 2 && isSearchOpen && (
+                  <div className="search-suggestions-dropdown">
+                    {isSearching ? (
+                      <div className="suggestions-loading">
+                        <div className="spinner"></div> Searching...
+                      </div>
+                    ) : suggestions.length > 0 ? (
+                      <div className="suggestions-content">
+                        <div className="suggestion-section">
+                          <h4>Products</h4>
+                          {suggestions.filter(s => s.type === 'product').map((item, i) => (
+                            <div key={i} className="suggestion-item product-suggestion" onClick={() => { setIsSearchOpen(false); navigate(`/search?q=${encodeURIComponent(item.name)}`); }}>
+                              <img src={item.img} alt={item.name} />
+                              <div className="suggestion-details">
+                                <span className="suggestion-name">{item.name}</span>
+                                <span className="suggestion-price">{item.price}</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="suggestion-section inline-suggestions">
+                          <div className="half-section">
+                            <h4>Categories</h4>
+                            {suggestions.filter(s => s.type === 'category').map((item, i) => (
+                              <div key={i} className="suggestion-item text-suggestion" onClick={() => { setIsSearchOpen(false); navigate(`/search?category=${encodeURIComponent(item.name)}`); }}>
+                                <Search size={14} /> {item.name}
+                              </div>
+                            ))}
+                          </div>
+                          <div className="half-section">
+                            <h4>Brands</h4>
+                            {suggestions.filter(s => s.type === 'brand').map((item, i) => (
+                              <div key={i} className="suggestion-item text-suggestion" onClick={() => { setIsSearchOpen(false); navigate(`/search?brand=${encodeURIComponent(item.name)}`); }}>
+                                <Search size={14} /> {item.name}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="no-suggestions">No results found for "{searchQuery}"</div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -336,7 +462,7 @@ const Navbar = () => {
             {megaMenus.map((item, index) => (
               <li key={index} className="sidebar-item">
                 <div className="sidebar-item-header" onClick={() => item.categories ? toggleExpand(item.title) : null}>
-                  {item.path ? (
+                  {item.path && !item.categories ? (
                     <Link to={item.path}>{item.title}</Link>
                   ) : (
                     <span>{item.title}</span>

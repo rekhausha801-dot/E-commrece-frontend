@@ -1,74 +1,85 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff, Mail, Lock, Tag, ArrowRight, User, Phone } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
+import axios from 'axios';
+import { Eye, EyeOff, Mail, Lock, User, Phone } from 'lucide-react';
 import './Register.css';
 
 // We will keep the previous image, but the user can update the asset.
 import bgImage from '../../assets/banners/register_bg.jpg';
 
 const Register = () => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
-  const navigate = useNavigate();
-
+  
   const [formData, setFormData] = useState({
-    name: '',
+    fullName: '',
     email: '',
     mobile: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    termsAccepted: false
   });
-  const [errorMsg, setErrorMsg] = useState('');
+  
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
   };
 
-  const handleRegister = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrorMsg('');
+    setError('');
+    setSuccess('');
 
     if (formData.password !== formData.confirmPassword) {
-      setErrorMsg("Passwords do not match");
-      return;
+      return setError('Passwords do not match');
+    }
+    if (!formData.termsAccepted) {
+      return setError('Please accept Terms and Conditions');
     }
 
     try {
-      const response = await fetch('http://localhost:5005/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: formData.email, password: formData.password })
-      });
-      const data = await response.json();
+      setLoading(true);
+      const response = await axios.post('http://localhost:5000/api/auth/register', formData);
       
-      if (response.ok) {
-        localStorage.setItem('userInfo', JSON.stringify(data));
-        navigate('/');
-      } else {
-        setErrorMsg(data.message || 'Registration failed');
-      }
+      setSuccess(response.data.message || 'Account created successfully!');
+      
+      // Redirect to login after 2 seconds
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
+
     } catch (err) {
-      setErrorMsg('Network error. Please check your backend server.');
+      setError(err.response?.data?.message || 'Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="register-page-wrapper">
-      
       <div className="register-card">
-        
         <div className="register-left-img" style={{ backgroundImage: `url(${bgImage})` }}>
         </div>
 
         <div className="register-right-form">
           <div className="register-form-container">
-            
             <div className="register-header">
               <h2 className="register-heading">Create Account</h2>
-              {errorMsg && <p style={{color: 'red', textAlign: 'center', marginTop: '10px'}}>{errorMsg}</p>}
             </div>
 
-            <form className="register-form" onSubmit={handleRegister}>
+            {/* Added error and success messages */}
+            {error && <div style={{ color: 'red', marginBottom: '10px', textAlign: 'center', backgroundColor: '#fee2e2', padding: '10px', borderRadius: '5px' }}>{error}</div>}
+            {success && <div style={{ color: 'green', marginBottom: '10px', textAlign: 'center', backgroundColor: '#dcfce7', padding: '10px', borderRadius: '5px' }}>{success}</div>}
+
+            <form className="register-form" onSubmit={handleSubmit}>
               
               <div className="register-input-group">
                 <label className="register-label">Full Name</label>
@@ -76,8 +87,8 @@ const Register = () => {
                   <span className="input-left-icon"><User size={16} /></span>
                   <input 
                     type="text" 
-                    name="name"
-                    value={formData.name}
+                    name="fullName"
+                    value={formData.fullName}
                     onChange={handleChange}
                     className="register-input" 
                     placeholder="Enter your full name" 
@@ -130,6 +141,7 @@ const Register = () => {
                     className="register-input" 
                     placeholder="Enter your password" 
                     required 
+                    minLength="6"
                   />
                   <span className="eye-icon" onClick={() => setShowPassword(!showPassword)}>
                     {showPassword ? <Eye size={16} /> : <EyeOff size={16} />}
@@ -149,6 +161,7 @@ const Register = () => {
                     className="register-input" 
                     placeholder="Confirm your password" 
                     required 
+                    minLength="6"
                   />
                   <span className="eye-icon" onClick={() => setShowNewPassword(!showNewPassword)}>
                     {showNewPassword ? <Eye size={16} /> : <EyeOff size={16} />}
@@ -158,14 +171,20 @@ const Register = () => {
 
               <div className="register-checkbox-group">
                 <label className="checkbox-label">
-                  <input type="checkbox" required />
+                  <input 
+                    type="checkbox" 
+                    name="termsAccepted"
+                    checked={formData.termsAccepted}
+                    onChange={handleChange}
+                    required 
+                  />
                   <span>I agree to the Terms and Conditions</span>
                 </label>
               </div>
 
               <div className="register-btn-wrapper">
-                <button type="submit" className="register-submit-btn">
-                  Create Account
+                <button type="submit" className="register-submit-btn" disabled={loading}>
+                  {loading ? 'Creating Account...' : 'Create Account'}
                 </button>
               </div>
               
@@ -184,14 +203,13 @@ const Register = () => {
               </button>
               
               <div className="register-footer">
-                Already Login? <Link to="/login" className="login-link">Login</Link>
+                Already have an account? <Link to="/login" className="login-link">Login</Link>
               </div>
             </form>
 
           </div>
         </div>
       </div>
-
     </div>
   );
 };

@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
+import { handleFlyingCartAnimation } from '../utils/cartAnimation';
 import { FaStar } from 'react-icons/fa';
 
 // Import images
@@ -179,21 +180,12 @@ const CATEGORY_DATA = {
   'accessories': {
     title: "Accessories",
     banner: banner16Img,
-    images: [
-      watchImg, 
-      stylishSunglassesImg, 
-      premiumLeatherBeltImg, 
-      classicBlackWatchImg,
-      silverBraceletImg,
-      goldEarringsImg,
-      leatherWalletImg,
-      silkNecktieImg
-    ]
+    images: [watchImg, classicBlackWatchImg, stylishSunglassesImg, premiumLeatherBeltImg, silverBraceletImg, goldEarringsImg, leatherWalletImg, silkNecktieImg]
   },
-  'kids-fashion': {
-    title: "Kids Fashion",
-    banner: banner15Img,
-    images: [newKids1, newKids2, newKids3, newKids4]
+  'women-t-shirts': {
+    title: "Women's Western",
+    banner: westernBannerImg,
+    images: [wtshirt1, wtshirt2, wtshirt3, wtshirt4, wtshirt5, wtshirt6, wtshirt7, wtshirt8, wmodel1, wmodel2, wmodel3, wmodel4, wmodel5]
   }
 };
 
@@ -205,18 +197,23 @@ const CATEGORIES = [
 ];
 
 const FABRICS = [
-  { label: "Cotton", count: 56 },
-  { label: "Premium", count: 34 },
-  { label: "Synthetic", count: 28 },
+  { label: "Cotton", count: 124 },
+  { label: "Silk", count: 45 },
+  { label: "Georgette", count: 32 },
+  { label: "Chiffon", count: 18 },
 ];
 
-const SIZES = ["S", "M", "L", "XL", "XXL"];
+const SIZES = ["XS", "S", "M", "L", "XL", "XXL", "3XL"];
 
 const COLORS = [
-  { name: "Blue", hex: "#798cb3" },
-  { name: "Black", hex: "#222222" },
-  { name: "White", hex: "#ffffff" },
-  { name: "Red", hex: "#cfb489" },
+  { name: "Blue", hex: "#000080" },
+  { name: "White", hex: "#FFFFFF" },
+  { name: "Pink", hex: "#FFC0CB" },
+  { name: "Green", hex: "#008000" },
+  { name: "Red", hex: "#FF0000" },
+  { name: "Yellow", hex: "#FFFF00" },
+  { name: "Black", hex: "#000000" },
+  { name: "Charcoal", hex: "#2B2B2E" },
 ];
 
 const RATINGS = [5, 4, 3];
@@ -225,6 +222,7 @@ const DISCOUNTS = [
   { label: "10% and above", value: 10, count: 64 },
   { label: "20% and above", value: 20, count: 47 },
   { label: "30% and above", value: 30, count: 29 },
+  { label: "40% and above", value: 40, count: 15 },
   { label: "50% and above", value: 50, count: 8 },
 ];
 
@@ -255,11 +253,12 @@ export default function CategoryPage() {
   const { addToCart } = useCart();
   const [addedToCart, setAddedToCart] = useState({});
 
-  const handleCartClick = (e, product) => {
+  const handleCartClick = async (e, product) => {
     e.stopPropagation();
     if (addedToCart[product.id]) {
       navigate('/cart');
     } else {
+      await handleFlyingCartAnimation(e);
       setAddedToCart(prev => ({ ...prev, [product.id]: true }));
       addToCart(product);
       message.success(`${product.title || 'Product'} added to cart!`);
