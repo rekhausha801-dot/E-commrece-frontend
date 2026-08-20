@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, Mail, Lock, Tag, ArrowRight, User, Phone } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
 import './Register.css';
 
 // We will keep the previous image, but the user can update the asset.
@@ -8,27 +9,66 @@ import bgImage from '../../assets/banners/register_bg.jpg';
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    mobile: '',
+    password: '',
+    confirmPassword: ''
+  });
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setErrorMsg('');
+
+    if (formData.password !== formData.confirmPassword) {
+      setErrorMsg("Passwords do not match");
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:5005/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: formData.email, password: formData.password })
+      });
+      const data = await response.json();
+      
+      if (response.ok) {
+        localStorage.setItem('userInfo', JSON.stringify(data));
+        navigate('/');
+      } else {
+        setErrorMsg(data.message || 'Registration failed');
+      }
+    } catch (err) {
+      setErrorMsg('Network error. Please check your backend server.');
+    }
+  };
 
   return (
     <div className="register-page-wrapper">
       
-      
       <div className="register-card">
         
-      
         <div className="register-left-img" style={{ backgroundImage: `url(${bgImage})` }}>
         </div>
 
-        
         <div className="register-right-form">
           <div className="register-form-container">
             
             <div className="register-header">
               <h2 className="register-heading">Create Account</h2>
-
+              {errorMsg && <p style={{color: 'red', textAlign: 'center', marginTop: '10px'}}>{errorMsg}</p>}
             </div>
 
-            <form className="register-form" onSubmit={(e) => e.preventDefault()}>
+            <form className="register-form" onSubmit={handleRegister}>
               
               <div className="register-input-group">
                 <label className="register-label">Full Name</label>
@@ -36,6 +76,9 @@ const Register = () => {
                   <span className="input-left-icon"><User size={16} /></span>
                   <input 
                     type="text" 
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
                     className="register-input" 
                     placeholder="Enter your full name" 
                     required 
@@ -49,6 +92,9 @@ const Register = () => {
                   <span className="input-left-icon"><Mail size={16} /></span>
                   <input 
                     type="email" 
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
                     className="register-input" 
                     placeholder="Enter your email" 
                     required 
@@ -62,6 +108,9 @@ const Register = () => {
                   <span className="input-left-icon"><Phone size={16} /></span>
                   <input 
                     type="tel" 
+                    name="mobile"
+                    value={formData.mobile}
+                    onChange={handleChange}
                     className="register-input" 
                     placeholder="Enter your mobile number" 
                     required 
@@ -75,6 +124,9 @@ const Register = () => {
                   <span className="input-left-icon"><Lock size={16} /></span>
                   <input 
                     type={showPassword ? "text" : "password"} 
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
                     className="register-input" 
                     placeholder="Enter your password" 
                     required 
@@ -91,6 +143,9 @@ const Register = () => {
                   <span className="input-left-icon"><Lock size={16} /></span>
                   <input 
                     type={showNewPassword ? "text" : "password"} 
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
                     className="register-input" 
                     placeholder="Confirm your password" 
                     required 
@@ -129,7 +184,7 @@ const Register = () => {
               </button>
               
               <div className="register-footer">
-                Already Login? <a href="/login" className="login-link">Login</a>
+                Already Login? <Link to="/login" className="login-link">Login</Link>
               </div>
             </form>
 
