@@ -120,7 +120,7 @@ const CATEGORY_DATA = {
   'women-t-shirts': {
     title: "Women's T-Shirts Collection",
     banner: banner0Img,
-    images: [tshirt8Img, tshirt1Img, tshirt2Img, tshirt3Img, tshirt6Img, tshirt7Img, tShirtImg, wmodel1, wmodel2, wmodel3, wmodel4, wmodel5, wtshirt1, wtshirt2, wtshirt3, tshirtWhite, topImg, top2Img, top3Img, tshirtBlack, tshirtRed]
+    images: [tshirt8Img, tshirt1Img, tshirt2Img, tshirt3Img, tshirt6Img, tshirt7Img, tShirtImg, wmodel1, wmodel2, wmodel3, wmodel4, wmodel5, wtshirt1, wtshirt2, wtshirt3, wtshirt4, wtshirt5, wtshirt6, wtshirt7, wtshirt8, tshirtWhite, topImg, top2Img, top3Img, tshirtBlack, tshirtRed]
   },
   'womenswear': {
     title: "Womenswear Collections",
@@ -182,11 +182,7 @@ const CATEGORY_DATA = {
     banner: banner16Img,
     images: [watchImg, classicBlackWatchImg, stylishSunglassesImg, premiumLeatherBeltImg, silverBraceletImg, goldEarringsImg, leatherWalletImg, silkNecktieImg]
   },
-  'women-t-shirts': {
-    title: "Women's Western",
-    banner: westernBannerImg,
-    images: [wtshirt1, wtshirt2, wtshirt3, wtshirt4, wtshirt5, wtshirt6, wtshirt7, wtshirt8, wmodel1, wmodel2, wmodel3, wmodel4, wmodel5]
-  }
+
 };
 
 const CATEGORIES = [
