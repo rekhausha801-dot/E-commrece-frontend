@@ -9,6 +9,8 @@ import {
 import { AreaChart, Area, ResponsiveContainer } from 'recharts';
 import { useNavigate } from 'react-router-dom';
 import AddCategoryModal from './AddCategoryModal';
+import { getCategories, deleteCategory, updateCategoryStatus } from '../../services/api';
+import { message } from 'antd';
 
 const sparklineData = [{ v: 40 }, { v: 30 }, { v: 60 }, { v: 45 }, { v: 70 }, { v: 90 }, { v: 120 }];
 const sparklineData2 = [{ v: 10 }, { v: 15 }, { v: 12 }, { v: 22 }, { v: 18 }, { v: 28 }, { v: 25 }];
@@ -66,10 +68,44 @@ const initialData = [
 
 const CategoryManagement = () => {
   const navigate = useNavigate();
-  const [categories, setCategories] = useState(initialData);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [editCandidate, setEditCandidate] = useState(null);
 
   const [selectedItems, setSelectedItems] = useState([]);
+
+  const fetchCategories = async () => {
+    try {
+      setLoading(true);
+      const res = await getCategories();
+      const mapped = res.data.data.map(item => ({
+        ...item,
+        id: item._id,
+        desc: item.description,
+        status: item.status === 'active' ? 'Active' : 'Inactive',
+        slug: item.name.toLowerCase().replace(/\s+/g, '-'),
+        parent: '', 
+        products: 0,
+        productCreation: 'Enabled',
+        order: 1,
+        created: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'N/A',
+        updated: item.updatedAt ? new Date(item.updatedAt).toLocaleDateString() : 'N/A',
+        img: item.image || 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=100'
+      }));
+      setCategories(mapped);
+    } catch (error) {
+      console.error(error);
+      message.error("Failed to fetch categories");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
   const [activeCategory, setActiveCategory] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [deleteCandidate, setDeleteCandidate] = useState(null);
@@ -136,9 +172,18 @@ const CategoryManagement = () => {
     setSelectedItems(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
   };
 
-  const toggleStatus = (id, e) => {
-    e.stopPropagation();
-    setCategories(prev => prev.map(c => c.id === id ? { ...c, status: c.status === 'Active' ? 'Inactive' : 'Active' } : c));
+  const toggleStatus = async (id, e) => {
+    if (e) e.stopPropagation();
+    const cat = categories.find(c => c.id === id);
+    if (!cat) return;
+    const newStatus = cat.status === 'Active' ? 'inactive' : 'active';
+    try {
+      await updateCategoryStatus(id, newStatus);
+      message.success('Status updated');
+      setCategories(prev => prev.map(c => c.id === id ? { ...c, status: newStatus === 'active' ? 'Active' : 'Inactive' } : c));
+    } catch (err) {
+      message.error('Failed to update status');
+    }
   };
 
   const toggleProductCreation = (id, e) => {
@@ -169,10 +214,17 @@ const CategoryManagement = () => {
     setOpenDropdownId(null);
   };
 
-  const confirmDelete = () => {
-    setCategories(prev => prev.filter(c => c.id !== deleteCandidate.id));
-    setDeleteCandidate(null);
-    if (activeCategory?.id === deleteCandidate.id) setIsDrawerOpen(false);
+  const confirmDelete = async () => {
+    try {
+      await deleteCategory(deleteCandidate.id);
+      message.success('Category deleted successfully');
+      setCategories(prev => prev.filter(c => c.id !== deleteCandidate.id));
+      if (activeCategory?.id === deleteCandidate.id) setIsDrawerOpen(false);
+    } catch (err) {
+      message.error(err.response?.data?.message || 'Failed to delete category');
+    } finally {
+      setDeleteCandidate(null);
+    }
   };
 
   const clearFilters = () => {
@@ -349,7 +401,7 @@ const CategoryManagement = () => {
           {
             key: 'edit',
             label: <span style={{ fontSize: '13px', fontWeight: '500', padding: '4px 8px', display: 'block' }}>Edit</span>,
-            onClick: ({ domEvent }) => { domEvent.stopPropagation(); setIsAddModalOpen(true); setOpenDropdownId(null); }
+            onClick: ({ domEvent }) => { domEvent.stopPropagation(); setEditCandidate(record); setIsAddModalOpen(true); setOpenDropdownId(null); }
           },
           {
             key: 'product-creation',
@@ -409,7 +461,7 @@ const CategoryManagement = () => {
           </div>
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
-          <button style={{ background: 'linear-gradient(90deg, #d97706 0%, #b45309 100%)', color: '#fff', border: 'none', padding: '10px 18px', borderRadius: '8px', fontSize: '13px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', boxShadow: '0 4px 6px -1px rgba(217, 119, 6, 0.2)' }} onClick={() => setIsAddModalOpen(true)}>
+          <button style={{ background: 'linear-gradient(90deg, #d97706 0%, #b45309 100%)', color: '#fff', border: 'none', padding: '10px 18px', borderRadius: '8px', fontSize: '13px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', boxShadow: '0 4px 6px -1px rgba(217, 119, 6, 0.2)' }} onClick={() => { setEditCandidate(null); setIsAddModalOpen(true); }}>
             <Plus size={15} /> Add Category
           </button>
         </div>
@@ -714,7 +766,7 @@ const CategoryManagement = () => {
             </div>
 
             <div style={{ padding: '24px', borderTop: '1px solid #f0f0f0', display: 'flex', gap: '12px' }}>
-              <button style={{ flex: 1, background: '#fff', color: '#222', border: '1px solid #e0e0e0', padding: '10px', borderRadius: '8px', fontSize: '13px', fontWeight: '600', cursor: 'pointer' }} onClick={() => setIsAddModalOpen(true)}>
+              <button style={{ flex: 1, background: '#fff', color: '#222', border: '1px solid #e0e0e0', padding: '10px', borderRadius: '8px', fontSize: '13px', fontWeight: '600', cursor: 'pointer' }} onClick={() => { setEditCandidate(activeCategory); setIsAddModalOpen(true); }}>
                 Edit Category
               </button>
               <button style={{ flex: 1, background: 'linear-gradient(90deg, #c9a05b 0%, #b08a4c 100%)', color: '#fff', border: 'none', padding: '10px', borderRadius: '8px', fontSize: '13px', fontWeight: '600', cursor: 'pointer' }} onClick={() => { setIsDrawerOpen(false); navigate(`/dashboard?category=${activeCategory.slug}`); }}>
@@ -753,7 +805,12 @@ const CategoryManagement = () => {
       )}
 
       {/* Add/Edit Modal */}
-      <AddCategoryModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} />
+      <AddCategoryModal 
+        isOpen={isAddModalOpen} 
+        onClose={() => { setIsAddModalOpen(false); setEditCandidate(null); }} 
+        editData={editCandidate}
+        onSuccess={fetchCategories}
+      />
 
       <style>{`
         @keyframes slideInRight {
