@@ -704,6 +704,15 @@ export default function ProductDetail() {
               </button>
               {activeColorObj.inStock ? (
                 <>
+                  {product?.customizable && (
+                    <button
+                      className="pdp-btn-customize"
+                      onClick={() => navigate(`/customize/${product.id}`, { state: { product } })}
+                      style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px 0', background: '#b58d4e', border: 'none', borderRadius: '4px', color: '#fff', fontWeight: '600', cursor: 'pointer' }}
+                    >
+                      <Palette size={16} /> Customize
+                    </button>
+                  )}
                   <button
                     className="pdp-btn-add-cart"
                     onClick={async (e) => {
@@ -715,7 +724,7 @@ export default function ProductDetail() {
                         message.success(`${product?.title || 'Product'} added to cart!`);
                       }
                     }}
-                    style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px 0', background: '#8B4513', border: 'none', borderRadius: '4px', color: '#fff', fontWeight: '600', cursor: 'pointer' }}
+                    style={{ flex: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px 0', background: '#8B4513', border: 'none', borderRadius: '4px', color: '#fff', fontWeight: '600', cursor: 'pointer' }}
                   >
                     <ShoppingCart size={16} /> {isAdded ? "Go to Cart" : "Add to Cart"}
                   </button>
