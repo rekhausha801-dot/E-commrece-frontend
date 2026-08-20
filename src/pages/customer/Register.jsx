@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
 import { Eye, EyeOff, Mail, Lock, User, Phone } from 'lucide-react';
+import { registerUser } from '../../services/api';
 import './Register.css';
 
 // We will keep the previous image, but the user can update the asset.
@@ -47,7 +47,7 @@ const Register = () => {
 
     try {
       setLoading(true);
-      const response = await axios.post('http://localhost:5000/api/auth/register', formData);
+      const response = await registerUser(formData);
       
       setSuccess(response.data.message || 'Account created successfully!');
       

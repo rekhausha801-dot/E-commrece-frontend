@@ -1,25 +1,92 @@
-import React, { useState } from 'react';
-import { Modal, Form, Input, Select, Switch, Row, Col, Upload, Button, Divider } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Modal, Form, Input, Select, Switch, Row, Col, Upload, Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
+import { createCategory, updateCategory } from '../../services/api';
 
 const { TextArea } = Input;
 const { Option } = Select;
 
-const AddCategoryModal = ({ isOpen, onClose }) => {
+const getBase64 = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
+
+const AddCategoryModal = ({ isOpen, onClose, onSuccess, editData }) => {
   const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
 
   const formItemLayout = {
     layout: "vertical",
     style: { marginBottom: '16px' }
   };
 
-  const handleSave = () => {
-    form.validateFields().then(values => {
-      console.log('Saved values:', values);
+  useEffect(() => {
+    if (isOpen) {
+      if (editData) {
+        form.setFieldsValue({
+          name: editData.name,
+          description: editData.description || editData.desc,
+          status: editData.status === 'active' || editData.status === 'Active',
+          slug: editData.slug || '',
+          parent: editData.parent || 'none',
+          displayOrder: editData.order || 1,
+          productCreation: editData.productCreation ? editData.productCreation.toLowerCase() : 'enabled',
+          image: editData.image || editData.img ? [{ url: editData.image || editData.img }] : []
+        });
+      } else {
+        form.resetFields();
+        form.setFieldsValue({ status: true, productCreation: 'enabled', parent: 'none' });
+      }
+    }
+  }, [isOpen, editData, form]);
+
+  const handleSave = async () => {
+    try {
+      const values = await form.validateFields();
+      setLoading(true);
+
+      let imageUrl = '';
+      if (values.image && values.image.fileList && values.image.fileList.length > 0) {
+        const file = values.image.fileList[0].originFileObj;
+        if (file) {
+          imageUrl = await getBase64(file);
+        } else {
+          imageUrl = values.image.fileList[0].url || '';
+        }
+      } else if (typeof values.image === 'string') {
+        imageUrl = values.image;
+      }
+
+      const payload = {
+        name: values.name,
+        description: values.description,
+        status: values.status ? 'active' : 'inactive',
+        image: imageUrl
+      };
+
+      if (editData && editData._id) {
+        await updateCategory(editData._id, payload);
+        message.success('Category updated successfully');
+      } else {
+        await createCategory(payload);
+        message.success('Category created successfully');
+      }
+
+      if (onSuccess) onSuccess();
       onClose();
-    }).catch(info => {
-      console.log('Validation Failed:', info);
-    });
+    } catch (error) {
+      console.error('Validation or API Failed:', error);
+      if (error.response && error.response.data) {
+         message.error(error.response.data.message || 'Failed to save category');
+      } else if (!error.errorFields) {
+         message.error('Something went wrong');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const sectionHeaderStyle = {
@@ -34,29 +101,29 @@ const AddCategoryModal = ({ isOpen, onClose }) => {
 
   return (
     <Modal
-      title={<div style={{ fontSize: '20px', fontWeight: '600', color: '#111827' }}>Add New Category</div>}
+      title={<div style={{ fontSize: '20px', fontWeight: '600', color: '#111827' }}>{editData ? 'Edit Category' : 'Add New Category'}</div>}
       open={isOpen}
       onCancel={onClose}
       width={700}
       footer={[
-        <Button key="cancel" onClick={onClose} style={{ borderRadius: '6px' }}>
+        <Button key="cancel" onClick={onClose} style={{ borderRadius: '6px' }} disabled={loading}>
           Cancel
         </Button>,
-        <Button key="publish" type="primary" onClick={handleSave} style={{ background: 'linear-gradient(90deg, #c9a05b 0%, #b08a4c 100%)', borderColor: '#c9a05b', borderRadius: '6px' }}>
-          Save Category
+        <Button key="publish" type="primary" onClick={handleSave} loading={loading} style={{ background: 'linear-gradient(90deg, #c9a05b 0%, #b08a4c 100%)', borderColor: '#c9a05b', borderRadius: '6px' }}>
+          {editData ? 'Update Category' : 'Save Category'}
         </Button>,
       ]}
       style={{ top: 20 }}
       styles={{ body: { maxHeight: 'calc(100vh - 150px)', overflowY: 'auto', padding: '0 24px 24px 24px' } }}
     >
-      <Form form={form} layout="vertical" initialValues={{ status: true, productCreation: 'enabled' }}>
+      <Form form={form} layout="vertical">
 
         {/* Basic Information */}
         <div style={sectionHeaderStyle}>Basic Information</div>
         <Row gutter={24}>
           <Col span={24}>
             <Form.Item name="image" label="Category Image" {...formItemLayout}>
-              <Upload listType="picture-card" maxCount={1}>
+              <Upload listType="picture-card" maxCount={1} beforeUpload={() => false}>
                 <div>
                   <PlusOutlined />
                   <div style={{ marginTop: 8 }}>Upload</div>
@@ -91,7 +158,7 @@ const AddCategoryModal = ({ isOpen, onClose }) => {
         </Row>
         <Row gutter={24}>
           <Col span={24}>
-            <Form.Item name="slug" label="URL Slug" rules={[{ required: true, message: 'Please enter slug' }]} {...formItemLayout}>
+            <Form.Item name="slug" label="URL Slug" {...formItemLayout}>
               <Input placeholder="e.g., /western-wear" size="large" />
             </Form.Item>
           </Col>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './Login.css';
 import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { loginUser } from '../../services/api';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -15,21 +16,22 @@ const Login = () => {
     setErrorMsg('');
     if (email && password) {
       try {
-        const response = await fetch('http://localhost:5005/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password })
-        });
-        const data = await response.json();
+        const response = await loginUser({ email, password });
+        const data = response.data;
         
-        if (response.ok) {
-          localStorage.setItem('userInfo', JSON.stringify(data));
+        if (data.success || data.token) {
+          localStorage.setItem('token', data.token);
+          if (data.user) {
+            localStorage.setItem('user', JSON.stringify(data.user));
+          }
+          alert('Login successful!');
+          window.scrollTo(0, 0);
           navigate('/');
         } else {
           setErrorMsg(data.message || 'Login failed');
         }
       } catch (err) {
-        setErrorMsg('Network error. Please check your backend server.');
+        setErrorMsg(err.response?.data?.message || 'Login failed. Please check your credentials.');
       }
     }
   };
