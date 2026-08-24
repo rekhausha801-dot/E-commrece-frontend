@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { Search, Plus, Ticket, CheckCircle, Clock, Edit, MoreVertical, Calendar, RefreshCcw, Tag, ChevronRight, ChevronLeft, Download } from 'lucide-react';
-import { Table, Dropdown, Select, Input, Space, Button, Modal, Drawer, Form, message, InputNumber, Row, Col, DatePicker } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Search, Plus, Ticket, CheckCircle, Clock, Edit, MoreVertical, Calendar, RefreshCcw, Tag, ChevronRight, ChevronLeft, Download, UploadCloud } from 'lucide-react';
+import { Table, Dropdown, Select, Input, Space, Button, Modal, Drawer, Form, message, InputNumber, Row, Col, DatePicker, Spin, Checkbox, Upload as AntUpload } from 'antd';
 import { AreaChart, Area, ResponsiveContainer } from 'recharts';
 import dayjs from 'dayjs';
+import { getOffers, createOffer, updateOffer, deleteOffer } from '../../services/api';
 
 const sparklineData = [{ v: 40 }, { v: 30 }, { v: 60 }, { v: 45 }, { v: 70 }, { v: 90 }, { v: 120 }];
 const sparklineData2 = [{ v: 10 }, { v: 15 }, { v: 12 }, { v: 22 }, { v: 18 }, { v: 28 }, { v: 25 }];
@@ -94,12 +95,49 @@ const initialCoupons = [
 ];
 
 const CouponManagement = () => {
-  const [coupons, setCoupons] = useState(initialCoupons);
+  const [coupons, setCoupons] = useState([]);
   const [selectedCoupon, setSelectedCoupon] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState('add');
+  const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
+  const [imageBase64, setImageBase64] = useState('');
+
+  const fetchCoupons = async () => {
+    setLoading(true);
+    try {
+      const { data } = await getOffers({ t: new Date().getTime(), admin: 'true' });
+      if (data.success) {
+        const mapped = data.data.map(c => ({
+          ...c,
+          id: c._id,
+          image: c.image || '',
+          title: c.title,
+          desc: c.description || c.category,
+          code: c.couponCode,
+          discount: c.discountType === 'Percentage' ? `${c.discountValue}%` : `₹${c.discountValue}`,
+          discountType: c.discountType,
+          minOrder: `₹${c.minPurchase}`,
+          validity: `${dayjs(c.startDate).format('DD MMM YYYY')} - ${dayjs(c.endDate).format('DD MMM YYYY')}`,
+          usage: 0,
+          maxUsage: 100,
+          status: c.isActive ? 'Active' : 'Expired',
+          isFirstOrderOnly: c.isFirstOrderOnly || false
+        }));
+        setCoupons(mapped);
+      }
+    } catch (error) {
+      console.error(error);
+      message.error("Failed to fetch coupons");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCoupons();
+  }, []);
 
   const handleMenuClick = (key, record) => {
     if (key === '1') {
@@ -114,9 +152,18 @@ const CouponManagement = () => {
     }
   };
 
-  const handleDeactivate = (id) => {
-    setCoupons(prev => prev.map(c => c.id === id ? { ...c, status: 'Expired' } : c));
-    message.success('Coupon deactivated successfully');
+  const handleDeactivate = async (id) => {
+    setLoading(true);
+    try {
+      await updateOffer(id, { isActive: false });
+      message.success('Coupon deactivated successfully');
+      fetchCoupons();
+    } catch (error) {
+      console.error(error);
+      message.error("Failed to deactivate coupon");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDelete = (id) => {
@@ -126,9 +173,18 @@ const CouponManagement = () => {
       okText: 'Yes, Delete',
       okType: 'danger',
       cancelText: 'Cancel',
-      onOk() {
-        setCoupons(prev => prev.filter(c => c.id !== id));
-        message.success('Coupon deleted successfully');
+      onOk: async () => {
+        setLoading(true);
+        try {
+          await deleteOffer(id);
+          message.success('Coupon deleted successfully');
+          fetchCoupons();
+        } catch (error) {
+          console.error(error);
+          message.error("Failed to delete coupon");
+        } finally {
+          setLoading(false);
+        }
       }
     });
   };
@@ -136,6 +192,7 @@ const CouponManagement = () => {
   const openAddModal = () => {
     setModalMode('add');
     form.resetFields();
+    setImageBase64('');
     setIsModalOpen(true);
   };
 
@@ -149,50 +206,51 @@ const CouponManagement = () => {
       discount: record.discount.replace(/[^0-9.]/g, ''),
       minOrder: record.minOrder.replace(/[^0-9.]/g, '')
     });
+    setImageBase64(record.image || '');
     setIsModalOpen(true);
   };
 
-  const handleModalSubmit = (values) => {
-    let validityStr = '';
+  const handleModalSubmit = async (values) => {
+    let startDate = new Date();
+    let endDate = new Date(new Date().setMonth(new Date().getMonth() + 1));
+
     if (values.validityRange && values.validityRange.length === 2) {
-      validityStr = `${values.validityRange[0].format('DD MMM YYYY')} - ${values.validityRange[1].format('DD MMM YYYY')}`;
+      startDate = values.validityRange[0].toDate();
+      endDate = values.validityRange[1].toDate();
     }
 
-    const formattedDiscount = values.discountType === 'Percentage' ? `${values.discount}%` : `₹${values.discount}`;
-    const formattedMinOrder = `₹${values.minOrder}`;
+    const payload = {
+      title: values.title,
+      description: values.desc || '',
+      category: 'All Offers', 
+      couponCode: values.code,
+      discountType: values.discountType || 'Percentage',
+      discountValue: Number(String(values.discount).replace(/[^0-9.]/g, '')),
+      minPurchase: Number(String(values.minOrder).replace(/[^0-9.]/g, '')),
+      startDate,
+      endDate,
+      isActive: selectedCoupon ? selectedCoupon.status === 'Active' : true,
+      isFirstOrderOnly: values.isFirstOrderOnly || false,
+      image: imageBase64,
+    };
 
-    if (modalMode === 'add') {
-      const newCoupon = {
-        id: coupons.length + 100,
-        image: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=100',
-        title: values.title,
-        desc: values.desc || '',
-        code: values.code,
-        discount: formattedDiscount,
-        discountType: values.discountType || 'Percentage',
-        minOrder: formattedMinOrder,
-        validity: validityStr,
-        usage: 0,
-        maxUsage: values.maxUsage || 100,
-        status: 'Active'
-      };
-      setCoupons([newCoupon, ...coupons]);
-      message.success('Coupon created successfully');
-    } else {
-      setCoupons(prev => prev.map(c => c.id === selectedCoupon.id ? {
-        ...c,
-        title: values.title,
-        desc: values.desc || c.desc,
-        code: values.code,
-        discount: formattedDiscount,
-        discountType: values.discountType || c.discountType,
-        minOrder: formattedMinOrder,
-        validity: validityStr || c.validity,
-        maxUsage: values.maxUsage || c.maxUsage,
-      } : c));
-      message.success('Coupon updated successfully');
+    setLoading(true);
+    try {
+      if (modalMode === 'add') {
+        await createOffer(payload);
+        message.success('Coupon created successfully');
+      } else {
+        await updateOffer(selectedCoupon.id, payload);
+        message.success('Coupon updated successfully');
+      }
+      setIsModalOpen(false);
+      fetchCoupons();
+    } catch (error) {
+      console.error(error);
+      message.error(error.response?.data?.message || "An error occurred");
+    } finally {
+      setLoading(false);
     }
-    setIsModalOpen(false);
   };
   
   const columns = [
@@ -421,22 +479,22 @@ const CouponManagement = () => {
       <div className="stats-grid" style={{ marginBottom: '32px' }}>
         <div className="stat-card dark" style={{ cursor: 'pointer' }}>
           <div className="stat-top">
-            <div className="stat-icon gold" style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', border: 'none' }}><Ticket size={18} /></div>
+            <div className="stat-icon gold"><Ticket size={18} color="#c9a05b" /></div>
             <div className="stat-info">
               <span className="stat-title">Total Coupons</span>
-              <h2 className="stat-value gold-text">48</h2>
+              <h2 className="stat-value gold-text">{coupons.length}</h2>
             </div>
           </div>
           <div className="stat-chart-sparkline">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={sparklineData}>
                 <defs>
-                  <linearGradient id="glowDarkCoup1" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="glowDarkCoup0" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#c9a05b" stopOpacity={0.8} />
                     <stop offset="95%" stopColor="#c9a05b" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <Area type="monotone" dataKey="v" stroke="#c9a05b" strokeWidth={2} fill="url(#glowDarkCoup1)" dot={{ r: 2.5, fill: '#c9a05b', strokeWidth: 0 }} />
+                <Area type="monotone" dataKey="v" stroke="#c9a05b" strokeWidth={2} fill="url(#glowDarkCoup0)" dot={{ r: 2.5, fill: '#c9a05b', strokeWidth: 0 }} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -444,10 +502,10 @@ const CouponManagement = () => {
 
         <div className="stat-card light" style={{ cursor: 'pointer' }}>
           <div className="stat-top">
-            <div className="stat-icon gold" style={{ color: '#10b981', background: '#ecfdf5', border: 'none' }}><CheckCircle size={18} /></div>
+            <div className="stat-icon gold"><CheckCircle size={18} color="#554422" /></div>
             <div className="stat-info">
               <span className="stat-title">Active</span>
-              <h2 className="stat-value">32</h2>
+              <h2 className="stat-value">{coupons.filter(c => c.status === 'Active').length}</h2>
             </div>
           </div>
           <div className="stat-chart-sparkline">
@@ -467,10 +525,10 @@ const CouponManagement = () => {
 
         <div className="stat-card light" style={{ cursor: 'pointer' }}>
           <div className="stat-top">
-            <div className="stat-icon gold" style={{ color: '#ef4444', background: '#fef2f2', border: 'none' }}><Clock size={18} /></div>
+            <div className="stat-icon gold"><Clock size={18} color="#554422" /></div>
             <div className="stat-info">
               <span className="stat-title">Expired</span>
-              <h2 className="stat-value">8</h2>
+              <h2 className="stat-value">{coupons.filter(c => c.status === 'Expired').length}</h2>
             </div>
           </div>
           <div className="stat-chart-sparkline">
@@ -488,24 +546,24 @@ const CouponManagement = () => {
           </div>
         </div>
 
-        <div className="stat-card light" style={{ cursor: 'pointer' }}>
+        <div className="stat-card dark" style={{ cursor: 'pointer' }}>
           <div className="stat-top">
-            <div className="stat-icon gold" style={{ color: '#8b5cf6', background: '#f3e8ff', border: 'none' }}><Tag size={18} /></div>
+            <div className="stat-icon gold"><Tag size={18} color="#c9a05b" /></div>
             <div className="stat-info">
               <span className="stat-title">Total Usages</span>
-              <h2 className="stat-value">1,248</h2>
+              <h2 className="stat-value gold-text">{coupons.reduce((sum, c) => sum + (c.usage || 0), 0)}</h2>
             </div>
           </div>
           <div className="stat-chart-sparkline">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={sparklineData2}>
                 <defs>
-                  <linearGradient id="glowLightCoup3" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#c9a05b" stopOpacity={0.5} />
+                  <linearGradient id="glowDarkCoup3" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#c9a05b" stopOpacity={0.8} />
                     <stop offset="95%" stopColor="#c9a05b" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <Area type="monotone" dataKey="v" stroke="#c9a05b" strokeWidth={2} fill="url(#glowLightCoup3)" dot={{ r: 2.5, fill: '#c9a05b', strokeWidth: 0 }} />
+                <Area type="monotone" dataKey="v" stroke="#c9a05b" strokeWidth={2} fill="url(#glowDarkCoup3)" dot={{ r: 2.5, fill: '#c9a05b', strokeWidth: 0 }} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -604,6 +662,7 @@ const CouponManagement = () => {
                   <Col span={12}><p style={{ margin: 0, color: '#6b7280', fontSize: '13px' }}>Min Order</p><p style={{ margin: '4px 0 0', fontWeight: '500', color: '#111827' }}>{selectedCoupon.minOrder}</p></Col>
                   <Col span={24}><p style={{ margin: 0, color: '#6b7280', fontSize: '13px' }}>Validity</p><p style={{ margin: '4px 0 0', fontWeight: '500', color: '#111827' }}>{selectedCoupon.validity}</p></Col>
                   <Col span={12}><p style={{ margin: 0, color: '#6b7280', fontSize: '13px' }}>Usage</p><p style={{ margin: '4px 0 0', fontWeight: '500', color: '#111827' }}>{selectedCoupon.usage} / {selectedCoupon.maxUsage}</p></Col>
+                  <Col span={12}><p style={{ margin: 0, color: '#6b7280', fontSize: '13px' }}>Restrictions</p><p style={{ margin: '4px 0 0', fontWeight: '500', color: '#111827' }}>{selectedCoupon.isFirstOrderOnly ? 'First Order Only' : 'None'}</p></Col>
                 </Row>
               </div>
             </div>
@@ -616,6 +675,7 @@ const CouponManagement = () => {
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
         onOk={() => form.submit()}
+        confirmLoading={loading}
         okText={modalMode === 'add' ? 'Create' : 'Save Changes'}
         width={600}
       >
@@ -638,7 +698,7 @@ const CouponManagement = () => {
             </Col>
             <Col span={12}>
               <Form.Item name="discountType" label="Discount Type" rules={[{ required: true }]}>
-                <Select options={[{ label: 'Percentage', value: 'Percentage' }, { label: 'Fixed Amount', value: 'Fixed Amount' }]} />
+                <Select options={[{ label: 'Percentage', value: 'Percentage' }, { label: 'Fixed Amount', value: 'Flat' }]} />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -656,9 +716,45 @@ const CouponManagement = () => {
                 <DatePicker.RangePicker style={{ width: '100%' }} format="DD MMM YYYY" />
               </Form.Item>
             </Col>
+            <Col span={12}>
+              <Form.Item name="isFirstOrderOnly" valuePropName="checked" style={{ paddingTop: '30px' }}>
+                <Checkbox>For First-Time Users Only</Checkbox>
+              </Form.Item>
+            </Col>
             <Col span={24}>
               <Form.Item name="desc" label="Description">
                 <Input.TextArea rows={2} placeholder="Brief description of the coupon" />
+              </Form.Item>
+            </Col>
+            <Col span={24}>
+              <Form.Item label="Background Image (Optional)">
+                <AntUpload 
+                  accept="image/*" 
+                  showUploadList={false}
+                  beforeUpload={(file) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = () => setImageBase64(reader.result);
+                    return false;
+                  }}
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', minWidth: '400px', height: '140px', border: '1px dashed #d9d9d9', borderRadius: '8px', cursor: 'pointer', background: '#fafafa', padding: '10px' }}>
+                    {imageBase64 ? (
+                      <img src={imageBase64} alt="preview" style={{ maxHeight: '120px', maxWidth: '100%', objectFit: 'contain' }} />
+                    ) : (
+                      <>
+                        <UploadCloud size={24} color="#9ca3af" style={{ marginBottom: 8 }} />
+                        <span style={{ color: '#6b7280', fontSize: 13 }}>Click to upload file</span>
+                        <span style={{ color: '#9ca3af', fontSize: 11, marginTop: 4 }}>Leave blank for text-only layout</span>
+                      </>
+                    )}
+                  </div>
+                </AntUpload>
+                {imageBase64 && (
+                  <Button type="link" danger onClick={(e) => { e.stopPropagation(); setImageBase64(''); }} style={{ marginTop: 8, padding: 0 }}>
+                    Remove Image (Use Text-Only Layout)
+                  </Button>
+                )}
               </Form.Item>
             </Col>
           </Row>

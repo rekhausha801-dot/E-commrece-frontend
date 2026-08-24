@@ -26,14 +26,41 @@ const initialBrands = [
   { id: 5, name: 'Raymond', category: 'Fashion', products: 22, discount: '10%', status: 'Active', createdAt: '02 May 2024', logo: 'https://upload.wikimedia.org/wikipedia/commons/7/7b/Raymond_logo.svg' },
 ];
 
+import { getBrands, createBrand, updateBrand, updateBrandStatus, deleteBrand } from '../../services/api';
+
 const BrandManagement = ({ setActiveTab }) => {
-  const [brands, setBrands] = useState(initialBrands);
+  const [brands, setBrands] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All Categories');
   const [isAdding, setIsAdding] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [editingBrand, setEditingBrand] = useState(null);
   const [viewingBrand, setViewingBrand] = useState(null);
+
+  const fetchBrands = async () => {
+    try {
+      const { data } = await getBrands();
+      const brandsData = data.data || data;
+      const mappedBrands = brandsData.map(b => ({
+        ...b,
+        id: b._id,
+        name: b.brandName,
+        logo: b.brandLogo ? `http://localhost:5000${b.brandLogo}` : 'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',
+        products: b.products || 0,
+        discount: b.discount || '0%',
+        category: b.category || 'Uncategorized',
+        status: b.status || 'Active',
+        createdAt: new Date(b.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+      }));
+      setBrands(mappedBrands);
+    } catch (error) {
+      console.error("Error fetching brands:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchBrands();
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -48,22 +75,52 @@ const BrandManagement = ({ setActiveTab }) => {
     };
   }, []);
   
+  const handleSaveBrand = async (formData, id) => {
+    try {
+      if (editingBrand) {
+        await updateBrand(editingBrand._id || editingBrand.id, formData);
+      } else {
+        await createBrand(formData);
+      }
+      fetchBrands();
+      setIsAdding(false);
+      setEditingBrand(null);
+      setViewingBrand(null);
+    } catch (error) {
+      console.error("Error saving brand:", error);
+    }
+  };
+
+  const handleToggleStatus = async (brand) => {
+    try {
+      const newStatus = brand.status === 'Active' ? 'Inactive' : 'Active';
+      await updateBrandStatus(brand._id || brand.id, newStatus);
+      fetchBrands();
+      setActiveDropdown(null);
+    } catch (error) {
+      console.error("Error updating brand status:", error);
+    }
+  };
+
+  const handleDeleteBrand = async (brand) => {
+    if (window.confirm(`Are you sure you want to delete ${brand.name}?`)) {
+      try {
+        await deleteBrand(brand._id || brand.id);
+        fetchBrands();
+        setActiveDropdown(null);
+      } catch (error) {
+        console.error("Error deleting brand:", error);
+      }
+    }
+  };
+
   if (isAdding || editingBrand || viewingBrand) {
     return (
       <AddNewBrand 
         initialData={editingBrand || viewingBrand}
         readOnly={!!viewingBrand}
         onCancel={() => { setIsAdding(false); setEditingBrand(null); setViewingBrand(null); }} 
-        onSave={(savedBrand) => {
-          if (editingBrand) {
-            setBrands(brands.map(b => b.id === savedBrand.id ? savedBrand : b));
-          } else if (isAdding) {
-            setBrands([savedBrand, ...brands]);
-          }
-          setIsAdding(false);
-          setEditingBrand(null);
-          setViewingBrand(null);
-        }} 
+        onSave={handleSaveBrand} 
       />
     );
   }
@@ -237,7 +294,7 @@ const BrandManagement = ({ setActiveTab }) => {
             </thead>
             <tbody>
               {brands.map((brand, index) => (
-                <tr key={brand.id}>
+                <tr key={brand._id || brand.id || index}>
                   <td className="bm-text-muted">{index + 1}</td>
                   <td>
                     <div className="bm-brand-cell">
@@ -259,26 +316,18 @@ const BrandManagement = ({ setActiveTab }) => {
                   <td style={{ textAlign: 'center', position: 'relative', zIndex: activeDropdown === brand.id ? 99 : 1 }}>
                     <button 
                       className="bm-action-btn"
-                      onClick={() => setActiveDropdown(activeDropdown === brand.id ? null : brand.id)}
+                      onClick={() => setActiveDropdown(activeDropdown === (brand._id || brand.id) ? null : (brand._id || brand.id))}
                     >
                       <MoreVertical size={16} />
                     </button>
-                    {activeDropdown === brand.id && (
+                    {activeDropdown === (brand._id || brand.id) && (
                       <div className="bm-dropdown-menu">
                         <button className="bm-dropdown-item" onClick={() => { alert('No Brand selected'); setActiveDropdown(null); }}><MinusCircle size={14} /> No Brand</button>
                         <button className="bm-dropdown-item" onClick={() => { setEditingBrand(brand); setActiveDropdown(null); }}><Edit size={14} /> Edit Brand</button>
-                        <button className="bm-dropdown-item" onClick={() => {
-                          setBrands(brands.map(b => b.id === brand.id ? { ...b, status: b.status === 'Active' ? 'Inactive' : 'Active' } : b));
-                          setActiveDropdown(null);
-                        }}>
+                        <button className="bm-dropdown-item" onClick={() => handleToggleStatus(brand)}>
                           <PauseCircle size={14} /> {brand.status === 'Active' ? 'Deactivate Brand' : 'Activate Brand'}
                         </button>
-                        <button className="bm-dropdown-item text-danger" onClick={() => {
-                          if (window.confirm(`Are you sure you want to delete ${brand.name}?`)) {
-                            setBrands(brands.filter(b => b.id !== brand.id));
-                          }
-                          setActiveDropdown(null);
-                        }}>
+                        <button className="bm-dropdown-item text-danger" onClick={() => handleDeleteBrand(brand)}>
                           <Trash2 size={14} /> Delete Brand
                         </button>
                       </div>

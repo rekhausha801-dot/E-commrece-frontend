@@ -183,7 +183,11 @@ const CATEGORY_DATA = {
     banner: banner16Img,
     images: [watchImg, classicBlackWatchImg, stylishSunglassesImg, premiumLeatherBeltImg, silverBraceletImg, goldEarringsImg, leatherWalletImg, silkNecktieImg]
   },
-
+  'womens-western': {
+    title: "Women's Western",
+    banner: westernBannerImg,
+    images: [wtshirt1, wtshirt2, wtshirt3, wtshirt4, wtshirt5, wtshirt6, wtshirt7, wtshirt8, wmodel1, wmodel2, wmodel3, wmodel4, wmodel5]
+  }
 };
 
 const CATEGORIES = [

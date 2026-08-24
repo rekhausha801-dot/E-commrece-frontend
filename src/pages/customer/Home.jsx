@@ -28,6 +28,7 @@ import trendySneakersImg from '../../assets/images/trendy_sneakers.png';
 import beautyCosmeticsImg from '../../assets/images/beauty_cosmetics.png';
 import { Heart, ShoppingBag, ShoppingCart, Star, Leaf } from 'lucide-react';
 import { useWishlist } from '../../context/WishlistContext';
+import { getBrands } from '../../services/api';
 
 const SectionHeader = ({ eyebrowText, titleDark, titleGold }) => (
   <div style={{ textAlign: 'center', marginBottom: '40px' }}>
@@ -58,6 +59,30 @@ const Home = () => {
   const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = React.useState({ h: 1, m: 10, s: 30 });
   const { toggleWishlist, isInWishlist } = useWishlist();
+  const [brands, setBrands] = React.useState(BRANDS);
+
+  React.useEffect(() => {
+    const fetchBrands = async () => {
+      try {
+        const { data } = await getBrands();
+        const brandsData = data.data || data;
+        if (brandsData && brandsData.length > 0) {
+          const activeBrands = brandsData.filter(b => b.status !== 'Inactive');
+          if (activeBrands.length > 0) {
+            const mappedBrands = activeBrands.map(b => ({
+              name: b.brandName,
+              domain: '',
+              bgClass: 'bg-glass-wave'
+            }));
+            setBrands(mappedBrands);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching brands:", error);
+      }
+    };
+    fetchBrands();
+  }, []);
 
   React.useEffect(() => {
     const timer = setInterval(() => {
@@ -266,7 +291,7 @@ const Home = () => {
 
         <div className="brands-marquee-container">
           <div className="brands-marquee">
-            {[...BRANDS, ...BRANDS, ...BRANDS].map((brand, index) => (
+            {(brands.length > 0 ? Array(Math.max(3, Math.ceil(18 / brands.length))).fill(brands).flat() : []).map((brand, index) => (
               <motion.div 
                 className={`brand-card ${brand.bgClass}`} 
                 key={index}
