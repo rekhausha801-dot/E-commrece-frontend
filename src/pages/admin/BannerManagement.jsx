@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ResponsiveContainer, AreaChart, Area } from 'recharts';
-import { Search, Filter, Plus, MoreVertical, LayoutTemplate, CheckCircle2, Calendar, UserX, ChevronLeft, ChevronRight, Image as ImageIcon, X, Type, Image as ImageOnlyIcon, UploadCloud, Link as LinkIcon, Calendar as CalendarIcon, CalendarDays, CalendarClock, Eye, Edit2, Copy, RefreshCw, ArrowUpDown, Trash2, ShoppingBag, Users, Package } from 'lucide-react';
+import { Search, Filter, Plus, MoreVertical, LayoutTemplate, CheckCircle2, Calendar, UserX, ChevronLeft, ChevronRight, Image as ImageIcon, X, Type, Image as ImageOnlyIcon, UploadCloud, Link as LinkIcon, Calendar as CalendarIcon, CalendarDays, CalendarClock, Eye, Edit2, Copy, RefreshCw, ArrowUpDown, Trash2, ShoppingBag, Users, Package, Video } from 'lucide-react';
 import fashionnImg from '../../assets/banners/fashionn.png';
 import newArrivalsImg from '../../assets/banners/new_arrivals_bg.png';
 import couponImg from '../../assets/banners/coupon.png';
@@ -9,6 +9,9 @@ import gloImg from '../../assets/banners/glo.png';
 import wearImg from '../../assets/banners/wear.png';
 import './BannerManagement.css';
 import './Dashboard.css';
+import { getBanners, createBanner, updateBanner, deleteBanner, toggleBannerStatus } from '../../services/api';
+import Swal from 'sweetalert2';
+const API_BASE_URL = 'http://localhost:5000';
 
 const sparklineTotalBanners = [{ v: 10 }, { v: 15 }, { v: 12 }, { v: 22 }, { v: 18 }, { v: 28 }, { v: 24 }];
 const sparklineActiveBanners = [{ v: 5 }, { v: 8 }, { v: 10 }, { v: 12 }, { v: 15 }, { v: 16 }, { v: 18 }];
@@ -87,24 +90,185 @@ const mockBanners = [
 ];
 
 const BannerManagement = () => {
-  const [isAddingBanner, setIsAddingBanner] = useState(false);
+  const [banners, setBanners] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [drawerMode, setDrawerMode] = useState('add');
+  const [selectedBanner, setSelectedBanner] = useState(null);
   const [bannerType, setBannerType] = useState('image-text');
+  const [mediaPreview, setMediaPreview] = useState(null);
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    link: '',
+    startDate: '',
+    endDate: '',
+    status: true,
+    placement: 'Home - Hero',
+  });
+  const [selectedFile, setSelectedFile] = useState(null);
+
+  useEffect(() => {
+    fetchBanners();
+  }, []);
+
+  const fetchBanners = async () => {
+    try {
+      setLoading(true);
+      const { data } = await getBanners();
+      setBanners(data.data || []);
+    } catch (error) {
+      Swal.fire('Error', 'Failed to load banners', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getBannerStatus = (banner) => {
+    if (!banner.status) return 'Inactive';
+    const now = new Date();
+    if (banner.startDate && new Date(banner.startDate) > now) return 'Scheduled';
+    if (banner.endDate && new Date(banner.endDate) < now) return 'Inactive';
+    return 'Active';
+  };
+
+  const getBannerTypeDisplay = (type) => {
+    if (type === 'with_text') return 'Image + Text';
+    if (type === 'without_text') return 'Image Only';
+    return 'Video';
+  };
+
+  const getImageUrl = (path) => {
+    if (!path) return '';
+    return path.startsWith('http') ? path : `${API_BASE_URL}${path}`;
+  };
+
+  const handleMediaUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      setMediaPreview(URL.createObjectURL(file));
+    }
+  };
+  
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
   
   const [activeTab, setActiveTab] = useState('All Banners');
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('All Status');
   const [activeDropdown, setActiveDropdown] = useState(null);
 
-  const filteredBanners = mockBanners.filter(banner => {
-    if (activeTab === 'Image + Text Banners' && banner.type !== 'Image + Text') return false;
-    if (activeTab === 'Image Only Banners' && banner.type !== 'Image Only') return false;
-    if (statusFilter !== 'All Status' && banner.status !== statusFilter) return false;
+  const filteredBanners = banners.filter(banner => {
+    const typeDisplay = getBannerTypeDisplay(banner.type);
+    const currentStatus = getBannerStatus(banner);
+
+    if (activeTab === 'Image + Text Banners' && typeDisplay !== 'Image + Text') return false;
+    if (activeTab === 'Image Only Banners' && typeDisplay !== 'Image Only') return false;
+    if (statusFilter !== 'All Status' && currentStatus !== statusFilter) return false;
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      if (!banner.name.toLowerCase().includes(query) && !banner.placement.toLowerCase().includes(query)) return false;
+      if (!banner.title.toLowerCase().includes(query)) return false;
     }
     return true;
   });
+
+  const totalCount = banners.length;
+  const activeCount = banners.filter(b => getBannerStatus(b) === 'Active').length;
+  const scheduledCount = banners.filter(b => getBannerStatus(b) === 'Scheduled').length;
+  const inactiveCount = banners.filter(b => getBannerStatus(b) === 'Inactive').length;
+
+  const handleSaveBanner = async () => {
+    try {
+      if (!formData.title) return Swal.fire('Error', 'Title is required', 'error');
+      
+      const form = new FormData();
+      form.append("title", formData.title);
+      if (formData.description) form.append("description", formData.description);
+      form.append("type", bannerType === 'image-text' ? 'with_text' : 'without_text');
+      if (formData.link) form.append("link", formData.link);
+      if (formData.startDate) form.append("startDate", formData.startDate);
+      if (formData.endDate) form.append("endDate", formData.endDate);
+      form.append("status", formData.status);
+      form.append("placement", formData.placement);
+      
+      if (selectedFile) {
+        form.append("image", selectedFile);
+      } else if (drawerMode === 'add') {
+        return Swal.fire('Error', 'Image is required', 'error');
+      }
+
+      setLoading(true);
+      if (drawerMode === 'edit') {
+        await updateBanner(selectedBanner._id, form);
+        Swal.fire('Success', 'Banner updated successfully', 'success');
+      } else {
+        await createBanner(form);
+        Swal.fire('Success', 'Banner created successfully', 'success');
+      }
+      setIsDrawerOpen(false);
+      fetchBanners();
+    } catch (error) {
+      Swal.fire('Error', error.response?.data?.message || "Something went wrong", 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleToggleStatus = async (id) => {
+    try {
+      await toggleBannerStatus(id);
+      Swal.fire('Success', 'Banner status updated', 'success');
+      fetchBanners();
+    } catch (error) {
+      Swal.fire('Error', 'Failed to update status', 'error');
+    }
+  };
+
+  const handleDelete = async (id) => {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!'
+    });
+    if (!result.isConfirmed) return;
+
+    try {
+      await deleteBanner(id);
+      Swal.fire('Deleted!', 'Banner has been deleted.', 'success');
+      fetchBanners();
+    } catch (error) {
+      Swal.fire('Error', 'Failed to delete banner', 'error');
+    }
+  };
+
+  const openDrawer = (mode, banner = null) => {
+    setDrawerMode(mode);
+    setSelectedBanner(banner);
+    setIsDrawerOpen(true);
+    setSelectedFile(null);
+    if (banner && mode !== 'add') {
+      setBannerType(banner.type === 'with_text' ? 'image-text' : 'image-only');
+      setFormData({
+        title: banner.title || '',
+        description: banner.description || '',
+        link: banner.link || '',
+        startDate: banner.startDate ? new Date(banner.startDate).toISOString().split('T')[0] : '',
+        endDate: banner.endDate ? new Date(banner.endDate).toISOString().split('T')[0] : '',
+        status: banner.status !== false,
+        placement: banner.placement || 'Home - Hero',
+      });
+      setMediaPreview(getImageUrl(banner.image));
+    } else {
+      setBannerType('image-text');
+      setFormData({ title: '', description: '', link: '', startDate: '', endDate: '', status: true, placement: 'Home - Hero' });
+      setMediaPreview(null);
+    }
+  };
 
   return (
     <div className="banner-management-page">
@@ -114,7 +278,7 @@ const BannerManagement = () => {
           <div>
             <h1 className="bm-page-title">Banner Management</h1>
           </div>
-          <button className="bam-btn-primary" onClick={() => setIsAddingBanner(true)}>
+          <button className="bam-btn-primary" onClick={() => openDrawer('add')}>
             <Plus size={16} /> Add Banner
           </button>
         </div>
@@ -127,9 +291,9 @@ const BannerManagement = () => {
             <div className="stat-icon gold"><LayoutTemplate size={18} color="#c9a05b" /></div>
             <div className="stat-info">
               <span className="stat-title">Total Banners</span>
-              <h2 className="stat-value gold-text">24</h2>
+              <h2 className="stat-value gold-text">{totalCount}</h2>
               <div className="stat-bottom">
-                <span className="stat-change positive">↑ 4</span> <span className="stat-change-text">new today</span>
+                <span className="stat-change positive">All Banners</span>
               </div>
             </div>
           </div>
@@ -153,9 +317,9 @@ const BannerManagement = () => {
             <div className="stat-icon gold"><CheckCircle2 size={18} color="#554422" /></div>
             <div className="stat-info">
               <span className="stat-title">Active Banners</span>
-              <h2 className="stat-value">18</h2>
+              <h2 className="stat-value">{activeCount}</h2>
               <div className="stat-bottom">
-                <span className="stat-change positive">↑ 3</span> <span className="stat-change-text">new today</span>
+                <span className="stat-change positive">Currently Active</span>
               </div>
             </div>
           </div>
@@ -179,9 +343,9 @@ const BannerManagement = () => {
             <div className="stat-icon gold"><Calendar size={18} color="#554422" /></div>
             <div className="stat-info">
               <span className="stat-title">Scheduled Banners</span>
-              <h2 className="stat-value">4</h2>
+              <h2 className="stat-value">{scheduledCount}</h2>
               <div className="stat-bottom">
-                <span className="stat-change positive">↑ 2</span> <span className="stat-change-text">new today</span>
+                <span className="stat-change positive">Upcoming</span>
               </div>
             </div>
           </div>
@@ -205,9 +369,9 @@ const BannerManagement = () => {
             <div className="stat-icon gold"><UserX size={18} color="#c9a05b" /></div>
             <div className="stat-info">
               <span className="stat-title">Inactive Banners</span>
-              <h2 className="stat-value gold-text">2</h2>
+              <h2 className="stat-value gold-text">{inactiveCount}</h2>
               <div className="stat-bottom">
-                <span className="stat-change negative">2</span> <span className="stat-change-text">require attention</span>
+                <span className="stat-change negative">Disabled</span>
               </div>
             </div>
           </div>
@@ -281,49 +445,54 @@ const BannerManagement = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredBanners.map(banner => (
-                <tr key={banner.id}>
+              {loading ? (
+                <tr>
+                  <td colSpan="8" style={{ textAlign: 'center', padding: '20px' }}>Loading banners...</td>
+                </tr>
+              ) : filteredBanners.length === 0 ? (
+                <tr>
+                  <td colSpan="8" style={{ textAlign: 'center', padding: '20px' }}>No banners found.</td>
+                </tr>
+              ) : filteredBanners.map((banner, index) => (
+                <tr key={banner._id}>
                   <td>
-                    <img src={banner.image} alt={banner.name} className="bam-preview-img" />
+                    <img src={getImageUrl(banner.image)} alt={banner.title} className="bam-preview-img" />
                   </td>
-                  <td style={{ fontWeight: 600 }}>{banner.name}</td>
+                  <td style={{ fontWeight: 600 }}>{banner.title}</td>
                   <td>
-                    <span className={`bam-pill ${banner.type === 'Image + Text' ? 'img-text' : 'img-only'}`}>
-                      {banner.type}
+                    <span className={`bam-pill ${banner.type === 'with_text' ? 'img-text' : 'img-only'}`}>
+                      {getBannerTypeDisplay(banner.type)}
                     </span>
                   </td>
-                  <td>{banner.placement}</td>
+                  <td>-</td>
                   <td>
-                    {banner.schedule.replace('\n', ' ')}
+                    {banner.startDate ? new Date(banner.startDate).toLocaleDateString() : 'N/A'} - {banner.endDate ? new Date(banner.endDate).toLocaleDateString() : 'N/A'}
                   </td>
                   <td>
-                    <span className={`bam-pill ${banner.status.toLowerCase()}`}>
-                      {banner.status}
+                    <span className={`bam-pill ${getBannerStatus(banner).toLowerCase()}`}>
+                      {getBannerStatus(banner)}
                     </span>
                   </td>
-                  <td style={{ textAlign: 'center' }}>{banner.order}</td>
+                  <td style={{ textAlign: 'center' }}>{index + 1}</td>
                   <td style={{ position: 'relative' }}>
                     <button 
                       className="bam-action-btn" 
-                      onClick={() => setActiveDropdown(activeDropdown === banner.id ? null : banner.id)}
+                      onClick={() => setActiveDropdown(activeDropdown === banner._id ? null : banner._id)}
                     >
                       <MoreVertical size={16} />
                     </button>
                     
-                    {activeDropdown === banner.id && (
+                    {activeDropdown === banner._id && (
                       <>
                         <div 
                           style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 90 }} 
                           onClick={() => setActiveDropdown(null)}
                         />
                         <div className="bam-dropdown-menu" style={{ zIndex: 100 }}>
-                          <div className="bam-dropdown-item" onClick={() => setActiveDropdown(null)}><Eye size={16} /> View Banner</div>
-                          <div className="bam-dropdown-item" onClick={() => setActiveDropdown(null)}><Edit2 size={16} /> Edit Banner</div>
-                          <div className="bam-dropdown-item" onClick={() => setActiveDropdown(null)}><Copy size={16} /> Duplicate Banner</div>
-                          <div className="bam-dropdown-item" onClick={() => setActiveDropdown(null)}><RefreshCw size={16} /> Set as Inactive</div>
-                          <div className="bam-dropdown-item" onClick={() => setActiveDropdown(null)}><Calendar size={16} /> Schedule Banner</div>
-                          <div className="bam-dropdown-item" onClick={() => setActiveDropdown(null)}><ArrowUpDown size={16} /> Reorder</div>
-                          <div className="bam-dropdown-item text-red" onClick={() => setActiveDropdown(null)}><Trash2 size={16} /> Delete Banner</div>
+                          <div className="bam-dropdown-item" onClick={() => { setActiveDropdown(null); openDrawer('view', banner); }}><Eye size={16} /> View Banner</div>
+                          <div className="bam-dropdown-item" onClick={() => { setActiveDropdown(null); openDrawer('edit', banner); }}><Edit2 size={16} /> Edit Banner</div>
+                          <div className="bam-dropdown-item" onClick={() => { setActiveDropdown(null); handleToggleStatus(banner._id); }}><RefreshCw size={16} /> Toggle Status</div>
+                          <div className="bam-dropdown-item text-red" onClick={() => { setActiveDropdown(null); handleDelete(banner._id); }}><Trash2 size={16} /> Delete Banner</div>
                         </div>
                       </>
                     )}
@@ -352,17 +521,21 @@ const BannerManagement = () => {
         </div>
       </div>
 
-      {/* Add Banner Drawer */}
-      {isAddingBanner && (
-        <div className="bam-drawer-overlay" onClick={() => setIsAddingBanner(false)}>
+      {/* Add/Edit/View Banner Drawer */}
+      {isDrawerOpen && (
+        <div className="bam-drawer-overlay" onClick={() => setIsDrawerOpen(false)}>
           <div className="bam-drawer" onClick={e => e.stopPropagation()}>
             
             <div className="bam-drawer-header">
               <div>
-                <h2 className="bam-drawer-title">Add New Banner</h2>
-                <p className="bam-drawer-subtitle">Create a new banner for your website.</p>
+                <h2 className="bam-drawer-title">
+                  {drawerMode === 'add' ? 'Add New Banner' : drawerMode === 'edit' ? 'Edit Banner' : 'View Banner'}
+                </h2>
+                <p className="bam-drawer-subtitle">
+                  {drawerMode === 'add' ? 'Create a new banner for your website.' : drawerMode === 'edit' ? 'Update the details for this banner.' : 'Viewing details for this banner.'}
+                </p>
               </div>
-              <button className="bam-drawer-close" onClick={() => setIsAddingBanner(false)}>
+              <button className="bam-drawer-close" onClick={() => setIsDrawerOpen(false)}>
                 <X size={24} />
               </button>
             </div>
@@ -386,6 +559,12 @@ const BannerManagement = () => {
                     <h4 className="bam-type-title">Image Only</h4>
                     <p className="bam-type-desc">Upload complete banner image with text in it.</p>
                   </div>
+                  <div className={`bam-type-card ${bannerType === 'video' ? 'active' : ''}`} style={{ opacity: 0.5, cursor: 'not-allowed' }} title="Video not supported by backend">
+                    {bannerType === 'video' && <CheckCircle2 size={18} className="bam-type-check" />}
+                    <div className="bam-type-icon"><Video size={20} /></div>
+                    <h4 className="bam-type-title">Video</h4>
+                    <p className="bam-type-desc">Not supported by backend</p>
+                  </div>
                 </div>
               </div>
 
@@ -395,20 +574,26 @@ const BannerManagement = () => {
                 
                 <div className="bam-form-group">
                   <label className="bam-label">Banner Name <span className="req">*</span></label>
-                  <input type="text" className="bam-input" placeholder="Enter banner name" />
+                  <input type="text" name="title" className="bam-input" placeholder="Enter banner name" value={formData.title} onChange={handleInputChange} disabled={drawerMode === 'view'} />
                 </div>
                 
                 <div className="bam-row-2">
                   <div className="bam-form-group">
-                    <label className="bam-label">Placement <span className="req">*</span></label>
-                    <select className="bam-select-input">
-                      <option>Select placement</option>
+                    <label className="bam-label">Placement</label>
+                    <select name="placement" className="bam-select-input" value={formData.placement} onChange={handleInputChange} disabled={drawerMode === 'view'}>
+                      <option value="Home - Hero">Home - Hero</option>
+                      <option value="Home - Section">Home - Section</option>
+                      <option value="Top Strip">Top Strip</option>
+                      <option value="Home - Bottom">Home - Bottom</option>
+                      <option value="Category Page">Category Page</option>
+                      <option value="Checkout Page">Checkout Page</option>
                     </select>
                   </div>
                   <div className="bam-form-group">
-                    <label className="bam-label">Status <span className="req">*</span></label>
-                    <select className="bam-select-input">
-                      <option>Select status</option>
+                    <label className="bam-label">Status</label>
+                    <select name="status" className="bam-select-input" value={formData.status} onChange={(e) => setFormData(prev => ({...prev, status: e.target.value === 'true'}))} disabled={drawerMode === 'view'}>
+                      <option value="true">Active</option>
+                      <option value="false">Inactive</option>
                     </select>
                   </div>
                 </div>
@@ -418,37 +603,53 @@ const BannerManagement = () => {
               <div className="bam-section">
                 <h3 className="bam-section-title">3. Banner Content</h3>
                 
-                <div className="bam-form-group">
-                  <label className="bam-label">Banner Image <span className="req">*</span></label>
-                  <input type="file" className="bam-input" accept="image/png, image/jpeg, image/webp" style={{ paddingTop: '10px' }} />
-                  <p style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>PNG, JPG or WEBP (Max 2MB)</p>
-                </div>
+                {bannerType === 'video' ? (
+                  <div className="bam-form-group">
+                    <label className="bam-label">Banner Video <span className="req">*</span></label>
+                    <input type="file" className="bam-input" accept="video/mp4, video/webm, video/ogg" style={{ paddingTop: '10px' }} onChange={handleMediaUpload} />
+                    <p style={{ fontSize: '12px', color: '#6b7280', margin: '4px 0 12px 0' }}>MP4, WEBM or OGG (Max 20MB)</p>
+                    {mediaPreview && (
+                      <div style={{ borderRadius: '8px', overflow: 'hidden', border: '1px solid #e5e7eb', background: '#000' }}>
+                        <video src={mediaPreview} autoPlay loop muted style={{ width: '100%', display: 'block' }} />
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="bam-form-group">
+                    <label className="bam-label">Banner Image <span className="req">*</span></label>
+                    <input type="file" className="bam-input" accept="image/png, image/jpeg, image/webp" style={{ paddingTop: '10px' }} onChange={handleMediaUpload} />
+                    <p style={{ fontSize: '12px', color: '#6b7280', margin: '4px 0 12px 0' }}>PNG, JPG or WEBP (Max 2MB)</p>
+                    {mediaPreview && (
+                      <div style={{ borderRadius: '8px', overflow: 'hidden', border: '1px solid #e5e7eb', background: '#fafafa', padding: '10px' }}>
+                        <img src={mediaPreview} alt="preview" style={{ width: '100%', display: 'block', borderRadius: '4px' }} />
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {bannerType === 'image-text' && (
                   <>
                     <div className="bam-row-2">
                       <div className="bam-form-group">
-                        <label className="bam-label">Title <span className="req">*</span></label>
-                        <input type="text" className="bam-input" placeholder="Enter banner title" />
+                        <label className="bam-label">Title</label>
+                        <input type="text" name="title" className="bam-input" placeholder="Title is handled above, but can be edited here" value={formData.title} onChange={handleInputChange} disabled={drawerMode === 'view'} />
                       </div>
                       <div className="bam-form-group">
-                        <label className="bam-label">Subtitle</label>
-                        <input type="text" className="bam-input" placeholder="Enter banner subtitle" />
+                        <label className="bam-label">Description</label>
+                        <input type="text" name="description" className="bam-input" placeholder="Enter banner description" value={formData.description} onChange={handleInputChange} disabled={drawerMode === 'view'} />
                       </div>
                     </div>
 
                     <div className="bam-row-2">
                       <div className="bam-form-group">
                         <label className="bam-label">Button Text</label>
-                        <input type="text" className="bam-input" placeholder="Enter button text" />
+                        <input type="text" className="bam-input" placeholder="Not supported by backend" disabled />
                       </div>
                       <div className="bam-form-group">
-                        <label className="bam-label">Button Link</label>
+                        <label className="bam-label">Banner Link</label>
                         <div className="bam-input-with-icon">
                           <LinkIcon size={16} className="bam-icon-left" style={{color: '#9ca3af'}} />
-                          <select className="bam-select-input" style={{paddingLeft: '36px'}}>
-                            <option>Enter link or select page</option>
-                          </select>
+                          <input type="text" name="link" className="bam-input" style={{paddingLeft: '36px'}} placeholder="Enter URL" value={formData.link} onChange={handleInputChange} disabled={drawerMode === 'view'} />
                         </div>
                       </div>
                     </div>
@@ -481,14 +682,14 @@ const BannerManagement = () => {
                     <label className="bam-label">Start Date</label>
                     <div className="bam-input-with-icon">
                       <CalendarIcon size={16} className="bam-icon-left" />
-                      <input type="text" className="bam-input" placeholder="Select start date" />
+                      <input type="date" name="startDate" className="bam-input" style={{paddingLeft: '36px'}} value={formData.startDate} onChange={handleInputChange} disabled={drawerMode === 'view'} />
                     </div>
                   </div>
                   <div className="bam-form-group">
                     <label className="bam-label">End Date</label>
                     <div className="bam-input-with-icon">
                       <CalendarClock size={16} className="bam-icon-left" />
-                      <input type="text" className="bam-input" placeholder="Select end date" />
+                      <input type="date" name="endDate" className="bam-input" style={{paddingLeft: '36px'}} value={formData.endDate} onChange={handleInputChange} disabled={drawerMode === 'view'} />
                     </div>
                   </div>
                 </div>
@@ -496,17 +697,24 @@ const BannerManagement = () => {
                 <div className="bam-row-2">
                   <div className="bam-form-group">
                     <label className="bam-label">Display Order</label>
-                    <input type="text" className="bam-input" placeholder="Enter button number" />
+                    <input type="text" className="bam-input" placeholder="Not supported by backend" disabled />
                   </div>
-                  <div className="bam-helper-text">Lower number shows first</div>
+                  <div className="bam-helper-text"></div>
                 </div>
               </div>
             </div>
 
-            <div className="bam-drawer-footer">
-              <button className="bam-btn-cancel" onClick={() => setIsAddingBanner(false)}>Cancel</button>
-              <button className="bam-btn-primary" onClick={() => setIsAddingBanner(false)}>Save Banner</button>
-            </div>
+            {drawerMode !== 'view' ? (
+              <div className="bam-drawer-footer">
+                <button className="bam-btn-cancel" onClick={() => setIsDrawerOpen(false)} disabled={loading}>Cancel</button>
+                <button className="bam-btn-primary" onClick={handleSaveBanner} disabled={loading}>{loading ? 'Saving...' : 'Save Banner'}</button>
+              </div>
+            ) : (
+              <div className="bam-drawer-footer">
+                <button className="bam-btn-cancel" onClick={() => setIsDrawerOpen(false)}>Close</button>
+                <button className="bam-btn-primary" onClick={() => setDrawerMode('edit')}>Edit</button>
+              </div>
+            )}
             
           </div>
         </div>

@@ -147,7 +147,7 @@ const Support = () => {
                 
                 <div className="question-body">
                   <p>Hi Rekha ,</p>
-                  <p>Your order was delivered on 10 Nov 24. As per Meesho policy, you can raise any Return/Exchange request within 7 days of delivery. As return window has passed on 17 Nov 24, you will not be able to Return/Exchange this order.</p>
+                  <p>Your order was delivered on 10 Nov 24. As per Relietech policy, you can raise any Return/Exchange request within 7 days of delivery. As return window has passed on 17 Nov 24, you will not be able to Return/Exchange this order.</p>
                 </div>
                 
                 <div className="divider-line full-width"></div>

@@ -44,7 +44,7 @@ const CustomSelect = ({ value, onChange, options, placeholder, disabled }) => {
 
 const AddNewBrand = ({ onCancel, onSave, initialData, readOnly }) => {
   const [brandName, setBrandName] = useState(initialData?.name || '');
-  const [brandSku, setBrandSku] = useState(initialData?.sku || '');
+  const [brandSku, setBrandSku] = useState(initialData?.brandSku || initialData?.sku || '');
   const [status, setStatus] = useState(initialData?.status || '');
   const [category, setCategory] = useState(initialData?.category || '');
   const [description, setDescription] = useState(initialData?.description || '');
@@ -52,32 +52,44 @@ const AddNewBrand = ({ onCancel, onSave, initialData, readOnly }) => {
   const [metaDescription, setMetaDescription] = useState(initialData?.metaDescription || '');
   
   const [coverImage, setCoverImage] = useState(initialData?.logo || null);
+  const [coverImageFile, setCoverImageFile] = useState(null);
+  
   const [galleryImages, setGalleryImages] = useState({ 1: null, 2: null, 3: null, 4: null });
+  const [galleryImageFiles, setGalleryImageFiles] = useState({ 1: null, 2: null, 3: null, 4: null });
 
   const handleReset = () => {
     setBrandName(initialData?.name || '');
-    setBrandSku(initialData?.sku || '');
+    setBrandSku(initialData?.brandSku || initialData?.sku || '');
     setStatus(initialData?.status || '');
     setCategory(initialData?.category || '');
     setDescription(initialData?.description || '');
     setMetaTitle(initialData?.metaTitle || '');
     setMetaDescription(initialData?.metaDescription || '');
     setCoverImage(initialData?.logo || null);
+    setCoverImageFile(null);
     setGalleryImages({ 1: null, 2: null, 3: null, 4: null });
+    setGalleryImageFiles({ 1: null, 2: null, 3: null, 4: null });
   };
 
   const handleSave = () => {
-    const newBrand = {
-      id: initialData?.id || Date.now(),
-      name: brandName || 'New Brand',
-      category: category || 'Uncategorized',
-      products: initialData?.products || 0,
-      discount: initialData?.discount || '0%',
-      status: status || 'Active',
-      createdAt: initialData?.createdAt || new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-      logo: coverImage || 'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg'
-    };
-    onSave(newBrand);
+    const formData = new FormData();
+    formData.append('brandName', brandName || 'New Brand');
+    formData.append('brandSku', brandSku);
+    formData.append('status', status || 'Active');
+    formData.append('category', category || 'Uncategorized');
+    formData.append('description', description);
+    formData.append('metaTitle', metaTitle);
+    formData.append('metaDescription', metaDescription);
+    
+    if (coverImageFile) {
+      formData.append('brandLogo', coverImageFile);
+    }
+    
+    Object.values(galleryImageFiles).forEach(file => {
+      if (file) formData.append('galleryImages', file);
+    });
+
+    onSave(formData, initialData?.id);
   };
 
   return (

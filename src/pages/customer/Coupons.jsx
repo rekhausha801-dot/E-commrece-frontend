@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getOffers } from '../../services/api';
 import {
   Gift, ArrowRight, Tag, Monitor,
   Sparkles, Home, MoreHorizontal, ChevronLeft,
@@ -15,16 +16,34 @@ import couponBanner from '../../assets/banners/coupon.png';
 const Coupons = () => {
   const [activeTab, setActiveTab] = useState('All Offers');
   const [copiedCode, setCopiedCode] = useState(null);
+  const [coupons, setCoupons] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    fetchCoupons();
+  }, []);
+
+  const fetchCoupons = async () => {
+    setLoading(true);
+    try {
+      const { data } = await getOffers({ t: new Date().getTime() });
+      if (data.success) {
+        // Filter out inactive coupons
+        setCoupons(data.data.filter(c => c.isActive !== false));
+      }
+    } catch (error) {
+      console.error("Failed to fetch coupons", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleCopy = (code) => {
     navigator.clipboard.writeText(code);
     setCopiedCode(code);
     setTimeout(() => setCopiedCode(null), 2000);
   };
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
 
   const tabs = [
     { name: 'All Offers', icon: <Tag size={16} /> },
@@ -33,6 +52,15 @@ const Coupons = () => {
     { name: 'Beauty', icon: <Sparkles size={16} /> },
     { name: 'Home & Living', icon: <Home size={16} /> }
   ];
+
+  // Helper to format discount
+  const formatDiscount = (coupon) => {
+    if (coupon.discountType === 'Percentage') {
+      return { pre: 'FLAT', val: `${coupon.discountValue}%`, post: 'OFF' };
+    } else {
+      return { pre: 'FLAT', val: `₹${coupon.discountValue}`, post: 'OFF' };
+    }
+  };
 
   return (
     <div className="new-coupon-page">
@@ -59,283 +87,85 @@ const Coupons = () => {
 
         {/* Coupons Grid */}
         <div className="nc-coupons-grid">
+          
+          {loading ? (
+            <div style={{ padding: '40px', textAlign: 'center', width: '100%' }}>Loading offers...</div>
+          ) : coupons.length === 0 ? (
+             <div style={{ padding: '40px', textAlign: 'center', width: '100%', color: '#6b7280' }}>No active offers available at the moment.</div>
+          ) : (
+            coupons.map((coupon, index) => {
+              const { pre, val, post } = formatDiscount(coupon);
+              
+              // We can alternate card styles just to keep it looking dynamic and varied
+              // Style depends on whether an image was provided
+              const styleClass = coupon.image ? 'card-style-1' : 'card-style-4';
+              const buttonColor = index % 3 === 0 ? 'theme-brown' : (index % 3 === 1 ? 'theme-gold' : 'theme-rose');
+              
+              // Basic category filtering check (if you implement category on backend later, you can map it. For now, show on 'All Offers')
+              if (activeTab !== 'All Offers' && coupon.category !== activeTab && coupon.category !== 'All Offers') {
+                 // For now, since admin panel saves as 'All Offers', they will show in all tabs if we don't filter them out strictly, 
+                 // but let's just make them show in 'All Offers' or if category matches
+                 return null;
+              }
 
-          {/* Card 3: Wardrobe Refresh */}
-          {(activeTab === 'All Offers' || activeTab === 'Fashion') && (
-            <div className="nc-wide-card card-style-3">
-              <div className="nwc-image-left">
-                <img src={imgHanging1} alt="Wardrobe" />
-              </div>
-              <div className="nwc-left">
-                <div className="nwc-tag"><span className="nwc-dot"></span> SPECIAL OFFER</div>
-                <h2 className="nwc-title">Wardrobe</h2>
-                <h3 className="nwc-subtitle script-font">Refresh</h3>
-                <p className="nwc-desc">Revamp your look with<br />our trending new styles.</p>
-
-                <div className="nwc-discount-box">
-                  <div className="nwc-discount-top">
-                    <span className="nwc-flat">FLAT</span>
-                    <span className="nwc-percent">20%</span>
-                    <span className="nwc-off">OFF</span>
-                  </div>
-                  <div className="nwc-min-purchase">ON MINIMUM PURCHASE OF ₹1499</div>
-                </div>
-              </div>
-
-              <div className="nwc-divider"></div>
-
-              <div className="nwc-right">
-                <p className="nwc-use-code">USE CODE</p>
-                <div className="nwc-code-box">REFRESH2</div>
-                <button className="nwc-copy-btn theme-rose" onClick={() => handleCopy('REFRESH2')}>
-                  {copiedCode === 'REFRESH2' ? (
-                    <><Check size={14} style={{ marginRight: 6 }} /> COPIED!</>
-                  ) : (
-                    <><Copy size={14} style={{ marginRight: 6 }} /> COPY CODE</>
+              return (
+                <div key={coupon._id} className={`nc-wide-card ${styleClass}`}>
+                  {styleClass === 'card-style-1' && (
+                    <div className="nwc-image-container">
+                      <img src={coupon.image || imgHanging1} alt={coupon.title} className="nwc-image" />
+                    </div>
                   )}
-                </button>
-              </div>
-            </div>
-          )}
+                  <div className="nwc-left">
+                    <div className="nwc-tag" style={{
+                        ...(styleClass === 'card-style-4' ? {alignSelf: 'center', marginBottom: 12} : {}),
+                        ...(coupon.isFirstOrderOnly ? { color: '#e11d48', fontWeight: 700 } : {})
+                    }}>
+                      {styleClass === 'card-style-1' && <span className="nwc-dot" style={coupon.isFirstOrderOnly ? { background: '#e11d48' } : {}}></span>} 
+                      {coupon.isFirstOrderOnly ? 'FIRST ORDER ONLY' : (styleClass === 'card-style-4' ? 'TODAY\'S DEAL' : 'SPECIAL OFFER')}
+                    </div>
+                    
+                    {styleClass === 'card-style-4' ? (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center', flexWrap: 'wrap' }}>
+                         <h2 className="nwc-title" style={{ color: '#2D3748', margin: 0, fontWeight: 700, fontSize: coupon.title.length > 15 ? '24px' : '32px' }}>{coupon.title.split(' ')[0]}</h2>
+                         <h2 className="nwc-title" style={{ color: '#A38C75', margin: 0, fontWeight: 400, fontSize: coupon.title.length > 15 ? '24px' : '32px', whiteSpace: 'nowrap' }}>{coupon.title.split(' ').slice(1).join(' ')}</h2>
+                      </div>
+                    ) : (
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '8px', width: '100%' }}>
+                        <h2 className="nwc-title" style={{ color: '#2D3748', margin: 0, fontWeight: 600, fontSize: coupon.title.length > 15 ? '24px' : '32px', textAlign: 'center' }}>{coupon.title.split(' ')[0]}</h2>
+                        <h2 className="nwc-title" style={{ color: '#B36B6B', margin: 0, fontWeight: 600, fontSize: coupon.title.length > 15 ? '22px' : '32px', textAlign: 'center' }}>{coupon.title.split(' ').slice(1).join(' ')}</h2>
+                      </div>
+                    )}
+                    
+                    <p className={styleClass === 'card-style-4' ? "nwc-desc-center" : "nwc-desc"} style={{ marginTop: 12, textAlign: 'center', padding: '0 10px' }}>
+                      {coupon.description || 'Grab this special discount while it lasts.'}
+                    </p>
 
-          {/* Card 4: Beauty Edit */}
-          {(activeTab === 'All Offers' || activeTab === 'Beauty') && (
-            <div className="nc-wide-card card-style-4">
-              <div className="nwc-left">
-                <div className="nwc-tag-center">TODAY'S DEAL</div>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px', justifyContent: 'center' }}>
-                  <h2 className="nwc-title-serif">Beauty</h2>
-                  <h3 className="nwc-subtitle-script">Edit</h3>
-                </div>
-                <p className="nwc-desc-center" style={{ marginTop: 16 }}>Expertly curated premium beauty styles exclusively.<br />Absolutely irresistible mind blowing beauty offers.</p>
-
-                <div className="nwc-discount-box">
-                  <div className="nwc-discount-top">
-                    <span className="nwc-flat">FLAT</span>
-                    <span className="nwc-percent">25%</span>
-                    <span className="nwc-off">OFF</span>
+                    <div className="nwc-discount-box">
+                      <div className="nwc-discount-top">
+                        <span className="nwc-flat">{pre}</span>
+                        <span className="nwc-percent">{val}</span>
+                        <span className="nwc-off">{post}</span>
+                      </div>
+                      <div className="nwc-min-purchase">ON MINIMUM PURCHASE OF ₹{coupon.minPurchase}</div>
+                    </div>
                   </div>
-                  <div className="nwc-min-purchase">ON ORDERS ABOVE ₹1999</div>
-                </div>
-              </div>
 
-              <div className="nwc-divider"></div>
+                  <div className="nwc-divider"></div>
 
-              <div className="nwc-right">
-                <p className="nwc-use-code">USE CODE</p>
-                <div className="nwc-code-box">EDIT25</div>
-                <button className="nwc-copy-btn theme-gold" onClick={() => handleCopy('EDIT25')}>
-                  {copiedCode === 'EDIT25' ? (
-                    <><Check size={14} style={{ marginRight: 6 }} /> COPIED!</>
-                  ) : (
-                    <><Copy size={14} style={{ marginRight: 6 }} /> COPY CODE</>
-                  )}
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Card 1: New Season */}
-          {(activeTab === 'All Offers' || activeTab === 'Fashion') && (
-            <div className="nc-wide-card card-style-1">
-              <div className="nwc-left">
-                <div className="nwc-tag"><span className="nwc-dot"></span> EXCLUSIVE OFFER</div>
-                <h2 className="nwc-title">New Season</h2>
-                <h3 className="nwc-subtitle">NEW STYLE</h3>
-                <p className="nwc-desc">Elevate your entire wardrobe style with<br />our absolutely stunning new fashion collection.</p>
-
-                <div className="nwc-discount-box">
-                  <div className="nwc-discount-top">
-                    <span className="nwc-flat">FLAT</span>
-                    <span className="nwc-percent">15%</span>
-                    <span className="nwc-off">OFF</span>
+                  <div className="nwc-right">
+                    <p className="nwc-use-code">USE CODE</p>
+                    <div className="nwc-code-box">{coupon.couponCode}</div>
+                    <button className={`nwc-copy-btn ${buttonColor}`} onClick={() => handleCopy(coupon.couponCode)}>
+                      {copiedCode === coupon.couponCode ? (
+                        <><Check size={14} style={{ marginRight: 6 }} /> COPIED!</>
+                      ) : (
+                        <><Copy size={14} style={{ marginRight: 6 }} /> COPY CODE</>
+                      )}
+                    </button>
                   </div>
-                  <div className="nwc-min-purchase">ON MINIMUM PURCHASE OF ₹999</div>
                 </div>
-              </div>
-
-              <div className="nwc-divider"></div>
-
-              <div className="nwc-right">
-                <p className="nwc-use-code">USE CODE</p>
-                <div className="nwc-code-box">STYLE15</div>
-                <button className="nwc-copy-btn theme-brown" onClick={() => handleCopy('STYLE15')}>
-                  {copiedCode === 'STYLE15' ? (
-                    <><Check size={14} style={{ marginRight: 6 }} /> COPIED!</>
-                  ) : (
-                    <><Copy size={14} style={{ marginRight: 6 }} /> COPY CODE</>
-                  )}
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Card 2: Chic Picks */}
-          {(activeTab === 'All Offers' || activeTab === 'Beauty') && (
-            <div className="nc-wide-card card-style-2">
-              <div className="nwc-image-container">
-                <img src={imgHanging2} alt="Dresses" />
-              </div>
-
-              <div className="nwc-divider" style={{ margin: '24px 20px' }}></div>
-
-              <div className="nwc-content-full">
-                <div className="nwc-tag-center"><Clock size={12} style={{ marginRight: 4 }} /> LIMITED TIME</div>
-                <h2 className="nwc-title-center">Chic Picks</h2>
-                <h3 className="nwc-subtitle-center">JUST FOR YOU</h3>
-                <div className="nwc-heart-divider"><Heart size={10} fill="#B36B6B" color="#B36B6B" /></div>
-                <p className="nwc-desc-center">Grab your most loved absolute favorites<br />at incredibly huge special discounted prices.</p>
-
-                <div className="nwc-horizontal-code" style={{ marginBottom: 6 }}>
-                  <span className="nwc-h-label">CODE</span>
-                  <span className="nwc-h-value">CHIC10</span>
-                  <button className="nwc-h-copy theme-pink" onClick={() => handleCopy('CHIC10')}>
-                    {copiedCode === 'CHIC10' ? <Check size={14} /> : <Copy size={14} />}
-                  </button>
-                </div>
-                <p className="nwc-min-purchase-center" style={{ marginBottom: 0 }}>GET 10% OFF ON ORDERS ABOVE ₹1299</p>
-              </div>
-            </div>
-          )}
-
-          {/* Card 5: Tech Gadgets */}
-          {(activeTab === 'All Offers' || activeTab === 'Electronics') && (
-            <div className="nc-wide-card card-style-1">
-              <div className="nwc-left">
-                <div className="nwc-tag"><span className="nwc-dot"></span> BIG SAVINGS</div>
-                <h2 className="nwc-title">Tech Gadgets</h2>
-                <h3 className="nwc-subtitle">SMART DEALS</h3>
-                <p className="nwc-desc">Upgrade your fast paced daily life<br />with the absolutely smartest modern tech.</p>
-
-                <div className="nwc-discount-box">
-                  <div className="nwc-discount-top">
-                    <span className="nwc-flat">UPTO</span>
-                    <span className="nwc-percent">40%</span>
-                    <span className="nwc-off">OFF</span>
-                  </div>
-                  <div className="nwc-min-purchase">ON SELECT ELECTRONICS</div>
-                </div>
-              </div>
-
-              <div className="nwc-divider"></div>
-
-              <div className="nwc-right">
-                <p className="nwc-use-code">USE CODE</p>
-                <div className="nwc-code-box">TECH40</div>
-                <button className="nwc-copy-btn theme-brown" onClick={() => handleCopy('TECH40')}>
-                  {copiedCode === 'TECH40' ? (
-                    <><Check size={14} style={{ marginRight: 6 }} /> COPIED!</>
-                  ) : (
-                    <><Copy size={14} style={{ marginRight: 6 }} /> COPY CODE</>
-                  )}
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Card 6: Home Essentials */}
-          {(activeTab === 'All Offers' || activeTab === 'Home & Living') && (
-            <div className="nc-wide-card card-style-1">
-              <div className="nwc-left">
-                <div className="nwc-tag"><span className="nwc-dot"></span> FESTIVE OFFER</div>
-                <h2 className="nwc-title">Home Decor</h2>
-                <h3 className="nwc-subtitle">LIVING SPACES</h3>
-                <p className="nwc-desc">Make your sweet lovely home beautiful<br />with our absolutely stunning new collection.</p>
-
-                <div className="nwc-discount-box">
-                  <div className="nwc-discount-top">
-                    <span className="nwc-flat">FLAT</span>
-                    <span className="nwc-percent">10%</span>
-                    <span className="nwc-off">OFF</span>
-                  </div>
-                  <div className="nwc-min-purchase">ON ORDERS ABOVE ₹2999</div>
-                </div>
-              </div>
-
-              <div className="nwc-divider"></div>
-
-              <div className="nwc-right">
-                <p className="nwc-use-code">USE CODE</p>
-                <div className="nwc-code-box">HOME10</div>
-                <button className="nwc-copy-btn theme-brown" style={{ backgroundColor: '#719A71' }} onClick={() => handleCopy('HOME10')}>
-                  {copiedCode === 'HOME10' ? (
-                    <><Check size={14} style={{ marginRight: 6 }} /> COPIED!</>
-                  ) : (
-                    <><Copy size={14} style={{ marginRight: 6 }} /> COPY CODE</>
-                  )}
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Card 7: Special Deal */}
-          {(activeTab === 'All Offers' || activeTab === 'Electronics' || activeTab === 'Home & Living') && (
-            <div className="nc-wide-card card-style-1">
-              <div className="nwc-left">
-                <div className="nwc-tag"><span className="nwc-dot"></span> MEGA DEAL</div>
-                <h2 className="nwc-title">Super Saver</h2>
-                <h3 className="nwc-subtitle">ANYTHING & EVERYTHING</h3>
-                <p className="nwc-desc">Get incredibly huge massive discounts across<br />all our wide ranging premium categories.</p>
-
-                <div className="nwc-discount-box">
-                  <div className="nwc-discount-top">
-                    <span className="nwc-flat">FLAT</span>
-                    <span className="nwc-percent">₹500</span>
-                    <span className="nwc-off">OFF</span>
-                  </div>
-                  <div className="nwc-min-purchase">ON ORDERS ABOVE ₹4999</div>
-                </div>
-              </div>
-
-              <div className="nwc-divider"></div>
-
-              <div className="nwc-right">
-                <p className="nwc-use-code">USE CODE</p>
-                <div className="nwc-code-box">MEGA500</div>
-                <button className="nwc-copy-btn theme-brown" style={{ backgroundColor: '#9F7AEA' }} onClick={() => handleCopy('MEGA500')}>
-                  {copiedCode === 'MEGA500' ? (
-                    <><Check size={14} style={{ marginRight: 6 }} /> COPIED!</>
-                  ) : (
-                    <><Copy size={14} style={{ marginRight: 6 }} /> COPY CODE</>
-                  )}
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Card 8: Weekend Flash */}
-          {(activeTab === 'All Offers') && (
-            <div className="nc-wide-card card-style-1">
-              <div className="nwc-left">
-                <div className="nwc-tag"><span className="nwc-dot"></span> FLASH SALE</div>
-                <h2 className="nwc-title">Weekend</h2>
-                <h3 className="nwc-subtitle">LIMITED TIME</h3>
-                <p className="nwc-desc">Grab massive extra special flat discounts<br />during this absolutely crazy festive weekend.</p>
-
-                <div className="nwc-discount-box">
-                  <div className="nwc-discount-top">
-                    <span className="nwc-flat">EXTRA</span>
-                    <span className="nwc-percent">30%</span>
-                    <span className="nwc-off">OFF</span>
-                  </div>
-                  <div className="nwc-min-purchase">ON ORDERS ABOVE ₹1499</div>
-                </div>
-              </div>
-
-              <div className="nwc-divider"></div>
-
-              <div className="nwc-right">
-                <p className="nwc-use-code">USE CODE</p>
-                <div className="nwc-code-box">WKND30</div>
-                <button className="nwc-copy-btn theme-gold" style={{ backgroundColor: '#D9A24D' }} onClick={() => handleCopy('WKND30')}>
-                  {copiedCode === 'WKND30' ? (
-                    <><Check size={14} style={{ marginRight: 6 }} /> COPIED!</>
-                  ) : (
-                    <><Copy size={14} style={{ marginRight: 6 }} /> COPY CODE</>
-                  )}
-                </button>
-              </div>
-            </div>
+              );
+            })
           )}
 
         </div>

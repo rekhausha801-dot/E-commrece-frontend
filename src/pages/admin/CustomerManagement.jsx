@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { Search, Filter, RotateCcw, MoreVertical, X, Mail, Phone, MapPin, Home, Edit, Ban, MessageSquare, Users, UserCheck, UserMinus, UserPlus, ChevronLeft, ChevronRight, Plus, User, Calendar, Hash, FileText, Lock, EyeOff, Globe, Map, FileSignature, UploadCloud, Save, RefreshCw, ArrowLeft, ChevronDown, Heart, Bell, Image, ShieldCheck, Info, Check } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, Filter, RotateCcw, MoreVertical, X, Mail, Phone, MapPin, Home, Edit, Ban, MessageSquare, Users, UserCheck, UserMinus, UserPlus, ChevronLeft, ChevronRight, Plus, User, Calendar, Hash, FileText, Lock, EyeOff, Globe, Map, FileSignature, UploadCloud, Save, RefreshCw, ArrowLeft, ChevronDown, Heart, Bell, Image, ShieldCheck, Info, Check, Loader } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area } from 'recharts';
+import { getCustomers, getCustomerStats, createCustomer, updateCustomer, updateCustomerStatus, deleteCustomer } from '../../services/api';
 import './CustomerManagement.css';
 import './Dashboard.css';
 
@@ -35,7 +36,9 @@ const mockRecentOrders = [
 ];
 
 const CustomerManagement = () => {
-  const [customers, setCustomers] = useState(mockCustomers);
+  const [customers, setCustomers] = useState([]);
+  const [stats, setStats] = useState({ totalCustomers: 0, activeCustomers: 0, blockedCustomers: 0, newCustomers: 0 });
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('All Status');
@@ -44,16 +47,105 @@ const CustomerManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   
-  const [formData, setFormData] = useState({
-    name: '', email: '', phone: '', status: 'Active', 
-    joined: new Date().toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'}), 
-    avatar: 'https://randomuser.me/api/portraits/lego/1.jpg'
-  });
+  const defaultFormData = {
+    name: '', email: '', phone: '', address: '', city: '', state: '', country: '', pincode: '', status: 'Active'
+  };
+  const [formData, setFormData] = useState(defaultFormData);
+
+  const fetchStats = async () => {
+    try {
+      const { data } = await getCustomerStats();
+      if (data.success) setStats(data.data);
+    } catch (error) {
+      console.error("Error fetching stats:", error);
+    }
+  };
+
+  const fetchCustomers = async () => {
+    setIsLoading(true);
+    try {
+      const { data } = await getCustomers({ limit: 1000, t: new Date().getTime() });
+      if (data.success) {
+        const mapped = data.data.map(c => ({
+          ...c,
+          id: c._id,
+          displayId: `#CUST${c._id.substring(c._id.length - 4).toUpperCase()}`,
+          name: c.name,
+          email: c.email,
+          phone: c.phone,
+          status: c.status,
+          joined: new Date(c.createdAt).toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'}),
+          avatar: 'https://randomuser.me/api/portraits/lego/1.jpg',
+          orders: 0,
+          totalSpent: '₹0'
+        }));
+        setCustomers(mapped);
+      }
+    } catch (error) {
+      console.error("Error fetching customers:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchStats();
+    fetchCustomers();
+  }, []);
+
+  const handleSaveCustomer = async () => {
+    if (!formData.name || !formData.email || !formData.phone) {
+      alert("Name, email and phone are required.");
+      return;
+    }
+    setIsLoading(true);
+    try {
+      if (selectedCustomer) {
+        await updateCustomer(selectedCustomer.id, formData);
+      } else {
+        await createCustomer(formData);
+      }
+      fetchCustomers();
+      fetchStats();
+      setIsAddingCustomer(false);
+      setSelectedCustomer(null);
+    } catch (error) {
+      alert(error.response?.data?.message || "An error occurred");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleToggleStatus = async (customer) => {
+    try {
+      const newStatus = customer.status === 'Blocked' ? 'Active' : 'Blocked';
+      await updateCustomerStatus(customer.id, newStatus);
+      fetchCustomers();
+      fetchStats();
+    } catch (error) {
+      alert("Error updating status");
+    }
+    setActiveDropdown(null);
+  };
+
+  const handleDeleteCustomer = async (id, name) => {
+    if(window.confirm(`Delete customer ${name}?`)) {
+      try {
+        await deleteCustomer(id);
+        fetchCustomers();
+        fetchStats();
+        if (selectedCustomer?.id === id) setSelectedCustomer(null);
+      } catch (error) {
+         alert("Error deleting customer");
+      }
+    }
+    setActiveDropdown(null);
+  };
 
   const filteredCustomers = customers.filter(c => {
     const matchesSearch = c.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           c.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          c.id.toLowerCase().includes(searchQuery.toLowerCase());
+                          c.displayId.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === 'All Status' || c.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -70,13 +162,9 @@ const CustomerManagement = () => {
             <h1 className="bm-page-title">{isAddingCustomer ? (selectedCustomer ? 'Edit Customer Details' : 'Add New Customer') : 'Customer Management'}</h1>
             {isAddingCustomer && <p style={{ fontSize: '13px', color: '#4b5563', margin: '4px 0 0 0' }}>{selectedCustomer ? 'Update the details for this customer account.' : 'Create a new customer account and add customer details.'}</p>}
           </div>
-          {isAddingCustomer ? (
+          {isAddingCustomer && (
             <button className="cm-btn-outline-action" onClick={() => { setIsAddingCustomer(false); setSelectedCustomer(null); }}>
               <ArrowLeft size={16} /> Back to Customers
-            </button>
-          ) : (
-            <button className="bm-btn-add" onClick={() => { setSelectedCustomer(null); setFormData({name: '', email: '', phone: '', status: 'Active', joined: new Date().toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'}), avatar: 'https://randomuser.me/api/portraits/lego/1.jpg'}); setIsAddingCustomer(true); }}>
-              <Plus size={16} /> Add Customer
             </button>
           )}
         </div>
@@ -91,7 +179,7 @@ const CustomerManagement = () => {
             <div className="stat-icon gold"><Users size={18} color="#c9a05b" /></div>
             <div className="stat-info">
               <span className="stat-title">Total Customers</span>
-              <h2 className="stat-value gold-text">12,450</h2>
+              <h2 className="stat-value gold-text">{stats.totalCustomers}</h2>
               <div className="stat-bottom">
                 <span className="stat-change positive">↑ 12.5%</span> <span className="stat-change-text">from last month</span>
               </div>
@@ -117,7 +205,7 @@ const CustomerManagement = () => {
             <div className="stat-icon gold"><UserCheck size={18} color="#554422" /></div>
             <div className="stat-info">
               <span className="stat-title">Active Customers</span>
-              <h2 className="stat-value">10,820</h2>
+              <h2 className="stat-value">{stats.activeCustomers}</h2>
               <div className="stat-bottom">
                 <span className="stat-change positive">↑ 8.3%</span> <span className="stat-change-text">from last month</span>
               </div>
@@ -142,8 +230,8 @@ const CustomerManagement = () => {
           <div className="stat-top">
             <div className="stat-icon gold"><UserMinus size={18} color="#554422" /></div>
             <div className="stat-info">
-              <span className="stat-title">Inactive Customers</span>
-              <h2 className="stat-value">1,230</h2>
+              <span className="stat-title">Blocked Customers</span>
+              <h2 className="stat-value">{stats.blockedCustomers}</h2>
               <div className="stat-bottom">
                 <span className="stat-change negative">4.1%</span> <span className="stat-change-text">from last month</span>
               </div>
@@ -169,7 +257,7 @@ const CustomerManagement = () => {
             <div className="stat-icon gold"><UserPlus size={18} color="#c9a05b" /></div>
             <div className="stat-info">
               <span className="stat-title">New Customers</span>
-              <h2 className="stat-value gold-text">400</h2>
+              <h2 className="stat-value gold-text">{stats.newCustomers}</h2>
               <div className="stat-bottom">
                 <span className="stat-change positive">↑ 15.2%</span> <span className="stat-change-text">from last month</span>
               </div>
@@ -246,7 +334,7 @@ const CustomerManagement = () => {
                       <img src={customer.avatar} alt="" className="cm-avatar" />
                       <div>
                         <div className="cm-customer-name">{customer.name}</div>
-                        <div className="cm-customer-id">{customer.id}</div>
+                        <div className="cm-customer-id">{customer.displayId}</div>
                       </div>
                     </td>
                     <td>{customer.email}</td>
@@ -272,18 +360,13 @@ const CustomerManagement = () => {
                           </button>
                           <button className="bm-dropdown-item" onClick={(e) => {
                             e.stopPropagation();
-                            setCustomers(customers.map(c => c.id === customer.id ? { ...c, status: c.status === 'Blocked' ? 'Active' : 'Blocked' } : c));
-                            setActiveDropdown(null);
+                            handleToggleStatus(customer);
                           }}>
                             <Ban size={14} /> {customer.status === 'Blocked' ? 'Unblock' : 'Block'}
                           </button>
                           <button className="bm-dropdown-item text-danger" onClick={(e) => {
                             e.stopPropagation();
-                            if(window.confirm(`Delete customer ${customer.name}?`)) {
-                              setCustomers(customers.filter(c => c.id !== customer.id));
-                              if (selectedCustomer?.id === customer.id) setSelectedCustomer(null);
-                            }
-                            setActiveDropdown(null);
+                            handleDeleteCustomer(customer.id, customer.name);
                           }}>
                             <X size={14} /> Delete
                           </button>
@@ -319,7 +402,7 @@ const CustomerManagement = () => {
                 <h2>{selectedCustomer.name}</h2>
                 <span className={`cm-tag ${selectedCustomer.status.toLowerCase()}`}>{selectedCustomer.status}</span>
                 <div className="cm-profile-meta">
-                  {selectedCustomer.id} &bull; Joined {selectedCustomer.joined}
+                  {selectedCustomer.displayId} &bull; Joined {selectedCustomer.joined}
                 </div>
               </div>
               <button className="cm-close-btn" onClick={() => setSelectedCustomer(null)}><X size={20} /></button>
@@ -330,7 +413,7 @@ const CustomerManagement = () => {
               <div className="cm-contact-list">
                 <div className="cm-contact-item"><Mail size={14} /> {selectedCustomer.email}</div>
                 <div className="cm-contact-item"><Phone size={14} /> {selectedCustomer.phone}</div>
-                <div className="cm-contact-item"><MapPin size={14} /> Chennai, Tamil Nadu</div>
+                <div className="cm-contact-item"><MapPin size={14} /> {selectedCustomer.city ? `${selectedCustomer.city}, ${selectedCustomer.state || ''}` : 'Location not provided'}</div>
               </div>
             </div>
 
@@ -357,10 +440,13 @@ const CustomerManagement = () => {
             </div>
             <div className="cm-address-card">
               <div className="cm-address-text">
-                No. 45, 2nd Street,<br />
-                Anna Nagar West,<br />
-                Chennai - 600040,<br />
-                Tamil Nadu, India
+                {selectedCustomer.address ? (
+                  <>
+                    {selectedCustomer.address},<br />
+                    {selectedCustomer.city}, {selectedCustomer.state} - {selectedCustomer.pincode},<br />
+                    {selectedCustomer.country}
+                  </>
+                ) : "No address provided."}
               </div>
               <button className="cm-btn-block">View All Addresses</button>
             </div>
@@ -452,7 +538,7 @@ const CustomerManagement = () => {
                     <label className="cm-label">Address Line 1 <span className="req">*</span></label>
                     <div className="cm-input-wrapper with-icon">
                       <Home size={16} className="cm-input-icon" />
-                      <input type="text" className="cm-input" placeholder="Enter address line 1" />
+                      <input type="text" className="cm-input" placeholder="Enter address line 1" value={formData.address || ''} onChange={(e) => setFormData({...formData, address: e.target.value})} />
                     </div>
                   </div>
                   <div className="cm-form-group">
@@ -474,14 +560,14 @@ const CustomerManagement = () => {
                     <label className="cm-label">Country <span className="req">*</span></label>
                     <div className="cm-input-wrapper with-icon">
                       <Globe size={16} className="cm-input-icon" />
-                      <select className="cm-select"><option>Select country</option></select>
+                      <input type="text" className="cm-input" placeholder="Select country" value={formData.country || ''} onChange={(e) => setFormData({...formData, country: e.target.value})} />
                     </div>
                   </div>
                   <div className="cm-form-group">
                     <label className="cm-label">State <span className="req">*</span></label>
                     <div className="cm-input-wrapper with-icon">
                       <Map size={16} className="cm-input-icon" />
-                      <select className="cm-select"><option>Select state</option></select>
+                      <input type="text" className="cm-input" placeholder="Select state" value={formData.state || ''} onChange={(e) => setFormData({...formData, state: e.target.value})} />
                     </div>
                   </div>
 
@@ -489,7 +575,7 @@ const CustomerManagement = () => {
                     <label className="cm-label">City <span className="req">*</span></label>
                     <div className="cm-input-wrapper with-icon">
                       <Home size={16} className="cm-input-icon" />
-                      <select className="cm-select"><option>Select city</option></select>
+                      <input type="text" className="cm-input" placeholder="Select city" value={formData.city || ''} onChange={(e) => setFormData({...formData, city: e.target.value})} />
                     </div>
                   </div>
                   <div className="cm-form-group">
@@ -504,7 +590,7 @@ const CustomerManagement = () => {
                     <label className="cm-label">Pincode <span className="req">*</span></label>
                     <div className="cm-input-wrapper with-icon">
                       <Mail size={16} className="cm-input-icon" />
-                      <input type="text" className="cm-input" placeholder="Enter pincode" />
+                      <input type="text" className="cm-input" placeholder="Enter pincode" value={formData.pincode || ''} onChange={(e) => setFormData({...formData, pincode: e.target.value})} />
                     </div>
                   </div>
                 </div>
@@ -526,9 +612,12 @@ const CustomerManagement = () => {
                   <label className="cm-label">Status <span className="req">*</span></label>
                   <div className="cm-input-wrapper with-icon">
                     <div className="cm-input-icon" style={{ display: 'flex', alignItems: 'center' }}>
-                      <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#16a34a' }}></div>
+                      <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: formData.status === 'Active' ? '#16a34a' : '#ef4444' }}></div>
                     </div>
-                    <select className="cm-select"><option>Active</option></select>
+                    <select className="cm-select" value={formData.status} onChange={(e) => setFormData({...formData, status: e.target.value})}>
+                      <option value="Active">Active</option>
+                      <option value="Blocked">Blocked</option>
+                    </select>
                   </div>
                 </div>
 
@@ -726,28 +815,13 @@ const CustomerManagement = () => {
           </div>
           
           <div className="cm-action-footer">
-            <button className="cm-btn-outline-action" style={{ color: '#b88645', borderColor: '#e0d5c1', background: '#fdfaf6' }} onClick={() => setFormData({name: '', email: '', phone: '', status: 'Active', joined: new Date().toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'}), avatar: 'https://randomuser.me/api/portraits/lego/1.jpg'})}>
+            <button className="cm-btn-outline-action" style={{ color: '#b88645', borderColor: '#e0d5c1', background: '#fdfaf6' }} onClick={() => setFormData(defaultFormData)}>
               <RefreshCw size={16} /> Reset
             </button>
             <div className="cm-footer-right">
-              <button className="cm-btn-outline-action" style={{ color: '#b88645', borderColor: '#e0d5c1', background: '#fff' }} onClick={() => {
-                const newId = '#CUST' + Math.floor(1000 + Math.random() * 9000);
-                setCustomers([{...formData, id: newId, orders: 0, totalSpent: '₹0'}, ...customers]);
-                setFormData({name: '', email: '', phone: '', status: 'Active', joined: new Date().toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'}), avatar: 'https://randomuser.me/api/portraits/lego/1.jpg'});
-              }}>
-                <Plus size={16} /> Save & Add Another
-              </button>
-              <button className="cm-btn-primary-action" onClick={() => {
-                if(selectedCustomer) {
-                  setCustomers(customers.map(c => c.id === selectedCustomer.id ? {...c, ...formData} : c));
-                } else {
-                  const newId = '#CUST' + Math.floor(1000 + Math.random() * 9000);
-                  setCustomers([{...formData, id: newId, orders: 0, totalSpent: '₹0'}, ...customers]);
-                }
-                setIsAddingCustomer(false);
-                setSelectedCustomer(null);
-              }}>
-                <Save size={16} /> Save Customer
+              <button className="cm-btn-primary-action" onClick={handleSaveCustomer} disabled={isLoading}>
+                {isLoading ? <Loader size={16} className="spin" /> : <Save size={16} />} 
+                {isLoading ? 'Saving...' : 'Save Customer'}
               </button>
             </div>
           </div>
