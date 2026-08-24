@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { message } from 'antd';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
+import { useProducts } from '../context/ProductContext';
 import { handleFlyingCartAnimation } from '../utils/cartAnimation';
 import KurtiBanner from './KurtiBanner';
 
@@ -23,102 +24,6 @@ import dfdImg from '../assets/images/dfd.png';
 import kurthi3Img from '../assets/images/kurthi3.png';
 import kurti1Img from '../assets/images/kurti1.png';
 import kurti2BannerImg from '../assets/images/kurti2.png';
-
-const products = [
-  {
-    id: 1,
-    title: 'Yellow Floral Kurti',
-    price: '₹899',
-    originalPrice: '₹1299',
-    rating: 4,
-    reviews: 24,
-    badge: 'NEW',
-    badgeClass: 'new',
-    image: kurthi5Img,
-    colors: ['#ffb703', '#fb8500', '#023047']
-  },
-  {
-    id: 2,
-    title: 'Blue Printed Kurti',
-    price: '₹799',
-    originalPrice: '₹1099',
-    rating: 5,
-    reviews: 32,
-    badge: 'BESTSELLER',
-    badgeClass: 'bestseller',
-    image: kurthi2Img,
-    colors: ['#219ebc', '#023047', '#8ecaef']
-  },
-  {
-    id: 3,
-    title: 'White Embroidered Kurti',
-    price: '₹1199',
-    originalPrice: '₹1499',
-    rating: 4,
-    reviews: 18,
-    badge: null,
-    image: kurthi4Img,
-    colors: ['#ffffff', '#f8edeb', '#fae1dd']
-  },
-  {
-    id: 4,
-    title: 'Red Festive Kurti',
-    price: '₹999',
-    originalPrice: '₹1399',
-    rating: 5,
-    reviews: 45,
-    badge: 'TRENDING',
-    badgeClass: 'trending',
-    image: kurtiImg,
-    colors: ['#d62828', '#f77f00', '#fcbf49']
-  },
-  {
-    id: 5,
-    title: 'Green Cotton Kurti',
-    price: '₹699',
-    originalPrice: '₹899',
-    rating: 3,
-    reviews: 17,
-    badge: '15% OFF',
-    badgeClass: 'discount',
-    image: croptopImg,
-    colors: ['#00838f', '#37474f']
-  },
-  {
-    id: 6,
-    title: 'Chikankari Kurti',
-    price: '₹1299',
-    originalPrice: '₹1599',
-    rating: 5,
-    reviews: 23,
-    badge: null,
-    image: topImg,
-    colors: ['#ffb703', '#fb8500']
-  },
-  {
-    id: 7,
-    title: 'Indo Western Kurti',
-    price: '₹899',
-    originalPrice: '₹1199',
-    rating: 4,
-    reviews: 15,
-    badge: null,
-    image: dfdImg,
-    colors: ['#111111', '#d32f2f']
-  },
-  {
-    id: 8,
-    title: 'Designer Silk Kurti',
-    price: '₹1599',
-    originalPrice: '₹2199',
-    rating: 5,
-    reviews: 56,
-    badge: 'PREMIUM',
-    badgeClass: 'premium',
-    image: top3Img,
-    colors: ['#d4af37', '#800000', '#000000']
-  }
-];
 
 const CATEGORIES = [
   { label: "Anarkali Kurtis", count: 32 },
@@ -182,6 +87,7 @@ export default function Collection() {
   const navigate = useNavigate();
   const { wishlistItems, toggleWishlist, isInWishlist } = useWishlist();
   const { addToCart } = useCart();
+  const { products: contextProducts, loading: isLoading } = useProducts();
   const [addedToCart, setAddedToCart] = useState({});
 
   const handleCartClick = async (e, product) => {
@@ -233,19 +139,20 @@ export default function Collection() {
     ));
   };
 
-  const sortedProducts = [...products].sort((a, b) => {
-    switch (sortBy) {
-      case 'Price: Low to High':
-        return parseInt(a.price.replace('₹', '')) - parseInt(b.price.replace('₹', ''));
-      case 'Price: High to Low':
-        return parseInt(b.price.replace('₹', '')) - parseInt(a.price.replace('₹', ''));
-      case 'Rating':
-        return b.rating - a.rating;
-      case 'Popularity':
-      default:
-        return b.reviews - a.reviews;
+  const [productsList, setProductsList] = useState([]);
+
+  const applyFilters = async () => {
+    // For now we just use the context products since filtering is mostly client side or handled globally
+    if (contextProducts) {
+      setProductsList(contextProducts);
     }
-  });
+  };
+
+  useEffect(() => {
+    applyFilters();
+  }, [contextProducts]); // Update when contextProducts change
+
+  const sortedProducts = productsList;
 
   return (
     <div className="collection-page">
@@ -496,7 +403,10 @@ export default function Collection() {
 
             {/* Footer button */}
             <div className="filter-sidebar-footer">
-              <button className="show-results-btn" onClick={() => setIsMobileFilterOpen(false)}>
+              <button className="show-results-btn" onClick={() => {
+                setIsMobileFilterOpen(false);
+                applyFilters();
+              }}>
                 Show Results
               </button>
             </div>

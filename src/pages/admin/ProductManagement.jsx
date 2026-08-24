@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './ProductManagement.css';
 import AddNewProduct from './AddNewProduct';
 import AddNewBrand from './AddNewBrand';
-import { Popover, Select, Dropdown } from 'antd';
+import { Popover, Select, Dropdown, message } from 'antd';
 import { 
   Plus, 
   Download, 
@@ -40,9 +40,44 @@ export const mockProducts = [
   { id: 5, name: "Polarized Sunglasses", sku: "SUNG005", cat: "Accessories", brand: "Ray-Ban", price: "₹1,199", oldPrice: "₹1,599", discount: "25% OFF", stock: 0, status: "Out of Stock", img: "https://pngimg.com/uploads/sunglasses/sunglasses_PNG72.png" }
 ];
 
+import { getProducts, createProduct, updateProduct, deleteProduct } from '../../services/productService';
+
 const ProductManagement = ({ globalSearch = '' }) => {
   const navigate = useNavigate();
-  const [products, setProducts] = useState(mockProducts);
+  const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  React.useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    setIsLoading(true);
+    try {
+      const res = await getProducts();
+      if (res.success) {
+        const rawProducts = res.data.products || res.data;
+        const mappedProducts = rawProducts.map(p => ({
+          ...p,
+          name: p.name || p.title || 'Unknown Product',
+          sku: p.sku || `SKU-${p.id}`,
+          cat: p.cat || p.category || 'Uncategorized',
+          brand: p.brand || 'Generic',
+          price: typeof p.price === 'number' ? `₹${p.price}` : p.price || '₹0',
+          oldPrice: typeof p.originalPrice === 'number' ? `₹${p.originalPrice}` : (p.oldPrice || (typeof p.price === 'number' ? `₹${p.price}` : p.price)),
+          discount: p.badge || (p.discount > 0 ? (p.discountType === 'Fixed' ? `₹${p.discount} OFF` : `${p.discount}% OFF`) : ''),
+          stock: p.countInStock !== undefined ? p.countInStock : (p.stock !== undefined ? p.stock : 100),
+          status: p.status || 'In Stock',
+          img: p.image || p.img || (p.colors && p.colors.length > 0 ? p.colors[0].image : "https://pngimg.com/uploads/box/box_PNG8.png")
+        }));
+        setProducts(mappedProducts);
+      }
+    } catch (error) {
+      console.error("Failed to fetch products", error);
+    }
+    setIsLoading(false);
+  };
+
   const [currentPage, setCurrentPage] = useState(1);
   const [editingProduct, setEditingProduct] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -357,12 +392,18 @@ const ProductManagement = ({ globalSearch = '' }) => {
     window.scrollTo(0, 0);
   };
   
-  const handleDeleteProduct = (productId) => {
-    if (window.confirm("Are you sure you want to delete this product?")) {
-      setProducts(products.filter(p => p.id !== productId));
+  const handleDeleteProduct = async (id) => {
+    if (window.confirm('Are you sure you want to delete this product?')) {
+      try {
+        await deleteProduct(id);
+        setProducts(products.filter(p => p.id !== id));
+      } catch (err) {
+        console.error("Error deleting product", err);
+      }
     }
+    setActiveDropdown(null);
   };
-  
+
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -377,16 +418,23 @@ const ProductManagement = ({ globalSearch = '' }) => {
 
   const filteredProducts = products.filter(p => {
     const finalSearchQuery = globalSearch || searchQuery;
-    const matchesSearch = p.name.toLowerCase().includes(finalSearchQuery.toLowerCase()) || p.sku.toLowerCase().includes(finalSearchQuery.toLowerCase());
+    const matchesSearch = (p.name || '').toLowerCase().includes((finalSearchQuery || '').toLowerCase()) || (p.sku || '').toLowerCase().includes((finalSearchQuery || '').toLowerCase());
     const matchesCategory = categoryFilter === 'All Categories' || p.cat === categoryFilter;
     const matchesBrand = brandFilter === 'All Brands' || p.brand === brandFilter;
     const matchesStatus = statusFilter === 'All Status' || p.status === statusFilter;
     return matchesSearch && matchesCategory && matchesBrand && matchesStatus;
   });
 
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    // Sort by id descending (works for both MongoDB ObjectIDs and timestamps)
+    if (a.id < b.id) return 1;
+    if (a.id > b.id) return -1;
+    return 0;
+  });
+
   const ITEMS_PER_PAGE = 5;
-  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE) || 1;
-  const paginatedProducts = filteredProducts.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(sortedProducts.length / ITEMS_PER_PAGE) || 1;
+  const paginatedProducts = sortedProducts.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
   const handleDuplicate = (product) => {
     const newProduct = { ...product, id: Date.now(), sku: product.sku + '-COPY', name: product.name + ' (Copy)' };
@@ -542,7 +590,7 @@ const ProductManagement = ({ globalSearch = '' }) => {
                   };
 
                   return (
-                  <tr key={p.id} className="table-body-row">
+                  <tr key={p.id || index} className="table-body-row">
                     <td style={{ paddingLeft: '16px' }}><input type="checkbox" className="custom-checkbox" /></td>
                     <td style={{ width: '56px', paddingRight: '12px' }}>
                       <img src={p.img} alt={p.name} className="table-img-placeholder" />
@@ -644,10 +692,31 @@ const ProductManagement = ({ globalSearch = '' }) => {
 
       {/* Edit View */}
       {isEditing && (
-        <AddNewProduct editingProduct={editingProduct} onSave={(updatedProduct) => {
-          if (editingProduct) { setProducts(products.map(p => p.id === editingProduct.id ? updatedProduct : p)); }
-          else { setProducts([updatedProduct, ...products]); }
-          setIsEditing(false);
+        <AddNewProduct editingProduct={editingProduct} onSave={async (updatedProduct) => {
+          try {
+            if (editingProduct) { 
+              const res = await updateProduct(editingProduct.id, updatedProduct);
+              if (res.success) {
+                await fetchProducts();
+                message.success('Product updated successfully!');
+                setIsEditing(false);
+              } else {
+                message.error(res.message || 'Failed to update product');
+              }
+            } else { 
+              const res = await createProduct(updatedProduct);
+              if (res.success) {
+                await fetchProducts();
+                message.success('Product created successfully!');
+                setIsEditing(false);
+              } else {
+                message.error(res.message || 'Failed to create product');
+              }
+            }
+          } catch (err) {
+            console.error("Error saving product", err);
+            message.error("An error occurred while saving.");
+          }
         }} onCancel={() => setIsEditing(false)} />
       )}
 

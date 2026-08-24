@@ -1,31 +1,57 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Camera, CheckCircle, Mail, Phone, Calendar, Edit2 } from 'lucide-react';
+import { Camera, CheckCircle, Mail, Phone, Calendar, Edit2, User } from 'lucide-react';
+import { getUserProfile } from '../../services/api';
+import { message } from 'antd';
 import './Profile.css';
 
-const profileImg = 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80';
+const defaultImg = 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80';
 
 const Profile = () => {
   const navigate = useNavigate();
   const [profile, setProfile] = React.useState({
-    fullName: 'Rekha R',
-    email: 'rekha.r@email.com',
-    phone: '+91 98765 43210',
-    profileImage: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80'
+    fullName: '',
+    email: '',
+    phone: '',
+    profileImage: defaultImg,
+    dateOfBirth: '',
+    gender: '',
+    createdAt: null
   });
+  const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
-    const stored = localStorage.getItem('userProfile');
-    if (stored) {
-      const data = JSON.parse(stored);
-      setProfile({
-        fullName: data.fullName || 'Rekha R',
-        email: data.email || 'rekha.r@email.com',
-        phone: data.phone || '+91 98765 43210',
-        profileImage: data.profileImage || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80'
-      });
-    }
+    const fetchProfile = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+      try {
+        const response = await getUserProfile();
+        const data = response.data.user;
+        setProfile({
+          fullName: data.fullName || '',
+          email: data.email || '',
+          phone: data.phoneNumber || '',
+          profileImage: data.profileImage || defaultImg,
+          dateOfBirth: data.dateOfBirth || '',
+          gender: data.gender || '',
+          createdAt: data.createdAt || null
+        });
+      } catch (error) {
+        console.error('Failed to fetch profile', error);
+        message.error('Failed to load profile data');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProfile();
   }, []);
+
+  if (loading) {
+    return <div style={{ textAlign: 'center', padding: '50px' }}>Loading Profile...</div>;
+  }
 
   return (
     <div className="profile-summary-container">
@@ -67,7 +93,23 @@ const Profile = () => {
               </div>
               <div className="ps-contact-item">
                 <Calendar size={16} className="ps-contact-icon" />
-                <span>Joined on 24 July 2025</span>
+                {profile.dateOfBirth ? (
+                  <span>DOB: {new Date(profile.dateOfBirth).toLocaleDateString()}</span>
+                ) : (
+                  <span style={{color: '#ef4444', cursor: 'pointer', fontWeight: 600}} onClick={() => navigate('/account/settings')}>+ Add Date of Birth</span>
+                )}
+              </div>
+              <div className="ps-contact-item">
+                <User size={16} className="ps-contact-icon" />
+                {profile.gender ? (
+                  <span>Gender: {profile.gender}</span>
+                ) : (
+                  <span style={{color: '#ef4444', cursor: 'pointer', fontWeight: 600}} onClick={() => navigate('/account/settings')}>+ Add Gender</span>
+                )}
+              </div>
+              <div className="ps-contact-item">
+                <Calendar size={16} className="ps-contact-icon" />
+                <span>{profile.createdAt ? `Joined on ${new Date(profile.createdAt).toLocaleDateString()}` : 'Member'}</span>
               </div>
             </div>
           </div>

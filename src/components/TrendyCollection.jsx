@@ -4,6 +4,7 @@ import { animate, stagger, inView, motion } from 'framer-motion';
 import { message } from 'antd';
 import { FaFire, FaStar, FaRegStar, FaStarHalfAlt, FaRegHeart, FaHeart, FaTag, FaMagic, FaShoppingBag, FaTshirt, FaPalette, FaArrowRight, FaLeaf, FaShoePrints } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
+import { useProducts } from '../context/ProductContext';
 import './TrendyCollection.css';
 
 import dressImg from '../assets/images/dress.jpg';
@@ -18,57 +19,6 @@ const TABS = [
   { id: 'new', label: 'New Arrivals', icon: <FaMagic /> },
   { id: 'limited', label: 'Limited Offers', icon: <FaTag /> },
 ];
-
-
-const ALL_PRODUCTS = [
-  {
-    id: 1,
-    image: dressImg,
-    badge: 'TRENDING',
-    badgeClass: 'badge-trending',
-    color: '#c0a07c',
-    title: 'Elegant Midi Dress',
-    price: '₹2,999',
-    originalPrice: '₹4,999',
-    rating: 5,
-    reviews: 342,
-    categoryLink: '/western'
-  },
-  {
-    id: 2,
-    image: poloImg,
-    title: 'Classic Polo Shirt',
-    price: '₹1,499',
-    originalPrice: '₹2,499',
-    discount: '40% off',
-    rating: 4,
-    reviews: 128,
-    categoryLink: '/category/menswear'
-  },
-  {
-    id: 3,
-    image: jordanImg,
-    title: 'Air Jordan 1 High',
-    price: '₹12,999',
-    originalPrice: '₹15,999',
-    discount: '18% off',
-    rating: 5,
-    reviews: 89,
-    categoryLink: '/category/footwear'
-  },
-  {
-    id: 4,
-    image: cargoImg,
-    title: 'Cargo Pants',
-    price: '₹1,899',
-    originalPrice: '₹2,999',
-    discount: '36% off',
-    rating: 4,
-    reviews: 215,
-    categoryLink: '/category/menswear'
-  }
-];
-
 
 function StarRating({ rating, reviews }) {
   const stars = [];
@@ -133,8 +83,8 @@ function FeatureIcon({ name }) {
 const TrendyCollection = () => {
   const [activeTab, setActiveTab] = useState('trending');
   const [likedIds, setLikedIds] = useState([]);
-  // We no longer need the local state: const [addedToCart, setAddedToCart] = useState({});
   const { cartItems, addToCart } = useCart();
+  const { products, loading } = useProducts();
   const navigate = useNavigate();
 
   const handleCartClick = async (e, product) => {
@@ -225,10 +175,28 @@ const TrendyCollection = () => {
   };
 
   const getDisplayedProducts = () => {
-    return ALL_PRODUCTS;
+    if (!products || products.length === 0) return [];
+    
+    // Convert backend format to frontend UI format for the Trendy Collection
+    return products.slice(0, 4).map(p => ({
+      id: p._id,
+      image: (p.images && p.images.length > 0) ? p.images[0].url : "https://pngimg.com/uploads/box/box_PNG8.png",
+      title: p.name,
+      price: `₹${p.price - (p.discountType === 'Fixed' ? (p.discount || 0) : ((p.price * (p.discount || 0)) / 100))}`,
+      originalPrice: p.discount > 0 ? `₹${p.price}` : null,
+      discount: p.discount > 0 ? (p.discountType === 'Percentage' ? `${p.discount}% OFF` : `₹${p.discount} OFF`) : null,
+      rating: p.rating || 4.5,
+      reviews: p.numReviews || Math.floor(Math.random() * 200) + 10,
+      badge: p.badge || (p.discount > 0 ? 'SALE' : null),
+      _backendData: p
+    }));
   };
 
   const displayedProducts = getDisplayedProducts();
+
+  if (loading) {
+    return <div style={{textAlign: 'center', padding: '40px'}}>Loading trendy collections...</div>;
+  }
 
   // The observer is replaced by Framer Motion's whileInView
 

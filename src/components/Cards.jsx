@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Cards.css';
 import { FiArrowRight, FiWatch, FiChevronLeft, FiChevronRight, FiGrid } from 'react-icons/fi';
@@ -12,7 +12,10 @@ import watchImg from '../assets/images/watch.png';
 import homeImg from '../assets/images/home.png';
 import beautyImg from '../assets/images/beauty.png';
 import kidsImg from '../assets/images/kids.jpeg';
-const categories = [
+import { getCategories } from '../services/api';
+
+// Fallback hardcoded categories (used while loading or on error)
+const defaultCategories = [
   { name: 'Ethnic Wear', subtitle: 'Traditional elegance', image: topImg, icon: <FaTshirt />, iconColor: '#b38e69', iconBg: '#f2ebe1' },
   { name: 'Western Dresses', subtitle: 'Modern & stylish', image: kurthiImg, icon: <FaFemale />, iconColor: '#b38e69', iconBg: '#f2ebe1' },
   { name: 'Menswear', subtitle: 'Sharp & casual', image: manImg, icon: <FaUserTie />, iconColor: '#b38e69', iconBg: '#f2ebe1' },
@@ -25,6 +28,39 @@ const categories = [
 
 export default function Cards() {
   const scrollRef = useRef(null);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCats = async () => {
+      try {
+        const res = await getCategories();
+        // Filter only active categories
+        const activeCats = res.data.data.filter(c => c.status === 'active');
+        if (activeCats.length > 0) {
+          // Map backend category format to card format
+          const mappedCats = activeCats.map((cat, index) => ({
+            name: cat.name,
+            subtitle: cat.description || 'Explore collection',
+            image: cat.image || defaultCategories[index % defaultCategories.length].image,
+            icon: cat.icon || null, // Will render image if string, otherwise fallback
+            fallbackIcon: defaultCategories[index % defaultCategories.length].icon,
+            iconColor: '#b38e69',
+            iconBg: '#f2ebe1'
+          }));
+          setCategories(mappedCats);
+        } else {
+          setCategories(defaultCategories);
+        }
+      } catch (err) {
+        console.error("Failed to fetch categories:", err);
+        setCategories(defaultCategories);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCats();
+  }, []);
 
   const scroll = (direction) => {
     if (scrollRef.current) {
@@ -56,31 +92,38 @@ export default function Cards() {
         </button>
 
         <div className="category-cards-container" ref={scrollRef}>
-          {categories.map((cat, index) => {
-            const targetLink = cat.name === 'Ethnic Wear' ? '/collection' : cat.name === 'Western Dresses' ? '/western' : `/category/${cat.name.toLowerCase().replace(' ', '-')}`;
-            return (
-              <div key={`${cat.name}-${index}`} className="category-new-card">
-                <Link to={targetLink} className="category-new-card-image" style={{ display: 'block', position: 'relative', background: cat.isCustom ? '#eacfa9' : 'transparent' }}>
-                  <img src={cat.image} alt={cat.name} style={cat.isCustom ? { opacity: 0.9 } : {}} />
-
-                </Link>
-                <div className="category-new-card-content">
-                  <div className="category-icon-wrapper" style={{ color: cat.iconColor, backgroundColor: cat.iconBg }}>
-                    {cat.icon}
-                  </div>
-                  <div className="category-text-wrapper">
-                    <Link to={targetLink} style={{ textDecoration: 'none', color: 'inherit' }}>
-                      <h3>{cat.name}</h3>
-                      <span className="category-subtitle">{cat.subtitle}</span>
+          {loading ? (
+            <div style={{ display: 'flex', gap: '20px', padding: '20px' }}>Loading Categories...</div>
+          ) : (
+            categories.map((cat, index) => {
+              const targetLink = `/category/${(cat.name || '').toLowerCase().replace(/\s+/g, '-')}`;
+              return (
+                <div key={`${cat.name}-${index}`} className="category-new-card">
+                  <Link to={targetLink} className="category-new-card-image" style={{ display: 'block', position: 'relative' }}>
+                    <img src={cat.image} alt={cat.name} />
+                  </Link>
+                  <div className="category-new-card-content">
+                    <div className="category-icon-wrapper" style={{ color: cat.iconColor, backgroundColor: cat.iconBg, overflow: 'hidden' }}>
+                      {typeof cat.icon === 'string' && cat.icon !== '' ? (
+                        <img src={cat.icon} alt={`${cat.name} icon`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      ) : (
+                        cat.fallbackIcon || cat.icon // fallbackIcon is for mapped, cat.icon is for defaultCategories
+                      )}
+                    </div>
+                    <div className="category-text-wrapper">
+                      <Link to={targetLink} style={{ textDecoration: 'none', color: 'inherit' }}>
+                        <h3>{cat.name}</h3>
+                        <span className="category-subtitle">{cat.subtitle}</span>
+                      </Link>
+                    </div>
+                    <Link to={targetLink} className="category-arrow-btn">
+                      <FiArrowRight />
                     </Link>
                   </div>
-                  <Link to={targetLink} className="category-arrow-btn">
-                    <FiArrowRight />
-                  </Link>
                 </div>
-              </div>
-            )
-          })}
+              )
+            })
+          )}
         </div>
 
         <button className="scroll-button right" onClick={() => scroll('right')} aria-label="Scroll right">

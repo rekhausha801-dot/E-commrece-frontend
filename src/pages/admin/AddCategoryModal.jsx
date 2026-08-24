@@ -32,9 +32,9 @@ const AddCategoryModal = ({ isOpen, onClose, onSuccess, editData }) => {
           status: editData.status === 'active' || editData.status === 'Active',
           slug: editData.slug || '',
           parent: editData.parent || 'none',
-          displayOrder: editData.order || 1,
           productCreation: editData.productCreation ? editData.productCreation.toLowerCase() : 'enabled',
-          image: editData.image || editData.img ? [{ url: editData.image || editData.img }] : []
+          image: editData.image || editData.img ? [{ uid: '-1', name: 'image.png', status: 'done', url: editData.image || editData.img }] : [],
+          icon: editData.icon ? [{ uid: '-2', name: 'icon.png', status: 'done', url: editData.icon }] : []
         });
       } else {
         form.resetFields();
@@ -49,22 +49,31 @@ const AddCategoryModal = ({ isOpen, onClose, onSuccess, editData }) => {
       setLoading(true);
 
       let imageUrl = '';
-      if (values.image && values.image.fileList && values.image.fileList.length > 0) {
-        const file = values.image.fileList[0].originFileObj;
+      if (values.image && Array.isArray(values.image) && values.image.length > 0) {
+        const file = values.image[0].originFileObj;
         if (file) {
           imageUrl = await getBase64(file);
         } else {
-          imageUrl = values.image.fileList[0].url || '';
+          imageUrl = values.image[0].url || '';
         }
-      } else if (typeof values.image === 'string') {
-        imageUrl = values.image;
+      }
+
+      let iconUrl = '';
+      if (values.icon && Array.isArray(values.icon) && values.icon.length > 0) {
+        const file = values.icon[0].originFileObj;
+        if (file) {
+          iconUrl = await getBase64(file);
+        } else {
+          iconUrl = values.icon[0].url || '';
+        }
       }
 
       const payload = {
         name: values.name,
         description: values.description,
         status: values.status ? 'active' : 'inactive',
-        image: imageUrl
+        image: imageUrl,
+        icon: iconUrl
       };
 
       if (editData && editData._id) {
@@ -121,12 +130,22 @@ const AddCategoryModal = ({ isOpen, onClose, onSuccess, editData }) => {
         {/* Basic Information */}
         <div style={sectionHeaderStyle}>Basic Information</div>
         <Row gutter={24}>
-          <Col span={24}>
-            <Form.Item name="image" label="Category Image" {...formItemLayout}>
+          <Col span={12}>
+            <Form.Item name="image" label="Category Background Image" valuePropName="fileList" getValueFromEvent={(e) => Array.isArray(e) ? e : e?.fileList} {...formItemLayout}>
               <Upload listType="picture-card" maxCount={1} beforeUpload={() => false}>
                 <div>
                   <PlusOutlined />
-                  <div style={{ marginTop: 8 }}>Upload</div>
+                  <div style={{ marginTop: 8 }}>Upload Banner</div>
+                </div>
+              </Upload>
+            </Form.Item>
+          </Col>
+          <Col span={12}>
+            <Form.Item name="icon" label="Category Icon (Small)" valuePropName="fileList" getValueFromEvent={(e) => Array.isArray(e) ? e : e?.fileList} {...formItemLayout}>
+              <Upload listType="picture-card" maxCount={1} beforeUpload={() => false}>
+                <div>
+                  <PlusOutlined />
+                  <div style={{ marginTop: 8 }}>Upload Icon</div>
                 </div>
               </Upload>
             </Form.Item>
@@ -134,8 +153,8 @@ const AddCategoryModal = ({ isOpen, onClose, onSuccess, editData }) => {
         </Row>
         <Row gutter={24}>
           <Col span={12}>
-            <Form.Item name="name" label="Category Name" rules={[{ required: true, message: 'Please enter category name' }]} {...formItemLayout}>
-              <Input placeholder="e.g., Western Wear" size="large" />
+            <Form.Item name="name" label="Category Name (Title)" rules={[{ required: true, message: 'Please enter category name' }]} {...formItemLayout}>
+              <Input placeholder="e.g., Western Dresses" size="large" />
             </Form.Item>
           </Col>
           <Col span={12}>
@@ -151,8 +170,8 @@ const AddCategoryModal = ({ isOpen, onClose, onSuccess, editData }) => {
         </Row>
         <Row gutter={24}>
           <Col span={24}>
-            <Form.Item name="description" label="Description" {...formItemLayout}>
-              <TextArea rows={3} placeholder="Brief description of this category..." />
+            <Form.Item name="description" label="Description (Subtitle)" {...formItemLayout}>
+              <TextArea rows={3} placeholder="e.g., Modern & stylish..." />
             </Form.Item>
           </Col>
         </Row>

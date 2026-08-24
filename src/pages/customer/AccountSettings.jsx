@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, ChevronDown, Camera } from 'lucide-react';
+import { getUserProfile, updateUserProfile } from '../../services/api';
+import { message } from 'antd';
 import './AccountSettings.css';
 
 const COUNTRIES = [
@@ -17,12 +19,13 @@ const AccountSettings = () => {
   const dropdownRef = useRef(null);
   const [showCountryDropdown, setShowCountryDropdown] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState(COUNTRIES[0]);
+  const [saving, setSaving] = useState(false);
   
   const [formData, setFormData] = useState({
     fullName: 'Rekha R',
     email: 'rekha.r@email.com',
-    phone: '+91 98765 43210',
-    dob: '2000-03-12',
+    phone: '',
+    dob: '',
     gender: 'Female',
     profileImage: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80',
     currentPassword: '',
@@ -31,10 +34,29 @@ const AccountSettings = () => {
   });
 
   useEffect(() => {
-    const stored = localStorage.getItem('userProfile');
-    if (stored) {
-      setFormData(JSON.parse(stored));
-    }
+    const fetchProfile = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+      try {
+        const response = await getUserProfile();
+        const data = response.data.user;
+        setFormData(prev => ({
+          ...prev,
+          fullName: data.fullName || '',
+          email: data.email || '',
+          phone: data.phoneNumber || '',
+          dob: data.dateOfBirth || '',
+          gender: data.gender || 'Female',
+          profileImage: data.profileImage || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=256&q=80'
+        }));
+      } catch (err) {
+        message.error("Failed to load profile data");
+      }
+    };
+    fetchProfile();
     
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -72,9 +94,26 @@ const AccountSettings = () => {
     fileInputRef.current.click();
   };
 
-  const handleSave = () => {
-    localStorage.setItem('userProfile', JSON.stringify(formData));
-    navigate('/account/profile');
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+      const response = await updateUserProfile({
+        fullName: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        dateOfBirth: formData.dob,
+        gender: formData.gender,
+        profileImage: formData.profileImage
+      });
+      const data = response.data.user;
+      localStorage.setItem('user', JSON.stringify(data));
+      message.success('Profile updated successfully!');
+      navigate('/account/profile');
+    } catch (err) {
+      message.error(err.response?.data?.message || 'Failed to update profile');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -179,7 +218,9 @@ const AccountSettings = () => {
 
           
           <div className="mp-form-actions" style={{ gridColumn: '1 / -1' }}>
-            <button className="mp-save-btn" onClick={handleSave}>Save Changes</button>
+            <button className="mp-save-btn" onClick={handleSave} disabled={saving}>
+              {saving ? 'Saving...' : 'Save Changes'}
+            </button>
           </div>
 
         </div>

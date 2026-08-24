@@ -9,6 +9,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -16,6 +17,7 @@ const Login = () => {
     setErrorMsg('');
     if (email && password) {
       try {
+        setLoading(true);
         const response = await loginUser({ email, password });
         const data = response.data;
         
@@ -32,6 +34,8 @@ const Login = () => {
         }
       } catch (err) {
         setErrorMsg(err.response?.data?.message || 'Login failed. Please check your credentials.');
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -82,9 +86,9 @@ const Login = () => {
               <button 
                 type="submit" 
                 className="split-submit-btn"
-                disabled={!email || !password}
+                disabled={!email || !password || loading}
               >
-                CONTINUE
+                {loading ? 'Logging In...' : 'CONTINUE'}
               </button>
             </form>
 
