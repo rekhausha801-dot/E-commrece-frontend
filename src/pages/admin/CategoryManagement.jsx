@@ -12,6 +12,15 @@ import AddCategoryModal from './AddCategoryModal';
 import { getCategories, deleteCategory, updateCategoryStatus } from '../../services/api';
 import { message } from 'antd';
 
+import kurthiImg from '../../assets/images/kurthi3.png';
+import topImg from '../../assets/images/top2.jpeg';
+import manImg from '../../assets/images/man.png';
+import shoeImg from '../../assets/images/shoe.png';
+import watchImg from '../../assets/images/watch.png';
+import homeImg from '../../assets/images/home.png';
+import beautyImg from '../../assets/images/beauty.png';
+import kidsImg from '../../assets/images/kids.jpeg';
+
 const sparklineData = [{ v: 40 }, { v: 30 }, { v: 60 }, { v: 45 }, { v: 70 }, { v: 90 }, { v: 120 }];
 const sparklineData2 = [{ v: 10 }, { v: 15 }, { v: 12 }, { v: 22 }, { v: 18 }, { v: 28 }, { v: 25 }];
 
@@ -20,50 +29,50 @@ const initialData = [
     id: 1, name: 'Women', desc: 'Women fashion collection', parent: '',
     slug: 'women', products: 120, status: 'Active', productCreation: 'Enabled',
     order: 1, created: '12 Aug 2026', updated: '12 Aug 2026',
-    img: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=100'
+    img: topImg
   },
   {
     id: 2, name: 'Kurtis', desc: 'Elegant & stylish kurtis collection', parent: 'Women',
     slug: 'kurtis', products: 48, status: 'Active', productCreation: 'Enabled',
     order: 2, created: '12 Aug 2026', updated: '12 Aug 2026',
-    img: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=100'
+    img: kurthiImg
   },
   {
-    id: 3, name: 'Sarees', desc: 'Traditional and designer sarees', parent: 'Women',
-    slug: 'sarees', products: 72, status: 'Active', productCreation: 'Enabled',
-    order: 3, created: '10 Aug 2026', updated: '12 Aug 2026',
-    img: 'https://images.unsplash.com/photo-1610189045763-7eb927233df8?w=100'
+    id: 3, name: 'Sarees', desc: 'Traditional sarees and ethnic wear', parent: 'Women',
+    slug: 'sarees', products: 86, status: 'Active', productCreation: 'Enabled',
+    order: 3, created: '11 Aug 2026', updated: '11 Aug 2026',
+    img: beautyImg
   },
   {
-    id: 4, name: 'Men', desc: 'Men fashion collection', parent: '',
-    slug: 'men', products: 205, status: 'Active', productCreation: 'Enabled',
-    order: 4, created: '08 Aug 2026', updated: '11 Aug 2026',
-    img: 'https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?w=100'
+    id: 4, name: 'Men', desc: 'Men fashion and accessories', parent: '',
+    slug: 'men', products: 94, status: 'Active', productCreation: 'Enabled',
+    order: 4, created: '10 Aug 2026', updated: '10 Aug 2026',
+    img: manImg
   },
   {
-    id: 5, name: 'Shirts', desc: 'Formal and casual shirts for men', parent: 'Men',
-    slug: 'shirts', products: 120, status: 'Active', productCreation: 'Enabled',
-    order: 5, created: '08 Aug 2026', updated: '11 Aug 2026',
-    img: 'https://images.unsplash.com/photo-1490578474895-699cd4e2cf59?w=100'
+    id: 5, name: 'Shirts', desc: 'Casual and formal shirts for men', parent: 'Men',
+    slug: 'shirts', products: 55, status: 'Inactive', productCreation: 'Paused',
+    order: 5, created: '10 Aug 2026', updated: '10 Aug 2026',
+    img: manImg
   },
   {
-    id: 6, name: 'Footwear', desc: 'Casual and sports shoes', parent: 'Men',
-    slug: 'footwear', products: 85, status: 'Active', productCreation: 'Paused',
-    order: 6, created: '25 Jul 2026', updated: '05 Aug 2026',
-    img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100'
+    id: 6, name: 'Footwear', desc: 'Shoes, sandals and boots', parent: '',
+    slug: 'footwear', products: 112, status: 'Active', productCreation: 'Enabled',
+    order: 6, created: '09 Aug 2026', updated: '09 Aug 2026',
+    img: shoeImg
   },
   {
-    id: 7, name: 'Kids', desc: 'Kids collection', parent: '',
-    slug: 'kids', products: 15, status: 'Inactive', productCreation: 'Paused',
-    order: 7, created: '01 Aug 2026', updated: '10 Aug 2026',
-    img: 'https://images.unsplash.com/photo-1514090458221-65bb69cf63e6?w=100'
+    id: 7, name: 'Kids', desc: 'Clothing for kids and infants', parent: '',
+    slug: 'kids', products: 67, status: 'Active', productCreation: 'Enabled',
+    order: 7, created: '08 Aug 2026', updated: '08 Aug 2026',
+    img: kidsImg
   },
   {
-    id: 8, name: 'Winter Wear', desc: 'Seasonal winter collection', parent: 'Kids',
-    slug: 'winter-wear', products: 15, status: 'Inactive', productCreation: 'Paused',
-    order: 8, created: '01 Aug 2026', updated: '10 Aug 2026',
-    img: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?w=100'
-  }
+    id: 8, name: 'Winter Wear', desc: 'Jackets, sweaters and coats', parent: '',
+    slug: 'winter-wear', products: 43, status: 'Active', productCreation: 'Enabled',
+    order: 8, created: '05 Aug 2026', updated: '05 Aug 2026',
+    img: topImg
+  },
 ];
 
 const CategoryManagement = () => {
@@ -79,7 +88,7 @@ const CategoryManagement = () => {
     try {
       setLoading(true);
       const res = await getCategories();
-      const mapped = res.data.data.map(item => ({
+      const mapped = res.data.data.map((item, index) => ({
         ...item,
         id: item._id,
         desc: item.description,
@@ -91,7 +100,8 @@ const CategoryManagement = () => {
         order: 1,
         created: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'N/A',
         updated: item.updatedAt ? new Date(item.updatedAt).toLocaleDateString() : 'N/A',
-        img: item.image || 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=100'
+        img: item.image || initialData[index % initialData.length].img,
+        icon: item.icon || ''
       }));
       setCategories(mapped);
     } catch (error) {

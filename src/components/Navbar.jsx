@@ -76,6 +76,8 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState('');
   const searchRef = useRef(null);
   
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
@@ -182,6 +184,13 @@ const Navbar = () => {
     }
   };
 
+  const handleLogout = (e) => {
+    e.preventDefault();
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate('/login');
+  };
+
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
   const toggleExpand = (title) => {
@@ -193,6 +202,20 @@ const Navbar = () => {
 
   useEffect(() => {
     setIsMobileMenuOpen(false);
+    
+    // Check auth status
+    const token = localStorage.getItem("token");
+    const userStr = localStorage.getItem("user");
+    if (token && userStr) {
+      setIsLoggedIn(true);
+      try {
+        const user = JSON.parse(userStr);
+        setUserName(user.fullName || user.name || '');
+      } catch (e) {}
+    } else {
+      setIsLoggedIn(false);
+      setUserName('');
+    }
   }, [location.pathname]);
 
   // Handle click outside for search
@@ -425,15 +448,21 @@ const Navbar = () => {
               <span className="icon-label" style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>Account <ChevronDown size={12} /></span>
               <div className="dropdown-menu standard-dropdown account-advanced-dropdown">
                 <div className="dropdown-welcome-section">
-                  <h4 className="welcome-title">Welcome</h4>
+                  <h4 className="welcome-title">{isLoggedIn ? `Welcome, ${userName}` : "Welcome"}</h4>
                   <p className="welcome-subtitle">To access account and manage orders</p>
-                  <Link to="/login" className="welcome-login-btn">LOGIN / SIGNUP</Link>
+                  {!isLoggedIn && (
+                    <Link to="/login" className="welcome-login-btn">LOGIN / SIGNUP</Link>
+                  )}
                 </div>
                 <div className="dropdown-divider"></div>
                 <ul className="dropdown-list two-columns">
-                  {accountItems.map((item, idx) => (
+                  {(isLoggedIn ? accountItems : accountItems.filter(item => item !== "Logout")).map((item, idx) => (
                     <li key={idx}>
-                      <Link to={item === "Logout" ? "/" : item === "Wishlist" ? "/wishlist" : item === "Coupons" ? "/coupons" : item === "My Profile" ? "/account/profile" : `/account/${item.toLowerCase().replace(/\s+/g, '-')}`}>{item}</Link>
+                      {item === "Logout" ? (
+                        <a href="/" onClick={handleLogout}>{item}</a>
+                      ) : (
+                        <Link to={item === "Wishlist" ? "/wishlist" : item === "Coupons" ? "/coupons" : item === "My Profile" ? "/account/profile" : `/account/${item.toLowerCase().replace(/\s+/g, '-')}`}>{item}</Link>
+                      )}
                     </li>
                   ))}
                 </ul>

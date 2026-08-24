@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import './AccountLayout.css';
 
-const userAvatar = 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=150&q=80';
+const defaultAvatar = 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=150&q=80';
 
 const navItems = [
   { name: 'My Profile', path: '/account/profile', icon: User },
@@ -22,11 +22,20 @@ const navItems = [
 const AccountLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [userData, setUserData] = React.useState({ fullName: '', email: '', profileImage: '' });
+
+  React.useEffect(() => {
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      setUserData(JSON.parse(userStr));
+    }
+  }, []);
 
   const handleLogout = (e) => {
     e.preventDefault();
-    // Simulate logout and redirect to home
-    navigate('/');
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate('/login');
   };
 
   return (
@@ -35,9 +44,9 @@ const AccountLayout = () => {
       <aside className="account-sidebar">
         {/* User Profile Header */}
         <div className="account-sidebar-profile">
-          <img src={userAvatar} alt="User Avatar" className="account-sidebar-avatar" />
-          <h3 className="account-sidebar-name">Rekha R</h3>
-          <p className="account-sidebar-email">rekha@gmail.com</p>
+          <img src={userData.profileImage || defaultAvatar} alt="User Avatar" className="account-sidebar-avatar" />
+          <h3 className="account-sidebar-name">{userData.fullName || 'Guest'}</h3>
+          <p className="account-sidebar-email">{userData.email || ''}</p>
         </div>
 
         <ul className="account-nav-list">

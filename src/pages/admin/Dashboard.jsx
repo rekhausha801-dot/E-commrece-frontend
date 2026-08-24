@@ -220,7 +220,9 @@ const LowStockCustomDot = (props) => {
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('Dashboard');
+  const [activeTab, setActiveTab] = useState(() => {
+    return localStorage.getItem('adminActiveTab') || 'Dashboard';
+  });
   const [settingsTab, setSettingsTab] = useState('General');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -229,6 +231,10 @@ const Dashboard = () => {
   const [notifications, setNotifications] = useState(initialNotifications);
   const [revenueFilterLabel, setRevenueFilterLabel] = useState('Last 7 Days');
   const [categoriesFilterLabel, setCategoriesFilterLabel] = useState('Last 6 Months');
+
+  React.useEffect(() => {
+    localStorage.setItem('adminActiveTab', activeTab);
+  }, [activeTab]);
 
   const getRevenueValue = () => {
     switch (revenueFilterLabel) {
