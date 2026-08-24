@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
+import { useProducts } from '../context/ProductContext';
 import { handleFlyingCartAnimation } from '../utils/cartAnimation';
 import { FaStar } from 'react-icons/fa';
 
@@ -248,9 +249,10 @@ function Section({ title, children, defaultOpen = true }) {
 
 export default function CategoryPage() {
   const { categoryId } = useParams();
-  const navigate = useNavigate();
+  const { cartItems, addToCart } = useCart();
   const { wishlistItems, toggleWishlist, isInWishlist } = useWishlist();
-  const { addToCart } = useCart();
+  const { products: contextProducts } = useProducts();
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [addedToCart, setAddedToCart] = useState({});
 
   const handleCartClick = async (e, product) => {
@@ -271,19 +273,31 @@ export default function CategoryPage() {
     images: [manImg, shoeImg, watchImg, beautyImg]
   };
 
-  // Generate 8 mock products based on the category images (useMemo prevents them from shuffling when clicking like)
-  const products = React.useMemo(() => Array.from({ length: 8 }).map((_, index) => ({
-    id: index + 1,
-    title: `${currentCategory.title} Item ${index + 1}`,
-    price: `₹${Math.floor(Math.random() * 1000) + 499}`,
-    originalPrice: `₹${Math.floor(Math.random() * 1000) + 1499}`,
-    rating: Math.floor(Math.random() * 2) + 4,
-    reviews: Math.floor(Math.random() * 50) + 10,
-    badge: index === 0 ? 'NEW' : index === 1 ? 'BESTSELLER' : null,
-    badgeClass: index === 0 ? 'new' : index === 1 ? 'bestseller' : '',
-    image: currentCategory.images[index % currentCategory.images.length],
-    categoryId: categoryId
-  })), [currentCategory, categoryId]);
+  // Use real products from context, filtered by category name
+  const products = React.useMemo(() => {
+    if (!contextProducts) return [];
+    const catName = currentCategory.title.toLowerCase();
+    
+    // Convert backend format to frontend UI format for the Category Page
+    const filtered = contextProducts.filter(p => {
+      const pCat = (p.category || '').toLowerCase();
+      return pCat.includes(catName) || catName.includes(pCat) || pCat === 'uncategorized';
+    });
+    
+    return filtered.map(p => ({
+      id: p._id,
+      title: p.name,
+      price: `₹${p.price - (p.discountType === 'Fixed' ? (p.discount || 0) : ((p.price * (p.discount || 0)) / 100))}`,
+      originalPrice: p.discount > 0 ? `₹${p.price}` : null,
+      rating: p.rating || 4.5,
+      reviews: p.numReviews || Math.floor(Math.random() * 200) + 10,
+      badge: p.badge || (p.discount > 0 ? 'SALE' : null),
+      badgeClass: 'new',
+      image: (p.images && p.images.length > 0) ? p.images[0].url : "https://pngimg.com/uploads/box/box_PNG8.png",
+      colors: p.colors && p.colors.length > 0 ? p.colors.map(c => c.hex || '#000000') : ['#000000', '#333333'],
+      _backendData: p
+    }));
+  }, [categoryId, contextProducts, currentCategory.title]);
   
   const [wishlist, setWishlist] = useState(() => {
     try {
@@ -313,7 +327,6 @@ export default function CategoryPage() {
   const [selectedDiscount, setSelectedDiscount] = useState(null);
   const [minPrice, setMinPrice] = useState(299);
   const [maxPrice, setMaxPrice] = useState(3532);
-  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [sortBy, setSortBy] = useState('Popularity');
   const [isSortOpen, setIsSortOpen] = useState(false);
   const totalFilters = selectedCategories.length + selectedFabrics.length + selectedSizes.length + selectedColors.length + (selectedRating ? 1 : 0) + (selectedDiscount ? 1 : 0);

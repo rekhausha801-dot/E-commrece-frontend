@@ -9,7 +9,7 @@ import {
   CheckCircle2, ShieldCheck, RefreshCcw, Heart, Plus, Minus, Check, Eye,
   Truck, CreditCard, Box, Navigation, MoreHorizontal, ThumbsUp, ShoppingBag, Palette, Shield,
   Camera, MessageCircle, Edit2, Info, Award, X, Leaf, ArrowDown, Zap,
-  Flower2, Mountain, Feather, Flame, Rocket, Compass, Send, Headphones, Palmtree
+  Flower2, Mountain, Feather, Flame, Rocket, Compass, Send, Headphones, Palmtree, Upload
 } from 'lucide-react';
 import CustomerReviews from './CustomerReviews';
 import './ProductDetail.css';
@@ -29,10 +29,12 @@ import westren3Img from '../assets/images/westren3.png';
 import westren4Img from '../assets/images/westren4.png';
 import westren5Img from '../assets/images/westren5.png';
 
-import { GLOBAL_PRODUCTS, getSimilarProducts, determineProductCategory, customizableDesigns } from '../data/mockProducts';
+import { determineProductCategory, customizableDesigns } from '../data/mockProducts';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
+import { useProducts } from '../context/ProductContext';
 import { handleFlyingCartAnimation } from '../utils/cartAnimation';
+import { getPredefinedDesigns, uploadDesign } from '../services/customDesignService';
 
 function ParallaxHighlightCard({ children }) {
   const ref = useRef(null);
@@ -148,7 +150,19 @@ function SimilarProductCard({ product, onQuickView }) {
               navigate('/cart');
             } else {
               await handleFlyingCartAnimation(e);
-              addToCart(product);
+              const productToAdd = { ...product };
+              if (product?.customizable && activeDesign) {
+                productToAdd.customization = {
+                  designImage: activeDesign.icon,
+                  designName: activeDesign.name,
+                  designType: activeDesign.category === 'Uploaded' ? 'uploaded' : 'predefined',
+                  designPosition: activePosition,
+                  designSize: 'medium',
+                  selectedColor: activeColor,
+                  selectedSize: activeSize
+                };
+              }
+              addToCart(productToAdd);
               message.success(`${product.title || 'Product'} added to cart!`);
             }
           }}>
@@ -162,11 +176,27 @@ function SimilarProductCard({ product, onQuickView }) {
 
 export default function ProductDetail() {
   const { productId } = useParams();
-  const navigate = useNavigate();
   const location = useLocation();
+  const navigate = useNavigate();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const { cartItems, addToCart } = useCart();
-  let baseProduct = location.state?.product || GLOBAL_PRODUCTS.find(p => p.id === parseInt(productId)) || null;
+  const { products: contextProducts } = useProducts();
+  
+  const [baseProduct, setBaseProduct] = useState(location.state?.product || null);
+  const [isLoading, setIsLoading] = useState(!baseProduct);
+
+  useEffect(() => {
+    if (!baseProduct && productId) {
+      import('../services/productService').then(({ getProductById }) => {
+        getProductById(productId)
+          .then(res => {
+            if (res.success) setBaseProduct(res.data);
+            setIsLoading(false);
+          })
+          .catch(() => setIsLoading(false));
+      });
+    }
+  }, [productId, baseProduct]);
 
   // Dynamically attach customization ONLY for the specific White T-Shirt (ID 100) or t-shirt7 or t-shirt8
   const isCustomizableTShirt = baseProduct?.id === 100 || (baseProduct?.image && (baseProduct.image.includes('t-shirt7') || baseProduct.image.includes('t-shirt8')));
@@ -184,6 +214,20 @@ export default function ProductDetail() {
   const [activeTab, setActiveTab] = useState('description');
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [activeDesign, setActiveDesign] = useState(product?.designs ? product.designs[0] : null);
+  const [activePosition, setActivePosition] = useState('front');
+  const [isUploading, setIsUploading] = useState(false);
+  const [customDesignsList, setCustomDesignsList] = useState([]);
+  
+  useEffect(() => {
+    if (product?.customizable) {
+      getPredefinedDesigns().then(designs => {
+        setCustomDesignsList(designs);
+        if (!activeDesign && designs.length > 0) {
+          setActiveDesign(designs[0]);
+        }
+      });
+    }
+  }, [product?.customizable]);
 
   const isAdded = product ? cartItems.some(item => item.id === product.id) : false;
 
@@ -297,9 +341,13 @@ export default function ProductDetail() {
   const displayImageSrc = (product?.customizable && activeDesign?.modelImage)
     ? activeDesign.modelImage
     : (activeColorObj?.image || product?.image || placeholderMain);
-  const displayImages = Array(6).fill(displayImageSrc);
+  const displayImages = product?.images?.length > 0 
+    ? product.images.map(img => img.url)
+    : Array(6).fill(displayImageSrc);
 
-  const similarProducts = getSimilarProducts(product);
+  const similarProducts = contextProducts 
+    ? contextProducts.filter(p => p._id !== product?.id && p.category === product?.category).slice(0, 4)
+    : [];
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -499,10 +547,16 @@ export default function ProductDetail() {
             </div>
 
             <div className="pdp-collection-tag-new">
-              👑 PREMIUM COLLECTION
+              {product?.badge || '👑 PREMIUM COLLECTION'}
             </div>
 
-            <h1 className="pdp-product-title-new">{product?.title || 'Floral A-Line Kurti'}</h1>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '8px' }}>
+              <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#666', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                {product?.brand || 'Gudwear'}
+              </span>
+              <h1 className="pdp-product-title-new" style={{ margin: 0 }}>{product?.title || 'Floral A-Line Kurti'}</h1>
+              <span style={{ fontSize: '12px', color: '#999' }}>SKU: {product?.sku || 'SKU-10045'}</span>
+            </div>
 
             <div className="pdp-rating-summary-new">
               <Star size={14} fill="#C89953" color="#C89953" />
@@ -529,7 +583,20 @@ export default function ProductDetail() {
                 <span className="pdp-status-dot-new"></span> In Stock
               </div>
               {/* Product Description or Customizer */}
-              {product?.customizable ? (
+              {/* Product Description */}
+              <div className="pdp-short-description" style={{ marginTop: '12px', marginBottom: '0', color: '#666', fontSize: '14px', lineHeight: '1.6' }}>
+                <p>{product?.description || (product?.title === 'Floral A-Line Kurti' ? 'Elevate your everyday style with our beautiful Floral A-Line Kurti. Carefully crafted from premium breathable cotton, it offers both unparalleled comfort and effortless elegance for any occasion.' : 'Elevate your everyday style with this beautiful piece. Carefully crafted for comfort and elegance.')}</p>
+                
+                {/* Tags */}
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '12px' }}>
+                  {(product?.tags || ['Trending', 'Summer Wear', 'Cotton']).map(tag => (
+                    <span key={tag} style={{ background: '#f5f5f5', color: '#666', padding: '4px 10px', borderRadius: '16px', fontSize: '11px', fontWeight: 'bold' }}>#{tag}</span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Product Customizer */}
+              {product?.customizable && (
                 <div className="pdp-right-col-customizer" style={{ marginTop: '20px' }}>
                   <div className="pdp-customizer-header" style={{ padding: '0', marginBottom: '12px' }}>
                     <h3 style={{ fontSize: '13px', fontWeight: '700', letterSpacing: '0.5px' }}>CHOOSE YOUR DESIGN</h3>
@@ -589,10 +656,6 @@ export default function ProductDetail() {
                     </div>
                     <button className="pdp-customizer-nav" onClick={() => scrollCustomizer('right')} style={{ background: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', border: 'none', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}><ChevronRight size={16} /></button>
                   </div>
-                </div>
-              ) : (
-                <div className="pdp-short-description" style={{ marginTop: '12px', marginBottom: '0', color: '#666', fontSize: '14px', lineHeight: '1.6' }}>
-                  <p>{product?.description || (product?.title === 'Floral A-Line Kurti' ? 'Elevate your everyday style with our beautiful Floral A-Line Kurti. Carefully crafted from premium breathable cotton, it offers both unparalleled comfort and effortless elegance for any occasion.' : 'Elevate your everyday style with this beautiful piece. Carefully crafted for comfort and elegance.')}</p>
                 </div>
               )}
             </div>
@@ -659,7 +722,9 @@ export default function ProductDetail() {
                       <span>{quantity}</span>
                       <button onClick={() => handleQtyChange('inc')}><Plus size={14} /></button>
                     </div>
-                    <span className="pdp-qty-left-new"><Box size={12} style={{ marginRight: '4px' }} /> Only 8 Left</span>
+                    <span className="pdp-qty-left-new" style={{ color: (product?.stock || 8) <= (product?.lowStockAlert || 10) ? '#e53e3e' : '#4a5568' }}>
+                      <Box size={12} style={{ marginRight: '4px' }} /> Only {product?.stock || 8} Left
+                    </span>
                   </div>
                 </div>
               </div>

@@ -28,6 +28,7 @@ import { WishlistProvider } from "./context/WishlistContext";
 import { OrderProvider } from "./context/OrderContext";
 import { CartProvider } from "./context/CartContext";
 import { NotificationProvider } from "./context/NotificationContext";
+import { ProductProvider } from "./context/ProductContext";
 import ReturnRefund from "./pages/customer/ReturnRefund";
 import Coupons from "./pages/customer/Coupons";
 import Register from "./pages/customer/Register";
@@ -89,17 +90,19 @@ const AppContent = () => {
 
 function App() {
   return (
-    <NotificationProvider>
-      <CartProvider>
-        <OrderProvider>
-          <WishlistProvider>
-            <BrowserRouter>
-              <AppContent />
-            </BrowserRouter>
-          </WishlistProvider>
-        </OrderProvider>
-      </CartProvider>
-    </NotificationProvider>
+    <ProductProvider>
+      <NotificationProvider>
+        <CartProvider>
+          <OrderProvider>
+            <WishlistProvider>
+              <BrowserRouter>
+                <AppContent />
+              </BrowserRouter>
+            </WishlistProvider>
+          </OrderProvider>
+        </CartProvider>
+      </NotificationProvider>
+    </ProductProvider>
   );
 }
 
