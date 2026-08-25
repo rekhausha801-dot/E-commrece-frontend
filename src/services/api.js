@@ -105,10 +105,19 @@ export const updateCustomerStatus = (id, status) => axios.patch(`${CUSTOMER_API}
 export const deleteCustomer = (id) => axios.delete(`${CUSTOMER_API}/${id}`);
 
 // -----------------------------------------------------
-// PRODUCT APIs (Add here later)
+// PRODUCT APIs
 // -----------------------------------------------------
 const PRODUCT_API = `${API_BASE_URL}/products`;
-// export const getProducts = () => axios.get(PRODUCT_API);
+
+export const fetchProducts = () => axios.get(PRODUCT_API);
+export const fetchProductById = (id) => axios.get(`${PRODUCT_API}/${id}`);
+export const fetchProductsByCategory = (categoryId) => axios.get(`${PRODUCT_API}/category/${categoryId}`);
+export const fetchNextSku = () => axios.get(`${PRODUCT_API}/next-sku`);
+export const createProductApi = (data) => axios.post(PRODUCT_API, data);
+export const updateProductApi = (id, data) => axios.put(`${PRODUCT_API}/${id}`, data);
+export const deleteProductApi = (id) => axios.delete(`${PRODUCT_API}/${id}`);
+
+
 
 // -----------------------------------------------------
 // OFFER/COUPON APIs

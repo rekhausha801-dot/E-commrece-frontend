@@ -10,20 +10,49 @@
 .product-management-page {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
   overflow-y: auto;
 }
 
 /* Card Base */
-.admin-card {
+.admin-card, .new-card {
   background: white;
-  border-radius: 12px;
-  border: 1px solid #efe5d4;
+  border-radius: 8px;
+  border: 1px solid #E5E7EB;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
   padding: 16px;
   display: flex;
   flex-direction: column;
   min-width: 0;
   overflow: hidden;
+}
+
+.new-card .card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #F3F4F6;
+  padding-bottom: 12px;
+}
+
+.new-card .card-header h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.new-card .card-badge {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
 }
 
 .admin-card-header {
@@ -65,17 +94,19 @@
 .form-input {
   width: 100%;
   box-sizing: border-box;
-  padding: 10px 14px;
-  border: 1px solid #efe5d4;
+  padding: 8px 12px;
+  border: 1px solid #E5E7EB;
   border-radius: 6px;
   font-size: 13px;
   outline: none;
-  transition: border-color 0.2s;
+  transition: all 0.2s ease;
   min-width: 0;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.01);
 }
 
 .form-input:focus {
-  border-color: #C89953;
+  border-color: #a66c24;
+  box-shadow: 0 0 0 3px rgba(166, 108, 36, 0.1);
 }
 
 /* Product List Table Placeholder */
@@ -124,23 +155,36 @@
 
 .btn-cancel {
   background: #fff;
-  border: 1px solid #ddd;
-  color: #555;
+  border: 1px solid #d1d5db;
+  color: #374151;
   padding: 8px 16px;
   border-radius: 6px;
   cursor: pointer;
   font-weight: 500;
   margin-right: 12px;
+  transition: all 0.2s;
+}
+
+.btn-cancel:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
 }
 
 .btn-save {
-  background: #a66c24;
-  border: 1px solid #a66c24;
+  background: linear-gradient(180deg, #a66c24 0%, #8b5719 100%);
+  border: 1px solid #8b5719;
   color: #fff;
   padding: 8px 16px;
   border-radius: 6px;
   cursor: pointer;
   font-weight: 500;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(166,108,36,0.2);
+}
+
+.btn-save:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(166,108,36,0.25);
 }
 
 .add-product-header {
@@ -196,7 +240,7 @@
 .main-grid-area {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 24px;
+  gap: 16px;
   align-content: start;
   align-items: stretch;
 }
@@ -1530,15 +1574,19 @@
 }
 
 .product-table td {
-  padding: 12px 12px;
+  padding: 8px 12px;
   font-size: 13px;
-  color: #555;
-  border-bottom: 1px solid #f7f7f7;
+  color: #374151;
+  border-bottom: 1px solid #F3F4F6;
   vertical-align: middle;
 }
 
+.table-body-row {
+  transition: background-color 0.15s ease;
+}
+
 .table-body-row:hover {
-  background: #fdfdfd;
+  background-color: #F9FAFB;
 }
 
 .custom-checkbox {

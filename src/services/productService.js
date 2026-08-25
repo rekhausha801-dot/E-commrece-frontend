@@ -12,7 +12,7 @@ export const getProducts = async (params = {}) => {
     } else {
       res = await fetchProducts();
     }
-    
+
     // We should map the backend data structure to our frontend structure if needed
     // Assuming backend returns { success: true, count: X, data: [...] }
     if (res.data && res.data.success) {
@@ -20,31 +20,33 @@ export const getProducts = async (params = {}) => {
         const basePrice = typeof p.price === 'number' ? p.price : 0;
         let salePrice = basePrice;
         let discountLabel = null;
-        
+
         if (p.discount > 0) {
           if (p.discountType === 'Fixed') {
             salePrice = basePrice - p.discount;
-            discountLabel = `₹${p.discount} OFF`;
+            discountLabel = `${p.discount} OFF`;
           } else {
             salePrice = Math.round(basePrice - (basePrice * p.discount / 100));
             discountLabel = `${p.discount}% OFF`;
           }
         }
-        
+
         return {
           ...p,
           id: p._id || p.id,
           title: p.name || p.title,
           price: `₹${salePrice}`,
           originalPrice: `₹${basePrice}`,
-          image: (p.images && p.images.length > 0) ? p.images[0].url : p.image,
+          image: (Array.isArray(p.images) && p.images.length > 0) ? (p.images[0]?.url || (typeof p.images[0] === 'string' ? p.images[0] : null)) : (typeof p.images === 'string' ? p.images : (p.image || "https://pngimg.com/uploads/box/box_PNG8.png")),
           rating: p.rating || 0,
           reviews: p.numReviews || p.reviews || 0,
           colors: p.colors || [],
           sizes: p.sizes || [],
           category: p.category?.name || p.category || 'Uncategorized',
           categoryId: p.category?._id || p.category?.id || p.category,
-          badge: discountLabel || (p.badge || null)
+          badge: discountLabel || (p.badge || null),
+          discount: discountLabel,
+          _backendData: p
         };
       });
       // Apply client-side filters until backend query params are fully supported
@@ -54,7 +56,7 @@ export const getProducts = async (params = {}) => {
       if (params.maxPrice !== undefined) {
         filtered = filtered.filter(p => parseInt(p.price?.toString().replace('₹', '') || '0') <= parseInt(params.maxPrice));
       }
-      
+
       return {
         success: true,
         message: "Products fetched successfully",
@@ -76,15 +78,15 @@ export const getProductById = async (id) => {
     const res = await apiFetchProductById(id);
     if (res.data && res.data.success) {
       const p = res.data.data;
-      
+
       const basePrice = typeof p.price === 'number' ? p.price : 0;
       let salePrice = basePrice;
       let discountLabel = null;
-      
+
       if (p.discount > 0) {
         if (p.discountType === 'Fixed') {
           salePrice = basePrice - p.discount;
-          discountLabel = `₹${p.discount} OFF`;
+          discountLabel = `${p.discount} OFF`;
         } else {
           salePrice = Math.round(basePrice - (basePrice * p.discount / 100));
           discountLabel = `${p.discount}% OFF`;
@@ -97,15 +99,17 @@ export const getProductById = async (id) => {
         title: p.name || p.title,
         price: `₹${salePrice}`,
         originalPrice: `₹${basePrice}`,
-        image: (p.images && p.images.length > 0) ? p.images[0].url : p.image,
-        gallery: p.images ? p.images.map(img => img.url) : (p.gallery || []),
+          image: (p.images && p.images.length > 0) ? (p.images[0].url || p.images[0]) : p.image,
+        gallery: p.images ? p.images.map(img => img.url || img) : (p.gallery || []),
         rating: p.rating || 0,
         reviews: p.numReviews || p.reviews || 0,
         colors: p.colors || [],
         sizes: p.sizes || [],
         category: p.category?.name || p.category || 'Uncategorized',
         categoryId: p.category?._id || p.category?.id || p.category,
-        badge: discountLabel || (p.badge || null)
+        badge: discountLabel || (p.badge || null),
+        discount: discountLabel,
+        _backendData: p
       };
       return { success: true, data: mapped };
     }
@@ -118,7 +122,7 @@ export const getProductById = async (id) => {
 
 const mapToBackendFormat = (data) => {
   const formData = new FormData();
-  
+
   if (data.name || data.title) formData.append('name', data.name || data.title);
   if (data.cat || data.category) {
     const cat = data.cat || data.category;
@@ -126,10 +130,10 @@ const mapToBackendFormat = (data) => {
   }
   if (data.brand) formData.append('brand', data.brand);
   if (data.status) formData.append('status', data.status === 'In Stock' ? 'Active' : data.status);
-  
+
   if (data.countInStock !== undefined) formData.append('countInStock', data.countInStock);
   else if (data.stock !== undefined) formData.append('countInStock', Number(data.stock));
-  
+
   if (data.price !== undefined) formData.append('price', Number(data.price.toString().replace(/[^0-9.]/g, '')));
   if (data.discount !== undefined) formData.append('discount', Number(data.discount.toString().replace(/[^0-9]/g, '')));
   if (data.costPrice !== undefined) formData.append('costPrice', Number(data.costPrice.toString().replace(/[^0-9.]/g, '')));
@@ -142,10 +146,10 @@ const mapToBackendFormat = (data) => {
   if (data.seoTitle) formData.append('seoTitle', data.seoTitle);
   if (data.seoDesc) formData.append('seoDesc', data.seoDesc);
   if (data.seoKeywords) formData.append('seoKeywords', data.seoKeywords);
-  
+
   const desc = data.description || data.fullDesc || data.shortDesc;
   if (desc) formData.append('description', desc);
-  
+
   if (data.sku && data.sku.trim() !== '') {
     formData.append('sku', data.sku);
   }
@@ -198,6 +202,19 @@ const mapToBackendFormat = (data) => {
   }
 
   formData.append('images', JSON.stringify(existingImages));
+
+  if (data.homeSection) {
+    formData.append('homeSection', data.homeSection);
+  }
+  if (data.isLimitedOffer !== undefined) {
+    formData.append('isLimitedOffer', data.isLimitedOffer);
+  }
+  if (data.limitedOfferEndDate) {
+    formData.append('limitedOfferEndDate', data.limitedOfferEndDate);
+  }
+  if (data.limitedOfferDetails) {
+    formData.append('limitedOfferDetails', JSON.stringify(data.limitedOfferDetails));
+  }
 
   return formData;
 };
