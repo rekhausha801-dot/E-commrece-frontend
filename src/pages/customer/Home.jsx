@@ -28,6 +28,7 @@ import trendySneakersImg from '../../assets/images/trendy_sneakers.png';
 import beautyCosmeticsImg from '../../assets/images/beauty_cosmetics.png';
 import { Heart, ShoppingBag, ShoppingCart, Star, Leaf } from 'lucide-react';
 import { useWishlist } from '../../context/WishlistContext';
+import { useProducts } from '../../context/ProductContext';
 import { getBrands } from '../../services/api';
 
 const SectionHeader = ({ eyebrowText, titleDark, titleGold }) => (
@@ -46,6 +47,51 @@ const SectionHeader = ({ eyebrowText, titleDark, titleGold }) => (
   </div>
 );
 
+const CountdownTimer = ({ targetDateStr, stockLimit, productId, onExpire }) => {
+  const [timeLeft, setTimeLeft] = React.useState('');
+
+  React.useEffect(() => {
+    if (!targetDateStr) return;
+    const targetDate = new Date(targetDateStr).getTime();
+
+    const calculateTime = () => {
+      const now = new Date().getTime();
+      const distance = targetDate - now;
+
+      if (stockLimit <= 0) {
+        setTimeLeft('Sold Out');
+        return false;
+      } else if (distance < 0) {
+        setTimeLeft('00h : 00m : 00s');
+        if (onExpire && productId) {
+          setTimeout(() => onExpire(productId), 2000);
+        }
+        return false;
+      } else {
+        const totalHours = Math.floor(distance / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        setTimeLeft(`${totalHours.toString().padStart(2, '0')}h : ${minutes.toString().padStart(2, '0')}m : ${seconds.toString().padStart(2, '0')}s`);
+        return true;
+      }
+    };
+
+    // Run immediately so it doesn't show 'Calculating...' for 1 second
+    if (!calculateTime()) return;
+
+    const interval = setInterval(() => {
+      if (!calculateTime()) {
+        clearInterval(interval);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [targetDateStr, stockLimit, productId, onExpire]);
+
+  return <>{timeLeft || 'Calculating...'}</>;
+};
+
 const BRANDS = [
   { name: 'LACOSTE', domain: 'lacoste.com', bgClass: 'bg-glass-wave' },
   { name: 'ZARA', domain: 'zara.com', bgClass: 'bg-glass-wave' },
@@ -57,9 +103,56 @@ const BRANDS = [
 
 const Home = () => {
   const navigate = useNavigate();
-  const [timeLeft, setTimeLeft] = React.useState({ h: 1, m: 10, s: 30 });
   const { toggleWishlist, isInWishlist } = useWishlist();
+  const { products } = useProducts();
   const [brands, setBrands] = React.useState(BRANDS);
+
+  const formatProduct = (p) => {
+    const rawPrice = Number(String(p.price || 0).replace(/[^0-9.-]+/g, "")) || 0;
+    const rawDiscount = Number(String(p.discount || 0).replace(/[^0-9.-]+/g, "")) || 0;
+
+    let price = rawPrice - (p.discountType === 'Fixed' ? rawDiscount : ((rawPrice * rawDiscount) / 100));
+    if (p.homeSection === 'Limited Offers' && p.limitedOfferDetails?.offerPrice) {
+      price = Number(String(p.limitedOfferDetails.offerPrice || 0).replace(/[^0-9.-]+/g, "")) || 0;
+    }
+
+    return {
+      id: p._id || p.id,
+      image: (Array.isArray(p.images) && p.images.length > 0) ? (p.images[0]?.url || (typeof p.images[0] === 'string' ? p.images[0] : null)) : (typeof p.images === 'string' ? p.images : (p.image || "https://pngimg.com/uploads/box/box_PNG8.png")),
+      title: p.name || p.title,
+      price: `₹${Math.round(price)}`,
+      originalPrice: rawPrice > 0 ? `₹${rawPrice}` : null,
+      discount: rawDiscount > 0 ? (p.discountType === 'Percentage' ? `${rawDiscount}% OFF` : `₹${rawDiscount} OFF`) : null,
+      rating: p.rating || 0,
+      reviews: p.numReviews || 0,
+      badge: p.badge || (p.discount > 0 ? 'SALE' : null),
+      timer: (p.homeSection === 'Limited Offers' || String(p.isLimitedOffer) === 'true') ? (p.limitedOfferEndDate || p.limitedOfferDetails?.endDate) : null,
+      stockLimit: p.limitedOfferDetails?.stockLimit !== undefined ? p.limitedOfferDetails.stockLimit : (p.countInStock ?? 999),
+      countInStock: p.countInStock || 0,
+      category: p.category?.name || p.category || 'Uncategorized',
+      _backendData: p
+    };
+  };
+
+  const [limitedOffers, setLimitedOffers] = React.useState([]);
+
+  React.useEffect(() => {
+    if (products) {
+      const validOffers = products
+        .filter(p => p.homeSection === 'Limited Offers' || String(p.isLimitedOffer) === 'true')
+        .map(formatProduct)
+        .filter(p => !p.timer || new Date(p.timer).getTime() > new Date().getTime())
+        .sort((a, b) => new Date(b._backendData?.createdAt || 0) - new Date(a._backendData?.createdAt || 0))
+        .slice(0, 4);
+      setLimitedOffers(validOffers);
+    }
+  }, [products]);
+
+  const handleOfferExpire = React.useCallback((productId) => {
+    setLimitedOffers(prev => prev.filter(p => p.id !== productId));
+  }, []);
+
+  const newArrivals = products?.filter(p => p.homeSection === 'New Arrivals').map(formatProduct).slice(0, 4) || [];
 
   React.useEffect(() => {
     const fetchBrands = async () => {
@@ -84,29 +177,6 @@ const Home = () => {
     fetchBrands();
   }, []);
 
-  React.useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft(prev => {
-        let { h, m, s } = prev;
-        if (s > 0) {
-          s--;
-        } else {
-          s = 59;
-          if (m > 0) {
-            m--;
-          } else {
-            m = 59;
-            if (h > 0) h--;
-          }
-        }
-        return { h, m, s };
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const formatTime = (val) => val.toString().padStart(2, '0');
-
   const categories = [
     { name: 'Dresses', path: '/category/dresses' },
     { name: 'Tops', path: '/category/tops' },
@@ -129,12 +199,7 @@ const Home = () => {
         <SectionHeader eyebrowText="SEASON SPECIAL" titleDark="Limited" titleGold="Offers" />
 
         <div className="unified-products-grid" style={{ padding: '0 5vw', marginTop: '30px' }}>
-          {[
-            { id: 1, title: 'Designer Kurthi', image: kurthi3Img, price: '₹499', originalPrice: '₹999', discount: '50% off', rating: 5, reviews: 24 },
-            { id: 2, title: 'Floral A-Line Kurti', image: kurthi2Img, price: '₹799', originalPrice: '₹999', discount: '20% off', rating: 4, reviews: 18 },
-            { id: 3, title: 'Cotton Daily Wear Kurti', image: kurthi4Img, price: '₹649', originalPrice: '₹899', discount: '28% off', rating: 4, reviews: 31 },
-            { id: 4, title: 'Indo Western Kurti', image: kurtiImg, price: '₹899', originalPrice: '₹1199', discount: '25% off', rating: 5, reviews: 42 }
-          ].map(product => (
+          {limitedOffers.length > 0 ? limitedOffers.map(product => (
             <motion.div
               key={product.id}
               layout
@@ -143,30 +208,32 @@ const Home = () => {
               viewport={{ once: true, margin: "0px 0px -50px 0px" }}
               transition={{ type: "spring", damping: 20, stiffness: 300 }}
               className="unified-product-card"
-              onClick={() => navigate(`/product/${product.id}`, { state: { product } })}
+              onClick={() => navigate(`/product/${product.id}`, { state: { product: product._backendData } })}
             >
               <div className="unified-card-image-wrap">
                 {product.badge && (
                   <div className="unified-badge" style={{ background: '#c0a07c' }}>{product.badge}</div>
                 )}
-                <div style={{
-                  position: 'absolute',
-                  bottom: '10px',
-                  left: '10px',
-                  backgroundColor: '#fcecdb',
-                  color: '#d36a44',
-                  padding: '4px 10px',
-                  borderRadius: '20px',
-                  fontSize: '12px',
-                  fontWeight: '600',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-                  zIndex: 2
-                }}>
-                  {formatTime(timeLeft.h)}h : {formatTime(timeLeft.m)}m : {formatTime(timeLeft.s)}s
-                </div>
+                {product.timer && (
+                  <div style={{
+                    position: 'absolute',
+                    bottom: '10px',
+                    left: '10px',
+                    backgroundColor: '#fcecdb',
+                    color: '#d36a44',
+                    padding: '4px 10px',
+                    borderRadius: '20px',
+                    fontSize: '12px',
+                    fontWeight: '600',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+                    zIndex: 2
+                  }}>
+                    <CountdownTimer targetDateStr={product.timer} stockLimit={product.stockLimit} productId={product.id} onExpire={handleOfferExpire} />
+                  </div>
+                )}
                 <button className="unified-wishlist-btn" onClick={(e) => { e.stopPropagation(); toggleWishlist(product); }}>
                   <Heart
                     size={16}
@@ -176,6 +243,18 @@ const Home = () => {
                   />
                 </button>
                 <img src={product.image} alt={product.title} />
+                {(product.stockLimit <= 0 || product.countInStock <= 0) && (
+                  <div style={{
+                    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                    background: 'rgba(255,255,255,0.6)', zIndex: 3,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  }}>
+                    <span style={{
+                      background: '#dc2626', color: '#fff', padding: '8px 16px',
+                      fontWeight: 'bold', fontSize: '14px', borderRadius: '4px', letterSpacing: '1px'
+                    }}>SOLD OUT</span>
+                  </div>
+                )}
               </div>
 
               <div className="unified-card-info">
@@ -196,13 +275,17 @@ const Home = () => {
                   {product.discount && <span className="unified-price-discount">{product.discount}</span>}
                 </div>
 
-                <button className="unified-explore-btn">
+                <button className="unified-explore-btn" onClick={(e) => { e.stopPropagation(); navigate(`/product/${product.id}`); }}>
                   Explore Collection
                   <span style={{ fontSize: '16px' }}>→</span>
                 </button>
               </div>
             </motion.div>
-          ))}
+          )) : (
+            <div style={{ width: '100%', textAlign: 'center', padding: '40px', color: '#6b7280' }}>
+              No limited offers available right now.
+            </div>
+          )}
         </div>
       </div>
 
@@ -223,12 +306,7 @@ const Home = () => {
         <SectionHeader eyebrowText="SEASON SPECIAL" titleDark="New" titleGold="Arrivals" />
 
         <div className="unified-products-grid" style={{ padding: '0 5vw', textAlign: 'left' }}>
-          {[
-            { id: 5, title: 'Classic Black Watch', image: classicBlackWatchImg, price: '₹1,999', rating: 4, reviews: 128, badge: 'NEW', color: '#1a1d20' },
-            { id: 6, title: 'Elegant Handbag', image: elegantHandbagImg, price: '₹2,499', rating: 4, reviews: 96, badge: 'NEW', color: '#b58c5a' },
-            { id: 7, title: 'Men Casual Shirt', image: menCasualShirtImg, price: '₹1,299', rating: 4, reviews: 213, badge: 'NEW', color: '#4b7b9d' },
-            { id: 8, title: 'Trendy Sneakers', image: trendySneakersImg, price: '₹2,199', rating: 4, reviews: 176, badge: 'NEW', color: '#5a774c' }
-          ].map(product => (
+          {newArrivals.length > 0 ? newArrivals.map(product => (
             <motion.div
               key={product.id}
               layout
@@ -272,13 +350,17 @@ const Home = () => {
                   {product.discount && <span className="unified-price-discount">{product.discount}</span>}
                 </div>
 
-                <button className="unified-explore-btn">
+                <button className="unified-explore-btn" onClick={(e) => { e.stopPropagation(); navigate(`/product/${product.id}`); }}>
                   Explore Collection
                   <span style={{ fontSize: '16px' }}>→</span>
                 </button>
               </div>
             </motion.div>
-          ))}
+          )) : (
+            <div style={{ width: '100%', textAlign: 'center', padding: '40px', color: '#6b7280' }}>
+              No new arrivals right now.
+            </div>
+          )}
         </div>
       </div>
 
@@ -292,8 +374,8 @@ const Home = () => {
         <div className="brands-marquee-container">
           <div className="brands-marquee">
             {(brands.length > 0 ? Array(Math.max(3, Math.ceil(18 / brands.length))).fill(brands).flat() : []).map((brand, index) => (
-              <motion.div 
-                className={`brand-card ${brand.bgClass}`} 
+              <motion.div
+                className={`brand-card ${brand.bgClass}`}
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}

@@ -284,11 +284,16 @@ export default function CategoryPage() {
       return pCat.includes(catName) || catName.includes(pCat) || pCat === 'uncategorized';
     });
     
-    return filtered.map(p => ({
-      id: p._id,
-      title: p.name,
-      price: `₹${p.price - (p.discountType === 'Fixed' ? (p.discount || 0) : ((p.price * (p.discount || 0)) / 100))}`,
-      originalPrice: p.discount > 0 ? `₹${p.price}` : null,
+    return filtered.map(p => {
+      const rawPrice = Number(String(p.price || 0).replace(/[^0-9.-]+/g, "")) || 0;
+      const rawDiscount = Number(String(p.discount || 0).replace(/[^0-9.-]+/g, "")) || 0;
+      const price = rawPrice - (p.discountType === 'Fixed' ? rawDiscount : ((rawPrice * rawDiscount) / 100));
+
+      return {
+        id: p._id,
+        title: p.name,
+        price: `₹${Math.round(price)}`,
+        originalPrice: rawDiscount > 0 && rawPrice > 0 ? `₹${rawPrice}` : null,
       rating: p.rating || 4.5,
       reviews: p.numReviews || Math.floor(Math.random() * 200) + 10,
       badge: p.badge || (p.discount > 0 ? 'SALE' : null),
@@ -296,7 +301,8 @@ export default function CategoryPage() {
       image: (p.images && p.images.length > 0) ? p.images[0].url : "https://pngimg.com/uploads/box/box_PNG8.png",
       colors: p.colors && p.colors.length > 0 ? p.colors.map(c => c.hex || '#000000') : ['#000000', '#333333'],
       _backendData: p
-    }));
+      };
+    });
   }, [categoryId, contextProducts, currentCategory.title]);
   
   const [wishlist, setWishlist] = useState(() => {

@@ -13,12 +13,51 @@ import cargoImg from '../assets/images/cargo.jpg';
 import sneakerImg from '../assets/images/sneaker.jpg';
 import jordanImg from '../assets/images/shoe-jordan.jpg';
 
-const TABS = [
-  { id: 'trending', label: 'Trending Now', icon: <FaFire /> },
-  { id: 'bestsellers', label: 'Best Sellers', icon: <FaStar /> },
-  { id: 'new', label: 'New Arrivals', icon: <FaMagic /> },
-  { id: 'limited', label: 'Limited Offers', icon: <FaTag /> },
-];
+
+
+function CountdownTimer({ targetDateStr, stockLimit, productId, onExpire }) {
+  const [timeLeft, setTimeLeft] = useState('');
+
+  useEffect(() => {
+    if (!targetDateStr) return;
+    const targetDate = new Date(targetDateStr).getTime();
+
+    const calculateTime = () => {
+      const now = new Date().getTime();
+      const distance = targetDate - now;
+
+      if (stockLimit <= 0) {
+        setTimeLeft('Sold Out');
+        return false;
+      } else if (distance < 0) {
+        setTimeLeft('00h : 00m : 00s');
+        if (onExpire && productId) {
+          setTimeout(() => onExpire(productId), 2000);
+        }
+        return false;
+      } else {
+        const totalHours = Math.floor(distance / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        setTimeLeft(`${totalHours.toString().padStart(2, '0')}h : ${minutes.toString().padStart(2, '0')}m : ${seconds.toString().padStart(2, '0')}s`);
+        return true;
+      }
+    };
+
+    if (!calculateTime()) return;
+
+    const interval = setInterval(() => {
+      if (!calculateTime()) {
+        clearInterval(interval);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [targetDateStr, stockLimit, productId, onExpire]);
+
+  return <span style={{ fontSize: '11px', fontWeight: 'bold' }}>{timeLeft || 'Calculating...'}</span>;
+}
 
 function StarRating({ rating, reviews }) {
   const stars = [];
@@ -81,7 +120,6 @@ function FeatureIcon({ name }) {
 }
 
 const TrendyCollection = () => {
-  const [activeTab, setActiveTab] = useState('trending');
   const [likedIds, setLikedIds] = useState([]);
   const { cartItems, addToCart } = useCart();
   const { products, loading } = useProducts();
@@ -89,10 +127,10 @@ const TrendyCollection = () => {
 
   const handleCartClick = async (e, product) => {
     e.stopPropagation();
-    
+
     // Check global cart state
     const isAdded = cartItems.some(item => item.id === product.id);
-    
+
     if (isAdded) {
       navigate('/cart');
       return;
@@ -102,7 +140,7 @@ const TrendyCollection = () => {
     const card = button.closest('.unified-product-card');
     const img = card ? card.querySelector('img') : null;
     const basket = document.getElementById('navbar-cart-badge');
-    
+
     if (img && basket) {
       // Temporarily disable the button to prevent spamming
       button.disabled = true;
@@ -156,10 +194,10 @@ const TrendyCollection = () => {
 
       // Knock the basket with a spring bounce
       animate(basket, { y: [0, 6, -3, 0], scale: [1, 0.9, 1.1, 1] }, { type: "spring", stiffness: 400, damping: 10 });
-      
+
       // Ripple the ring out
       animate(ring, { scale: [1, 2.5], opacity: [0.8, 0] }, { duration: 0.5, ease: "easeOut" }).then(() => ring.remove());
-      
+
       button.disabled = false;
     }
 
@@ -176,29 +214,44 @@ const TrendyCollection = () => {
 
   const getDisplayedProducts = () => {
     if (!products || products.length === 0) return [];
-    
-    // Convert backend format to frontend UI format for the Trendy Collection
-    return products.slice(0, 4).map(p => ({
-      id: p._id,
-      image: (p.images && p.images.length > 0) ? p.images[0].url : "https://pngimg.com/uploads/box/box_PNG8.png",
-      title: p.name,
-      price: `₹${p.price - (p.discountType === 'Fixed' ? (p.discount || 0) : ((p.price * (p.discount || 0)) / 100))}`,
-      originalPrice: p.discount > 0 ? `₹${p.price}` : null,
-      discount: p.discount > 0 ? (p.discountType === 'Percentage' ? `${p.discount}% OFF` : `₹${p.discount} OFF`) : null,
-      rating: p.rating || 4.5,
-      reviews: p.numReviews || Math.floor(Math.random() * 200) + 10,
-      badge: p.badge || (p.discount > 0 ? 'SALE' : null),
-      _backendData: p
-    }));
+
+    let filteredProducts = products.filter(p => p.homeSection === 'Trending');
+
+    return filteredProducts.slice(0, 4).map(p => {
+      const rawPrice = Number(String(p.price || 0).replace(/[^0-9.-]+/g, "")) || 0;
+      const rawDiscount = Number(String(p.discount || 0).replace(/[^0-9.-]+/g, "")) || 0;
+
+      let price = rawPrice - (p.discountType === 'Fixed' ? rawDiscount : ((rawPrice * rawDiscount) / 100));
+      if (p.homeSection === 'Limited Offers' && p.limitedOfferDetails?.offerPrice) {
+        price = Number(String(p.limitedOfferDetails.offerPrice || 0).replace(/[^0-9.-]+/g, "")) || 0;
+      }
+
+      return {
+        id: p._id || p.id,
+        image: (Array.isArray(p.images) && p.images.length > 0) ? (p.images[0]?.url || (typeof p.images[0] === 'string' ? p.images[0] : null)) : (typeof p.images === 'string' ? p.images : (p.image || "https://pngimg.com/uploads/box/box_PNG8.png")),
+        title: p.name || p.title,
+        price: `₹${Math.round(price)}`,
+        originalPrice: rawPrice > 0 ? `₹${rawPrice}` : null,
+        discount: rawDiscount > 0 ? (p.discountType === 'Percentage' ? `${rawDiscount}% OFF` : `₹${rawDiscount} OFF`) : null,
+        rating: p.rating || 0,
+        reviews: p.numReviews || 0,
+        badge: p.badge || (p.discount > 0 ? 'SALE' : null),
+        timer: (p.homeSection === 'Limited Offers' || String(p.isLimitedOffer) === 'true') ? (p.limitedOfferEndDate || p.limitedOfferDetails?.endDate) : null,
+        stockLimit: p.limitedOfferDetails?.stockLimit !== undefined ? p.limitedOfferDetails.stockLimit : (p.countInStock ?? 999),
+        countInStock: p.countInStock || 0,
+        category: p.category?.name || p.category || 'Uncategorized',
+        _backendData: p
+      };
+    });
   };
 
   const displayedProducts = getDisplayedProducts();
 
   if (loading) {
-    return <div style={{textAlign: 'center', padding: '40px'}}>Loading trendy collections...</div>;
+    return <div style={{ textAlign: 'center', padding: '40px' }}>Loading trendy collections...</div>;
   }
 
-  // The observer is replaced by Framer Motion's whileInView
+
 
   return (
     <section className="trendy-section">
@@ -214,11 +267,10 @@ const TrendyCollection = () => {
         <h2 className="trendy-title">
           Trending <span className="trendy-title-accent">Collections</span>
         </h2>
-
       </div>
 
       <div className="unified-products-grid" style={{ marginTop: '30px', marginBottom: '10px' }}>
-        {displayedProducts.map((product) => (
+        {displayedProducts.length > 0 ? displayedProducts.map((product) => (
           <motion.div
             className="unified-product-card"
             key={product.id}
@@ -238,9 +290,34 @@ const TrendyCollection = () => {
                 {likedIds.includes(product.id) ? <FaHeart color="#ff4d4f" /> : <FaRegHeart color="#555" />}
               </button>
               <img src={product.image} alt={product.title} />
+              {(product.stockLimit <= 0 || product.countInStock <= 0) && (
+                <div style={{
+                  position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                  background: 'rgba(255,255,255,0.6)', zIndex: 3,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
+                }}>
+                  <span style={{
+                    background: '#dc2626', color: '#fff', padding: '8px 16px',
+                    fontWeight: 'bold', fontSize: '14px', borderRadius: '4px', letterSpacing: '1px'
+                  }}>SOLD OUT</span>
+                </div>
+              )}
               {product.timer && (
-                <div className="unified-timer-pill">
-                  {product.timer}
+                <div className="unified-timer-pill" style={{
+                  position: 'absolute',
+                  bottom: '10px',
+                  left: '10px',
+                  backgroundColor: '#fcecdb',
+                  color: '#d36a44',
+                  padding: '4px 10px',
+                  borderRadius: '20px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+                  zIndex: 2
+                }}>
+                  <CountdownTimer targetDateStr={product.timer} stockLimit={product.stockLimit} />
                 </div>
               )}
             </div>
@@ -273,7 +350,11 @@ const TrendyCollection = () => {
               </button>
             </div>
           </motion.div>
-        ))}
+        )) : (
+          <div style={{ width: '100%', textAlign: 'center', padding: '40px', color: '#6b7280' }}>
+            No trending products available right now.
+          </div>
+        )}
       </div>
     </section>
   );
