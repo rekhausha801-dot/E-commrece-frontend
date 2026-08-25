@@ -3,21 +3,55 @@ import './SummerBanner.css';
 import seaImg from '../assets/banners/glo.png';
 import bannerVideo from '../assets/banners/8387356-uhd_4096_2160_25fps.mp4';
 import { FaArrowRight } from 'react-icons/fa';
+import { getActiveBanners } from '../services/api';
 
-const slides = [
+const defaultSlides = [
   { type: 'image', src: seaImg },
   { type: 'video', src: bannerVideo }
 ];
 
+const API_BASE_URL = 'http://localhost:5000';
+const getImageUrl = (path) => {
+  if (!path) return '';
+  return path.startsWith('http') ? path : `${API_BASE_URL}${path}`;
+};
+
 const SummerBanner = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+
+  const [dynamicBanners, setDynamicBanners] = useState([]);
+  
+  useEffect(() => {
+    const fetchBanners = async () => {
+      try {
+        const { data } = await getActiveBanners();
+        if (data && data.success) {
+          const middleBanners = data.data.filter(b => b.placement === 'Home - Middle');
+          if (middleBanners.length > 0) {
+            setDynamicBanners(middleBanners);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching middle banners", error);
+      }
+    };
+    fetchBanners();
+  }, []);
+
+  const slides = dynamicBanners.length > 0 ? dynamicBanners.map(b => ({
+    type: b.type === 'video' ? 'video' : 'image',
+    src: b.image ? getImageUrl(b.image) : '',
+    title: b.title,
+    description: b.description,
+    link: b.link
+  })) : defaultSlides;
 
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 5000);
     return () => clearInterval(timer);
-  }, []);
+  }, [slides.length]);
 
   return (
     <section className="summer-banner-wrapper">
@@ -96,18 +130,27 @@ const SummerBanner = () => {
               <span className="summer-line" />
             </div>
 
-
-            <h2 className="summer-title">SUMMER</h2>
-            <h3 className="summer-subtitle">COLLECTIONS</h3>
+            <h2 className="summer-title" style={{ fontSize: slides[currentSlide]?.title ? '42px' : '48px', lineHeight: '1.2' }}>
+              {slides[currentSlide]?.title ? slides[currentSlide].title.split(' ')[0] : 'SUMMER'}
+            </h2>
+            <h3 className="summer-subtitle" style={{ fontSize: slides[currentSlide]?.title ? '32px' : '36px' }}>
+              {slides[currentSlide]?.title ? slides[currentSlide].title.substring(slides[currentSlide].title.indexOf(' ') + 1) : 'COLLECTIONS'}
+            </h3>
 
             <p className="summer-desc">
-              Breezy fabrics. Sun-kissed colors.<br />
-              Effortless styles for every moment.
+              {slides[currentSlide]?.description || (
+                <>
+                  Breezy fabrics. Sun-kissed colors.<br />
+                  Effortless styles for every moment.
+                </>
+              )}
             </p>
 
-            <button className="summer-shop-btn">
-              SHOP NOW <FaArrowRight className="summer-btn-icon" />
-            </button>
+            <a href={slides[currentSlide]?.link || '/shop'} style={{ textDecoration: 'none' }}>
+              <button className="summer-shop-btn">
+                SHOP NOW <FaArrowRight className="summer-btn-icon" />
+              </button>
+            </a>
           </div>
         </div>
       </div>

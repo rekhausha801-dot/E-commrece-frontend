@@ -120,12 +120,10 @@ export const deleteProductApi = (id) => axios.delete(`${PRODUCT_API}/${id}`);
 
 
 // -----------------------------------------------------
-// OFFER/COUPON APIs
+// OFFER APIs
 // -----------------------------------------------------
 const OFFER_API = `${API_BASE_URL}/offers`;
-
-export const getOffers = (params) => axios.get(OFFER_API, { params });
-export const getOfferById = (id) => axios.get(`${OFFER_API}/${id}`);
+export const getOffers = () => axios.get(OFFER_API);
 export const createOffer = (data) => axios.post(OFFER_API, data);
 export const updateOffer = (id, data) => axios.put(`${OFFER_API}/${id}`, data);
 export const deleteOffer = (id) => axios.delete(`${OFFER_API}/${id}`);
@@ -134,10 +132,11 @@ export const deleteOffer = (id) => axios.delete(`${OFFER_API}/${id}`);
 // BANNER APIs
 // -----------------------------------------------------
 const BANNER_API = `${API_BASE_URL}/banners`;
-
 export const getBanners = () => axios.get(BANNER_API);
-export const getActiveBanners = () => axios.get(`${BANNER_API}/active`);
 export const createBanner = (data) => axios.post(BANNER_API, data);
 export const updateBanner = (id, data) => axios.put(`${BANNER_API}/${id}`, data);
 export const deleteBanner = (id) => axios.delete(`${BANNER_API}/${id}`);
-export const toggleBannerStatus = (id) => axios.patch(`${BANNER_API}/${id}/status`);
+export const toggleBannerStatus = (id, status) => axios.patch(`${BANNER_API}/${id}/status`, { status });
+export const getActiveBanners = () => axios.get(`${BANNER_API}/active`);
+
+export const fetchNextSku = () => axios.get(`${PRODUCT_API}/next-sku`);

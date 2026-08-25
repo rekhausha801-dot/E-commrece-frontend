@@ -252,7 +252,7 @@
 /* Table */
 .bam-table-container {
   width: 100%;
-  overflow-x: auto;
+  overflow: visible;
 }
 .bam-table {
   width: 100%;
