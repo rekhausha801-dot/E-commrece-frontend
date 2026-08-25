@@ -5,7 +5,7 @@ import {
   Check, X, Upload, Copy, Eye, Save, CloudUpload,
   Truck, Settings, Wallet, ArrowLeftRight, Home, Star, Info, ChevronDown,
   Hash, Shirt, Calendar, Trash2, Ruler, Puzzle, Tag, Package,
-  Mountain, Feather, Flame, Leaf, Rocket, Compass, Send, Headphones, Palmtree, Flower2
+  Mountain, Feather, Flame, Leaf, Rocket, Compass, Send, Headphones, Palmtree, Flower2, MonitorPlay, Timer
 } from 'lucide-react';
 import { fetchCategories, fetchNextSku } from '../../services/api';
 
@@ -100,14 +100,22 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
   }, [category, editingProduct]);
   const [activePage, setActivePage] = useState(1);
   const [coverImage, setCoverImage] = useState(editingProduct?.img || null);
-  const [galleryImages, setGalleryImages] = useState({ 1: null, 2: null, 3: null, 4: null });
+  const [galleryImages, setGalleryImages] = useState(() => {
+    const init = { 1: null, 2: null, 3: null, 4: null };
+    if (editingProduct?.gallery) {
+      editingProduct.gallery.forEach((url, index) => {
+        if (index < 4) init[index + 1] = url;
+      });
+    }
+    return init;
+  });
   const [isCustomizable, setIsCustomizable] = useState(editingProduct?.customizable || false);
   const [deliveryText, setDeliveryText] = useState(editingProduct?.deliveryText || 'Free Delivery on orders above ₹499');
   const [returnText, setReturnText] = useState(editingProduct?.returnText || '7 days return policy');
   const [warrantyText, setWarrantyText] = useState(editingProduct?.warrantyText || '100% secure checkout');
-  const [initialRating, setInitialRating] = useState(editingProduct?.rating || 4.8);
-  const [initialReviews, setInitialReviews] = useState(editingProduct?.reviews || 2547);
-  const [badgeLabel, setBadgeLabel] = useState(editingProduct?.badge || 'PREMIUM COLLECTION');
+  const [initialRating, setInitialRating] = useState(editingProduct?.rating ?? 4.8);
+  const [initialReviews, setInitialReviews] = useState(editingProduct?.reviews ?? 2547);
+  const [badgeLabel, setBadgeLabel] = useState(editingProduct?.badge ?? 'PREMIUM COLLECTION');
   const [isDesignModalOpen, setIsDesignModalOpen] = useState(false);
   const [customDesigns, setCustomDesigns] = useState(editingProduct?.designs || []);
   const [newDesignName, setNewDesignName] = useState('');
@@ -121,6 +129,15 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
   const [faqs, setFaqs] = useState(editingProduct?.faqs || []);
   const [relatedProducts, setRelatedProducts] = useState(editingProduct?.relatedProducts || []);
   const [relatedInput, setRelatedInput] = useState('');
+  
+  const [homeSection, setHomeSection] = useState(editingProduct?.homeSection || 'None');
+  const [isLimitedOffer, setIsLimitedOffer] = useState(editingProduct?.isLimitedOffer || false);
+  const [limitedOfferDetails, setLimitedOfferDetails] = useState({
+    offerPrice: editingProduct?.limitedOfferDetails?.offerPrice || '',
+    startDate: editingProduct?.limitedOfferDetails?.startDate ? new Date(editingProduct.limitedOfferDetails.startDate).toISOString().slice(0, 16) : '',
+    endDate: editingProduct?.limitedOfferDetails?.endDate ? new Date(editingProduct.limitedOfferDetails.endDate).toISOString().slice(0, 16) : '',
+    stockLimit: editingProduct?.limitedOfferDetails?.stockLimit || ''
+  });
 
   // Variants
   const [selectedSizes, setSelectedSizes] = useState(editingProduct?.sizes || []);
@@ -157,24 +174,24 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
     // Standard measurements for auto-generation
     const STANDARD_MEASUREMENTS = {
       'XS': { bust: '32', waist: '26', length: '37' },
-      'S':  { bust: '34', waist: '28', length: '38' },
-      'M':  { bust: '36', waist: '30', length: '39' },
-      'L':  { bust: '38', waist: '32', length: '40' },
+      'S': { bust: '34', waist: '28', length: '38' },
+      'M': { bust: '36', waist: '30', length: '39' },
+      'L': { bust: '38', waist: '32', length: '40' },
       'XL': { bust: '40', waist: '34', length: '41' },
-      'XXL':{ bust: '42', waist: '36', length: '42' },
-      '3XL':{ bust: '44', waist: '38', length: '43' },
-      '4XL':{ bust: '46', waist: '40', length: '44' },
-      '5XL':{ bust: '48', waist: '42', length: '45' }
+      'XXL': { bust: '42', waist: '36', length: '42' },
+      '3XL': { bust: '44', waist: '38', length: '43' },
+      '4XL': { bust: '46', waist: '40', length: '44' },
+      '5XL': { bust: '48', waist: '42', length: '45' }
     };
 
     // Sync sizeGuide with selectedSizes automatically
     setSizeGuide(prev => {
       const existing = new Map();
       prev.forEach(sg => existing.set(sg.size, sg));
-      
+
       const newGuide = [];
       const SIZES_LIST = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL'];
-      
+
       // Add all selected sizes
       selectedSizes.forEach(size => {
         if (existing.has(size)) {
@@ -186,14 +203,14 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
           newGuide.push({ size, bust: std.bust, waist: std.waist, length: std.length });
         }
       });
-      
+
       // Add remaining existing sizes that are NOT in SIZES_LIST (custom added rows)
       existing.forEach((sg, size) => {
         if (!SIZES_LIST.includes(size) || size === '') {
           newGuide.push(sg);
         }
       });
-      
+
       // Return initial size guide if nothing is selected and it's a new product, to avoid empty table
       if (newGuide.length === 0 && !editingProduct) {
         return [
@@ -238,7 +255,7 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
       }
     }
 
-    onSave({
+    const productToSave = {
       id: editingProduct?.id || Date.now(),
       name: productName,
       price: !isNaN(Number(price)) ? Number(price) : 0,
@@ -269,14 +286,20 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
       faqs,
       relatedProducts,
       rating: initialRating,
-      reviews: initialReviews,
+      numReviews: initialReviews,
       badge: badgeLabel,
       sizes: selectedSizes,
       colors: selectedColors,
       tags: tags,
       specs: specs,
-      sizeGuide: sizeGuide
-    });
+      sizeGuide: sizeGuide,
+      homeSection: homeSection,
+      limitedOfferDetails: (isLimitedOffer || homeSection === 'Limited Offers') ? limitedOfferDetails : null,
+      isLimitedOffer: isLimitedOffer || homeSection === 'Limited Offers',
+      limitedOfferEndDate: (isLimitedOffer || homeSection === 'Limited Offers') && limitedOfferDetails.endDate ? new Date(limitedOfferDetails.endDate).toISOString() : null
+    };
+
+    onSave(productToSave);
   };
 
   return (
@@ -485,24 +508,86 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
                     </div>
                   </div>
 
-                  {/* Tips Box */}
-                  <div style={{
-                    background: '#fffaf0',
-                    border: '1px solid #ffedd5',
-                    borderRadius: '8px',
-                    padding: '16px',
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    gap: '12px'
-                  }}>
-                    <div style={{ padding: '8px', background: 'transparent' }}>
-                      <Lightbulb size={24} color="#d97706" />
+                  <hr style={{ border: 'none', borderTop: '1px dashed #e5e7eb', margin: '24px 0' }} />
+
+                  <div>
+                    <h4 style={{ fontSize: '14px', fontWeight: '700', color: '#111827', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <MonitorPlay size={18} color="#a66c24" />
+                      Home Page Visibility
+                    </h4>
+                    
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', alignItems: 'end' }}>
+                      <div className="form-group" style={{ margin: 0 }}>
+                        <label style={{ fontSize: '12px', fontWeight: '700', marginBottom: '8px', display: 'block', color: '#374151' }}>Select Display Section</label>
+                        <CustomSelect
+                          value={homeSection}
+                          onChange={setHomeSection}
+                          options={['None', 'Trending', 'Limited Offers', 'New Arrivals', 'Best Sellers', 'Featured']}
+                          placeholder="Select section"
+                        />
+                      </div>
+
+                      <div style={{ paddingBottom: '10px' }}>
+                        <label style={{ fontSize: '13px', fontWeight: '600', color: '#111827', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <input 
+                            type="checkbox" 
+                            checked={homeSection === 'Limited Offers' || isLimitedOffer} 
+                            onChange={(e) => setIsLimitedOffer(e.target.checked)} 
+                            style={{ width: '16px', height: '16px', accentColor: '#a66c24', cursor: 'pointer' }}
+                          />
+                          Set as Limited Offer (with Countdown Timer)
+                        </label>
+                      </div>
                     </div>
-                    <div>
-                      <h4 style={{ margin: '0 0 6px 0', fontSize: '13px', fontWeight: '700', color: '#111827' }}>Tips</h4>
-                      <p style={{ margin: '0 0 4px 0', fontSize: '12px', color: '#4b5563' }}>Upload high-quality images for better customer experience.</p>
-                      <p style={{ margin: 0, fontSize: '12px', color: '#6b7280' }}>Recommended size: 800 x 1000 px</p>
-                    </div>
+
+                    {(isLimitedOffer || homeSection === 'Limited Offers') && (
+                      <div style={{ padding: '20px', marginTop: '20px', background: '#fdfbf7', borderRadius: '8px', border: '1px solid #f9eedc' }}>
+                        <h5 style={{ fontSize: '13px', fontWeight: '700', color: '#a66c24', margin: '0 0 16px 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <Timer size={16} />
+                          Limited Offer Configuration
+                        </h5>
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
+                          <div className="form-group" style={{ margin: 0 }}>
+                            <label style={{ display: 'block', fontSize: '11px', fontWeight: '600', color: '#4b5563', marginBottom: '6px' }}>Offer Price (₹)</label>
+                            <input
+                              type="number"
+                              placeholder="e.g. 1499"
+                              value={limitedOfferDetails.offerPrice}
+                              onChange={(e) => setLimitedOfferDetails({ ...limitedOfferDetails, offerPrice: e.target.value })}
+                              style={{ width: '100%', padding: '8px 12px', fontSize: '13px', border: '1px solid #e5e7eb', borderRadius: '6px', boxSizing: 'border-box' }}
+                            />
+                          </div>
+                          <div className="form-group" style={{ margin: 0 }}>
+                            <label style={{ display: 'block', fontSize: '11px', fontWeight: '600', color: '#4b5563', marginBottom: '6px' }}>Stock Limit</label>
+                            <input
+                              type="number"
+                              placeholder="e.g. 50"
+                              value={limitedOfferDetails.stockLimit}
+                              onChange={(e) => setLimitedOfferDetails({ ...limitedOfferDetails, stockLimit: e.target.value })}
+                              style={{ width: '100%', padding: '8px 12px', fontSize: '13px', border: '1px solid #e5e7eb', borderRadius: '6px', boxSizing: 'border-box' }}
+                            />
+                          </div>
+                          <div className="form-group" style={{ margin: 0 }}>
+                            <label style={{ display: 'block', fontSize: '11px', fontWeight: '600', color: '#4b5563', marginBottom: '6px' }}>Start Time</label>
+                            <input
+                              type="datetime-local"
+                              value={limitedOfferDetails.startDate}
+                              onChange={(e) => setLimitedOfferDetails({ ...limitedOfferDetails, startDate: e.target.value })}
+                              style={{ width: '100%', padding: '8px 12px', fontSize: '13px', border: '1px solid #e5e7eb', borderRadius: '6px', boxSizing: 'border-box' }}
+                            />
+                          </div>
+                          <div className="form-group" style={{ margin: 0 }}>
+                            <label style={{ display: 'block', fontSize: '11px', fontWeight: '600', color: '#4b5563', marginBottom: '6px' }}>End Time</label>
+                            <input
+                              type="datetime-local"
+                              value={limitedOfferDetails.endDate}
+                              onChange={(e) => setLimitedOfferDetails({ ...limitedOfferDetails, endDate: e.target.value })}
+                              style={{ width: '100%', padding: '8px 12px', fontSize: '13px', border: '1px solid #e5e7eb', borderRadius: '6px', boxSizing: 'border-box' }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -573,7 +658,18 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
                         placeholder="Select status"
                       />
                     </div>
-                    <div className="form-group" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', marginTop: '16px' }}>
+                    <div className="form-group">
+                      <label style={{ fontSize: '11px', fontWeight: '700', marginBottom: '8px', display: 'block', color: '#111827' }}>Rating (0-5)</label>
+                      <input type="number" step="0.1" min="0" max="5" placeholder="e.g. 4.5" value={initialRating} onChange={e => setInitialRating(e.target.value)} style={{ width: '100%', boxSizing: 'border-box' }} />
+                    </div>
+                  </div>
+                  
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginTop: '20px' }}>
+                    <div className="form-group">
+                      <label style={{ fontSize: '11px', fontWeight: '700', marginBottom: '8px', display: 'block', color: '#111827' }}>Number of Reviews</label>
+                      <input type="number" min="0" placeholder="e.g. 18" value={initialReviews} onChange={e => setInitialReviews(e.target.value)} style={{ width: '100%', boxSizing: 'border-box' }} />
+                    </div>
+                    <div className="form-group" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                       <label style={{ fontSize: '12px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px', color: '#111827', cursor: 'pointer' }}>
                         <input type="checkbox" checked={isCustomizable} onChange={(e) => setIsCustomizable(e.target.checked)} style={{ width: '16px', height: '16px', cursor: 'pointer' }} />
                         Customizable Form
@@ -636,43 +732,6 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
 
                   <hr style={{ border: 'none', borderTop: '1px dashed #e5e7eb', margin: '24px 0' }} />
 
-                  <div className="variant-row">
-                    <label style={{ display: 'block', margin: 0, fontWeight: 700, fontSize: '13px', color: '#111827', marginBottom: '16px' }}>Color</label>
-                    <div className="variant-options" style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
-                      {COLORS_LIST.map(c => {
-                        const isActive = selectedColors.includes(c.name);
-                        return (
-                          <div
-                            key={c.name}
-                            onClick={() => toggleArrayItem(selectedColors, setSelectedColors, c.name)}
-                            className="color-pill"
-                            style={{
-                              position: 'relative',
-                              border: isActive ? '1px solid #a66c24' : '1px solid #e5e7eb',
-                              borderRadius: '6px',
-                              padding: '10px 16px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '12px',
-                              fontSize: '12px',
-                              fontWeight: 600,
-                              color: isActive ? '#a66c24' : '#374151',
-                              background: isActive ? '#fff9f0' : '#fcfcfc',
-                              cursor: 'pointer'
-                            }}
-                          >
-                            <span style={{ background: c.hex, border: c.hex === '#fff' ? '1px solid #d1d5db' : 'none', width: '16px', height: '16px', borderRadius: '50%', display: 'inline-block' }}></span>
-                            {c.name}
-                            {isActive && (
-                              <div style={{ position: 'absolute', top: '-6px', right: '-6px', background: '#a66c24', color: '#fff', borderRadius: '50%', width: '16px', height: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <Check size={10} strokeWidth={4} />
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
                 </div>
               </div>
 

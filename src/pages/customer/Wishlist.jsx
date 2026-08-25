@@ -7,8 +7,10 @@ import '../../components/Collection.css';
 import bannerImg from "../../assets/banners/list.png";
 import { useWishlist } from '../../context/WishlistContext';
 import { useCart } from '../../context/CartContext';
+import { useProducts } from '../../context/ProductContext';
 import { handleFlyingCartAnimation } from '../../utils/cartAnimation';
 import { motion, AnimatePresence } from 'framer-motion';
+import { SimilarProductCard } from '../../components/ProductDetail';
 import westren3Img from '../../assets/images/westren3.png';
 import kurtiImg from '../../assets/images/kurti.png';
 import westren4Img from '../../assets/images/westren4.png';
@@ -68,9 +70,37 @@ const CustomSelect = ({ value, onChange, options }) => {
 const Wishlist = () => {
   const { wishlistItems, toggleWishlist, isInWishlist } = useWishlist();
   const { addToCart } = useCart();
+  const { products: contextProducts } = useProducts();
   const navigate = useNavigate();
   const [viewMode, setViewMode] = useState('grid');
   const [addedToCart, setAddedToCart] = useState({});
+  const [recommendedProducts, setRecommendedProducts] = useState([]);
+
+  useEffect(() => {
+    if (contextProducts && contextProducts.length > 0) {
+      if (wishlistItems.length > 0) {
+        const categoryCounts = {};
+        wishlistItems.forEach(item => {
+          const cat = item.category?.toLowerCase() || 'uncategorized';
+          categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
+        });
+        const dominantCategory = Object.keys(categoryCounts).reduce((a, b) => categoryCounts[a] > categoryCounts[b] ? a : b);
+        
+        const wishlistIds = new Set(wishlistItems.map(item => item.id));
+        const filtered = contextProducts.filter(p => p.category?.toLowerCase() === dominantCategory && !wishlistIds.has(p.id));
+        
+        // If no products match in that category, just show some random products not in wishlist
+        if (filtered.length === 0) {
+           const fallback = contextProducts.filter(p => !wishlistIds.has(p.id));
+           setRecommendedProducts(fallback.slice(0, 4));
+        } else {
+           setRecommendedProducts(filtered.slice(0, 4));
+        }
+      } else {
+        setRecommendedProducts(contextProducts.slice(0, 4));
+      }
+    }
+  }, [wishlistItems, contextProducts]);
 
   const handleCartClick = async (e, product) => {
     e.stopPropagation();
@@ -363,6 +393,29 @@ const Wishlist = () => {
             ))}
           </div>
         </div>
+
+
+        {/* Recommended Products */}
+        {recommendedProducts.length > 0 && (
+          <div className="pdp-carousel-section pdp-limited-offers-section" style={{ marginTop: '40px', padding: '0 24px' }}>
+            <div className="pdp-lo-header">
+              <h2 className="pdp-lo-title">
+                <span className="pdp-title-dark">Recommended</span> <span className="pdp-title-gold">For You</span>
+              </h2>
+            </div>
+            <div className="pdp-carousel-grid-container similar-products-carousel">
+              <div className="pdp-carousel-grid">
+                {recommendedProducts.map((prod) => (
+                  <SimilarProductCard
+                    key={prod.id}
+                    product={prod}
+                    onQuickView={(p) => navigate(`/product/${p.id}`, { state: { product: p } })}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Value Props */}
         <div className="lux-features">

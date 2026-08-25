@@ -51,15 +51,20 @@ function ParallaxHighlightCard({ children }) {
   );
 }
 
-function SimilarProductCard({ product, onQuickView }) {
+export function SimilarProductCard({ product, onQuickView }) {
   const navigate = useNavigate();
   const { toggleWishlist, isInWishlist } = useWishlist();
   const { cartItems, addToCart } = useCart();
   const isAdded = cartItems.some(item => item.id === product.id);
-  // Use product colors if available, otherwise just use its main image
-  const [activeColor, setActiveColor] = useState(product.colors ? product.colors[0].name : '');
-  const activeColorObj = product.colors?.find(c => c.name === activeColor);
-  const displayImage = activeColorObj?.image || product.image || product.colors?.[0]?.image;
+  const initialColor = product.colors && product.colors.length > 0
+    ? (typeof product.colors[0] === 'string' ? `color-0` : product.colors[0].name)
+    : '';
+  const [activeColor, setActiveColor] = useState(initialColor);
+  const activeColorObj = product.colors?.find((c, idx) => {
+    const cName = typeof c === 'string' ? `color-${idx}` : c.name;
+    return cName === activeColor;
+  });
+  const displayImage = activeColorObj?.image || product.image || (product.colors && typeof product.colors[0] !== 'string' ? product.colors[0]?.image : null);
   const isOutOfStock = activeColorObj ? !activeColorObj.inStock : false;
 
   return (
@@ -71,6 +76,7 @@ function SimilarProductCard({ product, onQuickView }) {
       whileInView={{ opacity: 1, scale: 1, y: 0 }}
       viewport={{ once: true, margin: "0px 0px -50px 0px" }}
       transition={{ type: "spring", damping: 20, stiffness: 300 }}
+      style={{ height: '100%', alignSelf: 'stretch' }}
     >
       <div className="unified-card-image-wrap">
         {isOutOfStock && <div className="out-of-stock-overlay">Out of Stock</div>}
@@ -108,43 +114,23 @@ function SimilarProductCard({ product, onQuickView }) {
         </div>
 
         <div className="unified-card-price">
-          <span className="unified-price-new">₹{product.price || '499'}</span>
-          <span className="unified-price-old">₹{product.originalPrice || '999'}</span>
-          <span className="unified-price-discount">{product.discount || '50% OFF'}</span>
+          <span className="unified-price-new">{product.price?.toString().startsWith('₹') ? product.price : `₹${product.price || '499'}`}</span>
+          {product.originalPrice && (
+            <span className="unified-price-old">{product.originalPrice.toString().startsWith('₹') ? product.originalPrice : `₹${product.originalPrice}`}</span>
+          )}
+          {product.discount && (
+            <span className="unified-price-discount">{product.discount}</span>
+          )}
         </div>
 
-        {product.colors && (
-          <div className="unified-color-swatches">
-            {product.colors.map((color, idx) => {
-              const colorName = typeof color === 'string' ? `color-${idx}` : color.name;
-              const colorHex = typeof color === 'string' ? color : color.hex;
-              return (
-                <div
-                  key={colorName}
-                  className={`color-swatch ${activeColor === colorName ? 'active' : ''}`}
-                  style={{
-                    backgroundColor: colorHex,
-                    border: activeColor === colorName ? '2px solid #000' : '1px solid rgba(0,0,0,0.1)'
-                  }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setActiveColor(colorName);
-                  }}
-                />
-              );
-            })}
-            {product.colors.length > 2 && (
-              <span className="color-more">+{product.colors.length - 2} more</span>
-            )}
-          </div>
-        )}
+
 
         {isOutOfStock ? (
           <button className="unified-add-cart-btn" style={{ background: '#fce4e4', color: '#d32f2f' }} onClick={(e) => e.stopPropagation()}>
             Notify Me
           </button>
         ) : (
-          <button className="unified-add-cart-btn" style={{ background: '#fce4e4', color: '#d32f2f' }} onClick={async (e) => {
+          <button className="unified-add-cart-btn" onClick={async (e) => {
             e.stopPropagation();
             if (isAdded) {
               navigate('/cart');
@@ -186,7 +172,17 @@ export default function ProductDetail() {
   const [isLoading, setIsLoading] = useState(!baseProduct);
 
   useEffect(() => {
-    if (!baseProduct && productId) {
+    if (productId) {
+      // First try to find it in context to load instantly
+      if (contextProducts && contextProducts.length > 0) {
+        const found = contextProducts.find(p => String(p.id) === String(productId) || String(p._id) === String(productId));
+        if (found) {
+          setBaseProduct(found);
+          setIsLoading(false);
+        }
+      }
+      
+      // Then fetch fresh data from backend to ensure we have gallery, specs, etc.
       import('../services/productService').then(({ getProductById }) => {
         getProductById(productId)
           .then(res => {
@@ -196,13 +192,14 @@ export default function ProductDetail() {
           .catch(() => setIsLoading(false));
       });
     }
-  }, [productId, baseProduct]);
+  }, [productId, contextProducts]);
 
   // Dynamically attach customization ONLY for the specific White T-Shirt (ID 100) or t-shirt7 or t-shirt8
   const isCustomizableTShirt = baseProduct?.id === 100 || (baseProduct?.image && (baseProduct.image.includes('t-shirt7') || baseProduct.image.includes('t-shirt8')));
 
   const product = baseProduct ? {
     ...baseProduct,
+    category: baseProduct.category || baseProduct._backendData?.category?.name || baseProduct._backendData?.category || 'Uncategorized',
     customizable: isCustomizableTShirt ? true : baseProduct.customizable,
     designs: isCustomizableTShirt ? customizableDesigns : baseProduct.designs
   } : null;
@@ -322,21 +319,15 @@ export default function ProductDetail() {
     : [placeholderMain, placeholderThumb1, placeholderThumb2, placeholderMain, placeholderThumb1, placeholderThumb2];
 
   const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL', '6XL'];
-  // Use product colors if available, otherwise fallback to default colors
-  const colors = product?.colors || [
-    { name: 'Beige', hex: '#F5E6D3', inStock: true, image: kurthi4Img },
-    { name: 'Brown', hex: '#8B4513', inStock: true, image: product?.image || kurthi2Img },
-    { name: 'Black', hex: '#1C1C1C', inStock: false, image: kurthi3Img }
-  ];
+  const colors = (product?.colors && product.colors.length > 0) ? product.colors : [];
 
-  // Initialize activeColor properly if it doesn't match the current colors
   useEffect(() => {
-    if (!colors.find(c => c.name === activeColor)) {
+    if (colors.length > 0 && !colors.find(c => c.name === activeColor)) {
       setActiveColor(colors[0].name);
     }
   }, [product, colors, activeColor]);
 
-  const activeColorObj = colors.find(c => c.name === activeColor) || colors[0];
+  const activeColorObj = colors.length > 0 ? (colors.find(c => c.name === activeColor) || colors[0]) : null;
 
   const displayImageSrc = (product?.customizable && activeDesign?.modelImage)
     ? activeDesign.modelImage
@@ -345,9 +336,32 @@ export default function ProductDetail() {
     ? product.images.map(img => img.url)
     : Array(6).fill(displayImageSrc);
 
-  const similarProducts = contextProducts 
-    ? contextProducts.filter(p => p._id !== product?.id && p.category === product?.category).slice(0, 4)
-    : [];
+  const similarProducts = React.useMemo(() => {
+    if (!contextProducts || !product) return [];
+    
+    const currentTitle = (product.title || '').toLowerCase();
+    const isKurti = currentTitle.includes('kurti') || currentTitle.includes('kurta');
+    const isTshirt = currentTitle.includes('t-shirt') || currentTitle.includes('tshirt') || currentTitle.includes('shirt') || currentTitle.includes('top');
+    const isDress = currentTitle.includes('dress');
+
+    return contextProducts.filter(p => {
+      if (p.id === product.id) return false;
+      
+      const sameCategory = p.categoryId === product.categoryId || p.category?.toLowerCase() === product.category?.toLowerCase();
+      const pTitle = (p.title || '').toLowerCase();
+      let keywordMatch = true;
+      
+      if (isKurti) {
+        keywordMatch = pTitle.includes('kurti') || pTitle.includes('kurta');
+      } else if (isTshirt) {
+        keywordMatch = pTitle.includes('t-shirt') || pTitle.includes('tshirt') || pTitle.includes('shirt') || pTitle.includes('top');
+      } else if (isDress) {
+        keywordMatch = pTitle.includes('dress');
+      }
+      
+      return sameCategory && keywordMatch;
+    }).slice(0, 4);
+  }, [contextProducts, product]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -369,41 +383,38 @@ export default function ProductDetail() {
 
   const [zoomStyle, setZoomStyle] = useState({});
 
-  const adsData = [
-    {
-      id: 1,
-      image: westren3Img,
-      title: "Gudwear Casual Roll Up Sleeves Printed Women Black Top",
-      discount: "83%",
-      oldPrice: "1,499",
-      newPrice: "₹256"
-    },
-    {
-      id: 2,
-      image: kurthi2Img,
-      title: "Elegant Cotton Embroidered Straight Kurta",
-      discount: "60%",
-      oldPrice: "2,499",
-      newPrice: "₹999"
-    },
-    {
-      id: 3,
-      image: westren2Img,
-      title: "Stylish Denim Jacket for Women",
-      discount: "40%",
-      oldPrice: "3,999",
-      newPrice: "₹2,399"
-    }
-  ];
+  // Generate dynamic ads from backend products that have discounts
+  const adsData = React.useMemo(() => {
+    if (!contextProducts || contextProducts.length === 0) return [];
+    
+    return contextProducts
+      .filter(p => {
+        const isSameCategory = p.categoryId === product?.categoryId || p.category === product?.category;
+        const isHighDiscount = p._backendData?.discount >= 40 && p._backendData?.discountType === 'Percentage';
+        const isNotCurrent = p.id !== product?.id;
+        return isSameCategory && isHighDiscount && isNotCurrent;
+      })
+      .slice(0, 5) // Take top 5
+      .map(p => ({
+        id: p.id,
+        image: p.image,
+        title: p.title,
+        discount: p.discount,
+        oldPrice: p.originalPrice,
+        newPrice: p.price,
+        _backendData: p._backendData
+      }));
+  }, [contextProducts, product?.id]);
 
   const [currentAdIndex, setCurrentAdIndex] = useState(0);
 
   useEffect(() => {
+    if (adsData.length === 0) return;
     const interval = setInterval(() => {
       setCurrentAdIndex((prev) => (prev + 1) % adsData.length);
     }, 3000);
     return () => clearInterval(interval);
-  }, []);
+  }, [adsData.length]);
 
   const handleMouseMove = (e) => {
     const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
@@ -468,7 +479,9 @@ export default function ProductDetail() {
                   onMouseMove={handleMouseMove}
                   onMouseLeave={handleMouseLeave}
                 >
-                  <div className="pdp-discount-badge">-40%</div>
+                  {product?.discount && (
+                    <div className="pdp-discount-badge">{product.discount}</div>
+                  )}
                   <button className="pdp-wishlist-heart-btn" onClick={() => {
                     if (product) {
                       toggleWishlist(product);
@@ -567,14 +580,30 @@ export default function ProductDetail() {
               <span className="pdp-sold-text-new">9.4K Sold</span>
             </div>
 
+            {/* Product Description */}
+            <div className="pdp-short-description" style={{ marginTop: '12px', marginBottom: '16px', color: '#666', fontSize: '14px', lineHeight: '1.6' }}>
+              <p>{product?.description || (product?.title === 'Floral A-Line Kurti' ? 'Elevate your everyday style with our beautiful Floral A-Line Kurti. Carefully crafted from premium breathable cotton, it offers both unparalleled comfort and effortless elegance for any occasion.' : 'Elevate your everyday style with this beautiful piece. Carefully crafted for comfort and elegance.')}</p>
+              
+              {/* Tags */}
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '12px' }}>
+                {(product?.tags || ['Trending', 'Summer Wear', 'Cotton']).map(tag => (
+                  <span key={tag} style={{ background: '#f5f5f5', color: '#666', padding: '4px 10px', borderRadius: '16px', fontSize: '11px', fontWeight: 'bold' }}>#{tag}</span>
+                ))}
+              </div>
+            </div>
+
             <div className="pdp-price-block-new">
               <span className="pdp-current-price-new">
                 {product?.price?.toString().startsWith('₹') ? product.price : `₹${product?.price || '799'}`}
               </span>
-              <span className="pdp-original-price-new">
-                {product?.originalPrice?.toString().startsWith('₹') ? product.originalPrice : `₹${product?.originalPrice || '999'}`}
-              </span>
-              <span className="pdp-discount-text-new">{product?.discount || '40% OFF'}</span>
+              {product?.originalPrice && (
+                <span className="pdp-original-price-new">
+                  {product.originalPrice.toString().startsWith('₹') ? product.originalPrice : `₹${product.originalPrice}`}
+                </span>
+              )}
+              {product?.discount && (
+                <span className="pdp-discount-text-new">{product.discount}</span>
+              )}
             </div>
             <div className="pdp-tax-inclusive-new">Inclusive of all taxes</div>
 
@@ -582,19 +611,7 @@ export default function ProductDetail() {
               <div className="pdp-stock-status-new">
                 <span className="pdp-status-dot-new"></span> In Stock
               </div>
-              {/* Product Description or Customizer */}
-              {/* Product Description */}
-              <div className="pdp-short-description" style={{ marginTop: '12px', marginBottom: '0', color: '#666', fontSize: '14px', lineHeight: '1.6' }}>
-                <p>{product?.description || (product?.title === 'Floral A-Line Kurti' ? 'Elevate your everyday style with our beautiful Floral A-Line Kurti. Carefully crafted from premium breathable cotton, it offers both unparalleled comfort and effortless elegance for any occasion.' : 'Elevate your everyday style with this beautiful piece. Carefully crafted for comfort and elegance.')}</p>
-                
-                {/* Tags */}
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '12px' }}>
-                  {(product?.tags || ['Trending', 'Summer Wear', 'Cotton']).map(tag => (
-                    <span key={tag} style={{ background: '#f5f5f5', color: '#666', padding: '4px 10px', borderRadius: '16px', fontSize: '11px', fontWeight: 'bold' }}>#{tag}</span>
-                  ))}
-                </div>
-              </div>
-
+              {/* Product Customizer */}
               {/* Product Customizer */}
               {product?.customizable && (
                 <div className="pdp-right-col-customizer" style={{ marginTop: '20px' }}>
@@ -767,7 +784,7 @@ export default function ProductDetail() {
               >
                 <Heart size={16} fill={isInWishlist(product?.id) ? '#8B4513' : 'none'} color="#8B4513" /> Wishlist
               </button>
-              {activeColorObj.inStock ? (
+              {(activeColorObj ? activeColorObj.inStock : (product?.countInStock > 0)) ? (
                 <>
                   {product?.customizable && (
                     <button
