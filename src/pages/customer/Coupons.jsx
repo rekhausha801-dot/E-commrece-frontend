@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getOffers } from '../../services/api';
+import { getOffers, getActiveBanners } from '../../services/api';
 import {
   Gift, ArrowRight, Tag, Monitor,
   Sparkles, Home, MoreHorizontal, ChevronLeft,
@@ -17,12 +17,34 @@ const Coupons = () => {
   const [activeTab, setActiveTab] = useState('All Offers');
   const [copiedCode, setCopiedCode] = useState(null);
   const [coupons, setCoupons] = useState([]);
+  const [bannerUrl, setBannerUrl] = useState(couponBanner);
+  const [activeBanner, setActiveBanner] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     window.scrollTo(0, 0);
     fetchCoupons();
+    fetchBanners();
   }, []);
+
+  const fetchBanners = async () => {
+    try {
+      const { data } = await getActiveBanners();
+      console.log('Active banners response:', data);
+      if (data && data.data && data.data.length > 0) {
+        const active = data.data[0];
+        setActiveBanner(active);
+        if (active.image) {
+          const imagePath = active.image.replace(/\\/g, '/');
+          const imgUrl = imagePath.startsWith('http') ? imagePath : `http://localhost:5000${imagePath.startsWith('/') ? '' : '/'}${imagePath}`;
+          console.log('Setting banner URL to:', imgUrl);
+          setBannerUrl(imgUrl);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to fetch banners", error);
+    }
+  };
 
   const fetchCoupons = async () => {
     setLoading(true);
@@ -65,8 +87,27 @@ const Coupons = () => {
   return (
     <div className="new-coupon-page">
       {/* Custom Hero Banner Replicating the Image */}
-      <div className="nc-hero-container" style={{ padding: '0', background: 'transparent', boxShadow: 'none', margin: '-48px 0 -20px 0', borderRadius: '0', width: '100%', maxWidth: '100%' }}>
-        <img src={couponBanner} alt="Coupon Banner" style={{ width: '100%', display: 'block', objectFit: 'cover', borderRadius: '0 !important', margin: '0', padding: '0' }} />
+      <div className="nc-hero-container" style={{ position: 'relative', padding: '0', background: 'transparent', boxShadow: 'none', margin: '0 0 24px 0', borderRadius: '0', width: '100%', maxWidth: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <img src={bannerUrl} alt="Coupon Banner" style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'contain', borderRadius: '0', margin: '0', padding: '0' }} onError={(e) => { e.target.onerror = null; e.target.src = couponBanner; console.error("Banner image failed to load, falling back to default"); }} />
+        {activeBanner && activeBanner.type === 'with_text' && (
+          <div style={{
+            position: 'absolute',
+            top: 0, left: 0, right: 0, bottom: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: activeBanner.textPosition === 'Left' ? 'flex-start' : (activeBanner.textPosition === 'Right' ? 'flex-end' : 'center'),
+            padding: '0 10%',
+            color: '#fff',
+            textAlign: activeBanner.textPosition === 'Left' ? 'left' : (activeBanner.textPosition === 'Right' ? 'right' : 'center')
+          }}>
+            <h1 style={{ fontSize: '3.5rem', fontWeight: 'bold', marginBottom: '10px', textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}>{activeBanner.title}</h1>
+            {activeBanner.description && <p style={{ fontSize: '1.5rem', marginBottom: '20px', textShadow: '1px 1px 3px rgba(0,0,0,0.5)' }}>{activeBanner.description}</p>}
+            {activeBanner.link && (
+              <a href={activeBanner.link} style={{ padding: '12px 28px', backgroundColor: '#c9a05b', color: '#fff', textDecoration: 'none', borderRadius: '30px', fontWeight: 'bold', boxShadow: '0 4px 6px rgba(0,0,0,0.1)' }}>Shop Now</a>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="nc-main-container">

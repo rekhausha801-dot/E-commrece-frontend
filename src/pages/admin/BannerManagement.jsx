@@ -104,6 +104,7 @@ const BannerManagement = () => {
     startDate: '',
     endDate: '',
     status: true,
+    textPosition: 'Center',
     placement: 'Home - Hero',
   });
   const [selectedFile, setSelectedFile] = useState(null);
@@ -135,7 +136,9 @@ const BannerManagement = () => {
   const getBannerTypeDisplay = (type) => {
     if (type === 'with_text') return 'Image + Text';
     if (type === 'without_text') return 'Image Only';
-    return 'Video';
+    if (type === 'video') return 'Video';
+    if (type === 'text') return 'Text Only';
+    return 'Unknown';
   };
 
   const getImageUrl = (path) => {
@@ -187,17 +190,19 @@ const BannerManagement = () => {
       const form = new FormData();
       form.append("title", formData.title);
       if (formData.description) form.append("description", formData.description);
-      form.append("type", bannerType === 'image-text' ? 'with_text' : 'without_text');
+      const submitType = bannerType === 'image-text' ? 'with_text' : bannerType === 'image-only' ? 'without_text' : bannerType;
+      form.append("type", submitType);
+      if (bannerType === 'image-text' || bannerType === 'text') form.append("textPosition", formData.textPosition);
+      form.append("placement", formData.placement);
       if (formData.link) form.append("link", formData.link);
       if (formData.startDate) form.append("startDate", formData.startDate);
       if (formData.endDate) form.append("endDate", formData.endDate);
       form.append("status", formData.status);
-      form.append("placement", formData.placement);
       
       if (selectedFile) {
         form.append("image", selectedFile);
-      } else if (drawerMode === 'add') {
-        return Swal.fire('Error', 'Image is required', 'error');
+      } else if (drawerMode === 'add' && bannerType !== 'text') {
+        return Swal.fire('Error', 'Media file is required', 'error');
       }
 
       setLoading(true);
@@ -252,7 +257,11 @@ const BannerManagement = () => {
     setIsDrawerOpen(true);
     setSelectedFile(null);
     if (banner && mode !== 'add') {
-      setBannerType(banner.type === 'with_text' ? 'image-text' : 'image-only');
+      let bType = banner.type;
+      if (banner.type === 'with_text') bType = 'image-text';
+      if (banner.type === 'without_text') bType = 'image-only';
+      setBannerType(bType);
+      
       setFormData({
         title: banner.title || '',
         description: banner.description || '',
@@ -260,12 +269,13 @@ const BannerManagement = () => {
         startDate: banner.startDate ? new Date(banner.startDate).toISOString().split('T')[0] : '',
         endDate: banner.endDate ? new Date(banner.endDate).toISOString().split('T')[0] : '',
         status: banner.status !== false,
+        textPosition: banner.textPosition || 'Center',
         placement: banner.placement || 'Home - Hero',
       });
-      setMediaPreview(getImageUrl(banner.image));
+      setMediaPreview(banner.type !== 'text' ? getImageUrl(banner.image) : null);
     } else {
       setBannerType('image-text');
-      setFormData({ title: '', description: '', link: '', startDate: '', endDate: '', status: true, placement: 'Home - Hero' });
+      setFormData({ title: '', description: '', link: '', startDate: '', endDate: '', status: true, textPosition: 'Center', placement: 'Home - Hero' });
       setMediaPreview(null);
     }
   };
@@ -413,7 +423,7 @@ const BannerManagement = () => {
             <input 
               type="text" 
               className="bam-search-input" 
-              placeholder="Search banner by name or placement..." 
+              placeholder="Search banner by name..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -423,6 +433,11 @@ const BannerManagement = () => {
             <option value="Active">Active</option>
             <option value="Scheduled">Scheduled</option>
             <option value="Inactive">Inactive</option>
+          </select>
+          <select className="bam-select" value={activeTab} onChange={(e) => setActiveTab(e.target.value)}>
+            <option value="All Banners">All Types</option>
+            <option value="Image + Text Banners">Image + Text</option>
+            <option value="Image Only Banners">Image Only</option>
           </select>
           <button className="bam-btn-outline" onClick={() => { setSearchQuery(''); setStatusFilter('All Status'); setActiveTab('All Banners'); }}>
             <Filter size={16} /> Reset Filters
@@ -437,10 +452,8 @@ const BannerManagement = () => {
                 <th>Banner</th>
                 <th>Name</th>
                 <th>Type</th>
-                <th>Placement</th>
                 <th>Schedule</th>
                 <th>Status</th>
-                <th>Order</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -456,7 +469,13 @@ const BannerManagement = () => {
               ) : filteredBanners.map((banner, index) => (
                 <tr key={banner._id}>
                   <td>
-                    <img src={getImageUrl(banner.image)} alt={banner.title} className="bam-preview-img" />
+                    {banner.type === 'video' ? (
+                      <video src={getImageUrl(banner.image)} className="bam-preview-img" style={{ objectFit: 'cover' }} muted />
+                    ) : banner.type === 'text' ? (
+                      <div className="bam-preview-img" style={{ background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Type size={16}/></div>
+                    ) : (
+                      <img src={getImageUrl(banner.image)} alt={banner.title} className="bam-preview-img" />
+                    )}
                   </td>
                   <td style={{ fontWeight: 600 }}>{banner.title}</td>
                   <td>
@@ -464,7 +483,6 @@ const BannerManagement = () => {
                       {getBannerTypeDisplay(banner.type)}
                     </span>
                   </td>
-                  <td>-</td>
                   <td>
                     {banner.startDate ? new Date(banner.startDate).toLocaleDateString() : 'N/A'} - {banner.endDate ? new Date(banner.endDate).toLocaleDateString() : 'N/A'}
                   </td>
@@ -473,7 +491,6 @@ const BannerManagement = () => {
                       {getBannerStatus(banner)}
                     </span>
                   </td>
-                  <td style={{ textAlign: 'center' }}>{index + 1}</td>
                   <td style={{ position: 'relative' }}>
                     <button 
                       className="bam-action-btn" 
@@ -491,7 +508,6 @@ const BannerManagement = () => {
                         <div className="bam-dropdown-menu" style={{ zIndex: 100 }}>
                           <div className="bam-dropdown-item" onClick={() => { setActiveDropdown(null); openDrawer('view', banner); }}><Eye size={16} /> View Banner</div>
                           <div className="bam-dropdown-item" onClick={() => { setActiveDropdown(null); openDrawer('edit', banner); }}><Edit2 size={16} /> Edit Banner</div>
-                          <div className="bam-dropdown-item" onClick={() => { setActiveDropdown(null); handleToggleStatus(banner._id); }}><RefreshCw size={16} /> Toggle Status</div>
                           <div className="bam-dropdown-item text-red" onClick={() => { setActiveDropdown(null); handleDelete(banner._id); }}><Trash2 size={16} /> Delete Banner</div>
                         </div>
                       </>
@@ -546,24 +562,26 @@ const BannerManagement = () => {
                 <h3 className="bam-section-title">1. Banner Type</h3>
                 <p className="bam-section-subtitle">Choose how you want to create your banner.</p>
                 
-                <div className="bam-type-grid">
-                  <div className={`bam-type-card ${bannerType === 'image-text' ? 'active' : ''}`} onClick={() => setBannerType('image-text')}>
+                <div className="bam-type-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+                  <div className={`bam-type-card ${bannerType === 'image-text' ? 'active' : ''}`} onClick={() => setBannerType('image-text')} style={{ padding: '16px 12px', minHeight: 'auto' }}>
                     {bannerType === 'image-text' && <CheckCircle2 size={18} className="bam-type-check" />}
                     <div className="bam-type-icon"><Type size={20} /></div>
-                    <h4 className="bam-type-title">Image + Text</h4>
-                    <p className="bam-type-desc">Upload image and add text separately from here.</p>
+                    <h4 className="bam-type-title" style={{ fontSize: '13px' }}>Image + Text</h4>
                   </div>
-                  <div className={`bam-type-card ${bannerType === 'image-only' ? 'active' : ''}`} onClick={() => setBannerType('image-only')}>
+                  <div className={`bam-type-card ${bannerType === 'image-only' ? 'active' : ''}`} onClick={() => setBannerType('image-only')} style={{ padding: '16px 12px', minHeight: 'auto' }}>
                     {bannerType === 'image-only' && <CheckCircle2 size={18} className="bam-type-check" />}
                     <div className="bam-type-icon"><ImageOnlyIcon size={20} /></div>
-                    <h4 className="bam-type-title">Image Only</h4>
-                    <p className="bam-type-desc">Upload complete banner image with text in it.</p>
+                    <h4 className="bam-type-title" style={{ fontSize: '13px' }}>Image Only</h4>
                   </div>
-                  <div className={`bam-type-card ${bannerType === 'video' ? 'active' : ''}`} style={{ opacity: 0.5, cursor: 'not-allowed' }} title="Video not supported by backend">
+                  <div className={`bam-type-card ${bannerType === 'video' ? 'active' : ''}`} onClick={() => setBannerType('video')} style={{ padding: '16px 12px', minHeight: 'auto' }}>
                     {bannerType === 'video' && <CheckCircle2 size={18} className="bam-type-check" />}
                     <div className="bam-type-icon"><Video size={20} /></div>
-                    <h4 className="bam-type-title">Video</h4>
-                    <p className="bam-type-desc">Not supported by backend</p>
+                    <h4 className="bam-type-title" style={{ fontSize: '13px' }}>Video</h4>
+                  </div>
+                  <div className={`bam-type-card ${bannerType === 'text' ? 'active' : ''}`} onClick={() => setBannerType('text')} style={{ padding: '16px 12px', minHeight: 'auto' }}>
+                    {bannerType === 'text' && <CheckCircle2 size={18} className="bam-type-check" />}
+                    <div className="bam-type-icon"><Type size={20} /></div>
+                    <h4 className="bam-type-title" style={{ fontSize: '13px' }}>Text Only</h4>
                   </div>
                 </div>
               </div>
@@ -577,16 +595,16 @@ const BannerManagement = () => {
                   <input type="text" name="title" className="bam-input" placeholder="Enter banner name" value={formData.title} onChange={handleInputChange} disabled={drawerMode === 'view'} />
                 </div>
                 
-                <div className="bam-row-2">
+                <div className="bam-row-2" style={{ marginTop: '16px' }}>
                   <div className="bam-form-group">
                     <label className="bam-label">Placement</label>
                     <select name="placement" className="bam-select-input" value={formData.placement} onChange={handleInputChange} disabled={drawerMode === 'view'}>
-                      <option value="Home - Hero">Home - Hero</option>
-                      <option value="Home - Section">Home - Section</option>
-                      <option value="Top Strip">Top Strip</option>
-                      <option value="Home - Bottom">Home - Bottom</option>
+                      <option value="Home - Hero">Home - Hero Section</option>
+                      <option value="Home - Middle">Home - Middle Section</option>
+                      <option value="Home - Bottom">Home - Bottom Section</option>
                       <option value="Category Page">Category Page</option>
                       <option value="Checkout Page">Checkout Page</option>
+                      <option value="Coupon Page">Coupon Page</option>
                     </select>
                   </div>
                   <div className="bam-form-group">
@@ -603,23 +621,24 @@ const BannerManagement = () => {
               <div className="bam-section">
                 <h3 className="bam-section-title">3. Banner Content</h3>
                 
-                {bannerType === 'video' ? (
+                {bannerType !== 'text' && (
                   <div className="bam-form-group">
-                    <label className="bam-label">Banner Video <span className="req">*</span></label>
-                    <input type="file" className="bam-input" accept="video/mp4, video/webm, video/ogg" style={{ paddingTop: '10px' }} onChange={handleMediaUpload} />
-                    <p style={{ fontSize: '12px', color: '#6b7280', margin: '4px 0 12px 0' }}>MP4, WEBM or OGG (Max 20MB)</p>
-                    {mediaPreview && (
-                      <div style={{ borderRadius: '8px', overflow: 'hidden', border: '1px solid #e5e7eb', background: '#000' }}>
-                        <video src={mediaPreview} autoPlay loop muted style={{ width: '100%', display: 'block' }} />
+                    <label className="bam-label">Banner Media <span className="req">*</span></label>
+                    <div className="bam-upload-box" onClick={() => { if(drawerMode !== 'view') document.getElementById('banner-media-upload').click() }}>
+                      <div className="bam-upload-icon">
+                        <UploadCloud size={20} />
                       </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="bam-form-group">
-                    <label className="bam-label">Banner Image <span className="req">*</span></label>
-                    <input type="file" className="bam-input" accept="image/png, image/jpeg, image/webp" style={{ paddingTop: '10px' }} onChange={handleMediaUpload} />
-                    <p style={{ fontSize: '12px', color: '#6b7280', margin: '4px 0 12px 0' }}>PNG, JPG or WEBP (Max 2MB)</p>
-                    {mediaPreview && (
+                      <div className="bam-upload-text">
+                        <b>Click to upload</b>
+                        <p>Images (Max 5MB) or Videos (Max 50MB)</p>
+                      </div>
+                      <input id="banner-media-upload" type="file" accept="image/*, video/*" style={{ display: 'none' }} onChange={handleMediaUpload} disabled={drawerMode === 'view'} />
+                    </div>
+                    {mediaPreview && bannerType === 'video' ? (
+                      <div style={{ borderRadius: '8px', overflow: 'hidden', border: '1px solid #e5e7eb', background: '#000', padding: '0' }}>
+                        <video src={mediaPreview} controls style={{ width: '100%', display: 'block' }} />
+                      </div>
+                    ) : mediaPreview && (
                       <div style={{ borderRadius: '8px', overflow: 'hidden', border: '1px solid #e5e7eb', background: '#fafafa', padding: '10px' }}>
                         <img src={mediaPreview} alt="preview" style={{ width: '100%', display: 'block', borderRadius: '4px' }} />
                       </div>
@@ -627,7 +646,7 @@ const BannerManagement = () => {
                   </div>
                 )}
 
-                {bannerType === 'image-text' && (
+                {(bannerType === 'image-text' || bannerType === 'text') && (
                   <>
                     <div className="bam-row-2">
                       <div className="bam-form-group">
@@ -642,30 +661,18 @@ const BannerManagement = () => {
 
                     <div className="bam-row-2">
                       <div className="bam-form-group">
-                        <label className="bam-label">Button Text</label>
-                        <input type="text" className="bam-input" placeholder="Not supported by backend" disabled />
+                        <label className="bam-label">Text Position</label>
+                        <select name="textPosition" className="bam-select-input" value={formData.textPosition} onChange={handleInputChange} disabled={drawerMode === 'view'}>
+                          <option value="Center">Center</option>
+                          <option value="Left">Left</option>
+                          <option value="Right">Right</option>
+                        </select>
                       </div>
                       <div className="bam-form-group">
                         <label className="bam-label">Banner Link</label>
                         <div className="bam-input-with-icon">
                           <LinkIcon size={16} className="bam-icon-left" style={{color: '#9ca3af'}} />
                           <input type="text" name="link" className="bam-input" style={{paddingLeft: '36px'}} placeholder="Enter URL" value={formData.link} onChange={handleInputChange} disabled={drawerMode === 'view'} />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="bam-row-2">
-                      <div className="bam-form-group">
-                        <label className="bam-label">Text Position</label>
-                        <select className="bam-select-input">
-                          <option>Center Center</option>
-                        </select>
-                      </div>
-                      <div className="bam-form-group">
-                        <label className="bam-label">Text Color</label>
-                        <div className="bam-input bam-color-picker">
-                          <input type="color" defaultValue="#000000" />
-                          <input type="text" defaultValue="#000000" />
                         </div>
                       </div>
                     </div>
@@ -692,14 +699,6 @@ const BannerManagement = () => {
                       <input type="date" name="endDate" className="bam-input" style={{paddingLeft: '36px'}} value={formData.endDate} onChange={handleInputChange} disabled={drawerMode === 'view'} />
                     </div>
                   </div>
-                </div>
-
-                <div className="bam-row-2">
-                  <div className="bam-form-group">
-                    <label className="bam-label">Display Order</label>
-                    <input type="text" className="bam-input" placeholder="Not supported by backend" disabled />
-                  </div>
-                  <div className="bam-helper-text"></div>
                 </div>
               </div>
             </div>

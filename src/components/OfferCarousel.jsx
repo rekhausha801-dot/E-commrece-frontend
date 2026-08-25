@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import bannerImage1 from '../assets/banners/musu.png';
+
 import bannerImageOriginal from '../assets/banners/legha.png';
 import imgNew from '../assets/banners/image.png';
 import girlsImg from '../assets/banners/girls.png';
@@ -8,6 +9,7 @@ import wearImg from '../assets/banners/wear.png';
 import { X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import '../pages/customer/Home.css';
+import { getActiveBanners } from '../services/api';
 
 const OfferCarousel = () => {
   const [showCarousel, setShowCarousel] = useState(true);
@@ -21,13 +23,40 @@ const OfferCarousel = () => {
     "Buy 1 Get 2 Free on selected accessories"
   ];
 
-  const carouselData = [
+  const [dynamicBanners, setDynamicBanners] = useState([]);
+
+  useEffect(() => {
+    const fetchBanners = async () => {
+      try {
+        const { data } = await getActiveBanners();
+        if (data && data.success) {
+          const heroBanners = data.data.filter(b => b.placement === 'Home - Hero' || !b.placement);
+          if (heroBanners.length > 0) {
+            setDynamicBanners(heroBanners);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching banners", error);
+      }
+    };
+    fetchBanners();
+  }, []);
+
+  const API_BASE_URL = 'http://localhost:5000';
+  const getImageUrl = (path) => {
+    if (!path) return '';
+    return path.startsWith('http') ? path : `http://localhost:5000${path}`;
+  };
+
+  const finalCarouselData = dynamicBanners.length > 0 ? dynamicBanners : [
     {
       img: bannerImage1,
+      type: 'with_text',
       showText: false
     },
     {
       img: bannerImageOriginal,
+      type: 'with_text',
       showText: true
     }
   ];
@@ -36,11 +65,11 @@ const OfferCarousel = () => {
     let interval;
     if (showCarousel && !isPaused) {
       interval = setInterval(() => {
-        setCurrentSlide((prevSlide) => (prevSlide + 1) % carouselData.length);
+        setCurrentSlide((prevSlide) => (prevSlide + 1) % finalCarouselData.length);
       }, 3000);
     }
     return () => clearInterval(interval);
-  }, [showCarousel, isPaused, carouselData.length]);
+  }, [showCarousel, isPaused, finalCarouselData.length]);
   useEffect(() => {
     const offerInterval = setInterval(() => {
       setCurrentOfferIndex((prev) => (prev + 1) % offers.length);
@@ -62,24 +91,75 @@ const OfferCarousel = () => {
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
-          <button className="carousel-close-btn premium-side-close" onClick={() => setShowCarousel(false)} style={{ zIndex: 100 }}>
-            <X size={20} className="icon-stroke" color="#FFFFFF" />
-          </button>
 
           <div className="carousel-images">
-            {carouselData.map((banner, idx) => (
+            {finalCarouselData.map((banner, idx) => (
               <div
                 key={idx}
                 className={idx === currentSlide ? 'slide active' : 'slide'}
               >
                 <div className="mega-sale-banner-wrapper" style={{ position: 'relative', width: '100%', height: '100%', display: 'block' }}>
-                  <img
-                    src={banner.img || bannerImageOriginal}
-                    alt={`Special Offer Banner ${idx + 1}`}
-                    className="slide-image"
-                    style={{ objectPosition: 'center top' }}
-                  />
-                  {banner.showText && (
+                  {banner.type === 'video' ? (
+                    <video
+                      src={banner.image ? getImageUrl(banner.image) : banner.img}
+                      autoPlay
+                      loop
+                      muted
+                      className="slide-image"
+                      style={{ objectFit: 'cover' }}
+                    />
+                  ) : banner.type === 'text' ? (
+                    <div className="slide-image" style={{ background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
+                      <h2 style={{ fontSize: '48px', color: '#333' }}>{banner.title}</h2>
+                    </div>
+                  ) : (
+                    <img
+                      src={banner.image ? getImageUrl(banner.image) : (banner.img || bannerImageOriginal)}
+                      alt={banner.title || `Special Offer Banner ${idx + 1}`}
+                      className="slide-image"
+                      style={{ objectPosition: 'center top' }}
+                    />
+                  )}
+                  {(banner.showText || banner.type === 'with_text' || banner.type === 'image-text') && banner.title && (
+                    <>
+                      <div style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundColor: 'rgba(0,0,0,0.15)',
+                        zIndex: 1
+                      }}></div>
+                      <div className="mega-banner-content" style={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: banner.textPosition === 'Center' ? '50%' : banner.textPosition === 'Right' ? '80%' : '8%',
+                        transform: banner.textPosition === 'Center' ? 'translate(-50%, -50%)' : 'translateY(-50%)',
+                        textAlign: banner.textPosition === 'Center' ? 'center' : 'left',
+                        padding: '20px',
+                        maxWidth: '500px',
+                        zIndex: 2,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: banner.textPosition === 'Center' ? 'center' : 'flex-start',
+                        color: '#ffffff'
+                      }}>
+                        <h2 style={{ fontFamily: '"Playfair Display", serif', fontSize: '64px', margin: '0 0 15px 0', fontWeight: 'normal', lineHeight: '1.1' }}>{banner.title}</h2>
+                        {banner.description && (
+                          <p style={{ fontSize: '20px', lineHeight: '1.4', marginBottom: '20px', fontWeight: '400' }}>
+                            {banner.description}
+                          </p>
+                        )}
+                        {banner.link && (
+                          <Link to={banner.link} className="shop-now-btn" style={{ backgroundColor: '#5c101c', color: '#fff', border: 'none' }}>
+                            SHOP NOW
+                          </Link>
+                        )}
+                      </div>
+                    </>
+                  )}
+                  {banner.showText && !banner.title && (
                     <>
                       <div style={{
                         position: 'absolute',
@@ -121,7 +201,7 @@ const OfferCarousel = () => {
             ))}
           </div>
           <div className="carousel-indicators">
-            {carouselData.map((_, idx) => (
+            {finalCarouselData.map((_, idx) => (
               <span
                 key={idx}
                 className={idx === currentSlide ? 'dot active' : 'dot'}

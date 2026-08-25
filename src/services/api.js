@@ -105,18 +105,22 @@ export const updateCustomerStatus = (id, status) => axios.patch(`${CUSTOMER_API}
 export const deleteCustomer = (id) => axios.delete(`${CUSTOMER_API}/${id}`);
 
 // -----------------------------------------------------
-// PRODUCT APIs (Add here later)
+// PRODUCT APIs
 // -----------------------------------------------------
 const PRODUCT_API = `${API_BASE_URL}/products`;
-// export const getProducts = () => axios.get(PRODUCT_API);
+
+export const fetchProducts = () => axios.get(PRODUCT_API);
+export const fetchProductById = (id) => axios.get(`${PRODUCT_API}/${id}`);
+export const fetchProductsByCategory = (categoryId) => axios.get(`${PRODUCT_API}?category=${categoryId}`);
+export const createProductApi = (data) => axios.post(PRODUCT_API, data);
+export const updateProductApi = (id, data) => axios.put(`${PRODUCT_API}/${id}`, data);
+export const deleteProductApi = (id) => axios.delete(`${PRODUCT_API}/${id}`);
 
 // -----------------------------------------------------
-// OFFER/COUPON APIs
+// OFFER APIs
 // -----------------------------------------------------
 const OFFER_API = `${API_BASE_URL}/offers`;
-
-export const getOffers = (params) => axios.get(OFFER_API, { params });
-export const getOfferById = (id) => axios.get(`${OFFER_API}/${id}`);
+export const getOffers = () => axios.get(OFFER_API);
 export const createOffer = (data) => axios.post(OFFER_API, data);
 export const updateOffer = (id, data) => axios.put(`${OFFER_API}/${id}`, data);
 export const deleteOffer = (id) => axios.delete(`${OFFER_API}/${id}`);
@@ -125,10 +129,11 @@ export const deleteOffer = (id) => axios.delete(`${OFFER_API}/${id}`);
 // BANNER APIs
 // -----------------------------------------------------
 const BANNER_API = `${API_BASE_URL}/banners`;
-
 export const getBanners = () => axios.get(BANNER_API);
-export const getActiveBanners = () => axios.get(`${BANNER_API}/active`);
 export const createBanner = (data) => axios.post(BANNER_API, data);
 export const updateBanner = (id, data) => axios.put(`${BANNER_API}/${id}`, data);
 export const deleteBanner = (id) => axios.delete(`${BANNER_API}/${id}`);
-export const toggleBannerStatus = (id) => axios.patch(`${BANNER_API}/${id}/status`);
+export const toggleBannerStatus = (id, status) => axios.patch(`${BANNER_API}/${id}/status`, { status });
+export const getActiveBanners = () => axios.get(`${BANNER_API}/active`);
+
+export const fetchNextSku = () => axios.get(`${PRODUCT_API}/next-sku`);
