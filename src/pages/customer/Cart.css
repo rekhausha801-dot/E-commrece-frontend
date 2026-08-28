@@ -261,6 +261,10 @@
   align-items: flex-start;
 }
 
+.lux-ci-top-row {
+  margin-bottom: 4px;
+}
+
 .lux-ci-title-row {
   margin-bottom: 10px;
 }
@@ -301,11 +305,16 @@
   margin-bottom: 16px;
 }
 
+.variant-value {
+  color: var(--text-main);
+  font-weight: 500;
+}
+
 .lux-ci-stock-delivery {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
+  margin-bottom: 12px;
 }
 
 .stock-info-left {
@@ -343,6 +352,13 @@
   align-items: center;
   gap: 8px;
   margin-bottom: 4px;
+}
+
+.lux-ci-price-container {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-left: 16px;
 }
 
 .lux-old-price {
@@ -391,7 +407,7 @@
 .lux-ci-footer {
   display: flex;
   align-items: center;
-  margin-top: auto;
+  margin-top: 8px;
 }
 
 .lux-ci-actions-left {

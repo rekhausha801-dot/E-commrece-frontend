@@ -5,6 +5,8 @@ import {
 } from 'lucide-react';
 import './AddAddress.css';
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
 const AddAddress = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -35,35 +37,63 @@ const AddAddress = () => {
 
   useEffect(() => {
     if (isEdit && addressData) {
-      setFormData(addressData);
+      setFormData({
+        id: addressData._id,
+        fullName: addressData.fullName,
+        phone: addressData.mobileNumber,
+        country: addressData.country,
+        pincode: addressData.pincode,
+        address1: addressData.addressLine1,
+        address2: addressData.addressLine2 || '',
+        city: addressData.city,
+        state: addressData.state,
+        landmark: addressData.landmark || '',
+        addressType: addressData.addressType || 'Home',
+        isDefault: addressData.isDefault || false
+      });
     }
   }, [isEdit, addressData]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!formData.fullName || !formData.phone || !formData.pincode || !formData.address1 || !formData.city || !formData.state) {
       alert("Please fill all required fields");
       return;
     }
 
-    const stored = localStorage.getItem('userAddresses');
-    let addresses = stored ? JSON.parse(stored) : [];
+    const token = localStorage.getItem('token');
+    const payload = {
+      fullName: formData.fullName,
+      mobileNumber: formData.phone,
+      addressLine1: formData.address1,
+      addressLine2: formData.address2,
+      landmark: formData.landmark,
+      city: formData.city,
+      state: formData.state,
+      country: formData.country,
+      pincode: formData.pincode,
+      addressType: formData.addressType,
+      isDefault: formData.isDefault
+    };
 
-    if (isEdit && addressData) {
-      addresses = addresses.map(addr => addr.id === addressData.id ? { ...formData, id: addressData.id } : addr);
-    } else {
-      const newAddress = { ...formData, id: Date.now() };
-      addresses.push(newAddress);
+    try {
+      if (isEdit && formData.id) {
+        await fetch(`${API_URL}/addresses/${formData.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify(payload)
+        });
+      } else {
+        await fetch(`${API_URL}/addresses`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify(payload)
+        });
+      }
+      navigate('/account/addresses');
+    } catch (error) {
+      console.error('Error saving address:', error);
+      alert('Unable to save address. Please try again.');
     }
-
-    if (formData.isDefault) {
-      addresses = addresses.map(addr => ({
-        ...addr,
-        isDefault: (isEdit && addressData ? addr.id === addressData.id : addr.id === addresses[addresses.length-1].id)
-      }));
-    }
-
-    localStorage.setItem('userAddresses', JSON.stringify(addresses));
-    navigate('/account/addresses');
   };
 
   return (

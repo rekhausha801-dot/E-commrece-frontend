@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
-import { Search, Download, RefreshCw, ShoppingBag, CheckCircle, XCircle, RotateCcw, Calendar, MoreVertical, Eye, ChevronLeft, ChevronRight, RefreshCcw, Clock, Copy, FilterX, X, MapPin, CreditCard, Box, Hash, User, Phone, Mail, AlertTriangle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { getOrders, getOrderStats, updateOrderStatus as updateStatusApi, cancelOrder as cancelOrderApi, reviewReturn as reviewReturnApi, processRefund as processRefundApi, getExportOrdersUrl } from '../../services/api';
+import { Search, Download, RefreshCw, ShoppingBag, CheckCircle, XCircle, RotateCcw, Calendar, MoreVertical, Eye, ChevronLeft, ChevronRight, RefreshCcw, Clock, Copy, FilterX, X, MapPin, CreditCard, Box, Hash, User, Phone, Mail, AlertTriangle, Truck } from 'lucide-react';
 import { Table, Dropdown, Menu, DatePicker, Select, Button, Input, Space, Drawer, Divider, Steps, Modal, Radio, message } from 'antd';
+import { ShippingTab } from './WebsiteSetting';
 import { AreaChart, Area, ResponsiveContainer } from 'recharts';
 import dayjs from 'dayjs';
 
@@ -9,21 +11,7 @@ const { RangePicker } = DatePicker;
 const sparklineData = [{ v: 40 }, { v: 30 }, { v: 60 }, { v: 45 }, { v: 70 }, { v: 90 }, { v: 120 }];
 const sparklineData2 = [{ v: 10 }, { v: 15 }, { v: 12 }, { v: 22 }, { v: 18 }, { v: 28 }, { v: 25 }];
 
-export const initialOrders = [
-  { id: '#ORD12540', customer: 'Priya Kumar', avatar: 'https://i.pravatar.cc/150?img=5', email: 'priya.k@example.com', phone: '+91 9876543210', address: '123, Anna Nagar, Chennai, Tamil Nadu 600040', items: 2, amount: '₹2,180', paymentMethod: 'COD', paymentStatus: 'Pending', status: 'Return Requested', date: '13 Aug 2026', time: '10:32 AM', products: [{ id: 'P1', image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=150', name: 'Premium Wireless Headphones', sku: 'AUDIO-WH-001', size: 'Standard', color: 'Matte Black', quantity: 1, unitPrice: '₹1,500', total: '₹1,500' }, { id: 'P2', image: 'https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=150', name: 'Smart Fitness Watch', sku: 'WEAR-FW-023', size: 'Dial: 44mm', color: 'Silver', quantity: 1, unitPrice: '₹680', total: '₹680' }] },
-  { id: '#ORD12541', customer: 'Rahul S', avatar: 'https://i.pravatar.cc/150?img=11', email: 'rahul.s@example.com', phone: '+91 9876543211', address: '45, MG Road, Bangalore, Karnataka 560001', items: 5, amount: '₹4,650', paymentMethod: 'UPI', paymentStatus: 'Paid', status: 'Processing', date: '13 Aug 2026', time: '09:15 AM', products: [{ id: 'P3', image: 'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=150', name: 'Bluetooth Speaker', sku: 'AUDIO-BS-012', size: 'Portable', color: 'Blue', quantity: 5, unitPrice: '₹930', total: '₹4,650' }] },
-  { id: '#ORD12542', customer: 'Anitha R', avatar: 'https://i.pravatar.cc/150?img=9', email: 'anitha.r@example.com', phone: '+91 9876543212', address: '78, Jubilee Hills, Hyderabad, Telangana 500033', items: 2, amount: '₹1,299', paymentMethod: 'Card', paymentStatus: 'Paid', status: 'Shipped', date: '12 Aug 2026', time: '07:45 PM', products: [{ id: 'P4', image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=150', name: 'Noise Cancelling Earbuds', sku: 'AUDIO-EB-004', size: 'Standard', color: 'White', quantity: 2, unitPrice: '₹649.50', total: '₹1,299' }] },
-  { id: '#ORD12543', customer: 'Vikram J', avatar: 'https://i.pravatar.cc/150?img=15', email: 'vikram.j@example.com', phone: '+91 9876543213', address: '12, Koregaon Park, Pune, Maharashtra 411001', items: 1, amount: '₹799', paymentMethod: 'COD', paymentStatus: 'Pending', status: 'Pending', date: '12 Aug 2026', time: '05:20 PM', products: [{ id: 'P5', image: 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=150', name: 'Polaroid Camera', sku: 'CAM-PL-005', size: 'Mini', color: 'Yellow', quantity: 1, unitPrice: '₹799', total: '₹799' }] },
-  { id: '#ORD12544', customer: 'Sneha M', avatar: 'https://i.pravatar.cc/150?img=1', email: 'sneha.m@example.com', phone: '+91 9876543214', address: '56, Salt Lake City, Kolkata, West Bengal 700091', items: 3, amount: '₹2,580', paymentMethod: 'UPI', paymentStatus: 'Paid', status: 'Out for Delivery', date: '12 Aug 2026', time: '03:10 PM', products: [{ id: 'P6', image: 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?w=150', name: 'Leather Wallet', sku: 'ACC-LW-008', size: 'Standard', color: 'Brown', quantity: 3, unitPrice: '₹860', total: '₹2,580' }] },
-  { id: '#ORD12545', customer: 'Arun Kumar', avatar: 'https://i.pravatar.cc/150?img=12', email: 'arun.k@example.com', phone: '+91 9876543215', address: '89, Connaught Place, New Delhi 110001', items: 4, amount: '₹3,550', paymentMethod: 'Card', paymentStatus: 'Paid', status: 'Delivered', date: '12 Aug 2026', time: '01:05 PM', products: [{ id: 'P7', image: 'https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=150', name: 'Classic Analog Watch', sku: 'WEAR-AW-011', size: 'Dial: 40mm', color: 'Gold/Black', quantity: 1, unitPrice: '₹2,000', total: '₹2,000' }, { id: 'P8', image: 'https://images.unsplash.com/photo-1572635196237-14b3f281501f?w=150', name: 'Designer Sunglasses', sku: 'ACC-SG-015', size: 'Standard', color: 'Tortoise', quantity: 3, unitPrice: '₹516.66', total: '₹1,550' }] },
-  { id: '#ORD12546', customer: 'Meera Patel', avatar: 'https://i.pravatar.cc/150?img=10', email: 'meera.p@example.com', phone: '+91 9876543216', address: '34, SG Highway, Ahmedabad, Gujarat 380015', items: 1, amount: '₹440', paymentMethod: 'Wallet', paymentStatus: 'Refunded', status: 'Cancelled', date: '11 Aug 2026', time: '11:40 AM', products: [{ id: 'P9', image: 'https://images.unsplash.com/photo-1594223274512-ad4803739b7c?w=150', name: 'Canvas Tote Bag', sku: 'BAG-TB-022', size: 'Large', color: 'Beige', quantity: 1, unitPrice: '₹440', total: '₹440' }] },
-  { id: '#ORD12547', customer: 'Karthik V', avatar: 'https://i.pravatar.cc/150?img=14', email: 'karthik.v@example.com', phone: '+91 9876543217', address: '90, Marine Drive, Mumbai, Maharashtra 400020', items: 2, amount: '₹1,050', paymentMethod: 'Net Banking', paymentStatus: 'Paid', status: 'Delivered', date: '11 Aug 2026', time: '10:12 AM', products: [{ id: 'P10', image: 'https://images.unsplash.com/photo-1512496015851-a908925dc7cc?w=150', name: 'Skincare Kit', sku: 'BEA-SK-003', size: '3 Items', color: 'N/A', quantity: 2, unitPrice: '₹525', total: '₹1,050' }] },
-].map((o, i) => ({
-  ...o,
-  transactionId: `TXN8934${i}29${i}`,
-  discount: i % 2 === 0 ? '₹100' : '₹0',
-  coupon: i % 2 === 0 ? 'WELCOME10' : 'N/A'
-}));
+// initialOrders mock data removed in favor of API
 
 const getProductImage = (product) => {
   if (!product || !product.image) return '/placeholder-product.png';
@@ -34,11 +22,126 @@ const getProductImage = (product) => {
 };
 
 const OrderManagement = ({ globalSearch = '' }) => {
-  const [orders, setOrders] = useState(initialOrders);
+  const [orders, setOrders] = useState([]);
+  const [stats, setStats] = useState({
+    totalOrders: 0,
+    processing: 0,
+    delivered: 0,
+    cancelled: 0
+  });
   const [activeTab, setActiveTab] = useState('All');
   const [searchText, setSearchText] = useState('');
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchOrders = async () => {
+    setIsLoading(true);
+    try {
+      const response = await getOrders({ search: searchText });
+      if (response.data && response.data.success) {
+        // Map backend order format to frontend UI format
+        const formattedOrders = response.data.data.map(order => ({
+          id: order.orderNumber || order.orderId,
+          _id: order._id, // Keep the Mongo ID for updates
+          customer: order.customer?.name || 'Unknown',
+          email: order.customer?.email || 'N/A',
+          phone: order.customer?.phone || order.shippingAddress?.mobileNumber || 'N/A',
+          address: order.shippingAddress ? `${order.shippingAddress.city}, ${order.shippingAddress.state}` : 'N/A',
+          items: order.totalItemsCount || (order.items ? order.items.length : 0),
+          amount: `₹${order.grandTotal || 0}`,
+          paymentMethod: order.paymentMethod?.label || order.paymentMethod?.type || 'N/A',
+          paymentStatus: order.paymentStatus,
+          status: order.orderStatus,
+          date: dayjs(order.createdAt).format('DD MMM YYYY'),
+          time: dayjs(order.createdAt).format('hh:mm A'),
+          cancelledBy: order.cancelledBy,
+          cancelledAt: order.cancelledAt ? dayjs(order.cancelledAt).format('DD MMM YYYY, hh:mm A') : null,
+          cancellationReason: order.cancellationReason,
+          products: (order.items || []).map(p => ({
+            id: p.product,
+            image: p.productImage,
+            name: p.productName,
+            quantity: p.quantity,
+            unitPrice: `₹${p.finalUnitPrice || p.originalPrice || 0}`,
+            total: `₹${p.totalPrice || 0}`
+          }))
+        }));
+        setOrders(formattedOrders);
+      }
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+      message.error('Failed to load orders');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const response = await getOrderStats();
+      if (response.data && response.data.success) {
+        setStats(response.data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching order stats:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchOrders();
+    fetchStats();
+  }, [searchText]); // refetch when search changes
+
+
+  const handleUpdateStatus = async (recordId, id, newStatus) => {
+    try {
+      setOrders(prev => prev.map(o => o.id === id ? { ...o, status: newStatus } : o));
+      await updateStatusApi(recordId, newStatus);
+      fetchStats();
+      message.success('Order status updated');
+    } catch (e) {
+      fetchOrders();
+      message.error('Failed to update status');
+    }
+  };
+
+  const handleCancelOrder = async (recordId, id) => {
+    try {
+      setOrders(prev => prev.map(o => o.id === id ? { ...o, status: 'Cancelled' } : o));
+      await cancelOrderApi(recordId);
+      fetchStats();
+      message.success('Order cancelled');
+    } catch (e) {
+      fetchOrders();
+      message.error('Failed to cancel order');
+    }
+  };
+
+  const handleRefundOrder = async (recordId, id) => {
+    try {
+      setOrders(prev => prev.map(o => o.id === id ? { ...o, paymentStatus: 'Refunded' } : o));
+      await processRefundApi(recordId, 'Processed');
+      fetchStats();
+      message.success('Refund processed');
+    } catch (e) {
+      fetchOrders();
+      message.error('Failed to process refund');
+    }
+  };
+
+  const handleReturnOrder = async (recordId, id, status, reason = '') => {
+    try {
+      setOrders(prev => prev.map(o => o.id === id ? { ...o, status: status === 'Approved' ? 'Returned' : o.status } : o));
+      await reviewReturnApi(recordId, status, reason);
+      fetchStats();
+      message.success(`Return ${status.toLowerCase()}`);
+      setIsReturnModalOpen(false);
+    } catch (e) {
+      fetchOrders();
+      message.error(`Failed to process return request`);
+    }
+  };
+
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
@@ -47,6 +150,7 @@ const OrderManagement = ({ globalSearch = '' }) => {
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [exportRange, setExportRange] = useState('all');
   const [exportFormat, setExportFormat] = useState('excel');
+  const [isShippingModalOpen, setIsShippingModalOpen] = useState(false);
 
   const handleExportSubmit = () => {
     let ordersToExport = [];
@@ -71,48 +175,9 @@ const OrderManagement = ({ globalSearch = '' }) => {
       return;
     }
 
-    const headers = ['Order ID', 'Customer Name', 'Customer Email', 'Product Name', 'Quantity', 'Amount', 'Payment Method', 'Payment Status', 'Order Status', 'Order Date'];
-    
-    const rows = [];
-    ordersToExport.forEach(order => {
-      order.products.forEach(product => {
-        rows.push([
-          order.id,
-          `"${order.customer}"`,
-          `"${order.email || 'customer@example.com'}"`,
-          `"${product.name}"`,
-          product.quantity,
-          `"${order.amount}"`,
-          order.paymentMethod,
-          order.paymentStatus,
-          order.status,
-          `"${order.date}"`
-        ]);
-      });
-    });
-
-    const csvContent = [
-      headers.join(','),
-      ...rows.map(row => row.join(','))
-    ].join('\n');
-
-    let filename = `orders_export_${new Date().getTime()}`;
-    if (exportFormat === 'csv') {
-      filename += '.csv';
-    } else if (exportFormat === 'excel') {
-      filename += '.xlsx'; 
-    } else {
-      filename += '.pdf';
-    }
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = filename;
-    link.click();
-    URL.revokeObjectURL(link.href);
-
+    window.open(getExportOrdersUrl(), '_blank');
     setIsExportModalOpen(false);
-    message.success(`Orders exported as ${exportFormat.toUpperCase()}`);
+    message.success(`Orders exported successfully`);
   };
 
   const columns = [
@@ -385,7 +450,7 @@ const OrderManagement = ({ globalSearch = '' }) => {
                 label: <span style={{ fontSize: '12px', fontWeight: '500' }}>Processing</span>,
                 onClick: ({ domEvent }) => {
                   domEvent.stopPropagation();
-                  setOrders(prev => prev.map(o => o.id === record.id ? { ...o, status: 'Processing' } : o));
+                  handleUpdateStatus(record._id, record.id, 'Processing');
                 }
               },
               {
@@ -393,7 +458,7 @@ const OrderManagement = ({ globalSearch = '' }) => {
                 label: <span style={{ fontSize: '12px', fontWeight: '500' }}>Shipped</span>,
                 onClick: ({ domEvent }) => {
                   domEvent.stopPropagation();
-                  setOrders(prev => prev.map(o => o.id === record.id ? { ...o, status: 'Shipped' } : o));
+                  handleUpdateStatus(record._id, record.id, 'Shipped');
                 }
               },
               {
@@ -401,7 +466,7 @@ const OrderManagement = ({ globalSearch = '' }) => {
                 label: <span style={{ fontSize: '12px', fontWeight: '500' }}>Out for Delivery</span>,
                 onClick: ({ domEvent }) => {
                   domEvent.stopPropagation();
-                  setOrders(prev => prev.map(o => o.id === record.id ? { ...o, status: 'Out for Delivery' } : o));
+                  handleUpdateStatus(record._id, record.id, 'Out for Delivery');
                 }
               },
               {
@@ -409,7 +474,7 @@ const OrderManagement = ({ globalSearch = '' }) => {
                 label: <span style={{ fontSize: '12px', fontWeight: '500' }}>Delivered</span>,
                 onClick: ({ domEvent }) => {
                   domEvent.stopPropagation();
-                  setOrders(prev => prev.map(o => o.id === record.id ? { ...o, status: 'Delivered' } : o));
+                  handleUpdateStatus(record._id, record.id, 'Delivered');
                 }
               }
             ]
@@ -451,7 +516,7 @@ const OrderManagement = ({ globalSearch = '' }) => {
             danger: true,
             onClick: ({ domEvent }) => {
               domEvent.stopPropagation();
-              setOrders(prev => prev.map(o => o.id === record.id ? { ...o, status: 'Cancelled' } : o));
+              handleCancelOrder(record._id, record.id);
             }
           }
         ];
@@ -492,20 +557,23 @@ const OrderManagement = ({ globalSearch = '' }) => {
           </div>
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
+          <button onClick={() => setIsShippingModalOpen(true)} style={{ background: '#1f2937', color: '#fff', border: 'none', padding: '10px 18px', borderRadius: '8px', fontSize: '13px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.2)' }}>
+            <Truck size={15} color="#c99a53" /> Shipping Config
+          </button>
           <button onClick={() => setIsExportModalOpen(true)} style={{ background: 'linear-gradient(90deg, #d97706 0%, #b45309 100%)', color: '#fff', border: 'none', padding: '10px 18px', borderRadius: '8px', fontSize: '13px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', boxShadow: '0 4px 6px -1px rgba(217, 119, 6, 0.2)' }}>
             <Download size={15} /> Export Orders
           </button>
         </div>
       </div>
 
-    
+
       <div className="stats-grid" style={{ marginBottom: '32px' }}>
         <div className="stat-card dark" style={{ cursor: 'pointer' }}>
           <div className="stat-top">
             <div className="stat-icon gold" style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', border: 'none' }}><ShoppingBag size={18} /></div>
             <div className="stat-info">
               <span className="stat-title">Total Orders</span>
-              <h2 className="stat-value gold-text">12,450</h2>
+              <h2 className="stat-value gold-text">{stats.totalOrders || 0}</h2>
             </div>
           </div>
           <div className="stat-chart-sparkline">
@@ -528,7 +596,7 @@ const OrderManagement = ({ globalSearch = '' }) => {
             <div className="stat-icon gold" style={{ color: '#3b82f6', background: '#eff6ff', border: 'none' }}><Clock size={18} /></div>
             <div className="stat-info">
               <span className="stat-title">Processing</span>
-              <h2 className="stat-value">540</h2>
+              <h2 className="stat-value">{stats.processing || 0}</h2>
             </div>
           </div>
           <div className="stat-chart-sparkline">
@@ -551,7 +619,7 @@ const OrderManagement = ({ globalSearch = '' }) => {
             <div className="stat-icon gold" style={{ color: '#10b981', background: '#ecfdf5', border: 'none' }}><CheckCircle size={18} /></div>
             <div className="stat-info">
               <span className="stat-title">Delivered</span>
-              <h2 className="stat-value">10,200</h2>
+              <h2 className="stat-value">{stats.delivered || 0}</h2>
             </div>
           </div>
           <div className="stat-chart-sparkline">
@@ -574,7 +642,7 @@ const OrderManagement = ({ globalSearch = '' }) => {
             <div className="stat-icon gold" style={{ color: '#ef4444', background: '#fef2f2', border: 'none' }}><XCircle size={18} /></div>
             <div className="stat-info">
               <span className="stat-title">Cancelled</span>
-              <h2 className="stat-value">270</h2>
+              <h2 className="stat-value">{stats.cancelled || 0}</h2>
             </div>
           </div>
           <div className="stat-chart-sparkline">
@@ -593,7 +661,7 @@ const OrderManagement = ({ globalSearch = '' }) => {
         </div>
       </div>
 
-    
+
       <div className="premium-glass-card" style={{ padding: '0px', borderRadius: '16px', background: '#fff', border: '1px solid #f3f4f6', boxShadow: '0 10px 30px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.02)', overflow: 'hidden' }}>
         <style>
           {`
@@ -664,10 +732,10 @@ const OrderManagement = ({ globalSearch = '' }) => {
           className="premium-table"
           dataSource={orders.filter(o => {
             const finalSearchText = globalSearch || searchText;
-            const matchesSearch = 
-                o.id.toLowerCase().includes(finalSearchText.toLowerCase()) ||
-                o.customer.toLowerCase().includes(finalSearchText.toLowerCase()) ||
-                o.products.some(p => p.name.toLowerCase().includes(finalSearchText.toLowerCase()));
+            const matchesSearch =
+              o.id.toLowerCase().includes(finalSearchText.toLowerCase()) ||
+              o.customer.toLowerCase().includes(finalSearchText.toLowerCase()) ||
+              o.products.some(p => p.name.toLowerCase().includes(finalSearchText.toLowerCase()));
 
             return matchesSearch;
           })}
@@ -758,6 +826,28 @@ const OrderManagement = ({ globalSearch = '' }) => {
                   ]}
                 />
               </div>
+
+              {selectedOrder.status === 'Cancelled' && (
+                <div style={{ background: '#fef2f2', borderRadius: '16px', padding: '24px', marginBottom: '24px', border: '1px solid #fecaca' }}>
+                  <h3 style={{ fontSize: '15px', fontWeight: '600', color: '#991b1b', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <XCircle size={16} color="#dc2626" /> Cancellation Details
+                  </h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
+                      <span style={{ color: '#7f1d1d' }}>Cancelled By</span>
+                      <span style={{ fontWeight: '600', color: '#991b1b', textTransform: 'capitalize' }}>{selectedOrder.cancelledBy || 'Unknown'}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px' }}>
+                      <span style={{ color: '#7f1d1d' }}>Date</span>
+                      <span style={{ fontWeight: '500', color: '#991b1b' }}>{selectedOrder.cancelledAt || 'N/A'}</span>
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', fontSize: '14px' }}>
+                      <span style={{ color: '#7f1d1d' }}>Reason</span>
+                      <span style={{ fontWeight: '500', color: '#991b1b', fontStyle: 'italic' }}>"{selectedOrder.cancellationReason || 'No reason provided.'}"</span>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
 
@@ -854,8 +944,14 @@ const OrderManagement = ({ globalSearch = '' }) => {
                     <span style={{ fontWeight: '500', color: '#111827' }}>Free</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: '#4b5563' }}>
-                    <span>Tax (GST)</span>
-                    <span style={{ fontWeight: '500', color: '#111827' }}>Included</span>
+                    <span>GST</span>
+                    <span style={{ fontWeight: '500', color: '#111827' }}>
+                      {selectedOrder.dbOrder && selectedOrder.dbOrder.gstAmount != null 
+                        ? `₹${selectedOrder.dbOrder.gstAmount.toFixed(2)}` 
+                        : (selectedOrder.dbOrder && selectedOrder.dbOrder.tax != null 
+                            ? `₹${selectedOrder.dbOrder.tax.toFixed(2)}` 
+                            : 'Included')}
+                    </span>
                   </div>
                   <Divider style={{ margin: '8px 0' }} />
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '16px', fontWeight: '700', color: '#111827' }}>
@@ -870,7 +966,7 @@ const OrderManagement = ({ globalSearch = '' }) => {
         )}
       </Drawer>
 
- 
+
       <Modal
         title={
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '600' }}>
@@ -898,9 +994,9 @@ const OrderManagement = ({ globalSearch = '' }) => {
 
               <div style={{ background: '#fffbeb', padding: '16px', borderRadius: '8px', border: '1px solid #fde68a' }}>
                 <div style={{ fontSize: '13px', color: '#d97706', marginBottom: '4px', fontWeight: '500' }}>Return Reason</div>
-                <div style={{ fontSize: '14px', fontWeight: '600', color: '#92400e' }}>Defective Product</div>
+                <div style={{ fontSize: '14px', fontWeight: '600', color: '#92400e' }}>Customer Request</div>
                 <div style={{ fontSize: '13px', color: '#92400e', marginTop: '8px', fontStyle: 'italic' }}>
-                  "The product is damaged. Please process the return."
+                  "{returnSelectedOrder.returnRequest?.reason || 'Please process the return.'}"
                 </div>
               </div>
 
@@ -908,17 +1004,14 @@ const OrderManagement = ({ globalSearch = '' }) => {
                 <Button
                   type="primary"
                   style={{ background: '#10b981', borderColor: '#10b981', flex: 1, height: '40px', fontWeight: '500' }}
-                  onClick={() => {
-                    setOrders(prev => prev.map(o => o.id === returnSelectedOrder.id ? { ...o, status: 'Returned' } : o));
-                    setIsReturnModalOpen(false);
-                  }}
+                  onClick={() => handleReturnOrder(returnSelectedOrder._id, returnSelectedOrder.id, 'Approved')}
                 >
                   Approve Return
                 </Button>
                 <Button
                   danger
                   style={{ flex: 1, height: '40px', fontWeight: '500' }}
-                  onClick={() => setIsReturnModalOpen(false)}
+                  onClick={() => handleReturnOrder(returnSelectedOrder._id, returnSelectedOrder.id, 'Rejected')}
                 >
                   Reject Return
                 </Button>
@@ -929,7 +1022,7 @@ const OrderManagement = ({ globalSearch = '' }) => {
         )}
       </Modal>
 
-   
+
       <Modal
         title={
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', fontWeight: '600' }}>
@@ -964,6 +1057,32 @@ const OrderManagement = ({ globalSearch = '' }) => {
               <Radio value="pdf">PDF (.pdf)</Radio>
             </Radio.Group>
           </div>
+        </div>
+      </Modal>
+
+      <Modal
+        title={
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '18px', fontWeight: '700', color: '#1a1a1a', paddingBottom: '8px', borderBottom: '1px solid #f0f0f0', marginBottom: '8px' }}>
+            <div style={{ background: '#fdfbf7', padding: '6px', borderRadius: '6px', border: '1px solid #f3e8d6', display: 'flex' }}>
+              <Truck size={18} color="#c99a53" />
+            </div>
+            Shipping Configuration
+          </div>
+        }
+        open={isShippingModalOpen}
+        onCancel={() => setIsShippingModalOpen(false)}
+        footer={null}
+        width={550}
+        centered
+        className="premium-shipping-modal"
+        styles={{ 
+          mask: { backdropFilter: 'blur(4px)', backgroundColor: 'rgba(0, 0, 0, 0.4)' },
+          content: { borderRadius: '12px', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', padding: '16px' } 
+        }}
+        closeIcon={<div style={{ background: '#f3f4f6', borderRadius: '50%', padding: '4px', display: 'flex', marginTop: '2px' }}><X size={14} color="#666" /></div>}
+      >
+        <div style={{ padding: '0' }}>
+          <ShippingTab />
         </div>
       </Modal>
 

@@ -41,6 +41,9 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        // Keep userInfo for backward compatibility if other parts of the app use it
         localStorage.setItem('userInfo', JSON.stringify(data));
         setSuccessMsg(data.message);
         setShowSuccessModal(true);

@@ -607,7 +607,9 @@ const ProductManagement = ({ globalSearch = '' }) => {
                           <span className="table-price">{p.price}</span>
                           <span className="old-price">{p.oldPrice || p.price}</span>
                         </div>
-                        <span className="table-discount">{p.discount || ''}</span>
+                        <span className="table-discount">
+                          {p.discount ? (p.discount.toString().includes('%') ? p.discount : p.discount.toString().replace(/(\d+)/, '$1%')) : ''}
+                        </span>
                       </div>
                     </td>
                     <td><span className={`stock-text ${p.stock > 0 ? (p.stock > 40 ? 'text-green' : 'text-orange') : 'text-red'}`}>{p.stock}</span></td>

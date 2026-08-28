@@ -138,6 +138,8 @@ const mapToBackendFormat = (data) => {
   if (data.discount !== undefined) formData.append('discount', Number(data.discount.toString().replace(/[^0-9]/g, '')));
   if (data.costPrice !== undefined) formData.append('costPrice', Number(data.costPrice.toString().replace(/[^0-9.]/g, '')));
   if (data.lowStockAlert !== undefined) formData.append('lowStockAlert', Number(data.lowStockAlert));
+  if (data.gstRate !== undefined) formData.append('gstRate', Number(data.gstRate));
+  if (data.gstIncludedInPrice !== undefined) formData.append('gstIncludedInPrice', Boolean(data.gstIncludedInPrice));
   if (data.customizable !== undefined) formData.append('customizable', data.customizable);
   if (data.discountType) formData.append('discountType', data.discountType);
   if (data.deliveryText) formData.append('deliveryText', data.deliveryText);

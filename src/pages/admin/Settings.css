@@ -18,12 +18,7 @@
 }
 
 .settings-sidebar h3 {
-  font-size: 13px;
-  font-weight: 700;
-  color: #9ca3af;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin: 0 24px 12px;
+  display: none;
 }
 
 .settings-nav {
@@ -54,9 +49,9 @@
 }
 
 .settings-nav-item.active {
-  background: #fffbeb;
-  color: #d97706;
-  border-left-color: #d97706;
+  background: #f8fafc;
+  color: #1e3a8a;
+  border-left-color: transparent;
   font-weight: 600;
 }
 

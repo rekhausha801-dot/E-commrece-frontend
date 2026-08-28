@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Search, ShoppingBag, User, Heart, Menu, Bell, ChevronDown, X, ShoppingCart, Shirt, Footprints, Watch } from 'lucide-react';
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { useCart } from '../context/CartContext';
+import { useNotification } from '../context/NotificationContext';
 import useDebounce from '../hooks/useDebounce';
 import './Navbar.css';
 
@@ -115,6 +116,9 @@ const Navbar = () => {
 
   const { cartItems } = useCart();
   const cartCount = cartItems.reduce((total, item) => total + (item.qty || 1), 0);
+
+  const { notifications = [], markAllAsRead } = useNotification() || {};
+  const unreadNotificationCount = notifications.filter(n => !n.read).length;
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -415,10 +419,17 @@ const Navbar = () => {
             </Link>
 
             {/* Notifications Dropdown */}
-            <div className="icon-btn action-item has-dropdown desktop-only">
+            <div 
+              className="icon-btn action-item has-dropdown desktop-only"
+              onMouseEnter={() => {
+                if (unreadNotificationCount > 0 && markAllAsRead) {
+                  markAllAsRead();
+                }
+              }}
+            >
               <div className="icon-badge-wrapper">
                 <Bell size={22} />
-                <span className="nav-alert-badge">3</span>
+                {unreadNotificationCount > 0 && <span className="nav-alert-badge">{unreadNotificationCount}</span>}
               </div>
               <span className="icon-label">Alerts</span>
               <div className="dropdown-menu standard-dropdown">

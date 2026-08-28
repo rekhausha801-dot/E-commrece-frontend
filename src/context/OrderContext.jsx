@@ -1,33 +1,47 @@
-import React, { createContext, useState, useContext } from 'react';
-import sareeImage from '../assets/Maroon.png';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 
 const OrderContext = createContext();
 
 export const OrderProvider = ({ children }) => {
-  const [orders, setOrders] = useState([
-    {
-      id: 'ORD102458',
-      date: '29 July 2026',
-      product: 'Georgette Embroidery Work Saree',
-      size: 'Free Size',
-      color: 'Maroon',
-      amount: '₹468',
-      payment: 'Paid',
-      paymentColor: '#2a7e4f',
-      status: 'Delivered',
-      statusColor: '#2a7e4f',
-      statusBg: '#e6f2eb',
-      image: sareeImage
-    }
-  ]);
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
-  const addOrder = (newOrders) => {
-    // Prepend new orders so they appear at the top
-    setOrders((prevOrders) => [...newOrders, ...prevOrders]);
+  const fetchOrders = async () => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/orders/myorders`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await response.json();
+      if (data.success) {
+        setOrders(data.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch orders:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const addOrder = (newOrder) => {
+    
+    setOrders((prevOrders) => [newOrder, ...prevOrders]);
+   
+    
   };
 
   return (
-    <OrderContext.Provider value={{ orders, addOrder }}>
+    <OrderContext.Provider value={{ orders, loading, fetchOrders, addOrder }}>
       {children}
     </OrderContext.Provider>
   );

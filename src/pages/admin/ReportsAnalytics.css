@@ -1,4 +1,4 @@
-﻿.report-ui-redesign {
+.report-ui-redesign {
   background-color: #f9fafb;
   min-height: 100vh;
   padding: 24px;
@@ -221,7 +221,8 @@
 .ra-donut-legend-wrap {
   display: flex;
   align-items: center;
-  gap: 16px;
+  justify-content: center;
+  gap: 32px;
   height: 220px;
 }
 .ra-donut-chart {

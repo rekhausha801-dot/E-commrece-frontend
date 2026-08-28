@@ -1,18 +1,34 @@
 import React, { useState } from 'react';
 import { ShoppingBag, MapPin, CreditCard, Receipt, Star, Trash2, Truck, Minus, Plus, RefreshCw, ShieldCheck, Headphones, Tag, Edit2, Lock, ArrowRight, Heart, Check, Leaf, X } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import './Cart.css';
 import kurtiImg from '../../assets/images/kurti.png';
 import { useCart } from '../../context/CartContext';
+import { useWishlist } from '../../context/WishlistContext';
+import { useSettings } from '../../context/SettingsContext';
 import CheckoutStepper from '../../components/CheckoutStepper';
+import { getShippingFeeApi } from '../../services/api';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const BASE_URL = API_URL.replace('/api', '');
+
+const getImageUrl = (path) => {
+  if (!path) return '';
+  if (path.startsWith('http') || path.startsWith('data:') || path.startsWith('blob:')) return path;
+  if (path.startsWith('/src/') || path.startsWith('/assets/')) return path;
+  return path.startsWith('/') ? `${BASE_URL}${path}` : `${BASE_URL}/${path}`;
+};
 
 const Cart = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   React.useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-  const { cartItems, updateQty, removeItem, updateItemDetails } = useCart();
+  const { cartItems, updateQty, removeItem, updateItemDetails, buyNowData, clearBuyNowData, dynamicShippingFee, cartPricing } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
+  const { formatCurrency } = useSettings();
 
   const [editingItem, setEditingItem] = useState(null);
   const [editForm, setEditForm] = useState({ size: '', color: '', qty: 1 });
@@ -28,19 +44,22 @@ const Cart = () => {
 
   const saveEdit = () => {
     if (editingItem) {
-      updateItemDetails(editingItem.id, editForm);
+      const targetId = editingItem.id || editingItem._id || editingItem.productId;
+      updateItemDetails(targetId, editForm);
       closeEditModal();
     }
   };
 
-  const cartItemCount = cartItems.reduce((acc, item) => acc + item.qty, 0);
-  const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.qty), 0);
-  const productDiscount = cartItems.length > 0 ? 25.00 : 0;
-  const couponDiscount = cartItems.length > 0 ? 15.00 : 0;
-  const shipping = 0;
-  const tax = subtotal * 0.041;
-  const grandTotal = Math.max(0, subtotal - productDiscount - couponDiscount + tax);
+  const activeItems = buyNowData ? buyNowData.items || [buyNowData] : cartItems;
+  const cartItemCount = activeItems.reduce((acc, item) => acc + (item.qty || item.quantity || 1), 0);
+  
+  const { subtotal, productDiscount, couponDiscount, shippingFee: shipping, tax, grandTotal } = cartPricing;
   const totalSavings = productDiscount + couponDiscount;
+
+  // Clear Buy Now if we want to cancel the flow
+  const handleCancelBuyNow = () => {
+    clearBuyNowData();
+  };
 
   return (
     <div className="lux-cart-page">
@@ -77,67 +96,72 @@ const Cart = () => {
           
           <div className="lux-cart-left">
             <div className="lux-cart-items-container">
-              {cartItems.map((item, index) => (
-                <div key={item.id + '-' + index} className="lux-cart-item">
+              {activeItems.map((item, index) => (
+                <div key={item.id || item.productId + '-' + index} className="lux-cart-item">
                   <div className="lux-ci-image">
-                    <img src={item.image} alt={item.title} />
+                    <img src={getImageUrl(item.productImage || item.image)} alt={item.title || item.productName} />
                   </div>
 
                   <div className="lux-ci-content">
                     <div className="lux-ci-top-row">
-                      <div className="lux-ci-brand">{item.brand}</div>
-                      <div className="lux-ci-price-top">
-                        {item.oldPrice && <span className="lux-old-price">₹{item.oldPrice.toFixed(2)}</span>}
-                        <span className="lux-discount-badge">{item.discount}</span>
-                      </div>
+                      <div className="lux-ci-brand">{item.brand || 'Gudwear'}</div>
                     </div>
 
                     <div className="lux-ci-title-row">
-                      <h3 className="lux-ci-title">{item.title}</h3>
-                      <span className="lux-current-price">₹{item.price.toFixed(2)}</span>
+                      <h3 className="lux-ci-title">{item.title || item.productName}</h3>
+                      <div className="lux-ci-price-container">
+                        {item.oldPrice || item.originalPrice ? <span className="lux-old-price">{formatCurrency(item.oldPrice || item.originalPrice)}</span> : null}
+                        <span className="lux-current-price">{formatCurrency(item.finalUnitPrice || item.price || 0)}</span>
+                        {(item.discount || item.discountAmount > 0) && <span className="lux-discount-badge">{item.discount || `₹${item.discountAmount} OFF`}</span>}
+                      </div>
                     </div>
 
                     <div className="lux-ci-rating">
                       <Star size={14} className="lux-star" fill="#D4AF37" color="#D4AF37" />
-                      <span>{item.rating} ({item.reviews} reviews)</span>
+                      <span>({item.reviews || '0'} reviews)</span>
                     </div>
 
                     <div className="lux-ci-variants-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                       <div className="lux-ci-variants" style={{ marginBottom: 0 }}>
-                        Color: {item.color} <span className="lux-divider">|</span> Size: {item.size}
+                        Color: <span className="variant-value">{item.color || 'N/A'}</span> <span className="lux-divider">|</span> Size: <span className="variant-value">{item.size || 'N/A'}</span>
                       </div>
 
                       <div className="lux-qty-pill">
-                        <button onClick={() => updateQty(item.id, -1)}><Minus size={14} /></button>
-                        <span>{item.qty}</span>
-                        <button onClick={() => updateQty(item.id, 1)}><Plus size={14} /></button>
+                        {!buyNowData && <button onClick={() => updateQty(item.id, -1)}><Minus size={14} /></button>}
+                        <span>Qty: {item.qty || item.quantity}</span>
+                        {!buyNowData && <button onClick={() => updateQty(item.id, 1)}><Plus size={14} /></button>}
                       </div>
                     </div>
 
                     <div className="lux-ci-stock-delivery">
                       <div className="stock-info-left">
-                        <span className="stock-status"><span className="status-dot"></span>{item.stock}</span>
+                        <span className="status-dot"></span>
                         <span className="lux-divider">|</span>
-                        <span className="delivery-date">Delivered by {item.delivery}</span>
+                        <span className="delivery-date">Delivered by {item.delivery || 'Tomorrow'}</span>
                         <span className="lux-divider">|</span>
-                        <span className="free-shipping"><Truck size={14} /> Free Shipping</span>
+                        <span className="free-shipping"><Truck size={14} style={{ marginRight: '4px' }} /> Free Shipping</span>
                       </div>
                     </div>
 
-                    <div className="lux-ci-footer">
-                      <div className="lux-ci-actions-left">
-                        <button className="lux-ci-action-text-btn" onClick={() => handleEditClick(item)}>
-                          <Edit2 size={14} color="#B58D4E" /> Edit
+                    <div className="lux-ci-footer" style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px dashed #E6DFD3' }}>
+                      <div className="lux-ci-actions-left" style={{ display: 'flex', gap: '20px' }}>
+                        <button className="lux-ci-action-text-btn" onClick={() => handleEditClick(item)} style={{ color: '#B58D4E', fontWeight: 'bold' }}>
+                          <Edit2 size={16} color="#B58D4E" style={{ marginRight: '4px' }} /> Edit
                         </button>
                         <span className="lux-divider-light">|</span>
-                        <button className="lux-ci-action-text-btn" onClick={() => removeItem(item.id)}>
-                          <Trash2 size={14} color="#B58D4E" /> Remove
+                        <button className="lux-ci-action-text-btn" onClick={() => buyNowData ? handleCancelBuyNow() : removeItem(item.id)} style={{ color: '#D93B3B', fontWeight: 'bold' }}>
+                          <Trash2 size={16} color="#D93B3B" style={{ marginRight: '4px' }} /> Remove
                         </button>
                       </div>
                     </div>
                   </div>
                 </div>
               ))}
+              {buyNowData && (
+                <button className="lux-continue-btn" onClick={handleCancelBuyNow} style={{ marginTop: '20px', border: '1px solid #ccc', background: 'transparent' }}>
+                  Cancel Buy Now
+                </button>
+              )}
             </div>
 
             <div className="lux-cart-features-dark">
@@ -183,23 +207,27 @@ const Cart = () => {
               <div className="lux-summary-rows">
                 <div className="lux-summary-row">
                   <span>Subtotal</span>
-                  <span>₹{subtotal.toFixed(2)}</span>
+                  <span>{formatCurrency(subtotal)}</span>
                 </div>
                 <div className="lux-summary-row green-text">
                   <span>Product Discount</span>
-                  <span>-₹{productDiscount.toFixed(2)}</span>
+                  <span>-{formatCurrency(productDiscount)}</span>
                 </div>
                 <div className="lux-summary-row green-text">
                   <span>Coupon Discount</span>
-                  <span>-₹{couponDiscount.toFixed(2)}</span>
+                  <span>-{formatCurrency(couponDiscount)}</span>
                 </div>
                 <div className="lux-summary-row">
                   <span>Shipping Fee</span>
-                  <span className="green-text">FREE</span>
+                  {shipping === 0 ? (
+                    <span className="green-text">FREE</span>
+                  ) : (
+                    <span>{formatCurrency(shipping)}</span>
+                  )}
                 </div>
                 <div className="lux-summary-row">
-                  <span>Tax</span>
-                  <span>₹{tax.toFixed(2)}</span>
+                  <span>GST</span>
+                  <span>{formatCurrency(tax)}</span>
                 </div>
               </div>
 
@@ -207,7 +235,7 @@ const Cart = () => {
 
               <div className="lux-summary-total">
                 <span>Grand Total</span>
-                <span>₹{grandTotal.toFixed(2)}</span>
+                <span>{formatCurrency(grandTotal)}</span>
               </div>
 
               <div className="lux-success-banner">

@@ -18,6 +18,12 @@ const Notifications = () => {
   // Calculate unread count
   const unreadCount = notifications.filter(n => !n.read).length;
 
+  React.useEffect(() => {
+    if (unreadCount > 0 && markAllAsRead) {
+      markAllAsRead();
+    }
+  }, [unreadCount, markAllAsRead]);
+
   // Filter notifications by active tab
   const filteredNotifications = notifications.filter(n => 
     activeTab === 'All' ? true : n.type === activeTab

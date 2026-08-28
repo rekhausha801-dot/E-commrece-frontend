@@ -128,7 +128,7 @@ const TrendyCollection = () => {
   const handleCartClick = async (e, product) => {
     e.stopPropagation();
 
-    // Check global cart state
+    
     const isAdded = cartItems.some(item => item.id === product.id);
 
     if (isAdded) {
@@ -142,13 +142,13 @@ const TrendyCollection = () => {
     const basket = document.getElementById('navbar-cart-badge');
 
     if (img && basket) {
-      // Temporarily disable the button to prevent spamming
+      
       button.disabled = true;
 
       const from = img.getBoundingClientRect();
       const to = basket.getBoundingClientRect();
 
-      // Create a flying clone of the image
+    
       const clone = img.cloneNode(true);
       clone.style.position = 'fixed';
       clone.style.top = `${from.top}px`;
