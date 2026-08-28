@@ -6,7 +6,7 @@ const WishlistContext = createContext();
 export const useWishlist = () => useContext(WishlistContext);
 
 export const WishlistProvider = ({ children }) => {
-  // Load from local storage initially to persist data across refreshes
+ 
   const [wishlistItems, setWishlistItems] = useState(() => {
     const saved = localStorage.getItem('wishlist');
     if (saved) {
@@ -19,7 +19,7 @@ export const WishlistProvider = ({ children }) => {
     return [];
   });
 
-  // Save to local storage whenever wishlist changes
+  
   useEffect(() => {
     localStorage.setItem('wishlist', JSON.stringify(wishlistItems));
   }, [wishlistItems]);

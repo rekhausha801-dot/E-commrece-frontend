@@ -3,38 +3,24 @@ import { flushSync } from 'react-dom';
 import { animate, stagger, inView, scroll, motion, useScroll, useTransform } from 'framer-motion';
 import { animateView } from 'motion-dom';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { message } from 'antd';
+import { message, Image } from 'antd';
 import {
   Star, ShoppingCart, ChevronRight, ChevronLeft, ArrowRight, Ruler,
   CheckCircle2, ShieldCheck, RefreshCcw, Heart, Plus, Minus, Check, Eye,
-  Truck, CreditCard, Box, Navigation, MoreHorizontal, ThumbsUp, ShoppingBag, Palette, Shield,
+  Truck, CreditCard, Box, Navigation, MoreHorizontal, MoreVertical, Trash2, ThumbsUp, ShoppingBag, Palette, Shield,
   Camera, MessageCircle, Edit2, Info, Award, X, Leaf, ArrowDown, Zap,
   Flower2, Mountain, Feather, Flame, Rocket, Compass, Send, Headphones, Palmtree, Upload
 } from 'lucide-react';
 import CustomerReviews from './CustomerReviews';
 import './ProductDetail.css';
 
-import placeholderMain from '../assets/images/banner0.png';
-import placeholderThumb1 from '../assets/images/beauty.png';
-import placeholderThumb2 from '../assets/images/shirt.jpeg';
 
-import kurtiImg from '../assets/images/kurti.png';
-import kurthi2Img from '../assets/images/kurthi2.png';
-import kurthi3Img from '../assets/images/kurthi3.png';
-import kurthi4Img from '../assets/images/kurthi4.png';
-import kurthi5Img from '../assets/images/kurthi5.png';
-
-import westren2Img from '../assets/images/westren2.png';
-import westren3Img from '../assets/images/westren3.png';
-import westren4Img from '../assets/images/westren4.png';
-import westren5Img from '../assets/images/westren5.png';
-
-import { determineProductCategory, customizableDesigns } from '../data/mockProducts';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
 import { useProducts } from '../context/ProductContext';
 import { handleFlyingCartAnimation } from '../utils/cartAnimation';
 import { getPredefinedDesigns, uploadDesign } from '../services/customDesignService';
+import { createReviewApi, getProductReviewsApi, getProductRatingSummaryApi, markReviewHelpfulApi, deleteCustomerReviewApi } from '../services/api';
 
 function ParallaxHighlightCard({ children }) {
   const ref = useRef(null);
@@ -107,14 +93,14 @@ export function SimilarProductCard({ product, onQuickView }) {
         <div className="unified-card-rating">
           <div className="unified-stars">
             {[1, 2, 3, 4, 5].map(i => (
-              <Star key={i} size={14} fill={i <= (product.rating || 5) ? "#C89953" : "#e0e0e0"} color={i <= (product.rating || 5) ? "#C89953" : "#e0e0e0"} />
+              <Star key={i} size={14} fill={i <= (product.rating || 0) ? "#C89953" : "#e0e0e0"} color={i <= (product.rating || 0) ? "#C89953" : "#e0e0e0"} />
             ))}
           </div>
-          <span className="unified-reviews">({product.reviews || 24})</span>
+          <span className="unified-reviews">({product.reviews || 0})</span>
         </div>
 
         <div className="unified-card-price">
-          <span className="unified-price-new">{product.price?.toString().startsWith('₹') ? product.price : `₹${product.price || '499'}`}</span>
+          <span className="unified-price-new">{product.price?.toString().startsWith('₹') ? product.price : `₹${product.price || 0}`}</span>
           {product.originalPrice && (
             <span className="unified-price-old">{product.originalPrice.toString().startsWith('₹') ? product.originalPrice : `₹${product.originalPrice}`}</span>
           )}
@@ -165,15 +151,16 @@ export default function ProductDetail() {
   const location = useLocation();
   const navigate = useNavigate();
   const { toggleWishlist, isInWishlist } = useWishlist();
-  const { cartItems, addToCart } = useCart();
+  const { cartItems, addToCart, setBuyNowData } = useCart();
+  const [isBuyNowLoading, setIsBuyNowLoading] = useState(false);
   const { products: contextProducts } = useProducts();
-  
+
   const [baseProduct, setBaseProduct] = useState(location.state?.product || null);
   const [isLoading, setIsLoading] = useState(!baseProduct);
 
   useEffect(() => {
     if (productId) {
-      // First try to find it in context to load instantly
+
       if (contextProducts && contextProducts.length > 0) {
         const found = contextProducts.find(p => String(p.id) === String(productId) || String(p._id) === String(productId));
         if (found) {
@@ -181,7 +168,7 @@ export default function ProductDetail() {
           setIsLoading(false);
         }
       }
-      
+
       // Then fetch fresh data from backend to ensure we have gallery, specs, etc.
       import('../services/productService').then(({ getProductById }) => {
         getProductById(productId)
@@ -194,19 +181,16 @@ export default function ProductDetail() {
     }
   }, [productId, contextProducts]);
 
-  // Dynamically attach customization ONLY for the specific White T-Shirt (ID 100) or t-shirt7 or t-shirt8
-  const isCustomizableTShirt = baseProduct?.id === 100 || (baseProduct?.image && (baseProduct.image.includes('t-shirt7') || baseProduct.image.includes('t-shirt8')));
-
   const product = baseProduct ? {
     ...baseProduct,
     category: baseProduct.category || baseProduct._backendData?.category?.name || baseProduct._backendData?.category || 'Uncategorized',
-    customizable: isCustomizableTShirt ? true : baseProduct.customizable,
-    designs: isCustomizableTShirt ? customizableDesigns : baseProduct.designs
+    customizable: baseProduct.customizable,
+    designs: baseProduct.designs
   } : null;
 
   const [activeImage, setActiveImage] = useState(0);
-  const [activeSize, setActiveSize] = useState('M');
-  const [activeColor, setActiveColor] = useState('Brown');
+  const [activeSize, setActiveSize] = useState('');
+  const [activeColor, setActiveColor] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('description');
   const [showSizeGuide, setShowSizeGuide] = useState(false);
@@ -214,7 +198,7 @@ export default function ProductDetail() {
   const [activePosition, setActivePosition] = useState('front');
   const [isUploading, setIsUploading] = useState(false);
   const [customDesignsList, setCustomDesignsList] = useState([]);
-  
+
   useEffect(() => {
     if (product?.customizable) {
       getPredefinedDesigns().then(designs => {
@@ -231,8 +215,47 @@ export default function ProductDetail() {
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [reviewForm, setReviewForm] = useState({ rating: 0, title: '', content: '', image: null });
   const [hoveredStar, setHoveredStar] = useState(0);
+  const [reviews, setReviews] = useState([]);
   const fileInputRef = useRef(null);
   const customizerScrollRef = useRef(null);
+
+  const [ratingSummary, setRatingSummary] = useState(null);
+
+  useEffect(() => {
+    if (productId) {
+      getProductReviewsApi(productId)
+        .then(res => {
+          if (res.data && res.data.success) {
+            const fetchedReviews = res.data.data.map(r => ({
+              id: r._id,
+              userId: r.user?._id || r.user,
+              name: r.user?.name || 'Anonymous',
+              avatar: r.user?.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(r.user?.name || 'A')}&background=fef3c7&color=d97706&size=100`,
+              purchased: product?.title || "Product",
+              rating: r.rating,
+              title: r.title || 'Feedback',
+              content: r.comment,
+              image: r.images && r.images.length > 0 ? r.images[0] : null,
+              date: new Date(r.createdAt).toLocaleDateString(),
+              verified: r.isVerifiedPurchase,
+              helpfulCount: r.helpfulCount || 0,
+              hasVotedHelpful: false
+            }));
+            setReviews(fetchedReviews);
+            setCustomerPhotos(fetchedReviews.filter(r => r.image).map(r => r.image));
+          }
+        })
+        .catch(err => console.error("Error fetching product reviews:", err));
+
+      getProductRatingSummaryApi(productId)
+        .then(res => {
+          if (res.data && res.data.success) {
+            setRatingSummary(res.data);
+          }
+        })
+        .catch(err => console.error("Error fetching rating summary:", err));
+    }
+  }, [productId, product?.title]);
 
   const scrollCustomizer = (direction) => {
     if (customizerScrollRef.current) {
@@ -248,77 +271,45 @@ export default function ProductDetail() {
     const file = e.target.files[0];
     if (file) {
       const imageUrl = URL.createObjectURL(file);
-      setReviewForm({ ...reviewForm, image: imageUrl });
+      setReviewForm({ ...reviewForm, image: imageUrl, file });
     }
   };
 
-  const [customerPhotos, setCustomerPhotos] = useState([
-    kurtiImg, kurthi2Img, kurthi3Img, kurthi4Img, kurthi5Img, westren2Img, westren3Img
-  ]);
+  const [customerPhotos, setCustomerPhotos] = useState([]);
 
-  const [reviews, setReviews] = useState([
-    {
-      id: 1,
-      name: "Priya Sharma",
-      avatar: kurthi4Img,
-      purchased: "Floral Anarkali Kurta",
-      rating: 5,
-      content: "Absolutely love the quality! The fabric is so soft and comfortable. Perfect fit and exactly as shown in the pictures.",
-    },
-    {
-      id: 2,
-      name: "Neha Verma",
-      avatar: kurthi2Img,
-      purchased: "Embroidered Straight Kurta",
-      rating: 5,
-      content: "Beautiful design and excellent stitching. I've received so many compliments when I wore this!",
-    },
-    {
-      id: 3,
-      name: "Anjali Mehta",
-      avatar: kurthi3Img,
-      purchased: "Printed Cotton Kurta Set",
-      rating: 5,
-      content: "Fast delivery and great packaging. The color and quality exceeded my expectations. Will shop again!",
-    },
-    {
-      id: 4,
-      name: "Sanya Kapoor",
-      avatar: kurtiImg,
-      purchased: "Chikankari Kurta",
-      rating: 5,
-      content: "Very classy and elegant. The material feels premium. Totally worth the price!",
-    }
-  ]);
 
-  const handleSubmitReview = (e) => {
+
+  const handleSubmitReview = async (e) => {
     e.preventDefault();
-    setTimeout(() => {
-      const newReview = {
-        id: Date.now(),
-        name: "You",
-        avatar: placeholderThumb1,
-        purchased: product?.title || "Floral A-Line Kurti",
-        rating: reviewForm.rating || 5,
-        title: reviewForm.title,
-        content: reviewForm.content,
-      };
-
-      if (reviewForm.image) {
-        setCustomerPhotos([reviewForm.image, ...customerPhotos]);
+    try {
+      const formData = new FormData();
+      formData.append('productId', productId);
+      formData.append('rating', reviewForm.rating || 0);
+      formData.append('title', reviewForm.title);
+      formData.append('comment', reviewForm.content);
+      if (reviewForm.file) {
+        formData.append('images', reviewForm.file);
       }
 
-      setReviews([newReview, ...reviews]);
-      setIsReviewModalOpen(false);
-      setReviewForm({ rating: 0, title: '', content: '', image: null });
-    }, 300);
+      const res = await createReviewApi(formData);
+      if (res.data && res.data.success) {
+        message.success('Review submitted successfully and is pending approval.');
+        setIsReviewModalOpen(false);
+        setReviewForm({ rating: 0, title: '', content: '', image: null, file: null });
+      } else {
+        message.error(res.data?.message || 'Failed to submit review');
+      }
+    } catch (error) {
+      console.error('Error submitting review:', error);
+      message.error(error.response?.data?.message || 'Error submitting review. Please try again.');
+    }
   };
 
-  const images = product?.image
-    ? [product.image, product.image, product.image, product.image, product.image, product.image]
-    : [placeholderMain, placeholderThumb1, placeholderThumb2, placeholderMain, placeholderThumb1, placeholderThumb2];
+  const images = product?.images?.length > 0
+    ? product.images.map(img => img.url)
+    : product?.image ? [product.image] : [];
 
-  const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL', '6XL'];
+  const sizes = product?.sizes && product.sizes.length > 0 ? product.sizes : [];
   const colors = (product?.colors && product.colors.length > 0) ? product.colors : [];
 
   useEffect(() => {
@@ -331,14 +322,14 @@ export default function ProductDetail() {
 
   const displayImageSrc = (product?.customizable && activeDesign?.modelImage)
     ? activeDesign.modelImage
-    : (activeColorObj?.image || product?.image || placeholderMain);
-  const displayImages = product?.images?.length > 0 
+    : (activeColorObj?.image || product?.image || '');
+  const displayImages = product?.images?.length > 0
     ? product.images.map(img => img.url)
-    : Array(6).fill(displayImageSrc);
+    : displayImageSrc ? [displayImageSrc] : [];
 
   const similarProducts = React.useMemo(() => {
     if (!contextProducts || !product) return [];
-    
+
     const currentTitle = (product.title || '').toLowerCase();
     const isKurti = currentTitle.includes('kurti') || currentTitle.includes('kurta');
     const isTshirt = currentTitle.includes('t-shirt') || currentTitle.includes('tshirt') || currentTitle.includes('shirt') || currentTitle.includes('top');
@@ -346,11 +337,11 @@ export default function ProductDetail() {
 
     return contextProducts.filter(p => {
       if (p.id === product.id) return false;
-      
+
       const sameCategory = p.categoryId === product.categoryId || p.category?.toLowerCase() === product.category?.toLowerCase();
       const pTitle = (p.title || '').toLowerCase();
       let keywordMatch = true;
-      
+
       if (isKurti) {
         keywordMatch = pTitle.includes('kurti') || pTitle.includes('kurta');
       } else if (isTshirt) {
@@ -358,7 +349,7 @@ export default function ProductDetail() {
       } else if (isDress) {
         keywordMatch = pTitle.includes('dress');
       }
-      
+
       return sameCategory && keywordMatch;
     }).slice(0, 4);
   }, [contextProducts, product]);
@@ -383,27 +374,66 @@ export default function ProductDetail() {
 
   const [zoomStyle, setZoomStyle] = useState({});
 
-  // Generate dynamic ads from backend products that have discounts
   const adsData = React.useMemo(() => {
     if (!contextProducts || contextProducts.length === 0) return [];
-    
-    return contextProducts
-      .filter(p => {
-        const isSameCategory = p.categoryId === product?.categoryId || p.category === product?.category;
-        const isHighDiscount = p._backendData?.discount >= 40 && p._backendData?.discountType === 'Percentage';
-        const isNotCurrent = p.id !== product?.id;
-        return isSameCategory && isHighDiscount && isNotCurrent;
-      })
-      .slice(0, 5) // Take top 5
-      .map(p => ({
-        id: p.id,
-        image: p.image,
-        title: p.title,
-        discount: p.discount,
-        oldPrice: p.originalPrice,
-        newPrice: p.price,
-        _backendData: p._backendData
-      }));
+    // Determine current product type from title
+    const currentTitle = (product?.title || '').toLowerCase();
+    const isKurti = currentTitle.includes('kurti') || currentTitle.includes('kurta');
+    const isTshirt = currentTitle.includes('t-shirt') || currentTitle.includes('tshirt') || currentTitle.includes('shirt') || currentTitle.includes('top');
+    const isDress = currentTitle.includes('dress');
+
+    // Get all products with >= 30% discount
+    let discountedProducts = contextProducts.filter(p => {
+      const isNotCurrent = p.id !== product?.id;
+
+      const cleanPrice = (val) => typeof val === 'string' ? parseFloat(val.replace(/[^\d.]/g, '')) : val;
+      const oPrice = cleanPrice(p.originalPrice);
+      const cPrice = cleanPrice(p.price);
+
+      const calcDiscount = oPrice && cPrice ? Math.round(((oPrice - cPrice) / oPrice) * 100) : 0;
+
+      // The backend returns things like "20 OFF", "10 OFF", "10% OFF". Extract the raw number.
+      const rawDiscount = p._backendData?.discount || p.discount;
+      const discountValue = rawDiscount ? parseFloat(rawDiscount.toString().replace(/[^\d.]/g, '')) : 0;
+
+      const isHighDiscount = calcDiscount >= 10 || discountValue >= 10;
+
+      return isHighDiscount && isNotCurrent;
+    });
+
+    // Prioritize products that match the current category or keyword
+    let filtered = discountedProducts.filter(p => {
+      const isSameCategory = p.categoryId === product?.categoryId || p.category === product?.category;
+      const pTitle = (p.title || '').toLowerCase();
+
+      if (isKurti) {
+        return pTitle.includes('kurti') || pTitle.includes('kurta');
+      } else if (isTshirt) {
+        return pTitle.includes('t-shirt') || pTitle.includes('tshirt') || pTitle.includes('shirt') || pTitle.includes('top');
+      } else if (isDress) {
+        return pTitle.includes('dress');
+      }
+
+      // If it's not a kurti, tshirt, or dress, fallback to strict category matching
+      return isSameCategory;
+    });
+
+    return filtered
+      .slice(0, 5) // Keep up to 5 items
+      .map(p => {
+        const cleanPrice = (val) => typeof val === 'string' ? parseFloat(val.replace(/[^\d.]/g, '')) : val;
+        const oPrice = cleanPrice(p.originalPrice);
+        const cPrice = cleanPrice(p.price);
+        return {
+          id: p.id,
+          image: p.image,
+          title: p.title,
+          discount: p.discount || (oPrice && cPrice && oPrice > cPrice ? `${Math.round(((oPrice - cPrice) / oPrice) * 100)}% OFF` : null),
+          oldPrice: p.originalPrice,
+          newPrice: p.price,
+          _backendData: p._backendData
+        };
+      });
   }, [contextProducts, product?.id]);
 
   const [currentAdIndex, setCurrentAdIndex] = useState(0);
@@ -415,6 +445,51 @@ export default function ProductDetail() {
     }, 3000);
     return () => clearInterval(interval);
   }, [adsData.length]);
+
+  const [currentUser, setCurrentUser] = useState(null);
+  const [activeReviewMenu, setActiveReviewMenu] = useState(null);
+
+  useEffect(() => {
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      try {
+        setCurrentUser(JSON.parse(userStr));
+      } catch (e) {
+        console.error("Error parsing user from localStorage", e);
+      }
+    }
+  }, []);
+
+  const handleHelpfulClick = async (reviewId, hasVoted) => {
+    if (hasVoted) return; // Prevent multiple votes
+
+    try {
+      const res = await markReviewHelpfulApi(reviewId);
+      if (res.data && res.data.success) {
+        setReviews(prevReviews => prevReviews.map(r => {
+          if (r.id === reviewId) {
+            return { ...r, helpfulCount: res.data.helpfulCount, hasVotedHelpful: true };
+          }
+          return r;
+        }));
+      }
+    } catch (error) {
+      console.error('Error marking review helpful:', error);
+    }
+  };
+
+  const handleDeleteReview = async (reviewId) => {
+    try {
+      const res = await deleteCustomerReviewApi(reviewId);
+      if (res.data && res.data.success) {
+        message.success('Review deleted successfully');
+        setReviews(prev => prev.filter(r => r.id !== reviewId));
+      }
+    } catch (error) {
+      console.error('Error deleting review:', error);
+      message.error(error.response?.data?.message || 'Failed to delete review');
+    }
+  };
 
   const handleMouseMove = (e) => {
     const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
@@ -445,7 +520,7 @@ export default function ProductDetail() {
           <span>Home</span> <ChevronRight size={12} />
           <span>Women</span> <ChevronRight size={12} />
           <span>Kurtis & Kurtas</span> <ChevronRight size={12} />
-          <span className="current">{product?.title || 'Floral A-Line Kurti'}</span>
+          <span className="current">{product?.title}</span>
         </div>
 
         <div className="pdp-main-container">
@@ -506,87 +581,72 @@ export default function ProductDetail() {
               </div>
             </div>
 
-            {/* Service Highlights */}
-            <div className="pdp-service-highlights" style={{ margin: '0' }}>
-              <div className="pdp-service-item">
-                <Truck size={20} className="pdp-service-icon" />
-                <div>
-                  <strong>Free Delivery</strong>
-                  <p>On orders above ₹499</p>
-                </div>
-              </div>
-              <div className="pdp-service-item">
-                <RefreshCcw size={20} className="pdp-service-icon" />
-                <div>
-                  <strong>Easy Returns</strong>
-                  <p>7 days return policy</p>
-                </div>
-              </div>
-              <div className="pdp-service-item">
-                <ShieldCheck size={20} className="pdp-service-icon" />
-                <div>
-                  <strong>Secure Payment</strong>
-                  <p>100% secure checkout</p>
-                </div>
-              </div>
-            </div>
           </div>
 
-          {/* Right Column: Info */}
           <div className="pdp-info-section">
-            <div style={{ overflow: 'hidden', width: '100%', borderRadius: '12px', marginBottom: '16px' }}>
-              <div
-                style={{
-                  display: 'flex',
-                  transition: 'transform 0.5s ease-in-out',
-                  transform: `translateX(-${currentAdIndex * 100}%)`
-                }}
-              >
-                {adsData.map((ad) => (
-                  <div key={ad.id} className="pdp-ad-banner" style={{ minWidth: '100%', flex: '0 0 100%', boxSizing: 'border-box', margin: 0, cursor: 'pointer' }} onClick={() => navigate(`/product/${ad.id}`)}>
-                    <img src={ad.image} alt="Ad Product" className="pdp-ad-img" />
-                    <div className="pdp-ad-content">
-                      <div className="pdp-ad-title">{ad.title}</div>
-                      <div className="pdp-ad-price-row">
-                        <span className="pdp-ad-discount"><ArrowDown size={12} strokeWidth={3} /> {ad.discount}</span>
-                        <span className="pdp-ad-old-price">{ad.oldPrice}</span>
-                        <span className="pdp-ad-new-price">{ad.newPrice}</span>
+            {adsData.length > 0 && (
+              <div style={{ overflow: 'hidden', width: '100%', borderRadius: '12px', marginBottom: '16px' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    transition: 'transform 0.5s ease-in-out',
+                    transform: `translateX(-${currentAdIndex * 100}%)`
+                  }}
+                >
+                  {adsData.map((ad) => (
+                    <div key={ad.id} className="pdp-ad-banner" style={{ minWidth: '100%', flex: '0 0 100%', boxSizing: 'border-box', margin: 0, cursor: 'pointer' }} onClick={() => navigate(`/product/${ad.id}`)}>
+                      <img src={ad.image} alt="Ad Product" className="pdp-ad-img" />
+                      <div className="pdp-ad-content">
+                        <div className="pdp-ad-title">{ad.title}</div>
+                        <div className="pdp-ad-price-row">
+                          <span className="pdp-ad-discount"><ArrowDown size={12} strokeWidth={3} /> {ad.discount}</span>
+                          <span className="pdp-ad-old-price">{ad.oldPrice}</span>
+                          <span className="pdp-ad-new-price">{ad.newPrice}</span>
+                        </div>
                       </div>
+                      <div className="pdp-ad-badge">Ads</div>
                     </div>
-                    <div className="pdp-ad-badge">Ads</div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
-            <div className="pdp-collection-tag-new">
-              {product?.badge || '👑 PREMIUM COLLECTION'}
-            </div>
+            {product?.badge && (
+              <div className="pdp-collection-tag-new">
+                {product.badge}
+              </div>
+            )}
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '8px' }}>
               <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#666', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                {product?.brand || 'Gudwear'}
+                {product?.brand}
               </span>
-              <h1 className="pdp-product-title-new" style={{ margin: 0 }}>{product?.title || 'Floral A-Line Kurti'}</h1>
-              <span style={{ fontSize: '12px', color: '#999' }}>SKU: {product?.sku || 'SKU-10045'}</span>
+              <h1 className="pdp-product-title-new" style={{ margin: 0 }}>{product?.title}</h1>
+              {product?.sku && <span style={{ fontSize: '12px', color: '#999' }}>SKU: {product.sku}</span>}
             </div>
 
-            <div className="pdp-rating-summary-new">
+            <div 
+              className="pdp-rating-summary-new" 
+              style={{ cursor: 'pointer' }}
+              onClick={() => {
+                document.getElementById('reviews-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+            >
               <Star size={14} fill="#C89953" color="#C89953" />
-              <span className="pdp-rating-num-new">{product?.rating || 4.8}</span>
-              <span className="pdp-rating-text-new">({product?.reviews || '2,547'} Ratings)</span>
+              <span className="pdp-rating-num-new">{product?.rating || 0}</span>
+              <span className="pdp-rating-text-new">({product?.reviews || 0} Ratings)</span>
               <span className="pdp-rating-divider-new">|</span>
               <Box size={14} className="pdp-sold-icon-new" />
-              <span className="pdp-sold-text-new">9.4K Sold</span>
+              <span className="pdp-sold-text-new">{product?.soldCount || 0} Sold</span>
             </div>
 
-            {/* Product Description */}
+
             <div className="pdp-short-description" style={{ marginTop: '12px', marginBottom: '16px', color: '#666', fontSize: '14px', lineHeight: '1.6' }}>
-              <p>{product?.description || (product?.title === 'Floral A-Line Kurti' ? 'Elevate your everyday style with our beautiful Floral A-Line Kurti. Carefully crafted from premium breathable cotton, it offers both unparalleled comfort and effortless elegance for any occasion.' : 'Elevate your everyday style with this beautiful piece. Carefully crafted for comfort and elegance.')}</p>
-              
-              {/* Tags */}
+              <p>{product?.description}</p>
+
+
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '12px' }}>
-                {(product?.tags || ['Trending', 'Summer Wear', 'Cotton']).map(tag => (
+                {(product?.tags || []).map(tag => (
                   <span key={tag} style={{ background: '#f5f5f5', color: '#666', padding: '4px 10px', borderRadius: '16px', fontSize: '11px', fontWeight: 'bold' }}>#{tag}</span>
                 ))}
               </div>
@@ -594,7 +654,7 @@ export default function ProductDetail() {
 
             <div className="pdp-price-block-new">
               <span className="pdp-current-price-new">
-                {product?.price?.toString().startsWith('₹') ? product.price : `₹${product?.price || '799'}`}
+                {product?.price?.toString().startsWith('₹') ? product.price : `₹${product?.price || 0}`}
               </span>
               {product?.originalPrice && (
                 <span className="pdp-original-price-new">
@@ -605,14 +665,13 @@ export default function ProductDetail() {
                 <span className="pdp-discount-text-new">{product.discount}</span>
               )}
             </div>
-            <div className="pdp-tax-inclusive-new">Inclusive of all taxes</div>
-
             <div className="pdp-status-badges-new">
-              <div className="pdp-stock-status-new">
-                <span className="pdp-status-dot-new"></span> In Stock
-              </div>
-              {/* Product Customizer */}
-              {/* Product Customizer */}
+              {(product?.stock !== undefined || product?.countInStock !== undefined) && (
+                <div className="pdp-stock-status-new" style={{ color: (product.stock > 0 || product.countInStock > 0) ? '#2e7d32' : '#d32f2f', background: (product.stock > 0 || product.countInStock > 0) ? '#e8f5e9' : '#ffebee' }}>
+                  <span className="pdp-status-dot-new" style={{ background: (product.stock > 0 || product.countInStock > 0) ? '#2e7d32' : '#d32f2f' }}></span> {(product.stock > 0 || product.countInStock > 0) ? 'In Stock' : 'Out of Stock'}
+                </div>
+              )}
+
               {product?.customizable && (
                 <div className="pdp-right-col-customizer" style={{ marginTop: '20px' }}>
                   <div className="pdp-customizer-header" style={{ padding: '0', marginBottom: '12px' }}>
@@ -681,53 +740,55 @@ export default function ProductDetail() {
 
             <div className="pdp-options-grid-new">
               <div className="pdp-options-left">
-                <div className="pdp-option-section-new">
-                  <div className="pdp-option-title-new">COLOR: <span className="font-normal">{activeColor}</span></div>
-                  <div className="pdp-color-swatches-new">
-                    {colors.map(color => (
-                      <div
-                        key={color.name}
-                        className={`pdp-color-swatch-new ${activeColor === color.name ? 'active' : ''}`}
-                        style={{ backgroundColor: color.hex }}
-                        onClick={async (e) => {
-                          if (activeColor === color.name) return;
+                {colors.length > 0 && (
+                  <div className="pdp-option-section-new">
+                    <div className="pdp-option-title-new">COLOR: <span className="font-normal">{activeColor}</span></div>
+                    <div className="pdp-color-swatches-new">
+                      {colors.map(color => (
+                        <div
+                          key={color.name}
+                          className={`pdp-color-swatch-new ${activeColor === color.name ? 'active' : ''}`}
+                          style={{ backgroundColor: color.hex }}
+                          onClick={async (e) => {
+                            if (activeColor === color.name) return;
 
-                          const pageX = e.clientX;
-                          const pageY = e.clientY;
+                            const pageX = e.clientX;
+                            const pageY = e.clientY;
 
-                          const update = () => {
-                            flushSync(() => {
-                              setActiveColor(color.name);
-                              setActiveImage(0);
-                            });
-                          };
+                            const update = () => {
+                              flushSync(() => {
+                                setActiveColor(color.name);
+                                setActiveImage(0);
+                              });
+                            };
 
-                          if (!document.startViewTransition) {
-                            update();
-                            return;
-                          }
+                            if (!document.startViewTransition) {
+                              update();
+                              return;
+                            }
 
-                          try {
-                            const animation = await animateView(update, {
-                              duration: 0.4,
-                              ease: [0.28, 0.02, 0.1, 0.99],
-                            }).new(
-                              {
-                                clipPath: [
-                                  `circle(0% at ${pageX}px ${pageY}px)`,
-                                  `circle(150% at ${pageX}px ${pageY}px)`,
-                                ],
-                              },
-                              { duration: 0.6, ease: "easeIn" }
-                            );
-                          } catch (err) {
-                            update();
-                          }
-                        }}
-                      ></div>
-                    ))}
+                            try {
+                              const animation = await animateView(update, {
+                                duration: 0.4,
+                                ease: [0.28, 0.02, 0.1, 0.99],
+                              }).new(
+                                {
+                                  clipPath: [
+                                    `circle(0% at ${pageX}px ${pageY}px)`,
+                                    `circle(150% at ${pageX}px ${pageY}px)`,
+                                  ],
+                                },
+                                { duration: 0.6, ease: "easeIn" }
+                              );
+                            } catch (err) {
+                              update();
+                            }
+                          }}
+                        ></div>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
 
               <div className="pdp-options-right pdp-quantity-section-new">
@@ -739,9 +800,11 @@ export default function ProductDetail() {
                       <span>{quantity}</span>
                       <button onClick={() => handleQtyChange('inc')}><Plus size={14} /></button>
                     </div>
-                    <span className="pdp-qty-left-new" style={{ color: (product?.stock || 8) <= (product?.lowStockAlert || 10) ? '#e53e3e' : '#4a5568' }}>
-                      <Box size={12} style={{ marginRight: '4px' }} /> Only {product?.stock || 8} Left
-                    </span>
+                    {product?.stock !== undefined && (
+                      <span className="pdp-qty-left-new" style={{ color: product.stock <= (product?.lowStockAlert || 0) ? '#e53e3e' : '#4a5568' }}>
+                        <Box size={12} style={{ marginRight: '4px' }} /> Only {product.stock} Left
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -749,26 +812,28 @@ export default function ProductDetail() {
 
             <div className="pdp-options-horizontal-divider"></div>
 
-            <div className="pdp-option-section-new pdp-size-section-new" style={{ marginBottom: '8px' }}>
-              <div className="pdp-option-header-new">
-                <div className="pdp-option-title-new">SIZE</div>
-                <button className="pdp-size-guide-btn-new" onClick={() => setShowSizeGuide(true)}>
-                  <Ruler size={14} style={{ transform: 'rotate(-45deg)', marginRight: '6px' }} /> Size Guide <ChevronRight size={14} style={{ marginLeft: '2px' }} />
-                </button>
-              </div>
-              <div className="pdp-size-selector-new">
-                {sizes.map(size => (
-                  <button
-                    key={size}
-                    className={`pdp-size-btn-new ${activeSize === size ? 'active' : ''}`}
-                    onClick={() => setActiveSize(size)}
-                  >
-                    {size}
+            {sizes.length > 0 && (
+              <div className="pdp-option-section-new pdp-size-section-new" style={{ marginBottom: '8px' }}>
+                <div className="pdp-option-header-new">
+                  <div className="pdp-option-title-new">SIZE</div>
+                  <button className="pdp-size-guide-btn-new" onClick={() => setShowSizeGuide(true)}>
+                    <Ruler size={14} style={{ transform: 'rotate(-45deg)', marginRight: '6px' }} /> Size Guide <ChevronRight size={14} style={{ marginLeft: '2px' }} />
                   </button>
-                ))}
+                </div>
+                <div className="pdp-size-selector-new">
+                  {sizes.map(size => (
+                    <button
+                      key={size}
+                      className={`pdp-size-btn-new ${activeSize === size ? 'active' : ''}`}
+                      onClick={() => setActiveSize(size)}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
+                <div className="pdp-selected-size-text">Selected Size: {activeSize}</div>
               </div>
-              <div className="pdp-selected-size-text">Selected Size: {activeSize}</div>
-            </div>
+            )}
 
             <div className="pdp-options-horizontal-divider" style={{ marginTop: '0' }}></div>
 
@@ -812,10 +877,49 @@ export default function ProductDetail() {
                   </button>
                   <button
                     className="pdp-btn-buy-now"
-                    onClick={() => navigate('/cart')}
-                    style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '14px 0', background: '#000', border: 'none', borderRadius: '4px', color: '#fff', fontWeight: '600', cursor: 'pointer' }}
+                    disabled={isBuyNowLoading}
+                    onClick={async () => {
+                      if (product.sizes && product.sizes.length > 0 && !activeSize) {
+                        return message.error('Please select a size');
+                      }
+                      if (product.colors && product.colors.length > 0 && !activeColor) {
+                        return message.error('Please select a color');
+                      }
+                      if (quantity < 1) {
+                        return message.error('Quantity must be at least 1');
+                      }
+
+                      setIsBuyNowLoading(true);
+                      try {
+                        // Assuming axios is used for API calls
+                        const response = await fetch('/api/checkout/buy-now', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                            productId: product.id || product._id,
+                            size: activeSize,
+                            color: activeColor,
+                            quantity: quantity
+                          })
+                        });
+                        const data = await response.json();
+
+                        if (data.success) {
+                          setBuyNowData(data);
+                          navigate('/cart');
+                        } else {
+                          message.error(data.message || 'Failed to initiate checkout');
+                        }
+                      } catch (error) {
+                        console.error('Buy Now Error:', error);
+                        message.error('An error occurred during checkout');
+                      } finally {
+                        setIsBuyNowLoading(false);
+                      }
+                    }}
+                    style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '14px 0', background: '#000', border: 'none', borderRadius: '4px', color: '#fff', fontWeight: '600', cursor: isBuyNowLoading ? 'not-allowed' : 'pointer', opacity: isBuyNowLoading ? 0.7 : 1 }}
                   >
-                    Buy Now
+                    {isBuyNowLoading ? 'Processing...' : 'Buy Now'}
                   </button>
                 </>
               ) : (
@@ -826,6 +930,30 @@ export default function ProductDetail() {
                   Notify Me When Available
                 </button>
               )}
+            </div>
+
+            <div className="pdp-service-highlights" style={{ marginTop: '32px' }}>
+              <div className="pdp-service-item">
+                <Truck size={20} className="pdp-service-icon" />
+                <div>
+                  <strong>Free Delivery</strong>
+                  <p>For the First order only</p>
+                </div>
+              </div>
+              <div className="pdp-service-item">
+                <RefreshCcw size={20} className="pdp-service-icon" />
+                <div>
+                  <strong>Easy Returns</strong>
+                  <p>7 days return policy</p>
+                </div>
+              </div>
+              <div className="pdp-service-item">
+                <ShieldCheck size={20} className="pdp-service-icon" />
+                <div>
+                  <strong>Secure Payment</strong>
+                  <p>100% secure checkout</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -844,8 +972,8 @@ export default function ProductDetail() {
                 sizeGuide: 'Size Guide',
                 reviews: (
                   <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    Customer Reviews (2,547)
-                    <span className="pdp-tab-rating-badge"><Star size={10} fill="#E26A2C" color="#E26A2C" /> 4.8</span>
+                    Customer Reviews {reviews.length > 0 && `(${reviews.length})`}
+                    {product?.rating && <span className="pdp-tab-rating-badge"><Star size={10} fill="#E26A2C" color="#E26A2C" /> {product.rating}</span>}
                   </span>
                 ),
                 faqs: 'Frequently Asked Questions'
@@ -867,59 +995,7 @@ export default function ProductDetail() {
               <div className="pdp-desc-content pdp-desc-split">
                 <div className="pdp-desc-left">
                   <h3 className="pdp-overview-title"><Star size={18} fill="#E26A2C" color="#E26A2C" className="pdp-star-icon-inline" style={{ clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)', transform: 'scale(0.8)' }} /> Product Overview</h3>
-                  <p>Crafted from premium rayon, this elegant Floral A-Line Kurti features a beautiful print, round neckline, and 3/4 sleeves. Perfect for casual outings and festive wear.</p>
-
-                  <div className="pdp-overview-divider">
-                    <span className="pdp-line"></span>
-                    <Star size={12} fill="#E26A2C" color="#E26A2C" style={{ clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)' }} />
-                    <span className="pdp-line"></span>
-                  </div>
-
-                  <ul className="pdp-overview-list">
-                    <li><div className="pdp-check-icon"><Check size={12} strokeWidth={4} /></div> Premium breathable rayon fabric</li>
-                    <li><div className="pdp-check-icon"><Check size={12} strokeWidth={4} /></div> Elegant all-over floral print</li>
-                    <li><div className="pdp-check-icon"><Check size={12} strokeWidth={4} /></div> Flattering A-line silhouette</li>
-                  </ul>
-                </div>
-                <div className="pdp-desc-right">
-                  <h3 className="pdp-highlights-title">Product Highlights</h3>
-                  <div className="pdp-highlights-grid">
-                    <ParallaxHighlightCard>
-                      <div className="pdp-hc-icon"><Leaf size={24} color="#E26A2C" strokeWidth={1.5} /></div>
-                      <div className="pdp-hc-info">
-                        <strong>Fabric</strong>
-                        <span>Premium Rayon</span>
-                      </div>
-                    </ParallaxHighlightCard>
-                    <ParallaxHighlightCard>
-                      <div className="pdp-hc-icon"><Box size={24} color="#E26A2C" strokeWidth={1.5} /></div>
-                      <div className="pdp-hc-info">
-                        <strong>Fit</strong>
-                        <span>Regular Fit</span>
-                      </div>
-                    </ParallaxHighlightCard>
-                    <ParallaxHighlightCard>
-                      <div className="pdp-hc-icon"><Box size={24} color="#E26A2C" strokeWidth={1.5} /></div>
-                      <div className="pdp-hc-info">
-                        <strong>Sleeve Length</strong>
-                        <span>Three-Quarter Sleeves</span>
-                      </div>
-                    </ParallaxHighlightCard>
-                    <ParallaxHighlightCard>
-                      <div className="pdp-hc-icon"><Star size={24} color="#E26A2C" strokeWidth={1.5} /></div>
-                      <div className="pdp-hc-info">
-                        <strong>Occasion</strong>
-                        <span>Casual, Office, Festive</span>
-                      </div>
-                    </ParallaxHighlightCard>
-                    <ParallaxHighlightCard>
-                      <div className="pdp-hc-icon"><RefreshCcw size={24} color="#E26A2C" strokeWidth={1.5} /></div>
-                      <div className="pdp-hc-info">
-                        <strong>Care</strong>
-                        <span>Machine Wash</span>
-                      </div>
-                    </ParallaxHighlightCard>
-                  </div>
+                  <p>{product?.description}</p>
                 </div>
               </div>
             )}
@@ -928,32 +1004,12 @@ export default function ProductDetail() {
                 <div className="pdp-desc-left" style={{ flex: 1 }}>
                   <h3 className="pdp-overview-title"><Star size={18} fill="#E26A2C" color="#E26A2C" className="pdp-star-icon-inline" style={{ transform: 'scale(0.8)' }} /> Product Specifications</h3>
                   <ul className="pdp-overview-list">
-                    <li><div className="pdp-check-icon"><Check size={12} strokeWidth={4} /></div> <strong>Fabric:</strong> Premium Rayon</li>
-                    <li><div className="pdp-check-icon"><Check size={12} strokeWidth={4} /></div> <strong>Pattern:</strong> Floral Print</li>
-                    <li><div className="pdp-check-icon"><Check size={12} strokeWidth={4} /></div> <strong>Neckline:</strong> Round Neck</li>
-                    <li><div className="pdp-check-icon"><Check size={12} strokeWidth={4} /></div> <strong>Sleeve Length:</strong> 3/4 Sleeves</li>
-                    <li><div className="pdp-check-icon"><Check size={12} strokeWidth={4} /></div> <strong>Fit:</strong> Regular Fit</li>
-                    <li><div className="pdp-check-icon"><Check size={12} strokeWidth={4} /></div> <strong>Length:</strong> Calf Length</li>
+                    {product?.specifications ? product.specifications.map((spec, idx) => (
+                      <li key={idx}><div className="pdp-check-icon"><Check size={12} strokeWidth={4} /></div> <strong>{spec.name}:</strong> {spec.value}</li>
+                    )) : (
+                      <li>No specifications available.</li>
+                    )}
                   </ul>
-                </div>
-                <div className="pdp-desc-right" style={{ flex: 1 }}>
-                  <h3 className="pdp-highlights-title">Additional Info</h3>
-                  <div className="pdp-highlights-grid" style={{ gridTemplateColumns: '1fr', marginTop: '24px' }}>
-                    <ParallaxHighlightCard>
-                      <div className="pdp-hc-icon"><Shield size={24} color="#E26A2C" strokeWidth={1.5} /></div>
-                      <div className="pdp-hc-info">
-                        <strong>Quality Assurance</strong>
-                        <span>100% Original Products</span>
-                      </div>
-                    </ParallaxHighlightCard>
-                    <ParallaxHighlightCard>
-                      <div className="pdp-hc-icon"><RefreshCcw size={24} color="#E26A2C" strokeWidth={1.5} /></div>
-                      <div className="pdp-hc-info">
-                        <strong>Easy Returns</strong>
-                        <span>7 Days Return Policy</span>
-                      </div>
-                    </ParallaxHighlightCard>
-                  </div>
                 </div>
               </div>
             )}
@@ -992,18 +1048,14 @@ export default function ProductDetail() {
               <div className="pdp-desc-content">
                 <h3 className="pdp-overview-title"><Star size={18} fill="#E26A2C" color="#E26A2C" className="pdp-star-icon-inline" style={{ transform: 'scale(0.8)' }} /> Frequently Asked Questions</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '24px' }}>
-                  <div style={{ background: '#fff', border: '1px solid #EAEAEA', borderRadius: '12px', padding: '20px' }}>
-                    <h4 style={{ margin: '0 0 8px 0', fontSize: '15px', color: '#222', display: 'flex', alignItems: 'center', gap: '8px' }}><div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#E26A2C' }}></div> Is the fabric comfortable for summer?</h4>
-                    <p style={{ margin: '0', fontSize: '14px', color: '#666', paddingLeft: '14px' }}>Yes, the premium rayon fabric is highly breathable and soft, making it perfect for summer wear.</p>
-                  </div>
-                  <div style={{ background: '#fff', border: '1px solid #EAEAEA', borderRadius: '12px', padding: '20px' }}>
-                    <h4 style={{ margin: '0 0 8px 0', fontSize: '15px', color: '#222', display: 'flex', alignItems: 'center', gap: '8px' }}><div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#E26A2C' }}></div> Does the color fade after washing?</h4>
-                    <p style={{ margin: '0', fontSize: '14px', color: '#666', paddingLeft: '14px' }}>Our kurtis use high-quality dyes. However, we recommend a gentle machine wash or hand wash to ensure long-lasting color vibrance.</p>
-                  </div>
-                  <div style={{ background: '#fff', border: '1px solid #EAEAEA', borderRadius: '12px', padding: '20px' }}>
-                    <h4 style={{ margin: '0 0 8px 0', fontSize: '15px', color: '#222', display: 'flex', alignItems: 'center', gap: '8px' }}><div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#E26A2C' }}></div> Can I return the product if the size doesn't fit?</h4>
-                    <p style={{ margin: '0', fontSize: '14px', color: '#666', paddingLeft: '14px' }}>Absolutely! We offer a hassle-free 7-day return and exchange policy for all unworn items with tags intact.</p>
-                  </div>
+                  {product?.faqs && product.faqs.length > 0 ? product.faqs.map((faq, idx) => (
+                    <div key={idx} style={{ background: '#fff', border: '1px solid #EAEAEA', borderRadius: '12px', padding: '20px' }}>
+                      <h4 style={{ margin: '0 0 8px 0', fontSize: '15px', color: '#222', display: 'flex', alignItems: 'center', gap: '8px' }}><div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#E26A2C' }}></div> {faq.question}</h4>
+                      <p style={{ margin: '0', fontSize: '14px', color: '#666', paddingLeft: '14px' }}>{faq.answer}</p>
+                    </div>
+                  )) : (
+                    <p style={{ color: '#777' }}>No frequently asked questions available for this product.</p>
+                  )}
                 </div>
               </div>
             )}
@@ -1011,7 +1063,7 @@ export default function ProductDetail() {
         </div>
 
         {/* Customer Reviews Redesigned Layout */}
-        <div className="pdp-reviews-redesigned-section">
+        <div className="pdp-reviews-redesigned-section" id="reviews-section">
           <div style={{ textAlign: 'center', marginBottom: '24px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '10px' }}>
               <span style={{ width: '40px', height: '1px', background: '#b58d4e' }}></span>
@@ -1028,35 +1080,33 @@ export default function ProductDetail() {
           <div className="pdp-reviews-new-summary">
             <div className="pdp-rns-score-col">
               <div className="pdp-rns-score-wrap">
-                <span className="pdp-rns-big-score">4.8</span>
+                <span className="pdp-rns-big-score">{ratingSummary?.averageRating || product?.rating || 0}</span>
               </div>
               <div className="pdp-rns-stars">
-                {[1, 2, 3, 4, 5].map(i => <Star key={i} size={20} fill="#C89953" color="#C89953" style={{ clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)' }} />)}
+                {[1, 2, 3, 4, 5].map(i => <Star key={i} size={20} fill={(ratingSummary?.averageRating || product?.rating || 0) >= i ? "#C89953" : "none"} color="#C89953" style={{ clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)' }} />)}
               </div>
               <div className="pdp-summary-divider" style={{ width: '60%', margin: '16px auto' }}>
                 <div className="pdp-diamond" style={{ width: '6px', height: '6px', background: '#C89953', border: 'none' }}></div>
               </div>
-              <span className="pdp-rns-based-on">Based on 2,450+ Reviews</span>
+              <span className="pdp-rns-based-on">Based on {ratingSummary?.totalReviews || product?.reviews || 0} Reviews</span>
             </div>
 
             <div className="pdp-rns-badge-divider" style={{ margin: '0' }}></div>
 
             <div className="pdp-rns-bars-col">
-              {[
-                { star: 5, count: 1856, pct: '75%' },
-                { star: 4, count: 412, pct: '15%' },
-                { star: 3, count: 129, pct: '5%' },
-                { star: 2, count: 32, pct: '2%' },
-                { star: 1, count: 21, pct: '1%' },
-              ].map(row => (
-                <div className="pdp-rns-bar-row" key={row.star}>
-                  <span className="pdp-rns-bar-label">{row.star} <Star size={10} fill="#C89953" color="#C89953" style={{ clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)' }} /></span>
+              {[5, 4, 3, 2, 1].map(star => {
+                const count = ratingSummary?.ratingBreakdown?.[star] || 0;
+                const total = ratingSummary?.totalReviews || 1;
+                const pct = ratingSummary?.totalReviews ? `${(count / total) * 100}%` : '0%';
+                return (
+                <div className="pdp-rns-bar-row" key={star}>
+                  <span className="pdp-rns-bar-label">{star} <Star size={10} fill="#C89953" color="#C89953" style={{ clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)' }} /></span>
                   <div className="pdp-rns-progress-track">
-                    <div className="pdp-rns-progress-fill" style={{ width: row.pct }}></div>
+                    <div className="pdp-rns-progress-fill" style={{ width: pct }}></div>
                   </div>
-                  <span className="pdp-rns-bar-count">{row.count}</span>
+                  <span className="pdp-rns-bar-count">{count}</span>
                 </div>
-              ))}
+              )})}
             </div>
 
             <div className="pdp-rns-badge-divider"></div>
@@ -1098,44 +1148,10 @@ export default function ProductDetail() {
             </div>
           </div>
 
-          {/* Container 2: Photos */}
-          <div className="pdp-reviews-new-photos">
-            <div className="pdp-rnp-header-layout">
-              <div className="pdp-rnp-header-left">
-                <div className="pdp-rnp-icon-wrap">
-                  <Camera size={24} color="#C89953" strokeWidth={1.5} />
-                </div>
-                <div className="pdp-rnp-title-wrap">
-                  <h3>Customer Photos</h3>
-                  <div className="pdp-rnp-divider">
-                    <div className="pdp-rnp-line"></div>
-                    <div className="pdp-rnp-diamond"></div>
-                  </div>
-                  <p>Real looks from our amazing customers</p>
-                </div>
-              </div>
-              <a href="#" className="pdp-rnp-view-more">View More Photos <ArrowRight size={16} /></a>
-            </div>
-
-            <div className="pdp-rnp-scroll">
-              {customerPhotos.map((img, idx) => (
-                <div key={idx} className="pdp-rnp-photo-card">
-                  <img src={img} alt="Customer wearing product" className="pdp-rnp-img" />
-                  <div className="pdp-rnp-photo-footer">
-                    <span className="pdp-rnp-photo-rating"><Star size={12} fill="#C89953" color="#C89953" /> 4.9</span>
-                    <span className="pdp-rnp-photo-sep">|</span>
-                    <span className="pdp-rnp-photo-buyer">Verified Buyer</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
           {/* Container 3: Review Cards */}
           <div className="pdp-reviews-new-cards">
-            <div className="pdp-rnc-header">
+            <div className="pdp-rnc-header" style={{ marginBottom: '24px' }}>
               <div className="pdp-rnc-title-group">
-                <MessageCircle size={18} />
                 <h3>What Customers Are Saying</h3>
               </div>
               <a href="#" className="pdp-rnc-view-more">View All Reviews <ArrowRight size={14} /></a>
@@ -1143,29 +1159,127 @@ export default function ProductDetail() {
             <div className="pdp-rnc-scroll">
               {reviews.map((review) => (
                 <div className="pdp-rnc-card" key={review.id}>
-                  <div className="pdp-rnc-stars">
-                    {[1, 2, 3, 4, 5].map(i => (
-                      <Star
-                        key={i}
-                        size={14}
-                        fill={i <= review.rating ? "#C89953" : "transparent"}
-                        color={i <= review.rating ? "#C89953" : "#ccc"}
-                      />
-                    ))}
+                  {/* Header: Avatar & Name & Menu */}
+                  <div className="pdp-rnc-header-user" style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <img src={review.avatar} alt="Avatar" className="pdp-rnc-user-avatar" />
+                      <span className="pdp-rnc-user-name-new">{review.name}</span>
+                    </div>
+                    {currentUser && (currentUser._id === review.userId || currentUser.id === review.userId) && (
+                      <div style={{ position: 'relative' }}>
+                        <button 
+                          onClick={() => setActiveReviewMenu(activeReviewMenu === review.id ? null : review.id)}
+                          style={{ 
+                            background: activeReviewMenu === review.id ? '#f0f0f0' : 'none', 
+                            border: 'none', 
+                            cursor: 'pointer', 
+                            color: activeReviewMenu === review.id ? '#111' : '#888', 
+                            padding: '6px',
+                            borderRadius: '50%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            transition: 'all 0.2s ease'
+                          }}
+                          onMouseOver={(e) => { e.currentTarget.style.backgroundColor = '#f5f5f5'; e.currentTarget.style.color = '#111'; }}
+                          onMouseOut={(e) => { e.currentTarget.style.backgroundColor = activeReviewMenu === review.id ? '#f0f0f0' : 'transparent'; e.currentTarget.style.color = activeReviewMenu === review.id ? '#111' : '#888'; }}
+                        >
+                          <MoreVertical size={18} />
+                        </button>
+                        
+                        {activeReviewMenu === review.id && (
+                          <div style={{
+                            position: 'absolute',
+                            top: '100%',
+                            right: 0,
+                            background: 'rgba(255, 255, 255, 0.85)',
+                            backdropFilter: 'blur(12px)',
+                            WebkitBackdropFilter: 'blur(12px)',
+                            border: '1px solid rgba(255, 255, 255, 0.3)',
+                            borderRadius: '12px',
+                            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04)',
+                            zIndex: 10,
+                            overflow: 'hidden',
+                            minWidth: '120px',
+                            marginTop: '8px',
+                            padding: '4px'
+                          }}>
+                            <button 
+                              onClick={() => {
+                                handleDeleteReview(review.id);
+                                setActiveReviewMenu(null);
+                              }}
+                              style={{ 
+                                background: 'transparent', 
+                                border: 'none', 
+                                color: '#e53e3e', 
+                                fontSize: '13px', 
+                                fontWeight: '500',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                padding: '10px 12px',
+                                width: '100%',
+                                textAlign: 'left',
+                                borderRadius: '8px',
+                                transition: 'all 0.2s ease'
+                              }}
+                              onMouseOver={(e) => { e.currentTarget.style.backgroundColor = '#fff5f5'; e.currentTarget.style.color = '#c53030'; }}
+                              onMouseOut={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = '#e53e3e'; }}
+                            >
+                              <Trash2 size={15} /> Delete
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
-                  <p className="pdp-rnc-text">
-                    {review.title && <strong>{review.title} - </strong>}
+
+                  {/* Meta: Rating Pill & Date */}
+                  <div className="pdp-rnc-meta-new">
+                    <div className="pdp-rnc-rating-pill">
+                      {Number(review.rating).toFixed(1)} <Star size={12} fill="#fff" color="#fff" />
+                    </div>
+                    <span className="pdp-rnc-date-new">• Posted on {review.date}</span>
+                  </div>
+
+                  {/* Text */}
+                  <p className="pdp-rnc-text-new">
+                    {review.title && <strong style={{ color: '#111' }}>{review.title} <br/> </strong>}
                     {review.content}
                   </p>
-                  <div className="pdp-rnc-footer">
-                    <img src={review.avatar} alt="Avatar" className="pdp-rnc-avatar" />
-                    <div className="pdp-rnc-user-info">
-                      <div className="pdp-rnc-user-name">
-                        {review.name} <span className="pdp-rnc-verified-badge">Verified Buyer</span>
-                      </div>
-                      <div className="pdp-rnc-purchased">Purchased: {review.purchased}</div>
+
+                  {/* Images */}
+                  {review.image && (
+                    <div className="pdp-rnc-images-new">
+                      <Image 
+                        src={review.image} 
+                        alt="Review attachment" 
+                        width={80} 
+                        height={80} 
+                        style={{ objectFit: 'cover', borderRadius: '8px', border: '1px solid #EAEAEA' }}
+                      />
                     </div>
-                    <CheckCircle2 size={16} color="#2E7D32" className="pdp-rnc-verified-icon" />
+                  )}
+
+                    {/* Helpful */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '16px' }}>
+                    <div 
+                      className="pdp-rnc-helpful-new" 
+                      onClick={() => handleHelpfulClick(review.id, review.hasVotedHelpful)}
+                      style={{ cursor: review.hasVotedHelpful ? 'default' : 'pointer', margin: 0 }}
+                    >
+                      <ThumbsUp 
+                        size={18} 
+                        fill={review.hasVotedHelpful ? "#03A685" : "#707684"} 
+                        color={review.hasVotedHelpful ? "#03A685" : "#707684"} 
+                        className="pdp-rnc-helpful-icon" 
+                      />
+                      <span style={{ color: review.hasVotedHelpful ? "#03A685" : "#707684" }}>
+                        Helpful ({review.helpfulCount})
+                      </span>
+                    </div>
                   </div>
                 </div>
               ))}

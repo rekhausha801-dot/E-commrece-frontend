@@ -1,0 +1,207 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+.admin-temple-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  /* Using a CLEAN version of the temple background (without the login box baked in) */
+  background: url('https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=1600') no-repeat center center/cover;
+  font-family: 'Poppins', sans-serif;
+  padding: 20px;
+  position: relative;
+}
+
+.admin-temple-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.2); /* Slight dark overlay for contrast */
+  z-index: 1;
+}
+
+.temple-glass-box {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 380px;
+  background: rgba(80, 80, 80, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 20px;
+  padding: 40px 35px 35px 35px;
+  color: #fff;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.user-icon-circle {
+  width: 60px;
+  height: 60px;
+  background-color: #1a73e8; /* Bright blue */
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 10px rgba(26, 115, 232, 0.4);
+}
+
+.temple-glass-box h2 {
+  font-size: 24px;
+  font-weight: 500;
+  margin-bottom: 25px;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+.error-text {
+  color: #ff6b6b;
+  font-size: 13px;
+  text-align: center;
+  margin-bottom: 15px;
+  background: rgba(0,0,0,0.3);
+  padding: 8px;
+  border-radius: 6px;
+  width: 100%;
+}
+
+form {
+  width: 100%;
+}
+
+.input-field-group {
+  margin-bottom: 25px;
+  width: 100%;
+}
+
+.input-field-group label {
+  display: block;
+  font-size: 12px;
+  color: #fff;
+  margin-bottom: 6px;
+  font-weight: 400;
+}
+
+.underline-input {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+  padding-bottom: 6px;
+  transition: border-color 0.3s;
+}
+
+.underline-input:focus-within {
+  border-bottom-color: #4CAF50;
+}
+
+.underline-input .left-icon {
+  color: #fff;
+  margin-right: 8px;
+  opacity: 0.9;
+}
+
+.underline-input input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-size: 14px;
+  padding: 4px 0;
+}
+
+.underline-input input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.eye-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  opacity: 0.7;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 8px;
+}
+
+.eye-btn:hover {
+  opacity: 1;
+}
+
+.temple-login-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  margin-bottom: 25px;
+  width: 100%;
+}
+
+.temple-remember-me {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: #4CAF50; /* Green text matching button */
+}
+
+.temple-remember-me input {
+  margin-right: 6px;
+  cursor: pointer;
+  accent-color: #fff;
+}
+
+.temple-forgot-pwd {
+  color: #4CAF50; /* Green text matching button */
+  text-decoration: none;
+}
+
+.temple-forgot-pwd:hover {
+  text-decoration: underline;
+}
+
+.temple-login-btn {
+  width: 100%;
+  height: 40px;
+  border-radius: 20px;
+  background-color: #4CAF50; /* Bright green */
+  color: #fff;
+  font-weight: 500;
+  font-size: 15px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+}
+
+.temple-login-btn:hover:not(:disabled) {
+  background-color: #45a049;
+}
+
+.temple-login-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.temple-register {
+  text-align: center;
+  font-size: 12px;
+  color: #fff;
+  width: 100%;
+}
+
+.temple-register a {
+  color: #4CAF50;
+  font-weight: 500;
+  text-decoration: none;
+  margin-left: 5px;
+}
+
+.temple-register a:hover {
+  text-decoration: underline;
+}
