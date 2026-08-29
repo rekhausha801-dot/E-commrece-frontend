@@ -1,16 +1,7 @@
 import axios from "axios";
 
-// Add a request interceptor to include the token
-axios.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+// Base URL configuration (You can switch this to env variables later)
+const API_BASE_URL = "http://localhost:5000/api";
 
 // Add a response interceptor to handle 401 errors
 axios.interceptors.response.use(
@@ -18,6 +9,7 @@ axios.interceptors.response.use(
   (error) => {
     if (error.response && error.response.status === 401) {
       localStorage.removeItem("token");
+      localStorage.removeItem("userInfo");
       localStorage.removeItem("user");
       if (window.location.pathname !== "/login" && window.location.pathname !== "/admin/login") {
         window.location.href = "/login";
@@ -27,32 +19,39 @@ axios.interceptors.response.use(
   }
 );
 
-// Base URL configuration (You can switch this to env variables later)
-const API_BASE_URL = "http://localhost:5000/api";
-
-// Add a request interceptor for authentication
+// Add a single request interceptor for authentication
 axios.interceptors.request.use(
   (config) => {
     // Only add token if the request goes to our API
-    if (config.url.startsWith(API_BASE_URL)) {
+    if (config.url && config.url.startsWith(API_BASE_URL)) {
+      let token = localStorage.getItem("token"); // Used by customer login
+      
       // Check for userInfo in localStorage (used by Auth/Admin login)
-      const userInfoStr = localStorage.getItem('userInfo');
-      if (userInfoStr) {
-        try {
-          const userInfo = JSON.parse(userInfoStr);
-          if (userInfo && userInfo.token) {
-            config.headers.Authorization = `Bearer ${userInfo.token}`;
+      if (!token) {
+        const userInfoStr = localStorage.getItem('userInfo');
+        if (userInfoStr) {
+          try {
+            const userInfo = JSON.parse(userInfoStr);
+            if (userInfo && userInfo.token) {
+              token = userInfo.token;
+            }
+          } catch (e) {
+            console.error("Error parsing userInfo from localStorage", e);
           }
-        } catch (e) {
-          console.error("Error parsing userInfo from localStorage", e);
+        }
+      }
+
+      if (token) {
+        if (config.headers.set) {
+            config.headers.set('Authorization', `Bearer ${token}`);
+        } else {
+            config.headers.Authorization = `Bearer ${token}`;
         }
       }
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 // -----------------------------------------------------

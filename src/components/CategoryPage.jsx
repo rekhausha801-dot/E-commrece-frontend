@@ -248,6 +248,7 @@ function Section({ title, children, defaultOpen = true }) {
 }
 
 export default function CategoryPage() {
+  const navigate = useNavigate();
   const { categoryId } = useParams();
   const { cartItems, addToCart } = useCart();
   const { wishlistItems, toggleWishlist, isInWishlist } = useWishlist();
@@ -443,7 +444,7 @@ export default function CategoryPage() {
       <div className="pdp-breadcrumbs" style={{ padding: '20px 5% 0', fontSize: '14px' }}>
         <span onClick={() => navigate('/')} style={{ color: '#666', cursor: 'pointer' }}>Home</span>
         <span style={{ margin: '0 8px', color: '#ccc' }}>/</span>
-        <span onClick={() => navigate('/category/womenswear')} style={{ color: '#666', cursor: 'pointer' }}>Category</span>
+        <span onClick={() => navigate('/')} style={{ color: '#666', cursor: 'pointer' }}>Category</span>
         <span style={{ margin: '0 8px', color: '#ccc' }}>/</span>
         <span className="current" style={{ color: '#222', fontWeight: '600' }}>{currentCategory.title}</span>
       </div>

@@ -247,7 +247,8 @@ const CouponManagement = () => {
       fetchCoupons();
     } catch (error) {
       console.error(error);
-      message.error(error.response?.data?.message || "An error occurred");
+      const fullError = JSON.stringify(error.response?.data || "Backend crash");
+      message.error(`Crash Info: ${fullError}`, 10);
     } finally {
       setLoading(false);
     }
