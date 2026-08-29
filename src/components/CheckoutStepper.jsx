@@ -7,7 +7,6 @@ const CheckoutStepper = ({ currentStep = 1 }) => {
     { id: 1, label: 'Cart', num: '01', icon: ShoppingCart },
     { id: 2, label: 'Address', num: '02', icon: MapPin },
     { id: 3, label: 'Payment', num: '03', icon: CreditCard },
-    { id: 4, label: 'Summary', num: '04', icon: ClipboardList },
   ];
 
   return (

@@ -14,7 +14,6 @@ import Wishlist from "./pages/customer/Wishlist";
 import Cart from "./pages/customer/Cart";
 import Address from "./pages/customer/Address";
 import Payment from "./pages/customer/Payment";
-import Summary from "./pages/customer/Summary";
 import OrderConfirmed from "./pages/customer/OrderConfirmed";
 import MyOrders from "./pages/customer/MyOrders";
 import AccountLayout from "./pages/customer/AccountLayout";
@@ -29,6 +28,7 @@ import { OrderProvider } from "./context/OrderContext";
 import { CartProvider } from "./context/CartContext";
 import { NotificationProvider } from "./context/NotificationContext";
 import { ProductProvider } from "./context/ProductContext";
+import { SettingsProvider } from "./context/SettingsContext";
 import ReturnRefund from "./pages/customer/ReturnRefund";
 import Coupons from "./pages/customer/Coupons";
 import Register from "./pages/customer/Register";
@@ -36,10 +36,11 @@ import Login from "./pages/customer/Login";
 import Notifications from "./pages/customer/Notifications";
 import Support from "./pages/customer/Support";
 import Dashboard from "./pages/admin/Dashboard";
+import AdminLogin from "./pages/admin/AdminLogin";
 
 const AppContent = () => {
   const location = useLocation();
-  const isDashboard = location.pathname.toLowerCase() === '/dashboard';
+  const isDashboard = location.pathname.toLowerCase().startsWith('/dashboard') || location.pathname.toLowerCase().startsWith('/admin/login');
 
   return (
     <>
@@ -48,6 +49,7 @@ const AppContent = () => {
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/Dashboard" element={<Dashboard />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/collection" element={<Collection />} />
@@ -61,8 +63,8 @@ const AppContent = () => {
         <Route path="/shop" element={<h1 style={{ padding: "120px 20px", textAlign: "center" }}>Shop Page - Coming Soon!</h1>} />
         <Route path="/address" element={<Address />} />
         <Route path="/payment" element={<Payment />} />
-        <Route path="/summary" element={<Summary />} />
-        <Route path="/order-confirmed" element={<OrderConfirmed />} />
+        <Route path="/order-confirmed/:orderId" element={<OrderConfirmed />} />
+        <Route path="/coupons" element={<Coupons />} />
 
         <Route path="/account/my-orders" element={<MyOrders />} />
         <Route path="/account" element={<AccountLayout />}>
@@ -89,19 +91,21 @@ const AppContent = () => {
 
 function App() {
   return (
-    <ProductProvider>
-      <NotificationProvider>
-        <CartProvider>
-          <OrderProvider>
-            <WishlistProvider>
-              <BrowserRouter>
-                <AppContent />
-              </BrowserRouter>
-            </WishlistProvider>
-          </OrderProvider>
-        </CartProvider>
-      </NotificationProvider>
-    </ProductProvider>
+    <SettingsProvider>
+      <ProductProvider>
+        <NotificationProvider>
+          <CartProvider>
+            <OrderProvider>
+              <WishlistProvider>
+                <BrowserRouter>
+                  <AppContent />
+                </BrowserRouter>
+              </WishlistProvider>
+            </OrderProvider>
+          </CartProvider>
+        </NotificationProvider>
+      </ProductProvider>
+    </SettingsProvider>
   );
 }
 

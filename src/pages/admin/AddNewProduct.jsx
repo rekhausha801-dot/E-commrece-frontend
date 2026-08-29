@@ -25,7 +25,7 @@ const CustomSelect = ({ value, onChange, options, placeholder, disabled }) => {
 
   // Determine display value
   let displayValue = placeholder;
-  if (value) {
+  if (value !== undefined && value !== null && value !== '') {
     const selectedOpt = options.find(opt => (typeof opt === 'object' ? opt.value === value : opt === value));
     displayValue = selectedOpt ? (typeof selectedOpt === 'object' ? selectedOpt.label : selectedOpt) : value;
   }
@@ -73,6 +73,11 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
   const [discountType, setDiscountType] = useState(editingProduct?.discountType || 'Percentage');
   const [costPrice, setCostPrice] = useState(editingProduct?.costPrice || '');
   const [lowStockAlert, setLowStockAlert] = useState(editingProduct?.lowStockAlert || '');
+  
+  const [gstRate, setGstRate] = useState(editingProduct?.gstRate || 0);
+  const [isCustomGst, setIsCustomGst] = useState(editingProduct && ![0, 5, 12, 18, 28].includes(editingProduct.gstRate) ? true : false);
+  const [customGstRate, setCustomGstRate] = useState(editingProduct && ![0, 5, 12, 18, 28].includes(editingProduct.gstRate) ? editingProduct.gstRate : '');
+  const [gstIncludedInPrice, setGstIncludedInPrice] = useState(editingProduct?.gstIncludedInPrice || false);
 
   const [categoryOptions, setCategoryOptions] = useState([]);
 
@@ -277,6 +282,8 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
       discountType,
       costPrice: !isNaN(Number(costPrice)) ? Number(costPrice) : 0,
       lowStockAlert: parseInt(lowStockAlert) || 10,
+      gstRate: isCustomGst ? Number(customGstRate) : Number(gstRate),
+      gstIncludedInPrice,
       deliveryText,
       returnText,
       warrantyText,
@@ -679,6 +686,45 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
                       ) : (
                         <p style={{ margin: '4px 0 0 24px', fontSize: '11px', color: '#6b7280' }}>Enable custom designs.</p>
                       )}
+                    </div>
+                  </div>
+                  
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginTop: '20px', padding: '16px', background: '#fdfbf7', borderRadius: '8px', border: '1px solid #f9eedc' }}>
+                    <div className="form-group" style={{ margin: 0 }}>
+                      <label style={{ fontSize: '11px', fontWeight: '700', marginBottom: '8px', display: 'block', color: '#111827' }}>GST Rate</label>
+                      <CustomSelect
+                        value={isCustomGst ? 'Custom' : gstRate}
+                        onChange={(val) => {
+                          if (val === 'Custom') {
+                            setIsCustomGst(true);
+                          } else {
+                            setIsCustomGst(false);
+                            setGstRate(Number(val));
+                          }
+                        }}
+                        options={[
+                          { label: '0%', value: 0 },
+                          { label: '5%', value: 5 },
+                          { label: '12%', value: 12 },
+                          { label: '18%', value: 18 },
+                          { label: '28%', value: 28 },
+                          { label: 'Custom', value: 'Custom' }
+                        ]}
+                        placeholder="Select GST Rate"
+                      />
+                    </div>
+                    {isCustomGst && (
+                      <div className="form-group" style={{ margin: 0 }}>
+                        <label style={{ fontSize: '11px', fontWeight: '700', marginBottom: '8px', display: 'block', color: '#111827' }}>Custom GST Rate (%)</label>
+                        <input type="number" min="0" max="100" placeholder="e.g. 18" value={customGstRate} onChange={e => setCustomGstRate(e.target.value)} style={{ width: '100%', boxSizing: 'border-box' }} />
+                      </div>
+                    )}
+                    <div className="form-group" style={{ margin: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                      <label style={{ fontSize: '12px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '8px', color: '#111827', cursor: 'pointer' }}>
+                        <input type="checkbox" checked={gstIncludedInPrice} onChange={(e) => setGstIncludedInPrice(e.target.checked)} style={{ width: '16px', height: '16px', cursor: 'pointer' }} />
+                        Price Includes GST (Inclusive)
+                      </label>
+                      <p style={{ margin: '4px 0 0 24px', fontSize: '11px', color: '#6b7280' }}>If unchecked, GST is added at checkout.</p>
                     </div>
                   </div>
                 </div>

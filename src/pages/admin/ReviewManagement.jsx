@@ -1,130 +1,73 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Download, PenTool, Edit, Eye, MoreVertical, Star, CheckCircle, Shield, Heart, Award, RefreshCcw, Camera, ChevronRight, ChevronLeft, MessageSquare, Filter, Box, X, Clock } from 'lucide-react';
-import { Table, Dropdown, Menu, Select, DatePicker, Button } from 'antd';
+import { Table, Dropdown, Menu, Select, DatePicker, Button, message } from 'antd';
 import { AreaChart, Area, ResponsiveContainer } from 'recharts';
+import { getAdminReviewsApi, updateReviewStatusApi, deleteReviewApi } from '../../services/api';
+import dayjs from 'dayjs';
 
 const sparklineData = [{ v: 40 }, { v: 30 }, { v: 60 }, { v: 45 }, { v: 70 }, { v: 90 }, { v: 120 }];
 const sparklineData2 = [{ v: 10 }, { v: 15 }, { v: 12 }, { v: 22 }, { v: 18 }, { v: 28 }, { v: 25 }];
 
 const { RangePicker } = DatePicker;
 
-const initialReviews = [
-  {
-    id: 1,
-    customerName: 'Priya Sharma',
-    productTitle: 'Floral Anarkali Kurta Set',
-    sku: 'SKU: FAK0001',
-    customerImage: 'https://ui-avatars.com/api/?name=Priya+Sharma&background=fef3c7&color=d97706&size=100',
-    rating: 5.0,
-    reviewText: 'Very beautiful kurta! The fabric is so soft and comfortable. Perfect fit and exactly as shown in the pictures.',
-    reviewImages: [
-      'https://picsum.photos/seed/kurta1/200/300',
-      'https://picsum.photos/seed/kurta2/200/300',
-      'https://picsum.photos/seed/kurta3/200/300'
-    ],
-    moreImagesCount: 2,
-    status: 'Approved',
-    verified: true,
-    date: '17 Aug 2026',
-    time: '10:32 AM'
-  },
-  {
-    id: 2,
-    customerName: 'Neha Verma',
-    productTitle: 'Embroidered Straight Kurta',
-    sku: 'SKU: ESK0002',
-    customerImage: 'https://ui-avatars.com/api/?name=Neha+Verma&background=ecfdf5&color=10b981&size=100',
-    rating: 5.0,
-    reviewText: 'Amazing quality and elegant stitching. Very happy with my purchase. Will shop again!',
-    reviewImages: [],
-    status: 'Approved',
-    verified: true,
-    date: '13 Aug 2026',
-    time: '09:15 AM'
-  },
-  {
-    id: 3,
-    customerName: 'Anjali Mehta',
-    productTitle: 'Beige Partywear Gown',
-    sku: 'SKU: BPG0003',
-    customerImage: 'https://ui-avatars.com/api/?name=Anjali+Mehta&background=eff6ff&color=3b82f6&size=100',
-    rating: 5.0,
-    reviewText: 'Loved the color and design. Got so many compliments! Totally worth it.',
-    reviewImages: [],
-    status: 'Approved',
-    verified: true,
-    date: '12 Aug 2026',
-    time: '07:45 PM'
-  },
-  {
-    id: 4,
-    customerName: 'Kavya Reddy',
-    productTitle: 'Cotton A-Line Kurta',
-    sku: 'SKU: CAK0004',
-    customerImage: 'https://ui-avatars.com/api/?name=Kavya+Reddy&background=fce7f3&color=db2777&size=100',
-    rating: 4.0,
-    reviewText: 'Nice collection and good quality. Delivery was on time.',
-    reviewImages: [],
-    status: 'Pending',
-    verified: true,
-    date: '12 Aug 2026',
-    time: '05:20 PM'
-  },
-  {
-    id: 5,
-    customerName: 'Meera Patel',
-    productTitle: 'Floral Printed Co-ord Set',
-    sku: 'SKU: FPC005',
-    customerImage: 'https://ui-avatars.com/api/?name=Meera+Patel&background=f3f4f6&color=4b5563&size=100',
-    rating: 4.0,
-    reviewText: 'The print is beautiful and fabric is breathable. Overall good experience.',
-    reviewImages: [],
-    status: 'Rejected',
-    verified: true,
-    date: '12 Aug 2026',
-    time: '03:10 PM'
-  }
-];
-
-const customerPhotos = [
-  'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=200',
-  'https://images.unsplash.com/photo-1583391733958-d25e07fac044?w=200',
-  'https://images.unsplash.com/photo-1605763240000-7e93b172d754?w=200',
-  'https://images.unsplash.com/photo-1564584217132-2271fea73ca4?w=200',
-  'https://images.unsplash.com/photo-1485230405346-71acb9518d9c?w=200',
-  'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=200'
-];
-
-const testimonials = [
-  {
-    id: 1,
-    rating: 5,
-    text: "Amazing product! Exactly what I was looking for. Highly recommended.",
-    user: "Priya Sharma",
-    verified: true,
-    avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=50'
-  },
-  {
-    id: 2,
-    rating: 5,
-    text: "Great quality and fast delivery. Will definitely buy again!",
-    user: "Neha Verma",
-    verified: true,
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=50'
-  },
-  {
-    id: 3,
-    rating: 4,
-    text: "Beautiful design and comfortable to wear. Loved it!",
-    user: "Anjali Mehta",
-    verified: true,
-    avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=50'
-  }
-];
-
 const ReviewManagement = () => {
-  const [reviews, setReviews] = useState(initialReviews);
+  const [reviews, setReviews] = useState([]);
   const [searchText, setSearchText] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const fetchReviews = async () => {
+    try {
+      setLoading(true);
+      const res = await getAdminReviewsApi();
+      if (res.data && res.data.success) {
+        // Map backend data to frontend structure
+        const formatted = res.data.data.map(r => ({
+          id: r._id,
+          customerName: r.user?.name || 'Anonymous',
+          productTitle: r.product ? r.product.name : 'Unknown Product',
+          sku: r.product ? (r.product.sku || `ID: ${r.product._id.substring(0, 8)}`) : 'N/A',
+          customerImage: r.user?.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(r.user?.name || 'A')}&background=fef3c7&color=d97706&size=100`,
+          rating: r.rating,
+          reviewText: r.comment || '',
+          reviewImages: r.images || [],
+          moreImagesCount: Math.max(0, (r.images?.length || 0) - 3),
+          status: r.status.charAt(0).toUpperCase() + r.status.slice(1),
+          verified: r.isVerifiedPurchase || false,
+          date: dayjs(r.createdAt).format('DD MMM YYYY'),
+          time: dayjs(r.createdAt).format('hh:mm A')
+        }));
+        setReviews(formatted);
+      }
+    } catch (err) {
+      message.error('Failed to load reviews');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchReviews();
+  }, []);
+
+  const handleUpdateStatus = async (id, status) => {
+    try {
+      await updateReviewStatusApi(id, status);
+      message.success(`Review ${status} successfully`);
+      fetchReviews();
+    } catch (err) {
+      message.error('Failed to update status');
+    }
+  };
+
+  const handleDeleteReview = async (id) => {
+    try {
+      await deleteReviewApi(id);
+      message.success('Review deleted successfully');
+      fetchReviews();
+    } catch (err) {
+      message.error('Failed to delete review');
+    }
+  };
 
   const filteredReviews = reviews.filter(r => {
     return searchText === '' || 
@@ -153,7 +96,7 @@ const ReviewManagement = () => {
               </tr>
             </thead>
             <tbody>
-              ${reviews.map(r => `
+              ${filteredReviews.map(r => `
                 <tr>
                   <td>${r.id}</td>
                   <td>${r.customerName}</td>
@@ -171,23 +114,24 @@ const ReviewManagement = () => {
     `;
 
     const blob = new Blob([tableHtml], { type: 'application/vnd.ms-excel' });
-    const link = document.createElement('a');
     const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', 'reviews_export.xls');
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `reviews_export_${new Date().toLocaleDateString()}.xls`;
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   const handleAction = (id, actionKey) => {
     if (actionKey === '3') {
-      setReviews(prev => prev.filter(r => r.id !== id));
+      handleDeleteReview(id);
     } else if (actionKey === '1') {
-      setReviews(prev => prev.map(r => r.id === id ? { ...r, status: 'Approved' } : r));
+      handleUpdateStatus(id, 'approved');
     } else if (actionKey === '2') {
-      setReviews(prev => prev.map(r => r.id === id ? { ...r, status: 'Rejected' } : r));
+      handleUpdateStatus(id, 'rejected');
     }
   };
 
@@ -203,7 +147,8 @@ const ReviewManagement = () => {
 
   const columns = [
     {
-      title: 'Customer & Review',
+      title: 'Customer Review',
+      dataIndex: 'customerReview',
       key: 'customerReview',
       width: 500,
       render: (_, record) => (

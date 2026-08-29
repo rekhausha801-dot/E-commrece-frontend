@@ -95,6 +95,15 @@
   cursor: pointer;
 }
 
+.delete-text-btn {
+  background: transparent;
+  border: none;
+  color: #D93B3B;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
 .address-details {
   font-size: 14px;
   color: var(--text-muted);
@@ -141,7 +150,8 @@
   background: #fff;
   border-radius: 8px;
   padding: 24px;
-  box-shadow: var(--shadow);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(0,0,0,0.05);
   display: flex;
   flex-direction: column;
 }

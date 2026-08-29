@@ -4,435 +4,361 @@ import {
   CheckCircle2, ShoppingCart, CreditCard, 
   Star, Users, AlertTriangle, 
   Clock, ArrowRight, Bell, Settings, MoreVertical, Trash2,
-  Undo2
+  Undo2,
+  LayoutGrid,
+  Mail,
+  Box,
+  Flame,
+  Check,
+  ChevronRight
 } from 'lucide-react';
+import { getAdminNotificationsApi, markNotificationAsReadApi, markAllNotificationsAsReadApi, deleteAdminNotificationApi } from '../../services/api';
 
 export const initialNotifications = [
-  {
-    id: 1,
-    type: 'Orders',
-    title: 'New Order Received',
-    desc: 'Order #ORD12540 has been placed by Arun Kumar',
-    meta: ['₹2,499', '2 Items'],
-    time: '2 mins ago',
-    dateGroup: 'Today',
-    priority: 'Medium',
-    unread: true,
-    actionText: 'View Order',
-  },
-  {
-    id: 5,
-    type: 'Returns',
-    title: 'Return Request',
-    desc: 'Suresh requested a return for Order #ORD12490',
-    meta: ['Reason: Defective'],
-    time: '4 hours ago',
-    dateGroup: 'Today',
-    priority: 'High',
-    unread: true,
-    actionText: 'View Details',
-  },
-  {
-    id: 2,
-    type: 'Payments',
-    title: 'Payment Successful',
-    desc: 'Payment received for Order #ORD12538',
-    meta: ['₹4,999 via Razorpay'],
-    time: '15 mins ago',
-    dateGroup: 'Today',
-    priority: 'Low',
-    unread: true,
-  },
-  {
-    id: 3,
-    type: 'Reviews',
-    title: 'New Review Submitted',
-    desc: 'Priya submitted a 4★ review for Premium Kurti',
-    meta: ['Premium Kurti', '★★★★☆'],
-    time: '1 hour ago',
-    dateGroup: 'Today',
-    priority: 'Low',
-    unread: true,
-    actionText: 'View Review',
-  },
-  {
-    id: 4,
-    type: 'System',
-    title: 'Low Stock Alert',
-    desc: 'Silk Saree – Maroon has only 3 units remaining',
-    meta: ['Action Required'],
-    time: '2 hours ago',
-    dateGroup: 'Today',
-    priority: 'High',
-    unread: true,
-    actionText: 'View Product',
-  },
-  {
-    id: 6,
-    type: 'System',
-    title: 'System Alert',
-    desc: 'Payment Gateway sync delayed by 5 minutes.',
-    meta: ['API Issue'],
-    time: '5 hours ago',
-    dateGroup: 'Today',
-    priority: 'Medium',
-    unread: false,
-  },
-  {
-    id: 7,
-    type: 'Customers',
-    title: 'New Customer Registered',
-    desc: 'Rahul Kumar created a new account',
-    meta: ['New User'],
-    time: '10:24 AM',
-    dateGroup: 'Yesterday',
-    priority: 'Low',
-    unread: false,
-  },
-  {
-    id: 8,
-    type: 'Orders',
-    title: 'Order Cancelled',
-    desc: 'Order #ORD12501 was cancelled by the customer',
-    meta: ['Reason: Change of mind'],
-    time: '4:15 PM',
-    dateGroup: 'Yesterday',
-    priority: 'Medium',
-    unread: false,
-    actionText: 'View Details',
-  },
-  {
-    id: 9,
-    type: 'System',
-    title: 'Product Out of Stock',
-    desc: 'Adidas Running Shoes completely sold out.',
-    meta: ['Inventory Empty'],
-    time: '2:00 PM',
-    dateGroup: 'Yesterday',
-    priority: 'High',
-    unread: false,
-    actionText: 'View Product',
-  },
-  {
-    id: 10,
-    type: 'Payments',
-    title: 'Refund Requested',
-    desc: 'Refund of ₹1,299 requested for Order #ORD12400',
-    meta: ['Action Required'],
-    time: '1:10 PM',
-    dateGroup: 'Yesterday',
-    priority: 'High',
-    unread: false,
-  },
-  {
-    id: 11,
-    type: 'System',
-    title: 'Coupon Expiring',
-    desc: 'Coupon FESTIVAL50 expires in 24 hours.',
-    meta: ['Marketing'],
-    time: '10:00 AM',
-    dateGroup: 'Older',
-    priority: 'Medium',
-    unread: false,
-  },
-  {
-    id: 12,
-    type: 'Orders',
-    title: 'Delivery Failed',
-    desc: 'Delivery attempt failed for Order #ORD12399',
-    meta: ['Customer unavailable'],
-    time: '09:00 AM',
-    dateGroup: 'Older',
-    priority: 'High',
-    unread: false,
-    actionText: 'View Order',
-  }
+  // Keeping this for reference if no API is connected or API fails
 ];
 
-const filters = ['All', 'Unread', 'Orders', 'Payments', 'Reviews', 'Customers', 'System'];
+const filters = [
+  { label: 'All', icon: <LayoutGrid size={16} />, id: 'All' },
+  { label: 'Unread', icon: <Mail size={16} />, id: 'Unread' },
+  { label: 'Orders', icon: <ShoppingCart size={16} />, id: 'Orders' },
+  { label: 'Payments', icon: <CreditCard size={16} />, id: 'Payments' },
+  { label: 'Reviews', icon: <Star size={16} />, id: 'Reviews' },
+  { label: 'Customers', icon: <Users size={16} />, id: 'Customers' },
+  { label: 'System', icon: <Settings size={16} />, id: 'System' }
+];
 
 const getTypeStyles = (type) => {
   switch (type) {
-    case 'Orders': return { icon: <ShoppingCart size={20} />, color: '#c9a05b', bg: '#fffbf2', dot: '#c9a05b' };
-    case 'Returns': return { icon: <Undo2 size={20} />, color: '#f472b6', bg: '#fdf2f8', dot: '#f472b6' };
-    case 'Payments': return { icon: <CreditCard size={20} />, color: '#10b981', bg: '#ecfdf5', dot: '#10b981' };
-    case 'Reviews': return { icon: <Star size={20} />, color: '#f59e0b', bg: '#fffbeb', dot: '#f59e0b' };
-    case 'System': return { icon: <AlertTriangle size={20} />, color: '#ef4444', bg: '#fef2f2', dot: '#ef4444' };
-    case 'Customers': return { icon: <Users size={20} />, color: '#8b5cf6', bg: '#f5f3ff', dot: '#8b5cf6' };
-    default: return { icon: <Bell size={20} />, color: '#c9a05b', bg: '#fffbf2', dot: '#c9a05b' };
+    case 'Orders': return { 
+      icon: <ShoppingCart size={24} />, 
+      color: '#A67634', bg: '#FBF5ED', dot: '#F5A623', leftBorder: '#A67634' 
+    };
+    case 'Payments': return { 
+      icon: <CreditCard size={24} />, 
+      color: '#A67634', bg: '#FCF9F2', dot: '#F5A623', leftBorder: '#D8C3A5' 
+    };
+    case 'Reviews': return { 
+      icon: <Star size={24} />, 
+      color: '#8A63D2', bg: '#F4F2FF', dot: 'transparent', leftBorder: '#8A63D2' 
+    };
+    case 'System': return { 
+      icon: <AlertTriangle size={24} />, 
+      color: '#EF4444', bg: '#FEF2F2', dot: '#EF4444', leftBorder: '#EF4444' 
+    };
+    case 'Customers': return { 
+      icon: <Users size={24} />, 
+      color: '#8B5CF6', bg: '#F5F3FF', dot: '#8B5CF6', leftBorder: '#8B5CF6' 
+    };
+    default: return { 
+      icon: <ShoppingCart size={24} />, 
+      color: '#A67634', bg: '#FBF5ED', dot: '#F5A623', leftBorder: '#A67634' 
+    };
   }
 };
 
 const getPriorityStyles = (priority) => {
   switch (priority) {
-    case 'High': return { bg: '#fce8eb', text: '#e75b75' };
-    case 'Medium': return { bg: '#fef3dd', text: '#c9a05b' };
-    case 'Low': return { bg: '#f3f4f6', text: '#6b7280' };
-    default: return { bg: 'transparent', text: 'transparent' };
+    case 'High': return { bg: '#FEF2F2', text: '#EF4444', icon: <Flame size={12} style={{marginRight: 4}}/>, label: 'High Priority' };
+    case 'Medium': return { bg: '#FFFBEB', text: '#F59E0B', icon: null, label: 'Medium' };
+    case 'Low': return { bg: '#ECFDF5', text: '#10B981', icon: <Check size={12} style={{marginRight: 4}}/>, label: 'Success' };
+    case 'New': return { bg: '#F3E8FF', text: '#9333EA', icon: <Star size={12} style={{marginRight: 4}} fill="#9333EA"/>, label: 'New' };
+    default: return null;
   }
 };
 
-const NotificationManagement = ({ setActiveTab, notifications, setNotifications }) => {
+const NotificationManagement = ({ setActiveTab }) => {
   const [activeFilter, setActiveFilter] = useState('All');
-  const [visibleCount, setVisibleCount] = useState(10);
-  const [selectedIds, setSelectedIds] = useState([]);
+  const [liveNotifications, setLiveNotifications] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Use either the passed in notifications or initialNotifications (to prevent crash if passing wrong format)
-  const safeNotifications = notifications && notifications[0] && Array.isArray(notifications[0].meta) ? notifications : initialNotifications;
+  React.useEffect(() => {
+    fetchNotifications();
+  }, []);
 
-  const unreadCount = safeNotifications.filter(n => n.unread).length;
+  const fetchNotifications = async () => {
+    setIsLoading(true);
+    try {
+      const res = await getAdminNotificationsApi();
+      if (res.data?.success) {
+        setLiveNotifications(res.data.data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch notifications:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  const filteredNotifications = safeNotifications.filter(n => {
+  const unreadCount = liveNotifications.filter(n => n.unread !== false).length;
+
+  const filteredNotifications = liveNotifications.filter(n => {
     if (activeFilter === 'All') return true;
-    if (activeFilter === 'Unread') return n.unread;
+    if (activeFilter === 'Unread') return n.unread !== false;
     return n.type === activeFilter;
   });
 
   const groupedNotifications = filteredNotifications.reduce((acc, notification) => {
-    const group = notification.dateGroup || 'Older';
+    const date = new Date(notification.createdAt);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    
+    let group = 'Older';
+    if (date.toDateString() === today.toDateString()) {
+      group = 'Today';
+    } else if (date.toDateString() === yesterday.toDateString()) {
+      group = 'Yesterday';
+    }
+
     if (!acc[group]) acc[group] = [];
     acc[group].push(notification);
     return acc;
   }, {});
 
-  const toggleSelectAll = () => {
-    if (selectedIds.length === filteredNotifications.length) {
-      setSelectedIds([]);
-    } else {
-      setSelectedIds(filteredNotifications.map(n => n.id));
+  const markAllAsRead = async () => {
+    try {
+      await markAllNotificationsAsReadApi();
+      setLiveNotifications(prev => prev.map(n => ({ ...n, unread: false })));
+    } catch (err) {
+      console.error('Error marking as read:', err);
     }
   };
 
-  const toggleSelection = (id) => {
-    setSelectedIds(prev => prev.includes(id) ? prev.filter(selectedId => selectedId !== id) : [...prev, id]);
+  const handleViewClick = (notif) => {
+    if (setActiveTab) {
+      if (notif.type === 'Orders' || notif.type === 'Returns') setActiveTab('Orders');
+      else if (notif.type === 'Reviews') setActiveTab('Reviews');
+      else if (notif.type === 'Payments') setActiveTab('Orders');
+      else if (notif.type === 'Customers') setActiveTab('Customers');
+      else if (notif.type === 'System') setActiveTab('Settings');
+      else setActiveTab('Dashboard');
+    }
   };
 
-  const markAsRead = (id) => {
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, unread: false } : n));
-  };
-
-  const deleteNotification = (id) => {
-    setNotifications(prev => prev.filter(n => n.id !== id));
+  const getActionButtonStyle = (type) => {
+    if (type === 'Reviews') {
+      return { bg: '#FCF9F2', text: '#A67634', border: '1px solid #F0EAD6' };
+    }
+    if (type === 'Payments') {
+      return { bg: '#FCF9F2', text: '#A67634', border: '1px solid #F0EAD6' };
+    }
+    // Default (Orders etc)
+    return { bg: '#A67634', text: '#FFF', border: 'none' };
   };
 
   return (
-    <div style={{ padding: '24px', maxWidth: '1100px', margin: '0 auto', fontFamily: '"Inter", sans-serif' }}>
+    <div style={{ padding: '10px 20px', background: 'transparent', fontFamily: '"Inter", sans-serif' }}>
       <div style={{ 
-        background: '#fff', 
+        background: '#FFFFFF', 
         borderRadius: '24px', 
         padding: '32px 40px', 
-        boxShadow: '0 10px 40px rgba(0,0,0,0.02)',
-        position: 'relative',
-        overflow: 'hidden'
+        boxShadow: '0 8px 30px rgba(0,0,0,0.03)',
+        maxWidth: '1200px',
+        margin: '0 auto'
       }}>
-        {/* Subtle decorative background wave */}
-        <div style={{
-          position: 'absolute', top: '-10%', right: '-5%', width: '300px', height: '300px',
-          background: 'radial-gradient(circle, transparent 20%, #fff 70%), repeating-radial-gradient(circle at center, #f5ebd9 0, #f5ebd9 1px, transparent 1px, transparent 20px)',
-          opacity: 0.6, pointerEvents: 'none', borderRadius: '50%'
-        }}></div>
-        <div style={{
-          position: 'absolute', top: '5%', right: '5%', width: '400px', height: '400px',
-          border: '1px solid #f9f1e1', borderRadius: '40% 60% 70% 30%', transform: 'rotate(45deg)', pointerEvents: 'none'
-        }}></div>
-
+        
         {/* Header Section */}
-        <div style={{ position: 'relative', zIndex: 1, marginBottom: '32px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <h1 style={{ margin: '0 0 8px 0', fontSize: '26px', fontWeight: '700', color: '#111' }}>Notifications</h1>
-              <p style={{ margin: 0, fontSize: '14px', color: '#666' }}>Stay updated with your store activity.</p>
-              
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+            <div style={{ 
+              position: 'relative', width: '64px', height: '64px', 
+              background: '#FDF7EE', borderRadius: '16px', 
+              display: 'flex', alignItems: 'center', justifyContent: 'center' 
+            }}>
+              <Bell size={32} color="#A67634" />
               {unreadCount > 0 && (
                 <div style={{ 
-                  display: 'inline-flex', alignItems: 'center', gap: '6px', 
-                  background: '#fffcf6', border: '1px solid #f4e8d3', color: '#c9a05b', 
-                  padding: '6px 12px', borderRadius: '8px', fontSize: '13px', fontWeight: '600', marginTop: '16px' 
+                  position: 'absolute', top: '-4px', right: '-4px', 
+                  background: '#EF4444', color: '#FFF', fontSize: '12px', fontWeight: 'bold', 
+                  width: '22px', height: '22px', borderRadius: '50%', 
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  border: '2px solid #FFF'
                 }}>
-                  <Bell size={14} />
-                  {unreadCount} Unread
+                  {unreadCount}
                 </div>
               )}
             </div>
-            
-            <button style={{ 
-              background: '#fff', border: '1px solid #f4e8d3', color: '#c9a05b', 
-              padding: '8px 16px', borderRadius: '8px', fontSize: '13px', fontWeight: '600', 
-              display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', transition: 'all 0.2s' 
-            }}>
-              <Settings size={16} /> Notification Settings
-            </button>
+            <div>
+              <h1 style={{ margin: '0 0 4px 0', fontSize: '28px', fontWeight: '700', color: '#111', fontFamily: '"Playfair Display", serif' }}>Notifications</h1>
+              <p style={{ margin: 0, fontSize: '15px', color: '#666' }}>Stay updated with your latest activities</p>
+            </div>
           </div>
+          
+          <button 
+            onClick={() => setActiveTab && setActiveTab('Settings')}
+            style={{ 
+              background: '#FDF7EE', border: '1px solid #F0EAD6', color: '#A67634', 
+              padding: '10px 20px', borderRadius: '24px', fontSize: '14px', fontWeight: '600', 
+              display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' 
+            }}>
+            <Settings size={16} /> Notification Settings <ChevronRight size={16} />
+          </button>
         </div>
 
         {/* Filters Row */}
-        <div style={{ 
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
-          borderBottom: '1px solid #f5f5f5', paddingBottom: '24px', marginBottom: '32px',
-          position: 'relative', zIndex: 1
-        }}>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            {filters.map(filter => (
+        <div style={{ display: 'flex', gap: '12px', marginBottom: '40px', flexWrap: 'nowrap', overflowX: 'auto', paddingBottom: '4px', whiteSpace: 'nowrap' }}>
+          {filters.map(filter => {
+            const isActive = activeFilter === filter.id;
+            return (
               <button
-                key={filter}
-                onClick={() => setActiveFilter(filter)}
+                key={filter.id}
+                onClick={() => setActiveFilter(filter.id)}
                 style={{
-                  padding: '8px 18px',
-                  borderRadius: '10px',
-                  fontSize: '13px',
+                  padding: '10px 20px',
+                  borderRadius: '12px',
+                  fontSize: '14px',
                   fontWeight: '600',
                   fontFamily: '"Inter", sans-serif',
                   cursor: 'pointer',
-                  border: activeFilter === filter ? '1px solid #c59a54' : '1px solid #f0f0f0',
-                  background: activeFilter === filter ? '#c59a54' : '#fafafa',
-                  color: activeFilter === filter ? '#fff' : '#4b5563',
+                  border: isActive ? 'none' : '1px solid #F0F0F0',
+                  background: isActive ? '#A67634' : '#FFFFFF',
+                  color: isActive ? '#FFFFFF' : '#4B5563',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
                   transition: 'all 0.2s ease',
-                  outline: 'none',
-                  boxShadow: 'none'
+                  boxShadow: isActive ? '0 4px 12px rgba(166, 118, 52, 0.2)' : 'none',
+                  whiteSpace: 'nowrap',
+                  flexShrink: 0
                 }}
               >
-                {filter}
+                {filter.icon}
+                {filter.label}
+                {(filter.id === 'All' || filter.id === 'Unread') && unreadCount > 0 && (
+                  <span style={{ 
+                    background: isActive ? '#FFFFFF' : '#FDF7EE', 
+                    color: isActive ? '#A67634' : '#A67634', 
+                    borderRadius: '50%', padding: '2px 8px', fontSize: '12px', fontWeight: 'bold' 
+                  }}>
+                    {filter.id === 'Unread' ? unreadCount : liveNotifications.length}
+                  </span>
+                )}
               </button>
-            ))}
-          </div>
-          
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <input 
-              type="checkbox" 
-              checked={selectedIds.length === filteredNotifications.length && filteredNotifications.length > 0}
-              onChange={toggleSelectAll}
-              style={{ width: '16px', height: '16px', cursor: 'pointer', accentColor: '#c59a54', borderRadius: '4px', border: '1px solid #ccc' }}
-            />
-            <span style={{ fontSize: '14px', fontWeight: '500', color: '#4b5563', fontFamily: '"Inter", sans-serif' }}>Select All</span>
-          </div>
+            )
+          })}
         </div>
 
-        {/* Notification List */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', position: 'relative', zIndex: 1 }}>
+        {/* Notification List Grouped */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
           {Object.keys(groupedNotifications).length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '80px 20px', background: '#fff', borderRadius: '20px', border: '1px dashed #f0ead6', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-              <div style={{ width: '64px', height: '64px', background: '#fffbf2', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px' }}>
-                <CheckCircle2 size={32} color="#c9a05b" />
-              </div>
-              <h3 style={{ margin: '0 0 8px 0', color: '#111', fontSize: '18px', fontWeight: '700' }}>You're all caught up!</h3>
-              <p style={{ margin: '0 0 24px 0', color: '#888', fontSize: '14px' }}>No notifications found for this category.</p>
-              <button onClick={() => setActiveFilter('All')} style={{ background: '#fff', border: '1px solid #eaddce', padding: '10px 24px', borderRadius: '12px', cursor: 'pointer', fontWeight: '600', color: '#c9a05b', fontSize: '14px', transition: 'all 0.2s', boxShadow: '0 2px 8px rgba(201, 160, 91, 0.1)' }}>
-                View All Notifications
-              </button>
+            <div style={{ textAlign: 'center', padding: '60px', color: '#888' }}>
+              No notifications found.
             </div>
           ) : (
             Object.keys(groupedNotifications).map(group => (
               <div key={group}>
-                <h4 style={{ margin: '0 0 16px 0', fontSize: '12px', fontWeight: '700', color: '#888', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                  {group}
-                </h4>
-              
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                {groupedNotifications[group].map(notif => {
-                  const styles = getTypeStyles(notif.type);
-                  const prio = getPriorityStyles(notif.priority);
-                  const isSelected = selectedIds.includes(notif.id);
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <div style={{ width: '4px', height: '24px', background: '#A67634', borderRadius: '4px' }}></div>
+                    <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '700', color: '#111' }}>{group}</h3>
+                  </div>
+                  {group === 'Today' && (
+                    <button onClick={markAllAsRead} style={{ 
+                      background: '#FDF7EE', border: 'none', color: '#A67634', 
+                      padding: '8px 16px', borderRadius: '20px', fontSize: '13px', fontWeight: '600', 
+                      display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' 
+                    }}>
+                      <Check size={14} /> Mark All as Read
+                    </button>
+                  )}
+                </div>
 
-                  return (
-                    <div key={notif.id} style={{ display: 'flex', alignItems: 'flex-start', gap: '16px' }}>
-                      {/* Floating Checkbox */}
-                      <div style={{ paddingTop: '36px' }}>
-                        <input 
-                          type="checkbox" 
-                          checked={isSelected}
-                          onChange={() => toggleSelection(notif.id)}
-                          style={{ width: '18px', height: '18px', cursor: 'pointer', accentColor: '#c59a54' }}
-                        />
-                      </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  {groupedNotifications[group].map(notif => {
+                    const styles = getTypeStyles(notif.type || 'Orders'); // Default to Orders if no type
+                    // Mock priority if not present for the UI to match
+                    let priorityObj = getPriorityStyles(notif.priority);
+                    if (!priorityObj) {
+                      if (notif.type === 'Orders') priorityObj = getPriorityStyles('High');
+                      else if (notif.type === 'Payments') priorityObj = getPriorityStyles('Low');
+                      else if (notif.type === 'Reviews') priorityObj = getPriorityStyles('New');
+                      else priorityObj = getPriorityStyles('Medium');
+                    }
 
-                      {/* Main Card */}
-                      <div style={{ 
-                        flex: 1, 
-                        background: '#fff', 
-                        borderRadius: '24px', 
-                        padding: '24px', 
-                        display: 'flex', 
+                    const actionBtn = getActionButtonStyle(notif.type || 'Orders');
+
+                    return (
+                      <div key={notif._id} style={{ 
+                        background: styles.bg,
+                        borderLeft: `4px solid ${styles.leftBorder}`,
+                        borderRadius: '16px',
+                        padding: '24px',
+                        display: 'flex',
+                        alignItems: 'flex-start',
                         gap: '20px',
-                        position: 'relative',
-                        boxShadow: '0 4px 20px rgba(0,0,0,0.02)',
-                        overflow: 'hidden'
+                        position: 'relative'
                       }}>
-                        
                         {/* Icon */}
                         <div style={{ 
-                          width: '64px', height: '64px', borderRadius: '16px', 
-                          background: styles.bg, color: styles.color,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 
+                          width: '56px', height: '56px', borderRadius: '50%', 
+                          background: '#FFF', color: styles.color,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                          boxShadow: '0 2px 10px rgba(0,0,0,0.03)'
                         }}>
                           {styles.icon}
                         </div>
 
                         {/* Content */}
-                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                          
-                          {/* Top Row: Title & Meta */}
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '10px' }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                              <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: styles.dot }}></div>
-                              <h3 style={{ margin: 0, fontSize: '16px', fontWeight: '700', color: '#222' }}>{notif.title}</h3>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              {notif.unread !== false && <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: styles.dot }}></div>}
+                              <h4 style={{ margin: 0, fontSize: '16px', fontWeight: '700', color: '#111' }}>{notif.title || (notif.type === 'Reviews' ? 'New Review Received' : 'New Activity')}</h4>
                             </div>
                             
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                              <span style={{ background: prio.bg, color: prio.text, padding: '4px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: '600' }}>
-                                {notif.priority}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                              {priorityObj && (
+                                <span style={{ 
+                                  background: priorityObj.bg, color: priorityObj.text, 
+                                  padding: '6px 12px', borderRadius: '20px', fontSize: '12px', fontWeight: '600',
+                                  display: 'flex', alignItems: 'center'
+                                }}>
+                                  {priorityObj.icon} {priorityObj.label}
+                                </span>
+                              )}
+                              <span style={{ color: '#888', fontSize: '13px' }}>
+                                {new Date(notif.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                               </span>
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#888', fontSize: '13px', fontWeight: '500' }}>
-                                <Clock size={14} />
-                                {notif.time}
-                              </div>
-                              <Dropdown menu={{
-                                items: [
-                                  { key: 'read', label: 'Mark as Read', onClick: () => markAsRead(notif.id) },
-                                  { key: 'delete', label: <span style={{ color: '#ef4444' }}>Delete</span>, onClick: () => deleteNotification(notif.id) }
-                                ]
-                              }} trigger={['click']} placement="bottomRight">
-                                <MoreVertical size={20} color="#999" style={{ cursor: 'pointer' }} />
-                              </Dropdown>
                             </div>
                           </div>
 
-                          {/* Description */}
-                          <p style={{ margin: 0, fontSize: '15px', color: '#555', lineHeight: '1.5' }}>
-                            {notif.desc}
+                          <p style={{ margin: 0, fontSize: '15px', color: '#555' }}>
+                            {notif.message || notif.desc}
                           </p>
 
-                          {/* Bottom Row: Tags & Action */}
+                          {/* Extra info & Action Button */}
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
                             <div style={{ display: 'flex', gap: '12px' }}>
-                              {notif.meta.map((tag, idx) => (
+                              {(notif.meta || (notif.type === 'Orders' ? ['₹1879', '1 Item'] : [])).map((tag, idx) => (
                                 <span key={idx} style={{ 
-                                  background: styles.bg, color: styles.color, 
-                                  padding: '4px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: '600' 
+                                  background: '#FFF', color: '#A67634', border: '1px solid #F0EAD6',
+                                  padding: '6px 12px', borderRadius: '8px', fontSize: '13px', fontWeight: '600',
+                                  display: 'flex', alignItems: 'center', gap: '6px'
                                 }}>
-                                  {idx === 0 && tag.includes('Reason') ? tag : (idx === 0 && notif.type === 'Orders' ? tag : (tag.includes('Items') ? `• ${tag}` : tag))}
+                                  <Box size={14} /> {tag}
                                 </span>
                               ))}
                             </div>
 
-                            {notif.actionText && (
-                              <button style={{ 
-                                background: 'none', border: 'none', padding: 0, 
-                                color: '#c59a54', fontSize: '14px', fontWeight: '600', 
-                                display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' 
+                            <button 
+                              onClick={() => handleViewClick(notif)}
+                              style={{ 
+                                background: actionBtn.bg, border: actionBtn.border, color: actionBtn.text, 
+                                padding: '8px 16px', borderRadius: '24px', fontSize: '13px', fontWeight: '600', 
+                                display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' 
                               }}>
-                                {notif.actionText} <ArrowRight size={16} />
-                              </button>
-                            )}
+                              {notif.type === 'Orders' ? 'View Order' : notif.type === 'Payments' ? 'View Payment' : notif.type === 'Reviews' ? 'View Review' : 'View Details'} <ChevronRight size={14} />
+                            </button>
                           </div>
-                          
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    )
+                  })}
+                </div>
               </div>
-            </div>
-          )))}
+            ))
+          )}
         </div>
       </div>
     </div>

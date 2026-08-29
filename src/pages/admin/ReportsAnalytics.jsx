@@ -82,10 +82,10 @@ const ReportsAnalytics = () => {
         <div className="stats-grid" style={{ marginBottom: '32px' }}>
           <div className="stat-card dark">
             <div className="stat-top">
-              <div className="stat-icon gold"><span style={{ fontSize: '18px', fontWeight: 'bold' }}>â‚¹</span></div>
+              <div className="stat-icon gold"><span style={{ fontSize: '18px', fontWeight: 'bold' }}>₹</span></div>
               <div className="stat-info">
                 <span className="stat-title">Total Revenue</span>
-                <h2 className="stat-value gold-text">â‚¹8,75,420</h2>
+                <h2 className="stat-value gold-text">₹8,75,420</h2>
                 <div className="stat-bottom">
                   <span className="stat-change positive">â†‘ 12.5%</span> <span className="stat-change-text">vs yesterday</span>
                 </div>
@@ -163,7 +163,7 @@ const ReportsAnalytics = () => {
               <div className="stat-icon gold"><Package size={18} color="#c9a05b" /></div>
               <div className="stat-info">
                 <span className="stat-title">Average Order Value</span>
-                <h2 className="stat-value gold-text">â‚¹999</h2>
+                <h2 className="stat-value gold-text">₹999</h2>
                 <div className="stat-bottom">
                   <span className="stat-change positive">â†‘ 2.4%</span> <span className="stat-change-text">vs yesterday</span>
                 </div>
@@ -229,7 +229,7 @@ const ReportsAnalytics = () => {
               <div className="ra-donut-chart">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
-                    <Pie data={pieData} cx="50%" cy="50%" innerRadius={40} outerRadius={65} paddingAngle={2} dataKey="value" stroke="none">
+                    <Pie data={pieData} cx="50%" cy="50%" innerRadius={55} outerRadius={80} paddingAngle={4} dataKey="value" stroke="none">
                       {pieData.map((entry, index) => <Cell key={index} fill={entry.color} />)}
                     </Pie>
                   </PieChart>

@@ -296,6 +296,104 @@
   gap: 24px;
 }
 
+.mo-pm-body {
+  padding: 32px;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 40px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.mo-pm-main {
+  display: flex;
+  flex-direction: column;
+}
+
+.mo-pm-sidebar {
+  display: flex;
+  flex-direction: column;
+  padding-left: 20px;
+  border-left: 1px solid #F0E9DF;
+}
+
+.mo-pm-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 32px;
+  margin-top: 16px;
+}
+
+.mo-pm-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px dashed #F0E9DF;
+}
+
+.mo-pm-item img {
+  width: 60px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #F0F0F0;
+}
+
+.mo-pm-item-details {
+  flex: 1;
+}
+
+.mo-pm-item-details h5 {
+  font-size: 15px;
+  color: #1A1A1A;
+  margin: 0 0 6px 0;
+  font-weight: 600;
+}
+
+.mo-pm-item-details p {
+  font-size: 13px;
+  color: #666;
+  margin: 0;
+}
+
+.mo-pm-item-price {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1A1A1A;
+}
+
+.mo-pm-price-summary {
+  background: #FDFaf6;
+  padding: 20px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mo-pm-ps-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  color: #666;
+}
+
+.mo-pm-ps-total {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1A1A1A;
+  padding-top: 12px;
+  border-top: 1px solid #EAE3D9;
+}
+
+.mo-text-green {
+  color: #2A7E4F;
+  font-weight: 600;
+}
+
 .mo-orders-wrapper {
   display: flex;
   flex-direction: column;
@@ -351,11 +449,13 @@
   font-size: 15px;
   font-weight: 700;
   color: #1A1A1A;
+  white-space: nowrap;
 }
 
 .mo-ch-date {
   font-size: 14px;
   color: #888;
+  white-space: nowrap;
 }
 
 .mo-ch-right {
@@ -368,6 +468,7 @@
   font-size: 15px;
   font-weight: 600;
   color: #1A1A1A;
+  white-space: nowrap;
 }
 
 .mo-status-pill {
@@ -398,7 +499,54 @@
 .mo-menu-dots-icon {
   color: #888;
   cursor: pointer;
+  padding: 4px;
 }
+
+.mo-menu-dots-icon:hover {
+  color: #333;
+}
+
+.mo-action-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  background: #FFF;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border: 1px solid #F0F0F0;
+  width: 160px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  padding: 6px 0;
+}
+
+.mo-action-dropdown button {
+  background: transparent;
+  border: none;
+  padding: 10px 16px;
+  text-align: left;
+  font-size: 13px;
+  color: #333;
+  cursor: pointer;
+  transition: background 0.2s;
+  width: 100%;
+  font-weight: 500;
+}
+
+.mo-action-dropdown button:hover {
+  background: #F9F9F9;
+}
+
+.mo-action-dropdown button.mo-text-danger {
+  color: #D32F2F;
+}
+
+.mo-action-dropdown button.mo-text-danger:hover {
+  background: #FFEBEE;
+}
+
 
 /* Card Body */
 .mo-card-body {
@@ -730,4 +878,83 @@
 .mo-btn-invoice:hover {
   background: #8C6A45;
   color: #FFF;
+}
+
+/* Premium Modal Styles */
+.mo-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.mo-premium-modal {
+  background: #FFF;
+  width: 90%;
+  max-width: 850px;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  animation: slideUpModal 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.mo-pm-header {
+  padding: 24px 32px;
+  background: #FDFaf6;
+  border-bottom: 1px solid #F0E9DF;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mo-pm-title h2 {
+  margin: 0;
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  color: #1A1A1A;
+}
+
+.mo-pm-title span {
+  font-size: 13px;
+  color: #888;
+  font-weight: 500;
+}
+
+.mo-pm-close {
+  background: #F3EFE9;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #555;
+  transition: all 0.2s;
+}
+
+.mo-pm-close:hover {
+  background: #E8DFD3;
+  color: #1A1A1A;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUpModal {
+  from { opacity: 0; transform: translateY(40px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }

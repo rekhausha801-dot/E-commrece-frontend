@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
+import { getAdminNotificationsApi, markAllNotificationsAsReadApi } from '../../services/api';
 import { motion, useCycle } from 'framer-motion';
 import {
   ShoppingBag,
@@ -147,6 +148,65 @@ const AdminLayout = () => {
   const { height } = useDimensions(containerRef);
   const [isProductsOpen, setIsProductsOpen] = useState(true);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [adminNotifications, setAdminNotifications] = useState([]);
+  const [adminUser, setAdminUser] = useState({ name: 'Admin User', role: 'Super Admin', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150' });
+  const prevUnreadCount = useRef(0);
+
+  const fetchNotifs = async () => {
+    try {
+      const res = await getAdminNotificationsApi();
+      if (res.data && res.data.success) {
+        setAdminNotifications(res.data.data);
+        const currentUnread = res.data.data.filter(n => n.unread !== false).length;
+        if (currentUnread > prevUnreadCount.current) {
+          // Play sound if new notification arrived
+          const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+          audio.play().catch(e => console.log('Audio play failed', e));
+        }
+        prevUnreadCount.current = currentUnread;
+      }
+    } catch (err) {
+      console.error("Failed to fetch admin notifications:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchNotifs();
+    const intervalId = setInterval(fetchNotifs, 10000); // Poll every 10 seconds
+    
+    // Load Admin Profile from LocalStorage
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        setAdminUser({
+          name: user.fullName || 'Admin User',
+          role: user.role === 'admin' ? 'Super Admin' : user.role || 'Admin',
+          image: user.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.fullName || 'Admin')}&background=random`
+        });
+      } catch (e) {
+        console.error("Error parsing user from localStorage", e);
+      }
+    }
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const handleNotificationClick = async () => {
+    setIsNotifOpen(!isNotifOpen);
+    if (!isNotifOpen && unreadCount > 0) {
+      try {
+        await markAllNotificationsAsReadApi();
+        setAdminNotifications(prev => prev.map(n => ({ ...n, unread: false })));
+        prevUnreadCount.current = 0;
+      } catch (error) {
+        console.error("Failed to mark all as read", error);
+      }
+    }
+  };
+
+  const unreadCount = adminNotifications.filter(n => n.unread !== false).length;
+
   return (
     <div className="admin-layout">
       {/* Animated Floating Sidebar */}
@@ -304,18 +364,10 @@ const AdminLayout = () => {
               <input type="text" placeholder="Search products..." />
               <Search size={16} className="search-icon" />
             </div>
-<<<<<<< HEAD
-
-            <button className="notification-btn">
-              <Bell size={20} />
-              <span className="badge">5</span>
-            </button>
-=======
-            
             <div className="notification-wrapper" style={{ position: 'relative' }}>
-              <button className="notification-btn" onClick={() => setIsNotifOpen(!isNotifOpen)}>
+              <button className="notification-btn" onClick={handleNotificationClick}>
                 <Bell size={20} />
-                <span className="badge">5</span>
+                {unreadCount > 0 && <span className="badge">{unreadCount}</span>}
               </button>
               
               {isNotifOpen && (
@@ -325,41 +377,32 @@ const AdminLayout = () => {
                     <span className="notif-mark-read">Mark all as read</span>
                   </div>
                   <div className="notif-list">
-                    <div className="notif-item unread">
-                      <div className="notif-icon order"><ShoppingCart size={14}/></div>
-                      <div className="notif-content">
-                        <p>New order <strong>#1047</strong> received.</p>
-                        <span>2 min ago</span>
+                    {adminNotifications.length > 0 ? adminNotifications.slice(0, 5).map(notif => (
+                      <div key={notif._id} className={`notif-item ${notif.unread !== false ? 'unread' : ''}`}>
+                        <div className={`notif-icon ${notif.type || 'order'}`}><ShoppingCart size={14}/></div>
+                        <div className="notif-content">
+                          <p>{notif.message}</p>
+                          <span>{new Date(notif.createdAt).toLocaleDateString()}</span>
+                        </div>
                       </div>
-                    </div>
-                    <div className="notif-item unread">
-                      <div className="notif-icon alert"><Package size={14}/></div>
-                      <div className="notif-content">
-                        <p>Product "Women's Jacket" is low in stock.</p>
-                        <span>15 min ago</span>
+                    )) : (
+                      <div className="notif-item">
+                        <div className="notif-content"><p>No new notifications</p></div>
                       </div>
-                    </div>
-                    <div className="notif-item">
-                      <div className="notif-icon user"><User size={14}/></div>
-                      <div className="notif-content">
-                        <p>New customer registered.</p>
-                        <span>1 hr ago</span>
-                      </div>
-                    </div>
+                    )}
                   </div>
                   <div className="notif-footer">
-                    View all notifications
+                    <NavLink to="/admin/notifications">View all notifications</NavLink>
                   </div>
                 </div>
               )}
             </div>
->>>>>>> 18ef50130343d4fbe1500235de333a1d5733004b
 
             <div className="admin-profile">
-              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150" alt="Admin" />
+              <img src={adminUser.image} alt={adminUser.name} />
               <div className="profile-info">
-                <span className="name">Admin User</span>
-                <span className="role">Super Admin</span>
+                <span className="name">{adminUser.name}</span>
+                <span className="role">{adminUser.role}</span>
               </div>
               <ChevronDown size={14} />
             </div>

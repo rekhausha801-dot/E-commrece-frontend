@@ -3,33 +3,38 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, MapPin, Edit2, Trash2 } from 'lucide-react';
 import './SavedAddresses.css';
 
-const defaultAddress = {
-  id: 1,
-  fullName: 'Rekha R',
-  phone: '98765 43210',
-  country: 'India',
-  pincode: '635503',
-  address1: '12, Lake View Street, Madhanur, Thirupattur Dist',
-  city: 'Thirupattur',
-  state: 'Tamil Nadu',
-  landmark: '',
-  addressType: 'Home',
-  isDefault: true
-};
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const SavedAddresses = () => {
   const navigate = useNavigate();
   const [addresses, setAddresses] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const stored = localStorage.getItem('userAddresses');
-    if (stored) {
-      setAddresses(JSON.parse(stored));
-    } else {
-      setAddresses([defaultAddress]);
-      localStorage.setItem('userAddresses', JSON.stringify([defaultAddress]));
-    }
+    fetchAddresses();
   }, []);
+
+  const fetchAddresses = async () => {
+    setIsLoading(true);
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setIsLoading(false);
+      return;
+    }
+    try {
+      const res = await fetch(`${API_URL}/addresses`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        setAddresses(data.addresses);
+      }
+    } catch (error) {
+      console.error('Error fetching addresses:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleEdit = (address) => {
     navigate('/account/add-address', {
@@ -40,11 +45,18 @@ const SavedAddresses = () => {
     });
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this address?")) {
-      const updated = addresses.filter(addr => addr.id !== id);
-      setAddresses(updated);
-      localStorage.setItem('userAddresses', JSON.stringify(updated));
+      const token = localStorage.getItem('token');
+      try {
+        await fetch(`${API_URL}/addresses/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        fetchAddresses();
+      } catch (error) {
+        console.error('Error deleting address:', error);
+      }
     }
   };
 
@@ -65,13 +77,15 @@ const SavedAddresses = () => {
       {/* Address List */}
       <div className="sa-list">
 
-        {addresses.length === 0 ? (
+        {isLoading ? (
+          <div style={{ padding: '40px', textAlign: 'center', color: '#666' }}>Loading addresses...</div>
+        ) : addresses.length === 0 ? (
           <div style={{ padding: '40px', textAlign: 'center', color: '#666' }}>
             No saved addresses found. Please add a new address.
           </div>
         ) : (
           addresses.map((addr) => (
-            <div className="sa-card" key={addr.id}>
+            <div className="sa-card" key={addr._id}>
 
               <div className="sa-card-left">
                 <div className="sa-icon-wrapper">
@@ -86,13 +100,14 @@ const SavedAddresses = () => {
                 </div>
 
                 <div className="sa-address-text">
-                  {addr.address1},<br />
+                  {addr.addressLine1},<br />
+                  {addr.addressLine2 && <>{addr.addressLine2},<br /></>}
                   {addr.city}, {addr.state} - {addr.pincode}<br />
                   {addr.country}
                 </div>
 
                 <div className="sa-phone">
-                  {addr.phone}
+                  {addr.mobileNumber}
                 </div>
               </div>
 
@@ -100,7 +115,7 @@ const SavedAddresses = () => {
                 <button className="sa-action-btn edit" title="Edit Address" onClick={() => handleEdit(addr)}>
                   <Edit2 size={16} />
                 </button>
-                <button className="sa-action-btn delete" title="Delete Address" onClick={() => handleDelete(addr.id)}>
+                <button className="sa-action-btn delete" title="Delete Address" onClick={() => handleDelete(addr._id)}>
                   <Trash2 size={16} />
                 </button>
               </div>
