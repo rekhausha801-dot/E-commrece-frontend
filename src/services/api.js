@@ -1,16 +1,7 @@
 import axios from "axios";
 
-// Add a request interceptor to include the token
-axios.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+// Base URL configuration (You can switch this to env variables later)
+const API_BASE_URL = "http://localhost:5000/api";
 
 // Add a response interceptor to handle 401 errors
 axios.interceptors.response.use(
@@ -18,6 +9,7 @@ axios.interceptors.response.use(
   (error) => {
     if (error.response && error.response.status === 401) {
       localStorage.removeItem("token");
+      localStorage.removeItem("userInfo");
       localStorage.removeItem("user");
       window.location.href = "/login";
     }
@@ -25,32 +17,39 @@ axios.interceptors.response.use(
   }
 );
 
-// Base URL configuration (You can switch this to env variables later)
-const API_BASE_URL = "http://localhost:5000/api";
-
-// Add a request interceptor for authentication
+// Add a single request interceptor for authentication
 axios.interceptors.request.use(
   (config) => {
     // Only add token if the request goes to our API
-    if (config.url.startsWith(API_BASE_URL)) {
+    if (config.url && config.url.startsWith(API_BASE_URL)) {
+      let token = localStorage.getItem("token"); // Used by customer login
+      
       // Check for userInfo in localStorage (used by Auth/Admin login)
-      const userInfoStr = localStorage.getItem('userInfo');
-      if (userInfoStr) {
-        try {
-          const userInfo = JSON.parse(userInfoStr);
-          if (userInfo && userInfo.token) {
-            config.headers.Authorization = `Bearer ${userInfo.token}`;
+      if (!token) {
+        const userInfoStr = localStorage.getItem('userInfo');
+        if (userInfoStr) {
+          try {
+            const userInfo = JSON.parse(userInfoStr);
+            if (userInfo && userInfo.token) {
+              token = userInfo.token;
+            }
+          } catch (e) {
+            console.error("Error parsing userInfo from localStorage", e);
           }
-        } catch (e) {
-          console.error("Error parsing userInfo from localStorage", e);
+        }
+      }
+
+      if (token) {
+        if (config.headers.set) {
+            config.headers.set('Authorization', `Bearer ${token}`);
+        } else {
+            config.headers.Authorization = `Bearer ${token}`;
         }
       }
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 // -----------------------------------------------------
@@ -139,4 +138,32 @@ export const deleteBanner = (id) => axios.delete(`${BANNER_API}/${id}`);
 export const toggleBannerStatus = (id, status) => axios.patch(`${BANNER_API}/${id}/status`, { status });
 export const getActiveBanners = () => axios.get(`${BANNER_API}/active`);
 
-export const fetchNextSku = () => axios.get(`${PRODUCT_API}/next-sku`);
+// -----------------------------------------------------
+// FAQ APIs
+// -----------------------------------------------------
+const ADMIN_FAQ_API = `${API_BASE_URL}/admin/faqs`;
+const FAQ_API = `${API_BASE_URL}/support/faqs`;
+
+export const getFAQs = () => axios.get(FAQ_API);
+export const createFAQ = (data) => axios.post(ADMIN_FAQ_API, data);
+export const updateFAQ = (id, data) => axios.put(`${ADMIN_FAQ_API}/${id}`, data);
+export const deleteFAQ = (id) => axios.delete(`${ADMIN_FAQ_API}/${id}`);
+
+// -----------------------------------------------------
+// SUPPORT TICKET APIs
+// -----------------------------------------------------
+const ADMIN_TICKET_API = `${API_BASE_URL}/admin/support/tickets`;
+
+export const getAdminTickets = () => axios.get(ADMIN_TICKET_API);
+export const getAdminTicketById = (id) => axios.get(`${ADMIN_TICKET_API}/${id}`);
+export const updateTicketStatus = (id, status) => axios.put(`${ADMIN_TICKET_API}/${id}/status`, { status });
+export const updateTicketPriority = (id, priority) => axios.put(`${ADMIN_TICKET_API}/${id}/priority`, { priority });
+export const assignTicket = (id, assignedTo) => axios.put(`${ADMIN_TICKET_API}/${id}/assign`, { assignedTo });
+export const resolveTicket = (id, data) => axios.post(`${ADMIN_TICKET_API}/${id}/resolve`, data);
+export const escalateTicket = (id) => axios.post(`${ADMIN_TICKET_API}/${id}/escalate`);
+
+const CUSTOMER_TICKET_API = `${API_BASE_URL}/support/tickets`;
+export const getCustomerTickets = (params) => axios.get(CUSTOMER_TICKET_API, { params });
+export const getCustomerTicketById = (id) => axios.get(`${CUSTOMER_TICKET_API}/${id}`);
+export const contactSupport = (data) => axios.post(`${CUSTOMER_TICKET_API}/contact`, data);
+export const getSupportDashboardStats = () => axios.get(`${API_BASE_URL}/support/dashboard/dashboard`);

@@ -1,438 +1,295 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Support.css';
 import { 
-  ChevronLeft, ChevronRight, FileText, Store, CheckCircle2,
-  Package, ClipboardList, MessageSquare, PhoneCall, HelpCircle, ThumbsUp, ThumbsDown, Headset, X, Edit3, Heart, Info
+  ChevronRight, ChevronDown, Headset, Grid, Package, 
+  CreditCard, RotateCcw, Truck, User, Sparkles, MoreHorizontal,
+  MessageCircleQuestion, ArrowLeft
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { contactSupport, getFAQs, getCustomerTickets } from '../../services/api';
+import { message } from 'antd';
+import { X } from 'lucide-react';
 
 const Support = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('main'); // 'main' or 'return-request'
-  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
-  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
-  const [feedbackType, setFeedbackType] = useState(null); // 'yes' or 'no'
-  const [showCallModal, setShowCallModal] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState('');
-  const [callRequested, setCallRequested] = useState(false);
-  
-  const [showChatModal, setShowChatModal] = useState(false);
-  const [selectedChatLanguage, setSelectedChatLanguage] = useState('');
-  const [chatStarted, setChatStarted] = useState(false);
-  
-  const languages = ['हिंदी', 'English', 'తెలుగు', 'বাংলা', 'தமிழ்', 'ಕನ್ನಡ', 'മലയാളം'];
-  
-  // Sample bag image for the UI mockup
-  const bagImgUrl = "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=150&q=80";
+  const [expandedQuestion, setExpandedQuestion] = useState(null); 
+  const [activeTab, setActiveTab] = useState('faqs');
+  const [myTickets, setMyTickets] = useState([]);
+  const [isLoadingTickets, setIsLoadingTickets] = useState(false);
+
+  const fetchMyTickets = async () => {
+    try {
+      setIsLoadingTickets(true);
+      const response = await getCustomerTickets();
+      setMyTickets(response.data.data || []);
+    } catch (error) {
+      console.error("Failed to fetch tickets:", error);
+    } finally {
+      setIsLoadingTickets(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'tickets') {
+      fetchMyTickets();
+    }
+  }, [activeTab]);
+
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const [ticketData, setTicketData] = useState({ subject: '', category: 'Technical', priority: 'low', description: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleTicketSubmit = async (e) => {
+    e.preventDefault();
+    if (!ticketData.subject || !ticketData.description) return message.warning('Please fill in all required fields.');
+    try {
+      setIsSubmitting(true);
+      await contactSupport(ticketData);
+      message.success('Support ticket created successfully! Our team will contact you soon.');
+      setIsContactModalOpen(false);
+      setTicketData({ subject: '', category: 'Technical', priority: 'low', description: '' });
+    } catch (error) {
+      if (error.response?.status === 401) {
+        message.error('Please log in to submit a support ticket.');
+      } else {
+        message.error(error.response?.data?.message || 'Failed to submit ticket.');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const [faqs, setFaqs] = useState([]);
+  const [isLoadingFaqs, setIsLoadingFaqs] = useState(true);
+
+  useEffect(() => {
+    const fetchFAQs = async () => {
+      try {
+        const response = await getFAQs();
+        if (response.data && response.data.data) {
+          setFaqs(response.data.data);
+          if (response.data.data.length > 0) {
+            setExpandedQuestion(response.data.data[0]._id);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch FAQs:", error);
+      } finally {
+        setIsLoadingFaqs(false);
+      }
+    };
+    fetchFAQs();
+  }, []);
+
+  const toggleQuestion = (id) => {
+    if (expandedQuestion === id) {
+      setExpandedQuestion(null);
+    } else {
+      setExpandedQuestion(id);
+    }
+  };
 
   return (
-    <div className="support-wrapper-container">
-        
-        {/* Background Gradient inside the card */}
-        <div className="help-centre-bg">
-          <div className="help-centre-bg-image"></div>
+    <div className="faq-page-wrapper">
+      
+      {/* Header Section */}
+      <div className="faq-hero-section">
+        <div className="faq-breadcrumb">
+          <Link to="/">Home</Link> <ChevronRight size={14} /> 
+          <span>Help Center</span> <ChevronRight size={14} /> 
+          <span className="current">FAQs</span>
         </div>
         
-        {/* Header */}
-        <div className="help-centre-header">
-          <button className="back-btn" onClick={() => activeTab === 'main' ? navigate(-1) : setActiveTab('main')}>
-            <ChevronLeft size={24} color="#c89f66" strokeWidth={2.5} />
+        <div className="faq-hero-content">
+          <div className="faq-hero-text">
+            <h1>Frequently Asked Questions</h1>
+            <p>Find answers to common questions<br/>related to our services</p>
+          </div>
+          
+          <div className="faq-hero-graphics">
+            {/* The blue question mark bubble and other shapes */}
+            <div className="graphic-bubble blue-bubble">
+              <span className="question-mark">?</span>
+            </div>
+            <div className="graphic-bubble small-dot"></div>
+            <div className="graphic-bubble dots-bubble">
+              <span>...</span>
+            </div>
+            <div className="graphic-bubble yellow-bubble"></div>
+            <div className="graphic-bubble rectangle rect-1"></div>
+            <div className="graphic-bubble rectangle rect-2"></div>
+          </div>
+        </div>
+      </div>
+
+      <div className="faq-main-container" style={{ flexDirection: 'column', alignItems: 'center' }}>
+        
+        <div style={{ width: '100%', maxWidth: '800px', margin: '0 auto 24px', display: 'flex', gap: '24px', borderBottom: '1px solid #e5e7eb' }}>
+          <button 
+            onClick={() => setActiveTab('faqs')}
+            style={{ background: 'none', border: 'none', padding: '12px 16px', cursor: 'pointer', fontSize: '16px', fontWeight: '600', color: activeTab === 'faqs' ? '#C89953' : '#6b7280', borderBottom: activeTab === 'faqs' ? '2px solid #C89953' : '2px solid transparent', marginBottom: '-1px', transition: 'all 0.2s' }}
+          >
+            FAQs
           </button>
-          <h1>HELP CENTRE</h1>
+          <button 
+            onClick={() => setActiveTab('tickets')}
+            style={{ background: 'none', border: 'none', padding: '12px 16px', cursor: 'pointer', fontSize: '16px', fontWeight: '600', color: activeTab === 'tickets' ? '#C89953' : '#6b7280', borderBottom: activeTab === 'tickets' ? '2px solid #C89953' : '2px solid transparent', marginBottom: '-1px', transition: 'all 0.2s' }}
+          >
+            My Support Tickets
+          </button>
         </div>
 
-        <div className="help-centre-content">
-          {activeTab === 'main' ? (
-            <>
-              {/* Order Details Card */}
-              <div className="order-details-card">
-                <div className="order-row">
-                  <div className="order-left">
-                    <div className="icon-circle">
-                      <FileText size={16} color="#c89f66" strokeWidth={2} />
-                    </div>
-                    <span className="order-text">Order ID 83181012050914176</span>
-                  </div>
-                  <span className="sold-to">Sold to <span className="highlight">Rekha</span></span>
-                </div>
-                
-                <div className="divider-line"></div>
-                
-                <div className="order-row">
-                  <div className="icon-circle">
-                    <Store size={16} color="#c89f66" strokeWidth={2} />
-                  </div>
-                  <span className="supplier-text">Supplier : <strong>THE MARKA ENTERPRISE</strong></span>
-                </div>
-              </div>
-
-              {/* Product Details Card */}
-              <div className="product-details-card">
-                <div className="product-info">
-                  <div className="product-image-container">
-                    <img src={bagImgUrl} alt="College Bag" className="product-image" />
-                  </div>
-                  <div className="product-text-details">
-                    <h3>The Marka Unisex College Bag</h3>
-                    <div className="delivery-status">
-                      <CheckCircle2 size={16} color="#279e43" strokeWidth={2.5} />
-                      <span>Delivered on</span>
-                    </div>
-                  </div>
-                </div>
-                <button className="next-btn">
-                  <ChevronRight size={20} color="#333" />
-                </button>
-              </div>
-
-              {/* Issues Section */}
-              <div className="issues-section">
-                <div className="issues-title-container">
-                  <h2>What issue are you facing?</h2>
-                  <div className="title-underline"></div>
-                </div>
-                
-                <div className="issue-card" onClick={() => setActiveTab('return-request')}>
-                  <div className="issue-left">
-                    <div className="issue-icon-wrapper">
-                      <Package size={24} color="#333" />
-                      <div className="loop-icon-badge">
-                        <RotateCcwIcon size={12} color="#c89f66" strokeWidth={3} />
+        {/* Content Area */}
+        <div className="faq-content-area">
+          {activeTab === 'faqs' ? (
+          <div className="faq-list-card">
+            <div className="faq-list-header">
+              <span className="faq-count">{faqs.length} Questions</span>
+            </div>
+            
+            <div className="faq-list">
+              {isLoadingFaqs ? (
+                <div style={{ padding: '20px', textAlign: 'center', color: '#64748b' }}>Loading FAQs...</div>
+              ) : faqs.length === 0 ? (
+                <div style={{ padding: '20px', textAlign: 'center', color: '#64748b' }}>No FAQs available.</div>
+              ) : (
+                faqs.map((faq, index) => (
+                  <div 
+                    key={faq._id} 
+                    className={`faq-item ${expandedQuestion === faq._id ? 'expanded' : ''}`}
+                  >
+                    <button 
+                      className="faq-question-btn" 
+                      onClick={() => toggleQuestion(faq._id)}
+                    >
+                      <span className="faq-question-text">{index + 1}. {faq.question}</span>
+                      {expandedQuestion === faq._id ? (
+                        <ChevronDown size={20} className="faq-toggle-icon" />
+                      ) : (
+                        <ChevronDown size={20} className="faq-toggle-icon closed" style={{ transform: 'rotate(-90deg)' }} />
+                      )}
+                    </button>
+                    
+                    {expandedQuestion === faq._id && (
+                      <div className="faq-answer">
+                        {typeof faq.answer === 'string' ? <p>{faq.answer}</p> : faq.answer}
                       </div>
-                    </div>
-                    <span className="issue-text">Can I raise a return/exchange request?</span>
-                  </div>
-                  <button className="next-btn">
-                    <ChevronRight size={20} color="#333" />
-                  </button>
-                </div>
-                
-                <div className="issue-card" onClick={() => setActiveTab('where-order')}>
-                  <div className="issue-left">
-                    <div className="issue-icon-wrapper">
-                      <ClipboardList size={24} color="#333" />
-                    </div>
-                    <span className="issue-text">Where is my order?</span>
-                  </div>
-                  <button className="next-btn">
-                    <ChevronRight size={20} color="#333" />
-                  </button>
-                </div>
-              </div>
-            </>
-          ) : (
-            /* Tab: Issue Details (For Return/Exchange OR Where is my order) */
-            <div className="return-request-tab">
-              {/* Question Details Card */}
-              <div className="question-details-card">
-                <div className="question-header">
-                  <div className="icon-circle question-icon">
-                    {activeTab === 'return-request' ? (
-                      <div className="issue-icon-wrapper" style={{width: '100%', height: '100%', backgroundColor: 'transparent'}}>
-                        <Package size={20} color="#c89f66" />
-                        <div className="loop-icon-badge" style={{padding: '1px', right: '-4px', bottom: '-2px'}}>
-                          <RotateCcwIcon size={10} color="#c89f66" strokeWidth={3} />
-                        </div>
-                      </div>
-                    ) : (
-                      <ClipboardList size={20} color="#c89f66" />
                     )}
                   </div>
-                  <h2>
-                    {activeTab === 'return-request' 
-                      ? 'Can I raise a return/exchange request?' 
-                      : 'Where is my order?'}
-                  </h2>
-                </div>
-                
-                <div className="question-body">
-                  <p>Hi Rekha ,</p>
-                  <p>Your order was delivered on 10 Nov 24. As per Relietech policy, you can raise any Return/Exchange request within 7 days of delivery. As return window has passed on 17 Nov 24, you will not be able to Return/Exchange this order.</p>
-                </div>
-                
-                <div className="divider-line full-width"></div>
-                
-                <div className="helpful-section">
-                  <span className="helpful-text">Was this helpful?</span>
-                  <div className="helpful-buttons">
-                    <button 
-                      className={`helpful-btn btn-no ${feedbackType === 'no' ? 'selected' : ''}`} 
-                      onClick={() => {
-                        setFeedbackSubmitted(false);
-                        setShowFeedbackModal(true);
-                      }}
-                    >
-                      <ThumbsDown size={18} strokeWidth={2.5} /> NO
-                    </button>
-                    <button 
-                      className={`helpful-btn btn-yes ${feedbackType === 'yes' ? 'selected' : ''}`}
-                      onClick={() => {
-                        setFeedbackSubmitted(true);
-                        setFeedbackType('yes');
-                      }}
-                    >
-                      <ThumbsUp size={18} strokeWidth={2.5} /> YES
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Still need help section */}
-              <div className="still-need-help-section">
-                <div className="still-help-header">
-                  <h2>Still need help?</h2>
-                </div>
-                
-                <div className="contact-options-list">
-                  <div className="contact-card" onClick={() => setShowChatModal(true)}>
-                    <div className="contact-left">
-                      <div className="contact-icon-wrapper">
-                        <MessageSquare size={20} color="#c89f66" strokeWidth={2} />
-                      </div>
-                      <div className="contact-text">
-                        <h4>Chat with us</h4>
-                        <p>Wait time: Less than 1 minute</p>
-                      </div>
-                    </div>
-                    <div className="contact-chevron-circle">
-                      <ChevronRight size={18} color="#c89f66" />
-                    </div>
-                  </div>
-                  
-                  <div className="contact-card" onClick={() => setShowCallModal(true)}>
-                    <div className="contact-left">
-                      <div className="contact-icon-wrapper">
-                        <PhoneCall size={20} color="#c89f66" strokeWidth={2} />
-                      </div>
-                      <div className="contact-text">
-                        <h4>Call me back</h4>
-                        <p>Wait time: Less than 5 minutes</p>
-                      </div>
-                    </div>
-                    <div className="contact-chevron-circle">
-                      <ChevronRight size={18} color="#c89f66" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* No feedback banner removed based on user request */}
-
-              {/* Dark Feedback Success Banner (For YES) */}
-              {feedbackSubmitted && feedbackType === 'yes' && (
-                <div className="feedback-dark-banner fade-in">
-                  <div className="dark-banner-icon">
-                    <div className="info-icon-small">
-                      <span className="info-text">i</span>
-                    </div>
-                  </div>
-                  <span className="dark-success-text">Thanks for the feedback!</span>
-                </div>
+                ))
               )}
-
-              {/* Call Confirmation Banner */}
-              {callRequested && (
-                <div className="feedback-success-banner fade-in" style={{ marginTop: '16px' }}>
-                  <div className="feedback-success-left">
-                    <div className="icon-circle purple-icon" style={{ backgroundColor: '#2e7d32', boxShadow: 'none' }}>
-                      <PhoneCall size={20} color="white" strokeWidth={2.5} />
-                    </div>
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      <span className="success-text" style={{ color: '#2e7d32' }}>Call request confirmed!</span>
-                      <span style={{ fontSize: '13px', color: '#555', marginTop: '4px' }}>Our agent will call you in 5 minutes.</span>
-                    </div>
-                  </div>
+            </div>
+          </div>
+        ) : (
+          <div className="faq-list-card" style={{ padding: '24px' }}>
+              <h3 style={{ marginTop: 0, marginBottom: '24px', fontSize: '18px', color: '#111827' }}>My Support Tickets</h3>
+              {isLoadingTickets ? (
+                <div style={{ textAlign: 'center', padding: '20px', color: '#64748b' }}>Loading tickets...</div>
+              ) : myTickets.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '40px 20px', color: '#64748b' }}>
+                  <Package size={32} style={{ opacity: 0.3, marginBottom: '12px' }} />
+                  <div>You haven't submitted any tickets yet.</div>
                 </div>
-              )}
-
-              {/* Chat Confirmation Banner */}
-              {chatStarted && (
-                <div className="feedback-success-banner fade-in" style={{ marginTop: '16px' }}>
-                  <div className="feedback-success-left">
-                    <div className="icon-circle purple-icon" style={{ backgroundColor: '#c89f66', boxShadow: 'none' }}>
-                      <MessageSquare size={20} color="white" strokeWidth={2.5} />
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  {myTickets.map(ticket => (
+                    <div key={ticket._id} style={{ border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px', background: '#fff' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                        <span style={{ fontWeight: '600', fontSize: '16px', color: '#111827' }}>{ticket.subject}</span>
+                        <span style={{ background: ticket.status === 'resolved' ? '#dcfce7' : ticket.status === 'pending' ? '#fef9c3' : ticket.status === 'escalated' ? '#fee2e2' : '#dbeafe', color: ticket.status === 'resolved' ? '#166534' : ticket.status === 'pending' ? '#854d0e' : ticket.status === 'escalated' ? '#991b1b' : '#1e40af', padding: '4px 10px', borderRadius: '12px', fontSize: '12px', fontWeight: '600', textTransform: 'capitalize' }}>
+                          {ticket.status}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '13px', color: '#6b7280', marginBottom: '12px' }}>
+                        Ticket ID: {ticket.ticketNumber || ticket._id.substring(0, 8)} | Date: {new Date(ticket.createdAt).toLocaleDateString()} | Category: {ticket.category}
+                      </div>
+                      
+                      <div style={{ fontSize: '14px', color: '#4a5568', marginBottom: '16px', lineHeight: '1.5' }}>
+                        {ticket.description}
+                      </div>
+                      
+                      {(ticket.resolution || ticket.adminReply) && (
+                        <div style={{ background: '#F8F3EB', padding: '16px', borderRadius: '8px', borderLeft: '4px solid #C89953', marginTop: '12px' }}>
+                          <strong style={{ display: 'block', fontSize: '13px', color: '#B68645', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Admin Reply / Resolution:</strong>
+                          <span style={{ fontSize: '15px', color: '#5c4629', lineHeight: '1.5' }}>{ticket.resolution || ticket.adminReply}</span>
+                        </div>
+                      )}
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      <span className="success-text" style={{ color: '#c89f66' }}>Chat session started!</span>
-                      <span style={{ fontSize: '13px', color: '#555', marginTop: '4px' }}>Connecting you to an agent...</span>
-                    </div>
-                  </div>
+                  ))}
                 </div>
               )}
             </div>
           )}
+
+          {/* Still Need Help Banner */}
+          <div className="faq-contact-banner">
+            <div className="contact-banner-left">
+              <div className="contact-avatar">
+                <Headset size={32} color="#C89953" strokeWidth={1.5} />
+              </div>
+              <div className="contact-banner-text">
+                <h3>Still need help?</h3>
+                <p>Our support team is here to assist you.</p>
+              </div>
+            </div>
+            <button className="faq-contact-btn" onClick={() => setIsContactModalOpen(true)}>
+              Contact Us
+            </button>
+          </div>
         </div>
-        
-        {/* Feedback Centered Card Modal */}
-        {showFeedbackModal && (
-          <div className="feedback-modal-overlay center-card-overlay">
-            <div className="feedback-modal center-card-modal">
-              <div className="modal-header" style={{ justifyContent: 'space-between', alignItems: 'flex-start', margin: 0, padding: 0 }}>
-                <h2 style={{ fontSize: '15px', fontWeight: '800', color: '#111', lineHeight: '1.4', margin: 0 }}>
-                  Do you want to tell us why this wasn't helpful?
-                </h2>
-                <button 
-                  onClick={() => setShowFeedbackModal(false)}
-                  style={{ background: 'transparent', border: 'none', padding: '0', cursor: 'pointer', marginLeft: '16px' }}
-                >
-                  <X size={20} color="#333" />
-                </button>
-              </div>
-              
-              <div className="modal-body" style={{ marginTop: '32px', marginBottom: '32px' }}>
-                <label className="comment-label">Comment</label>
-                <textarea 
-                  className="comment-textarea" 
-                  placeholder="Type your comment here..."
-                  rows={3}
-                ></textarea>
-              </div>
-              
-              <div className="modal-footer" style={{ gap: '16px' }}>
-                <button className="btn-no-thanks" onClick={() => setShowFeedbackModal(false)}>
-                  No, Thanks
-                </button>
-                <button className="btn-submit" onClick={() => {
-                  setShowFeedbackModal(false);
-                  setFeedbackSubmitted(true);
-                  setFeedbackType('no');
-                }}>
-                  Submit
-                </button>
-              </div>
+      </div>
+      
+      {/* Contact Support Ticket Modal */}
+      {isContactModalOpen && (
+        <div className="feedback-modal-overlay center-card-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <div className="feedback-modal center-card-modal" style={{ background: 'white', padding: '24px', borderRadius: '12px', width: '90%', maxWidth: '500px' }}>
+            <div className="modal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h2 style={{ fontSize: '18px', fontWeight: '700', color: '#111', margin: 0 }}>Create a Support Ticket</h2>
+              <button onClick={() => setIsContactModalOpen(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}>
+                <X size={20} color="#333" />
+              </button>
             </div>
+            
+            <form onSubmit={handleTicketSubmit} className="modal-body">
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#333', marginBottom: '8px' }}>Subject</label>
+                <input type="text" required placeholder="Brief summary of your issue" value={ticketData.subject} onChange={(e) => setTicketData({...ticketData, subject: e.target.value})} style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e5e7eb', outline: 'none' }} />
+              </div>
+              
+              <div style={{ display: 'flex', gap: '16px', marginBottom: '16px' }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#333', marginBottom: '8px' }}>Category</label>
+                  <select value={ticketData.category} onChange={(e) => setTicketData({...ticketData, category: e.target.value})} style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e5e7eb', outline: 'none', background: '#fff' }}>
+                    <option value="Technical">Technical Issue</option>
+                    <option value="Account">Account Issue</option>
+                    <option value="Order">Order Issue</option>
+                    <option value="Payment">Payment Issue</option>
+                  </select>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#333', marginBottom: '8px' }}>Priority</label>
+                  <select value={ticketData.priority} onChange={(e) => setTicketData({...ticketData, priority: e.target.value})} style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e5e7eb', outline: 'none', background: '#fff' }}>
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div style={{ marginBottom: '24px' }}>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#333', marginBottom: '8px' }}>Description</label>
+                <textarea required placeholder="Describe your issue in detail..." rows="4" value={ticketData.description} onChange={(e) => setTicketData({...ticketData, description: e.target.value})} style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e5e7eb', outline: 'none', resize: 'vertical' }}></textarea>
+              </div>
+              
+              <button type="submit" disabled={isSubmitting} className="btn-submit" style={{ width: '100%', padding: '12px', background: '#C89953', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1 }}>
+                {isSubmitting ? 'Submitting...' : 'Submit Ticket'}
+              </button>
+            </form>
           </div>
-        )}
-
-        {/* Call Me Back Bottom Sheet Modal */}
-        {showCallModal && (
-          <div className="feedback-modal-overlay center-card-overlay">
-            <div className="call-modal center-card-modal">
-              <div className="call-modal-header">
-                <h3>CALL ME BACK</h3>
-                <button className="modal-close-btn" onClick={() => setShowCallModal(false)}>
-                  <X size={20} color="#333" />
-                </button>
-              </div>
-              
-              <div className="call-modal-body">
-                <div className="contact-details-section">
-                  <h3>Your Contact Details</h3>
-                  <p className="contact-subtitle">We will call you back on the below number</p>
-                  
-                  <div className="phone-number-field">
-                    <span className="phone-label">Phone Number</span>
-                    <div className="phone-value">+91 9344954743</div>
-                  </div>
-                </div>
-
-                <div className="language-section">
-                  <p className="language-title">Let us know your preferred communication language</p>
-                  <div className="language-grid">
-                    {languages.map((lang) => (
-                      <button 
-                        key={lang} 
-                        className={`lang-btn ${selectedLanguage === lang ? 'selected' : ''}`}
-                        onClick={() => setSelectedLanguage(lang)}
-                      >
-                        {lang}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              
-              <div className="call-modal-footer">
-                <button 
-                  className={`btn-continue ${selectedLanguage ? 'active' : ''}`}
-                  disabled={!selectedLanguage}
-                  onClick={() => {
-                    setShowCallModal(false);
-                    setCallRequested(true);
-                  }}
-                >
-                  Select to Continue
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Chat Modal */}
-        {showChatModal && (
-          <div className="feedback-modal-overlay center-card-overlay">
-            <div className="call-modal center-card-modal">
-              <div className="call-modal-header">
-                <h3>CHAT WITH US</h3>
-                <button className="modal-close-btn" onClick={() => setShowChatModal(false)}>
-                  <X size={20} color="#333" />
-                </button>
-              </div>
-              
-              <div className="call-modal-body">
-                <div className="contact-details-section">
-                  <h3>Your Contact Details</h3>
-                  <p className="contact-subtitle">We will connect you via chat on the below number</p>
-                  
-                  <div className="phone-number-field">
-                    <span className="phone-label">Phone Number</span>
-                    <div className="phone-value">+91 9344954743</div>
-                  </div>
-                </div>
-
-                <div className="language-section">
-                  <p className="language-title">Let us know your preferred communication language</p>
-                  <div className="language-grid">
-                    {languages.map((lang) => (
-                      <button 
-                        key={lang} 
-                        className={`lang-btn ${selectedChatLanguage === lang ? 'selected' : ''}`}
-                        onClick={() => setSelectedChatLanguage(lang)}
-                      >
-                        {lang}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              
-              <div className="call-modal-footer">
-                <button 
-                  className={`btn-continue ${selectedChatLanguage ? 'active' : ''}`}
-                  disabled={!selectedChatLanguage}
-                  onClick={() => {
-                    setShowChatModal(false);
-                    setChatStarted(true);
-                  }}
-                >
-                  Select to Continue
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-        
+        </div>
+      )}
     </div>
   );
 };
-
-// Helper component for the small loop badge
-const RotateCcwIcon = ({ size, color, strokeWidth }) => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    width={size} height={size} 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke={color} 
-    strokeWidth={strokeWidth} 
-    strokeLinecap="round" 
-    strokeLinejoin="round"
-  >
-    <polyline points="3 9 9 9 9 3"></polyline>
-    <path d="M20.49 9A9 9 0 0 0 5.64 5.64L3 9"></path>
-    <path d="M3.51 15A9 9 0 0 0 18.36 18.36L21 15"></path>
-    <polyline points="21 15 15 15 15 21"></polyline>
-  </svg>
-);
 
 export default Support;

@@ -63,7 +63,6 @@ const AppContent = () => {
         <Route path="/payment" element={<Payment />} />
         <Route path="/summary" element={<Summary />} />
         <Route path="/order-confirmed" element={<OrderConfirmed />} />
-        <Route path="/coupons" element={<Coupons />} />
 
         <Route path="/account/my-orders" element={<MyOrders />} />
         <Route path="/account" element={<AccountLayout />}>
@@ -74,7 +73,7 @@ const AppContent = () => {
           <Route path="orders" element={<AccountPlaceholder />} />
           <Route path="addresses" element={<SavedAddresses />} />
           <Route path="payment-methods" element={<PaymentMethods />} />
-          <Route path="coupons" element={<AccountPlaceholder />} />
+          <Route path="coupons" element={<Coupons />} />
           <Route path="notifications" element={<Notifications />} />
           <Route path="returns" element={<ReturnRefund />} />
           <Route path="recently-viewed" element={<AccountPlaceholder />} />

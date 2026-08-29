@@ -5,10 +5,10 @@ import './BrandManagement.css';
 import './Dashboard.css';
 import AddNewBrand from './AddNewBrand';
 
-const sparklineTotalBrands = [{ v: 20 }, { v: 22 }, { v: 25 }, { v: 24 }, { v: 26 }, { v: 27 }, { v: 28 }];
-const sparklineActiveBrands = [{ v: 15 }, { v: 18 }, { v: 20 }, { v: 22 }, { v: 23 }, { v: 23 }, { v: 24 }];
-const sparklineInactiveBrands = [{ v: 5 }, { v: 4 }, { v: 5 }, { v: 2 }, { v: 3 }, { v: 4 }, { v: 4 }];
-const sparklineTotalProducts = [{ v: 300 }, { v: 310 }, { v: 330 }, { v: 340 }, { v: 345 }, { v: 350 }, { v: 356 }];
+const sparklineTotalBrands = [{ v: 40 }, { v: 30 }, { v: 60 }, { v: 45 }, { v: 70 }, { v: 90 }, { v: 120 }];
+const sparklineActiveBrands = [{ v: 10 }, { v: 15 }, { v: 12 }, { v: 22 }, { v: 18 }, { v: 28 }, { v: 25 }];
+const sparklineInactiveBrands = [{ v: 20 }, { v: 25 }, { v: 20 }, { v: 35 }, { v: 30 }, { v: 45 }, { v: 40 }];
+const sparklineTotalProducts = [{ v: 5 }, { v: 10 }, { v: 15 }, { v: 12 }, { v: 20 }, { v: 18 }, { v: 30 }];
 
 const renderCustomDot = (props) => {
   const { cx, cy, index } = props;
@@ -128,16 +128,20 @@ const BrandManagement = ({ setActiveTab }) => {
   return (
     <div className="brand-management-page">
       {/* Header Section */}
-      <div className="bm-header-section">
-        
-        <div className="bm-header-title-row">
-          <div>
-            <h1 className="bm-page-title">Brand Management</h1>
+      <div style={{ background: '#fff', padding: '16px 24px', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 2px 12px rgba(0,0,0,0.03)', marginBottom: '24px', border: '1px solid #f9f9f9' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={{ width: '48px', height: '48px', borderRadius: '12px', border: '1.5px solid #fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Tag size={22} color="#d97706" />
           </div>
-          <button className="bm-btn-add" onClick={() => setIsAdding(true)}>
-            <Plus size={16} /> Add Brand
-          </button>
+          <div style={{ width: '2.5px', height: '22px', background: '#d97706', borderRadius: '2px' }}></div>
+          <h1 style={{ margin: 0, fontSize: '20px', fontWeight: '700', color: '#0f172a' }}>Brand Management</h1>
         </div>
+        <button 
+          onClick={() => setIsAdding(true)}
+          style={{ background: 'linear-gradient(90deg, #d97706 0%, #b45309 100%)', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontWeight: '600', fontSize: '14px', boxShadow: '0 4px 12px rgba(217, 119, 6, 0.2)' }}
+        >
+          <Plus size={16} strokeWidth={2.5} /> Add Brand
+        </button>
       </div>
 
       {/* Stats Cards */}

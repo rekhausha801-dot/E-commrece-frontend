@@ -1,22 +1,15 @@
 import React, { useState } from 'react';
 import { Search, ChevronDown, ChevronRight, HelpCircle, FileText, Mail, Phone, Clock, Send, Paperclip, ArrowRight, Ticket, Users, User, MessageSquare, AlertCircle, CheckCircle2, MoreVertical, Edit, Trash2, Eye, FileDigit, Settings as SettingsIcon, BookOpen, ExternalLink, Video, Truck, RotateCcw, Package } from 'lucide-react';
 import { Dropdown, Modal, message } from 'antd';
+import { getFAQs, deleteFAQ, getAdminTickets, createFAQ, updateFAQ, resolveTicket, updateTicketStatus } from '../../services/api';
 
-const mockTickets = [
-  { id: 'TKT-1042', customer: 'Sarah Jenkins', subject: 'Order not received', category: 'Shipping', priority: 'High', status: 'Open', date: 'Aug 17, 2026', admin: 'Unassigned' },
-  { id: 'TKT-1041', customer: 'Michael Chen', subject: 'Refund request for defective item', category: 'Returns', priority: 'Medium', status: 'Pending', date: 'Aug 16, 2026', admin: 'Admin User' },
-  { id: 'TKT-1040', customer: 'Emma Watson', subject: 'Cannot apply coupon code', category: 'Payment', priority: 'Low', status: 'Resolved', date: 'Aug 15, 2026', admin: 'Super Admin' },
-  { id: 'TKT-1039', customer: 'David Smith', subject: 'Account locked out', category: 'Account', priority: 'Critical', status: 'Escalated', date: 'Aug 14, 2026', admin: 'Super Admin' },
-];
 
-const mockFaqs = [
-  { id: 1, question: 'How long does shipping take?', category: 'Shipping', status: 'Active', order: 1 },
-  { id: 2, question: 'What is your return policy?', category: 'Returns', status: 'Active', order: 2 },
-  { id: 3, question: 'Do you offer international shipping?', category: 'Shipping', status: 'Draft', order: 3 },
-  { id: 4, question: 'How can I track my order?', category: 'Orders', status: 'Active', order: 4 },
-];
+
+
 
 const HelpSupport = () => {
+  const [faqs, setFaqs] = useState([]);
+  const [tickets, setTickets] = useState([]);
   const [activeTab, setActiveTab] = useState('Help Center');
   const [searchTerm, setSearchTerm] = useState('');
   const [ticketSearchTerm, setTicketSearchTerm] = useState('');
@@ -25,39 +18,124 @@ const HelpSupport = () => {
   
   const [isFaqModalVisible, setIsFaqModalVisible] = useState(false);
   const [faqFormMode, setFaqFormMode] = useState('add');
+  const [currentFaqId, setCurrentFaqId] = useState(null);
+  const [faqFormData, setFaqFormData] = useState({
+    question: '',
+    answer: '',
+    category: 'Shipping',
+    status: 'active'
+  });
 
   const [isArticleFormVisible, setIsArticleFormVisible] = useState(false);
   const [articleFormMode, setArticleFormMode] = useState('add');
 
   const [isTicketReplyVisible, setIsTicketReplyVisible] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState(null);
+  const [replyText, setReplyText] = useState('');
+
+  const fetchData = async () => {
+    try {
+      const [faqsRes, ticketsRes] = await Promise.all([
+        getFAQs(),
+        getAdminTickets()
+      ]);
+      setFaqs(faqsRes.data.data || faqsRes.data || []);
+      setTickets(ticketsRes.data.data || ticketsRes.data || []);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      message.error('Failed to load support data');
+    }
+  };
+
+  React.useEffect(() => {
+    fetchData();
+  }, []);
   
   const handleExport = () => {
     message.loading({ content: 'Exporting data...', key: 'export' });
     setTimeout(() => message.success({ content: 'Export completed successfully!', key: 'export' }), 1000);
   };
 
-  const handleTicketAction = (action, ticketId) => {
+  const handleTicketAction = (action, ticket) => {
     if (action === 'view') {
-      setSelectedTicket(ticketId);
+      setSelectedTicket(ticket);
+      setReplyText('');
       setIsTicketReplyVisible(true);
+    } else if (action === 'close') {
+      Modal.confirm({
+        title: 'Close Ticket',
+        content: 'Are you sure you want to resolve this ticket?',
+        onOk: async () => {
+          try {
+            await updateTicketStatus(ticket._id, 'resolved');
+            message.success('Ticket marked as resolved');
+            fetchData();
+          } catch (e) {
+            message.error('Failed to update status');
+          }
+        }
+      });
     } else {
-      message.info(`Action '${action}' triggered for ticket ${ticketId}`);
+      message.info(`Action '${action}' triggered for ticket ${ticket.ticketNumber || ticket._id}`);
+    }
+  };
+
+  const handleTicketReply = async () => {
+    if (!replyText.trim()) return message.warning('Please enter a reply');
+    try {
+      await resolveTicket(selectedTicket._id, { resolution: replyText });
+      message.success('Ticket resolved and reply sent successfully!');
+      setIsTicketReplyVisible(false);
+      setReplyText('');
+      fetchData();
+    } catch (error) {
+      console.error('Error resolving ticket:', error);
+      message.error('Failed to send reply');
     }
   };
 
   const handleAddFAQ = () => {
     setFaqFormMode('add');
+    setCurrentFaqId(null);
+    setFaqFormData({ question: '', answer: '', category: 'Shipping', status: 'active' });
     setIsFaqModalVisible(true);
   };
 
-  const handleEdit = (itemType, id) => {
+  const handleEdit = (itemType, item) => {
     if (itemType === 'FAQ') {
       setFaqFormMode('edit');
+      setCurrentFaqId(item._id);
+      setFaqFormData({
+        question: item.question || '',
+        answer: item.answer || '',
+        category: item.category || 'Shipping',
+        status: item.status || 'active'
+      });
       setIsFaqModalVisible(true);
     } else if (itemType === 'Article') {
       setArticleFormMode('edit');
       setIsArticleFormVisible(true);
+    }
+  };
+
+  const handleFaqSubmit = async () => {
+    if (!faqFormData.question || !faqFormData.answer) {
+      return message.warning('Please fill in all required fields.');
+    }
+    
+    try {
+      if (faqFormMode === 'add') {
+        await createFAQ(faqFormData);
+        message.success('FAQ created successfully!');
+      } else {
+        await updateFAQ(currentFaqId, faqFormData);
+        message.success('FAQ updated successfully!');
+      }
+      setIsFaqModalVisible(false);
+      fetchData();
+    } catch (error) {
+      console.error('Error saving FAQ:', error);
+      message.error(`Failed to ${faqFormMode} FAQ.`);
     }
   };
 
@@ -67,7 +145,20 @@ const HelpSupport = () => {
       content: 'Are you sure you want to delete this? This action cannot be undone.',
       okText: 'Delete',
       okType: 'danger',
-      onOk: () => message.success(`${itemType} deleted successfully!`)
+      onOk: async () => {
+        if (itemType === 'FAQ') {
+          try {
+            await deleteFAQ(id);
+            message.success(`${itemType} deleted successfully!`);
+            fetchData();
+          } catch (error) {
+            console.error('Error deleting FAQ:', error);
+            message.error(`Failed to delete ${itemType}.`);
+          }
+        } else {
+          message.success(`${itemType} deleted successfully!`);
+        }
+      }
     });
   };
 
@@ -93,26 +184,29 @@ const HelpSupport = () => {
     }, 1200);
   };
   
-  const tabs = ['Help Center', 'Support Tickets', 'FAQs', 'Knowledge Base', 'Guides', 'Contact Support'];
+  const tabs = ['Help Center', 'Support Tickets', 'FAQs'];
 
   const renderStatusBadge = (status) => {
+    const s = (status || '').toLowerCase();
     let bg = '#f3f4f6', color = '#6b7280';
-    if (status === 'Open' || status === 'Active') { bg = '#eff6ff'; color = '#3b82f6'; }
-    if (status === 'Resolved' || status === 'Published') { bg = '#ecfdf5'; color = '#10b981'; }
-    if (status === 'Pending' || status === 'Draft') { bg = '#fffbeb'; color = '#f59e0b'; }
-    if (status === 'Escalated') { bg = '#fef2f2'; color = '#ef4444'; }
+    let text = status || 'Unknown';
+    if (s === 'open' || s === 'active') { bg = '#eff6ff'; color = '#3b82f6'; text = s === 'active' ? 'Active' : 'Open'; }
+    if (s === 'resolved' || s === 'published') { bg = '#ecfdf5'; color = '#10b981'; text = s === 'published' ? 'Published' : 'Resolved'; }
+    if (s === 'pending' || s === 'draft') { bg = '#fffbeb'; color = '#f59e0b'; text = s === 'draft' ? 'Draft' : 'Pending'; }
+    if (s === 'escalated') { bg = '#fef2f2'; color = '#ef4444'; text = 'Escalated'; }
     
-    return <span style={{ background: bg, color, padding: '4px 10px', borderRadius: '20px', fontSize: '12px', fontWeight: '600' }}>{status}</span>;
+    return <span style={{ background: bg, color, padding: '4px 10px', borderRadius: '20px', fontSize: '12px', fontWeight: '600', textTransform: 'capitalize' }}>{text}</span>;
   };
 
   const renderPriorityBadge = (priority) => {
+    const p = (priority || '').toLowerCase();
     let color = '#6b7280';
-    if (priority === 'High') color = '#ef4444';
-    if (priority === 'Critical') color = '#991b1b';
-    if (priority === 'Medium') color = '#f59e0b';
-    if (priority === 'Low') color = '#10b981';
+    if (p === 'high' || p === 'urgent') color = '#ef4444';
+    if (p === 'critical') color = '#991b1b';
+    if (p === 'medium') color = '#f59e0b';
+    if (p === 'low') color = '#10b981';
     
-    return <span style={{ color, fontSize: '13px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px' }}><AlertCircle size={14} /> {priority}</span>;
+    return <span style={{ color, fontSize: '13px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '4px', textTransform: 'capitalize' }}><AlertCircle size={14} /> {priority || 'None'}</span>;
   };
 
   return (
@@ -219,8 +313,8 @@ const HelpSupport = () => {
                       </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: '12px' }}>
-                      <div style={{ fontSize: '40px', fontWeight: '800', color: '#0f172a', lineHeight: '1' }}>24</div>
-                      <div style={{ color: '#10b981', fontSize: '13px', fontWeight: '700', display: 'flex', alignItems: 'center' }}>+3 today</div>
+                      <div style={{ fontSize: '40px', fontWeight: '800', color: '#0f172a', lineHeight: '1' }}>{tickets.filter(t => (t.status || '').toLowerCase() === 'open').length}</div>
+                      <div style={{ color: '#10b981', fontSize: '13px', fontWeight: '700', display: 'flex', alignItems: 'center' }}>Live</div>
                     </div>
                   </div>
 
@@ -232,7 +326,7 @@ const HelpSupport = () => {
                       </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: '12px' }}>
-                      <div style={{ fontSize: '40px', fontWeight: '800', color: '#78350f', lineHeight: '1' }}>12</div>
+                      <div style={{ fontSize: '40px', fontWeight: '800', color: '#78350f', lineHeight: '1' }}>{tickets.filter(t => (t.status || '').toLowerCase() === 'pending').length}</div>
                       <div style={{ color: '#f59e0b', fontSize: '13px', fontWeight: '700' }}>In Review</div>
                     </div>
                   </div>
@@ -243,8 +337,8 @@ const HelpSupport = () => {
                       <span style={{ fontSize: '15px', fontWeight: '700', color: '#065f46' }}>Resolved</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: '12px' }}>
-                      <div style={{ fontSize: '40px', fontWeight: '800', color: '#064e3b', lineHeight: '1' }}>148</div>
-                      <div style={{ color: '#10b981', fontSize: '13px', fontWeight: '700' }}>92% rate</div>
+                      <div style={{ fontSize: '40px', fontWeight: '800', color: '#064e3b', lineHeight: '1' }}>{tickets.filter(t => (t.status || '').toLowerCase() === 'resolved').length}</div>
+                      <div style={{ color: '#10b981', fontSize: '13px', fontWeight: '700' }}>{tickets.length > 0 ? Math.round((tickets.filter(t => (t.status || '').toLowerCase() === 'resolved').length / tickets.length) * 100) : 0}% rate</div>
                     </div>
                   </div>
 
@@ -254,7 +348,7 @@ const HelpSupport = () => {
                       <span style={{ fontSize: '15px', fontWeight: '700', color: '#991b1b' }}>Escalated</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginTop: '12px' }}>
-                      <div style={{ fontSize: '40px', fontWeight: '800', color: '#7f1d1d', lineHeight: '1' }}>3</div>
+                      <div style={{ fontSize: '40px', fontWeight: '800', color: '#7f1d1d', lineHeight: '1' }}>{tickets.filter(t => (t.status || '').toLowerCase() === 'escalated').length}</div>
                       <div style={{ color: '#ef4444', fontSize: '13px', fontWeight: '700' }}>Action req.</div>
                     </div>
                   </div>
@@ -263,21 +357,21 @@ const HelpSupport = () => {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   <h4 style={{ margin: '0 0 8px 0', fontSize: '16px', fontWeight: '600', color: '#374151' }}>Search Results</h4>
                   
-                  {mockTickets.filter(t => t.subject.toLowerCase().includes(searchTerm.toLowerCase()) || t.id.toLowerCase().includes(searchTerm.toLowerCase())).map(ticket => (
-                    <div key={ticket.id} className="help-card" style={{ padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', border: '1px solid #e5e7eb' }}>
+                  {tickets.filter(t => (t.subject || '').toLowerCase().includes(searchTerm.toLowerCase()) || (t.ticketId || t._id || '').toLowerCase().includes(searchTerm.toLowerCase())).map(ticket => (
+                    <div key={ticket._id} className="help-card" style={{ padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', border: '1px solid #e5e7eb' }}>
                       <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                         <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#3b82f6' }}><Ticket size={18} /></div>
                         <div>
-                          <div style={{ fontWeight: '600', color: '#111827', marginBottom: '2px' }}>{ticket.subject} <span style={{ color: '#9ca3af', fontSize: '13px', fontWeight: 'normal', marginLeft: '8px' }}>{ticket.id}</span></div>
-                          <div style={{ fontSize: '13px', color: '#6b7280' }}>Ticket raised by {ticket.customer}</div>
+                          <div style={{ fontWeight: '600', color: '#111827', marginBottom: '2px' }}>{ticket.subject} <span style={{ color: '#9ca3af', fontSize: '13px', fontWeight: 'normal', marginLeft: '8px' }}>{ticket.ticketId || ticket._id.substring(0, 8)}</span></div>
+                          <div style={{ fontSize: '13px', color: '#6b7280' }}>Ticket raised by {ticket.userId?.name || 'Customer'}</div>
                         </div>
                       </div>
                       <ChevronRight size={18} color="#9ca3af" />
                     </div>
                   ))}
 
-                  {mockFaqs.filter(f => f.question.toLowerCase().includes(searchTerm.toLowerCase())).map(faq => (
-                    <div key={faq.id} className="help-card" style={{ padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', border: '1px solid #e5e7eb' }}>
+                  {faqs.filter(f => f.question.toLowerCase().includes(searchTerm.toLowerCase())).map(faq => (
+                    <div key={faq._id} className="help-card" style={{ padding: '16px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', border: '1px solid #e5e7eb' }}>
                       <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                         <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: '#fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f59e0b' }}><HelpCircle size={18} /></div>
                         <div>
@@ -289,8 +383,8 @@ const HelpSupport = () => {
                     </div>
                   ))}
 
-                  {mockTickets.filter(t => t.subject.toLowerCase().includes(searchTerm.toLowerCase()) || t.id.toLowerCase().includes(searchTerm.toLowerCase())).length === 0 && 
-                   mockFaqs.filter(f => f.question.toLowerCase().includes(searchTerm.toLowerCase())).length === 0 && (
+                  {tickets.filter(t => (t.subject || '').toLowerCase().includes(searchTerm.toLowerCase()) || (t.ticketId || t._id || '').toLowerCase().includes(searchTerm.toLowerCase())).length === 0 && 
+                   faqs.filter(f => f.question.toLowerCase().includes(searchTerm.toLowerCase())).length === 0 && (
                     <div style={{ padding: '40px', textAlign: 'center', color: '#6b7280', background: '#f9fafb', borderRadius: '16px', border: '1px dashed #d1d5db' }}>
                       <Search size={32} color="#d1d5db" style={{ margin: '0 auto 12px auto' }} />
                       <div style={{ fontSize: '16px', fontWeight: '500', color: '#374151' }}>No results found</div>
@@ -339,16 +433,16 @@ const HelpSupport = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {mockTickets.filter(t => 
-                      t.id.toLowerCase().includes(ticketSearchTerm.toLowerCase()) || 
-                      t.subject.toLowerCase().includes(ticketSearchTerm.toLowerCase()) || 
-                      t.customer.toLowerCase().includes(ticketSearchTerm.toLowerCase())
+                    {tickets.filter(t => 
+                      (t.ticketId || t._id || '').toLowerCase().includes(ticketSearchTerm.toLowerCase()) || 
+                      (t.subject || '').toLowerCase().includes(ticketSearchTerm.toLowerCase()) || 
+                      (t.userId?.name || '').toLowerCase().includes(ticketSearchTerm.toLowerCase())
                     ).map(ticket => (
-                      <tr key={ticket.id} className="table-row">
-                        <td style={{ fontWeight: '600', color: '#111827' }}>{ticket.id}</td>
+                      <tr key={ticket._id} className="table-row">
+                        <td style={{ fontWeight: '600', color: '#111827' }}>{ticket.ticketId || ticket._id.substring(0, 8)}</td>
                         <td style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '500' }}>
                           <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><User size={14} color="#6b7280" /></div>
-                          {ticket.customer}
+                          {ticket.userId?.name || 'Customer'}
                         </td>
                         <td>
                           <div style={{ fontWeight: '500', color: '#111827', marginBottom: '4px' }}>{ticket.subject}</div>
@@ -356,10 +450,10 @@ const HelpSupport = () => {
                         </td>
                         <td>{renderPriorityBadge(ticket.priority)}</td>
                         <td>{renderStatusBadge(ticket.status)}</td>
-                        <td style={{ color: '#6b7280' }}>{ticket.date}</td>
-                        <td style={{ color: ticket.admin === 'Unassigned' ? '#9ca3af' : '#374151', fontStyle: ticket.admin === 'Unassigned' ? 'italic' : 'normal' }}>{ticket.admin}</td>
+                        <td style={{ color: '#6b7280' }}>{new Date(ticket.createdAt).toLocaleDateString()}</td>
+                        <td style={{ color: !ticket.assignedTo ? '#9ca3af' : '#374151', fontStyle: !ticket.assignedTo ? 'italic' : 'normal' }}>{ticket.assignedTo?.name || 'Unassigned'}</td>
                         <td>
-                          <Dropdown trigger={['click']} menu={{ items: [{ key: 'view', label: 'View / Reply', icon: <MessageSquare size={14} /> }, { key: 'assign', label: 'Assign Admin', icon: <Users size={14} /> }, { key: 'close', label: 'Close Ticket', icon: <CheckCircle2 size={14} /> }], onClick: ({ key }) => handleTicketAction(key, ticket.id) }}>
+                          <Dropdown trigger={['click']} menu={{ items: [{ key: 'view', label: 'View / Reply', icon: <MessageSquare size={14} /> }, { key: 'assign', label: 'Assign Admin', icon: <Users size={14} /> }, { key: 'close', label: 'Close Ticket', icon: <CheckCircle2 size={14} /> }], onClick: ({ key }) => handleTicketAction(key, ticket) }}>
                             <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#9ca3af', padding: '4px' }}><MoreVertical size={16} /></button>
                           </Dropdown>
                         </td>
@@ -391,16 +485,16 @@ const HelpSupport = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {mockFaqs.map(faq => (
-                      <tr key={faq.id} className="table-row">
-                        <td style={{ color: '#6b7280', fontWeight: '500' }}>#{faq.order}</td>
+                    {faqs.map((faq, idx) => (
+                      <tr key={faq._id} className="table-row">
+                        <td style={{ color: '#6b7280', fontWeight: '500' }}>#{idx + 1}</td>
                         <td style={{ fontWeight: '500', color: '#111827', maxWidth: '300px' }}>{faq.question}</td>
                         <td style={{ color: '#4b5563' }}>{faq.category}</td>
-                        <td>{renderStatusBadge(faq.status)}</td>
+                        <td>{renderStatusBadge(faq.status || 'Active')}</td>
                         <td>
                           <div style={{ display: 'flex', gap: '8px' }}>
-                            <button onClick={() => handleEdit('FAQ', faq.id)} style={{ background: '#f3f4f6', border: 'none', padding: '6px', borderRadius: '6px', cursor: 'pointer', color: '#374151' }}><Edit size={14} /></button>
-                            <button onClick={() => handleDelete('FAQ', faq.id)} style={{ background: '#fef2f2', border: 'none', padding: '6px', borderRadius: '6px', cursor: 'pointer', color: '#ef4444' }}><Trash2 size={14} /></button>
+                            <button onClick={() => handleEdit('FAQ', faq)} style={{ background: '#f3f4f6', border: 'none', padding: '6px', borderRadius: '6px', cursor: 'pointer', color: '#374151' }}><Edit size={14} /></button>
+                            <button onClick={() => handleDelete('FAQ', faq._id)} style={{ background: '#fef2f2', border: 'none', padding: '6px', borderRadius: '6px', cursor: 'pointer', color: '#ef4444' }}><Trash2 size={14} /></button>
                           </div>
                         </td>
                       </tr>
@@ -411,145 +505,6 @@ const HelpSupport = () => {
             </div>
           )}
 
-          {/* TAB: KNOWLEDGE BASE */}
-          {activeTab === 'Knowledge Base' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-              <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '700', color: '#111827' }}>Knowledge Base Articles</h2>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
-                {[
-                  { title: 'Getting Started', desc: 'Basics of using the platform.', icon: <BookOpen color="#c9a05b" /> },
-                  { title: 'Orders & Shipping', desc: 'Managing fulfillment and delivery.', icon: <Truck color="#c9a05b" /> },
-                  { title: 'Payments', desc: 'Payment gateways and transactions.', icon: <FileText color="#c9a05b" /> },
-                  { title: 'Returns & Refunds', desc: 'Processing customer returns.', icon: <RotateCcw color="#c9a05b" /> },
-                  { title: 'Coupons & Promos', desc: 'Creating discount campaigns.', icon: <Ticket color="#c9a05b" /> },
-                  { title: 'Product Catalog', desc: 'Adding and editing inventory.', icon: <Package color="#c9a05b" /> },
-                ].map((kb, i) => (
-                  <div key={i} className="grid-card" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    <div style={{ width: '48px', height: '48px', background: '#fffdf7', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      {kb.icon}
-                    </div>
-                    <div>
-                      <h4 style={{ margin: '0 0 6px 0', fontSize: '16px', fontWeight: '600', color: '#111827' }}>{kb.title}</h4>
-                      <p style={{ margin: 0, fontSize: '13px', color: '#6b7280' }}>{kb.desc}</p>
-                    </div>
-                    <button 
-                      onClick={() => { setSelectedCategory(kb.title); setIsManageModalVisible(true); }}
-                      style={{ background: 'none', border: 'none', color: '#3b82f6', fontSize: '13px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', alignSelf: 'flex-start', padding: 0, marginTop: 'auto' }}
-                    >
-                      Manage Articles <ArrowRight size={14} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* TAB: GUIDES */}
-          {activeTab === 'Guides' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-              <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '700', color: '#111827' }}>System Guides & Tutorials</h2>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
-                {[
-                  { title: 'Admin Panel Walkthrough', type: 'Video Tutorial', time: '10 mins' },
-                  { title: 'Order Management Guide', type: 'Step-by-step PDF', time: '5 mins' },
-                  { title: 'Reports & Analytics', type: 'Interactive Guide', time: '15 mins' },
-                ].map((guide, i) => (
-                  <div key={i} className="grid-card" onClick={() => handleViewGuide(guide.title)} style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <div style={{ width: '64px', height: '64px', background: '#f9fafb', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #e5e7eb' }}>
-                      {guide.type.includes('Video') ? <Video size={24} color="#9ca3af" /> : <FileText size={24} color="#9ca3af" />}
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <h4 style={{ margin: '0 0 4px 0', fontSize: '14px', fontWeight: '600', color: '#111827' }}>{guide.title}</h4>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#6b7280' }}>
-                        <span>{guide.type}</span> • <span>{guide.time}</span>
-                      </div>
-                    </div>
-                    <ChevronRight size={16} color="#9ca3af" />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* TAB: CONTACT SUPPORT */}
-          {activeTab === 'Contact Support' && (
-            <div style={{ display: 'flex', gap: '32px', flexWrap: 'wrap' }}>
-              <div style={{ flex: '2', minWidth: '400px' }}>
-                <h2 style={{ margin: '0 0 8px 0', fontSize: '20px', fontWeight: '700', color: '#111827', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Mail size={20} color="#c9a05b" /> Send a Request
-                </h2>
-                <p style={{ margin: '0 0 24px 0', fontSize: '14px', color: '#6b7280' }}>Submit a ticket to the RelieTech platform developers for technical assistance.</p>
-                
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#4b5563', marginBottom: '8px' }}>Subject</label>
-                    <input type="text" className="form-input" placeholder="Brief summary of your issue" />
-                  </div>
-                  <div style={{ display: 'flex', gap: '16px' }}>
-                    <div style={{ flex: 1 }}>
-                      <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#4b5563', marginBottom: '8px' }}>Category</label>
-                      <select className="form-input" style={{ cursor: 'pointer' }}>
-                        <option>Technical Issue</option>
-                        <option>Account Issue</option>
-                        <option>Feature Request</option>
-                      </select>
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#4b5563', marginBottom: '8px' }}>Priority</label>
-                      <select className="form-input" style={{ cursor: 'pointer' }}>
-                        <option>Low</option>
-                        <option>Medium</option>
-                        <option>High</option>
-                        <option>Critical</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#4b5563', marginBottom: '8px' }}>Description</label>
-                    <textarea className="form-input" placeholder="Describe your issue in detail..." rows="5" style={{ resize: 'vertical' }}></textarea>
-                  </div>
-                  <button onClick={handleContactSubmit} className="premium-btn" style={{ width: '100%', padding: '14px', fontSize: '14px' }}>
-                    <Send size={16} /> Submit Request
-                  </button>
-                </div>
-              </div>
-
-              <div style={{ flex: '1', minWidth: '300px' }}>
-                <div className="support-info-card" style={{ padding: '32px', borderRadius: '16px' }}>
-                  <h3 style={{ margin: '0 0 20px 0', fontSize: '18px', fontWeight: '700', color: '#111827' }}>Dedicated Support</h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                      <div style={{ width: '44px', height: '44px', background: '#fff', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(201,160,91,0.15)' }}>
-                        <Mail size={20} color="#c9a05b" />
-                      </div>
-                      <div>
-                        <div style={{ fontSize: '12px', color: '#6b7280', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Email Us</div>
-                        <div style={{ fontSize: '15px', fontWeight: '600', color: '#111827', marginTop: '2px' }}>support@relietech.com</div>
-                      </div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                      <div style={{ width: '44px', height: '44px', background: '#fff', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(201,160,91,0.15)' }}>
-                        <Phone size={20} color="#c9a05b" />
-                      </div>
-                      <div>
-                        <div style={{ fontSize: '12px', color: '#6b7280', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Call Us (Toll-Free)</div>
-                        <div style={{ fontSize: '15px', fontWeight: '600', color: '#111827', marginTop: '2px' }}>+1 (800) 123-4567</div>
-                      </div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                      <div style={{ width: '44px', height: '44px', background: '#fff', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(201,160,91,0.15)' }}>
-                        <Clock size={20} color="#c9a05b" />
-                      </div>
-                      <div>
-                        <div style={{ fontSize: '12px', color: '#6b7280', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Working Hours</div>
-                        <div style={{ fontSize: '15px', fontWeight: '600', color: '#111827', marginTop: '2px' }}>24/7 Premium Support</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
 
         </div>
       </div>
@@ -618,31 +573,32 @@ const HelpSupport = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '16px' }}>
           <div>
             <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#4b5563', marginBottom: '8px' }}>Question</label>
-            <input type="text" className="form-input" placeholder="e.g. How long does shipping take?" defaultValue={faqFormMode === 'edit' ? 'Sample Question?' : ''} />
+            <input type="text" className="form-input" placeholder="e.g. How long does shipping take?" value={faqFormData.question} onChange={(e) => setFaqFormData({...faqFormData, question: e.target.value})} />
           </div>
           <div>
             <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#4b5563', marginBottom: '8px' }}>Answer</label>
-            <textarea className="form-input" rows="4" placeholder="Provide the detailed answer here..."></textarea>
+            <textarea className="form-input" rows="4" placeholder="Provide the detailed answer here..." value={faqFormData.answer} onChange={(e) => setFaqFormData({...faqFormData, answer: e.target.value})}></textarea>
           </div>
           <div style={{ display: 'flex', gap: '16px' }}>
             <div style={{ flex: 1 }}>
               <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#4b5563', marginBottom: '8px' }}>Category</label>
-              <select className="form-input">
-                <option>Shipping</option>
-                <option>Returns</option>
-                <option>Orders</option>
-                <option>Payment</option>
+              <select className="form-input" value={faqFormData.category} onChange={(e) => setFaqFormData({...faqFormData, category: e.target.value})}>
+                <option value="Shipping">Shipping</option>
+                <option value="Returns">Returns</option>
+                <option value="Orders">Orders</option>
+                <option value="Payment">Payment</option>
+                <option value="Account">Account</option>
               </select>
             </div>
             <div style={{ flex: 1 }}>
               <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#4b5563', marginBottom: '8px' }}>Status</label>
-              <select className="form-input">
-                <option>Active</option>
-                <option>Draft</option>
+              <select className="form-input" value={faqFormData.status} onChange={(e) => setFaqFormData({...faqFormData, status: e.target.value})}>
+                <option value="active">Active</option>
+                <option value="inactive">Draft / Inactive</option>
               </select>
             </div>
           </div>
-          <button className="premium-btn" style={{ width: '100%', marginTop: '8px' }} onClick={() => { message.success(`FAQ ${faqFormMode === 'add' ? 'created' : 'updated'} successfully!`); setIsFaqModalVisible(false); }}>
+          <button className="premium-btn" style={{ width: '100%', marginTop: '8px' }} onClick={handleFaqSubmit}>
             <CheckCircle2 size={16} /> Save FAQ
           </button>
         </div>
@@ -686,7 +642,7 @@ const HelpSupport = () => {
 
       {/* Ticket Reply Modal */}
       <Modal
-        title={<div style={{ fontSize: '18px', fontWeight: '700', color: '#111827', display: 'flex', alignItems: 'center', gap: '8px' }}><Ticket size={20} color="#3b82f6" /> Reply to Ticket {selectedTicket}</div>}
+        title={<div style={{ fontSize: '18px', fontWeight: '700', color: '#111827', display: 'flex', alignItems: 'center', gap: '8px' }}><Ticket size={20} color="#3b82f6" /> Reply to Ticket {selectedTicket?.ticketNumber || selectedTicket?._id?.substring(0, 8)}</div>}
         open={isTicketReplyVisible}
         onCancel={() => setIsTicketReplyVisible(false)}
         footer={null}
@@ -695,17 +651,20 @@ const HelpSupport = () => {
         <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div style={{ background: '#f9fafb', padding: '16px', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-              <div style={{ fontWeight: '600', color: '#111827' }}>Customer</div>
-              <div style={{ fontSize: '12px', color: '#6b7280' }}>Aug 17, 2026 - 10:30 AM</div>
+              <div style={{ fontWeight: '600', color: '#111827' }}>{selectedTicket?.customerName || selectedTicket?.userId?.name || 'Customer'}</div>
+              <div style={{ fontSize: '12px', color: '#6b7280' }}>{selectedTicket && new Date(selectedTicket.createdAt).toLocaleString()}</div>
+            </div>
+            <div style={{ color: '#111827', fontSize: '15px', fontWeight: '600', marginBottom: '8px' }}>
+              {selectedTicket?.subject}
             </div>
             <div style={{ color: '#374151', fontSize: '14px', lineHeight: '1.5' }}>
-              Hello, I haven't received my order yet. Could you please check the tracking status for me?
+              {selectedTicket?.description || "No description provided."}
             </div>
           </div>
           
           <div>
-            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#4b5563', marginBottom: '8px' }}>Your Reply</label>
-            <textarea className="form-input" rows="5" placeholder="Type your response here..."></textarea>
+            <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#4b5563', marginBottom: '8px' }}>Your Reply / Resolution</label>
+            <textarea className="form-input" rows="5" placeholder="Type your response here... this will resolve the ticket." value={replyText} onChange={(e) => setReplyText(e.target.value)}></textarea>
           </div>
           
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -714,8 +673,8 @@ const HelpSupport = () => {
                 <Paperclip size={16} /> Attach File
               </button>
             </div>
-            <button className="premium-btn" onClick={() => { message.success('Reply sent successfully!'); setIsTicketReplyVisible(false); }}>
-              <Send size={16} /> Send Reply
+            <button className="premium-btn" onClick={handleTicketReply}>
+              <Send size={16} /> Resolve & Send Reply
             </button>
           </div>
         </div>
