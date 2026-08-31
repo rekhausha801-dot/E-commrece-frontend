@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Dropdown, Modal, message } from 'antd';
-import { getAdminNotificationsApi, markAllNotificationsAsReadApi, getDashboardAnalyticsApi, getRatingAnalyticsApi } from '../../services/api';
 import './Dashboard.css';
 import {
   LayoutDashboard, BarChart2, FileText, Settings, Users, PieChart,
@@ -27,7 +26,7 @@ import ActivityLogManagement from './ActivityLogManagement';
 import HelpSupport from './HelpSupport';
 import NotificationManagement, { initialNotifications } from './NotificationManagement';
 import { mockProducts } from './ProductManagement';
-
+import { initialOrders } from './OrderManagement';
 import BrandManagement from './BrandManagement';
 import CustomerManagement from './CustomerManagement';
 import BannerManagement from './BannerManagement';
@@ -39,37 +38,190 @@ import {
   PieChart as RechartsPieChart, Pie, Cell, BarChart, Bar, LabelList
 } from 'recharts';
 
-
-
 const revenueData = [
-  { name: 'May 18', revenue: 200 },
-  { name: 'May 19', revenue: 350 },
-  { name: 'May 20', revenue: 520 },
-  { name: 'May 21', revenue: 380 },
-  { name: 'May 22', revenue: 650 },
-  { name: 'May 23', revenue: 780 },
-  { name: 'May 24', revenue: 1000 },
+  { name: 'May 18', revenue: 20000 },
+  { name: 'May 19', revenue: 35000 },
+  { name: 'May 20', revenue: 52000 },
+  { name: 'May 21', revenue: 38000 },
+  { name: 'May 22', revenue: 65000 },
+  { name: 'May 23', revenue: 78000 },
+  { name: 'May 24', revenue: 100000 },
 ];
 
-const sparklineTotalRevenue = [{ v: 4 }, { v: 3 }, { v: 6 }, { v: 4 }, { v: 7 }, { v: 9 }, { v: 12 }];
-const sparklineTotalOrders = [{ v: 1 }, { v: 2 }, { v: 1 }, { v: 3 }, { v: 2 }, { v: 3 }, { v: 2 }];
-const sparklineTotalCustomers = [{ v: 2 }, { v: 3 }, { v: 2 }, { v: 4 }, { v: 3 }, { v: 5 }, { v: 4 }];
-const sparklineTotalProducts = [{ v: 1 }, { v: 2 }, { v: 2 }, { v: 1 }, { v: 2 }, { v: 2 }, { v: 3 }];
+const sparklineTotalRevenue = [{ v: 40 }, { v: 30 }, { v: 60 }, { v: 45 }, { v: 70 }, { v: 90 }, { v: 120 }];
+const sparklineTotalOrders = [{ v: 10 }, { v: 15 }, { v: 12 }, { v: 22 }, { v: 18 }, { v: 28 }, { v: 25 }];
+const sparklineTotalCustomers = [{ v: 20 }, { v: 25 }, { v: 20 }, { v: 35 }, { v: 30 }, { v: 45 }, { v: 40 }];
+const sparklineTotalProducts = [{ v: 5 }, { v: 10 }, { v: 15 }, { v: 12 }, { v: 20 }, { v: 18 }, { v: 30 }];
+
+const topSellingProducts = [
+  { name: 'Linen Shirt', sold: '256 sold', price: '₹2,45,000', img: 'https://images.unsplash.com/photo-1596755094514-f87e32f85e23?w=100' },
+  { name: 'Summer Dress', sold: '182 sold', price: '₹1,86,000', img: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=100' },
+  { name: 'Sneakers', sold: '140 sold', price: '₹1,45,000', img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100' },
+  { name: 'Handbag', sold: '112 sold', price: '₹98,000', img: 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?w=100' },
+];
 
 const topCategoriesData = [
-  { name: 'Women', value: 8, color: '#8c673d' },
-  { name: 'Men\'s Wear', value: 5, color: '#dfbc88' },
-  { name: 'Accessories', value: 3, color: '#b98e54' },
-  { name: 'Footwear', value: 2, color: '#eedda8' },
-  { name: 'Others', value: 1, color: '#1f1f1f' },
+  { name: 'Women', value: 42, color: '#8c673d' },
+  { name: 'Men\'s Wear', value: 24, color: '#dfbc88' },
+  { name: 'Accessories', value: 16, color: '#b98e54' },
+  { name: 'Footwear', value: 10, color: '#eedda8' },
+  { name: 'Others', value: 8, color: '#1f1f1f' },
 ];
+
+const recentOrdersData = [
+  { id: '#ORD1042', date: 'May 24, 2024', customer: 'Janani R.', amount: '₹3,450', status: 'Delivered', statusClass: 'delivered', img: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=100' },
+  { id: '#ORD1043', date: 'May 24, 2024', customer: 'Ravi K.', amount: '₹1,250', status: 'Processing', statusClass: 'processing', img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100' },
+  { id: '#ORD1044', date: 'May 24, 2024', customer: 'Priya S.', amount: '₹4,990', status: 'Pending', statusClass: 'pending', img: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=100' },
+];
+
+const lowStockAlertData = [
+  { name: 'Women\'s Hoodie', size: 'M', stock: 3, percent: 15, status: 'Low', statusClass: 'low', img: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=100' },
+  { name: 'Casual Sandals', size: '6', stock: 2, percent: 10, status: 'Low', statusClass: 'low', img: 'https://images.unsplash.com/photo-1603808033192-082d6919d3e1?w=100' },
+  { name: 'Running Shoes', size: '9', stock: 1, percent: 8, status: 'Low', statusClass: 'low', img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100' },
+  { name: 'Classic Sunglasses', size: 'One Size', stock: 4, percent: 12, status: 'Low', statusClass: 'low', img: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=100' },
+];
+
+const recentReviewsData = [
+  { rating: 5, text: '"Excellent quality and fast delivery!"', author: 'Anjali S.', time: '2 hours ago', helpful: 12, avatar: 'https://i.pravatar.cc/100?img=5', productImg: 'https://images.unsplash.com/photo-1596755094514-f87e32f85e23?w=100' },
+  { rating: 5, text: '"Loved the fabric and fit."', author: 'Priya M.', time: '5 hours ago', helpful: 8, avatar: 'https://i.pravatar.cc/100?img=9', productImg: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=100' },
+  { rating: 5, text: '"Worth every penny!"', author: 'Rahul K.', time: '1 day ago', helpful: 15, avatar: 'https://i.pravatar.cc/100?img=11', productImg: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100' },
+];
+
+const notificationsData = [
+  { icon: Bell, title: 'System Update Completed', subtitle: 'Version 2.1.0', time: 'Just now' },
+  { icon: ShoppingCart, title: 'New Order Received', subtitle: '#ORD12345', time: '2m ago' },
+  { icon: User, title: 'New Customer Registered', subtitle: 'John Doe', time: '15m ago' },
+  { icon: Package, title: 'Low Stock Alert', subtitle: 'Women\'s Hoodie (M)', time: '20m ago' },
+  { icon: Star, title: 'New Review Received', subtitle: 'Summer Dress', time: '1h ago' },
+  { icon: CreditCard, title: 'Payment Processed', subtitle: '$129.00 from Sophia', time: '2h ago' },
+];
+
+const calendarData = [
+  { date: '24 May', event: 'New Orders & Shipments' },
+  { date: '25 May', event: 'Flash Sale (Summer Collection)' },
+  { date: '26 May', event: 'Coupon "WELCOME10" Expiring' },
+];
+
+const newRecentOrdersTableData = [
+  { id: '#ORD-7824', customer: 'Sophia Carter', product: 'Leather Handbag', variant: 'Brown', amount: '$129.00', status: 'Delivered', avatar: 'https://i.pravatar.cc/100?img=1', productImg: 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?w=100' },
+  { id: '#ORD-7823', customer: 'Liam Anderson', product: 'Classic Sneakers', variant: 'White / 42', amount: '$89.00', status: 'Processing', avatar: 'https://i.pravatar.cc/100?img=11', productImg: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100' },
+  { id: '#ORD-7822', customer: 'Olivia Bennett', product: 'Floral Midi Dress', variant: 'Cream / M', amount: '$79.00', status: 'Pending', avatar: 'https://i.pravatar.cc/100?img=5', productImg: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=100' },
+  { id: '#ORD-7821', customer: 'Noah Mitchell', product: 'Aviator Sunglasses', variant: 'Black', amount: '$59.00', status: 'Delivered', avatar: 'https://i.pravatar.cc/100?img=15', productImg: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=100' },
+  { id: '#ORD-7820', customer: 'Emma Walker', product: 'Genuine Leather Belt', variant: 'Brown / 36', amount: '$49.00', status: 'Cancelled', avatar: 'https://i.pravatar.cc/100?img=9', productImg: 'https://images.unsplash.com/photo-1627123424574-724758594e93?w=100' },
+];
+
+const newReviewsData = [
+  { name: 'Ava Thompson', date: 'May 24, 2025', rating: 5, text: 'Absolutely love the quality and finish!', avatar: 'https://i.pravatar.cc/100?img=1', productImg: 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?w=100' },
+  { name: 'James Carter', date: 'May 23, 2025', rating: 4, text: 'Super comfortable and stylish.', avatar: 'https://i.pravatar.cc/100?img=11', productImg: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100' },
+  { name: 'Isabella Brown', date: 'May 22, 2025', rating: 5, text: 'The fabric feels amazing. Will buy again!', avatar: 'https://i.pravatar.cc/100?img=5', productImg: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=100' },
+  { name: 'William Davis', date: 'May 21, 2025', rating: 5, text: 'Perfect fit and premium quality.', avatar: 'https://i.pravatar.cc/100?img=15', productImg: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=100' },
+];
+
+const newTopSellingData = [
+  { rank: 1, name: 'Floral Maxi Dress', category: 'Women', sold: '1,245', revenue: '$37,350.00', percent: 90, img: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=100' },
+  { rank: 2, name: 'Classic Sneakers', category: 'Footwear', sold: '1,026', revenue: '$30,780.00', percent: 75, img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100' },
+  { rank: 3, name: 'Leather Handbag', category: 'Bags', sold: '842', revenue: '$25,260.00', percent: 60, img: 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?w=100' },
+  { rank: 4, name: 'Aviator Sunglasses', category: 'Accessories', sold: '739', revenue: '$14,780.00', percent: 50, img: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=100' },
+  { rank: 5, name: 'Genuine Leather Belt', category: 'Accessories', sold: '612', revenue: '$7,344.00', percent: 40, img: 'https://images.unsplash.com/photo-1627123424574-724758594e93?w=100' },
+];
+
+const newLowStockData = [
+  { name: 'Silk Midi Dress', category: 'Women', stock: 5, img: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=100' },
+  { name: 'Quilted Shoulder Bag', category: 'Bags', stock: 8, img: 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?w=100' },
+  { name: 'Minimal White Sneakers', category: 'Footwear', stock: 6, img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100' },
+  { name: 'Round Frame Sunglasses', category: 'Accessories', stock: 7, img: 'https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=100' },
+];
+
+const newArrivalsData = [
+  { name: 'Velvet Evening Gown', category: 'Women', price: '$249.00', img: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=100', badge: 'New' },
+  { name: 'Minimalist Watch', category: 'Accessories', price: '$129.00', img: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100', badge: 'Trending' },
+  { name: 'Canvas Tote Bag', category: 'Bags', price: '$49.00', img: 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?w=100', badge: 'New' },
+  { name: 'Sport Sneakers', category: 'Footwear', price: '$119.00', img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100', badge: 'Hot' },
+];
+
+const lowStockChartData = [
+  { name: 'Day 1', value: 5, product: 'Silk Saree' },
+  { name: 'Day 2', value: 12, product: 'Cotton Kurti' },
+  { name: 'Day 3', value: 27, product: 'Men\'s Polo', isMax: true },
+  { name: 'Day 4', value: 15, product: 'Leather Wallet' },
+  { name: 'Day 5', value: 8, product: 'Denim Jacket' },
+  { name: 'Day 6', value: 14, product: 'Floral Dress' },
+  { name: 'Day 7', value: 4, product: 'Gold Plated Necklace', isMin: true },
+  { name: 'Day 8', value: 16, product: 'Running Shoes' },
+  { name: 'Day 9', value: 10, product: 'Handbag' },
+  { name: 'Day 10', value: 14, product: 'Sunglasses' },
+];
+
+const ordersOverviewData = [
+  { title: 'Pending', count: 42, icon: 'Clock', color: '#ff9800', bg: '#fff4e5' },
+  { title: 'Processing', count: 18, icon: 'RotateCcw', color: '#2196f3', bg: '#e3f2fd' },
+  { title: 'Shipped', count: 26, icon: 'Truck', color: '#9c27b0', bg: '#f3e5f5' },
+  { title: 'Delivered', count: 105, icon: 'CheckCircle2', color: '#4caf50', bg: '#e8f5e9' },
+  { title: 'Cancelled', count: 5, icon: 'XCircle', color: '#f44336', bg: '#ffebee' }
+];
+
+const recentTransactionsData = [
+  { id: '#FS10234', name: 'Laura Peterson', amount: '₹2,450', status: 'Completed', icon: User, bg: '#f2dfc5', fg: '#333' },
+  { id: '#FS10233', name: 'Olivia Bennett', amount: '₹1,890', status: 'Processing', icon: ShoppingBag, bg: '#1f1f1f', fg: '#fff' },
+  { id: '#FS10232', name: 'Ava Martinez', amount: '₹3,150', status: 'Completed', icon: Package, bg: '#91725b', fg: '#fff' },
+  { id: '#FS10231', name: 'Sophia Williams', amount: '₹2,780', status: 'Cancelled', icon: CreditCard, bg: '#4a3727', fg: '#fff' }
+];
+
+const topSellingData = [
+  { name: 'Summer Dress', sold: 182, price: '₹1,86,000', img: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=100' },
+  { name: 'Sneakers', sold: 140, price: '₹1,45,000', img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100' },
+  { name: 'Cotton T-Shirt', sold: 256, price: '₹1,25,000', img: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=100' },
+  { name: 'Handbag', sold: 112, price: '₹98,000', img: 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?w=100' }
+];
+
+const sunburstRing1 = [{ name: 'R1', value: 100, fill: '#2e7d32' }];
+const sunburstRing2 = [
+  { name: 'R2-1', value: 40, fill: '#388e3c' },
+  { name: 'R2-2', value: 20, fill: '#1976d2' },
+  { name: 'R2-3', value: 15, fill: '#673ab7' },
+  { name: 'R2-4', value: 25, fill: '#d84315' }
+];
+const sunburstRing3 = [
+  { name: 'R3-1', value: 20, fill: '#4caf50' },
+  { name: 'R3-2', value: 10, fill: '#4caf50' },
+  { name: 'R3-3', value: 10, fill: '#4caf50' },
+  { name: 'R3-4', value: 10, fill: '#42a5f5' },
+  { name: 'R3-5', value: 10, fill: '#42a5f5' },
+  { name: 'R3-6', value: 8, fill: '#9575cd' },
+  { name: 'R3-7', value: 7, fill: '#9575cd' },
+  { name: 'R3-8', value: 12, fill: '#ff8a65' },
+  { name: 'R3-9', value: 13, fill: '#ff8a65' }
+];
+const sunburstRing4 = Array.from({ length: 40 }).map((_, i) => ({
+  name: `R4-${i}`,
+  value: Math.random() * 5 + 2,
+  fill: i < 15 ? '#81c784' : i < 23 ? '#64b5f6' : i < 30 ? '#ba68c8' : '#ffab91'
+}));
+
+const ordersOverviewBarData = [
+  { name: 'Pending', count: 52, color: '#8c673d' },
+  { name: ' ', count: 28, color: '#1f1f1f' },
+  { name: 'Shipped', count: 36, color: '#dfbc88' },
+  { name: '  ', count: 105, color: '#b98e54' },
+  { name: 'Cancelled', count: 25, color: '#eedda8' },
+];
+
+const LowStockCustomDot = (props) => {
+  const { cx, cy, payload } = props;
+  if (payload.name === 'Day 8') {
+    return (
+      <g>
+        <circle cx={cx} cy={cy} r={6} fill="#fff" stroke="#c9a05b" strokeWidth={3} />
+      </g>
+    );
+  }
+  return <circle cx={cx} cy={cy} r={4} fill="#c9a05b" strokeWidth={0} />;
+};
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState(() => {
-    return localStorage.getItem('adminActiveTab') || 'Dashboard';
-  });
-  const [settingsTab, setSettingsTab] = useState('Security');
+  const [activeTab, setActiveTab] = useState('Dashboard');
+  const [settingsTab, setSettingsTab] = useState('General');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [globalSearch, setGlobalSearch] = useState('');
@@ -77,57 +229,6 @@ const Dashboard = () => {
   const [notifications, setNotifications] = useState(initialNotifications);
   const [revenueFilterLabel, setRevenueFilterLabel] = useState('Last 7 Days');
   const [categoriesFilterLabel, setCategoriesFilterLabel] = useState('Last 6 Months');
-  const [dashboardData, setDashboardData] = useState(null);
-  const [ratingData, setRatingData] = useState([]);
-  const [isLoadingAnalytics, setIsLoadingAnalytics] = useState(true);
-
-  React.useEffect(() => {
-    const fetchAnalytics = async () => {
-      setIsLoadingAnalytics(true);
-      try {
-        const [dashRes, ratingRes] = await Promise.all([
-          getDashboardAnalyticsApi(),
-          getRatingAnalyticsApi()
-        ]);
-        if (dashRes.data?.success) setDashboardData(dashRes.data.data);
-        if (ratingRes.data?.success) setRatingData(ratingRes.data.data);
-      } catch (err) {
-        console.error('Failed to fetch analytics', err);
-        message.error('Failed to load dashboard data');
-      } finally {
-        setIsLoadingAnalytics(false);
-      }
-    };
-    fetchAnalytics();
-  }, []);
-
-  React.useEffect(() => {
-    localStorage.setItem('adminActiveTab', activeTab);
-  }, [activeTab]);
-
-  React.useEffect(() => {
-    const fetchAdminNotifications = async () => {
-      try {
-        const res = await getAdminNotificationsApi();
-        if (res.data?.success) {
-          setNotifications(res.data.data);
-        }
-      } catch (err) {
-        console.error('Failed to fetch admin notifications:', err);
-      }
-    };
-    fetchAdminNotifications();
-  }, []);
-
-  React.useEffect(() => {
-    if (activeTab === 'Notifications') {
-      const hasUnread = notifications.some(n => n.unread !== false);
-      if (hasUnread) {
-        setNotifications(prev => prev.map(n => ({ ...n, unread: false })));
-        markAllNotificationsAsReadApi().catch(console.error);
-      }
-    }
-  }, [activeTab, notifications]);
 
   const getRevenueValue = () => {
     switch (revenueFilterLabel) {
@@ -149,31 +250,14 @@ const Dashboard = () => {
     }
   };
 
-  const unreadCount = notifications.filter(n => n.unread !== false).length;
+  const unreadCount = notifications.filter(n => n.unread).length;
 
-  const [adminProfile, setAdminProfile] = useState({
+  const adminProfile = {
     name: 'Admin User',
     role: 'Super Admin',
     email: 'admin@relietech.com',
     avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100'
-  });
-
-  React.useEffect(() => {
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-      try {
-        const user = JSON.parse(userStr);
-        setAdminProfile({
-          name: user.fullName || 'Admin User',
-          role: user.role === 'admin' ? 'Super Admin' : user.role || 'Admin',
-          email: user.email || 'admin@relietech.com',
-          avatar: user.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.fullName || 'Admin')}&background=random`
-        });
-      } catch (e) {
-        console.error("Error parsing user from localStorage", e);
-      }
-    }
-  }, []);
+  };
 
   const adminMenu = {
     items: [
@@ -191,7 +275,9 @@ const Dashboard = () => {
         ),
       },
       { type: 'divider' },
-      { key: 'profile', label: <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '4px 0' }}><User size={16} color="#4b5563" /> <span style={{ fontWeight: 500, color: '#374151' }}>My Profile</span></div>, onClick: () => { setActiveTab('Settings'); setSettingsTab('Security'); } },
+      { key: 'profile', label: <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '4px 0' }}><User size={16} color="#4b5563" /> <span style={{ fontWeight: 500, color: '#374151' }}>My Profile</span></div>, onClick: () => { setActiveTab('Settings'); setSettingsTab('Admin Profile'); } },
+      { key: 'password', label: <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '4px 0' }}><Lock size={16} color="#4b5563" /> <span style={{ fontWeight: 500, color: '#374151' }}>Change Password</span></div>, onClick: () => { setActiveTab('Settings'); setSettingsTab('Security'); } },
+      { key: 'settings', label: <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '4px 0' }}><Settings size={16} color="#4b5563" /> <span style={{ fontWeight: 500, color: '#374151' }}>Account Settings</span></div>, onClick: () => { setActiveTab('Settings'); setSettingsTab('General'); } },
       { type: 'divider' },
       {
         key: 'notifications', label: <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '4px 0', justifyContent: 'space-between', width: '200px' }}>
@@ -200,6 +286,7 @@ const Dashboard = () => {
         </div>,
         onClick: () => setActiveTab('Notifications')
       },
+      { key: 'security', label: <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '4px 0' }}><Shield size={16} color="#4b5563" /> <span style={{ fontWeight: 500, color: '#374151' }}>Security & Activity</span></div>, onClick: () => { setActiveTab('Settings'); setSettingsTab('Security'); } },
       { key: 'activity', label: <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '4px 0' }}><Activity size={16} color="#4b5563" /> <span style={{ fontWeight: 500, color: '#374151' }}>Activity Log</span></div>, onClick: () => setActiveTab('ActivityLog') },
       { type: 'divider' },
       { key: 'help', label: <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '4px 0' }}><HelpCircle size={16} color="#4b5563" /> <span style={{ fontWeight: 500, color: '#374151' }}>Help & Support</span></div>, onClick: () => setActiveTab('HelpSupport') },
@@ -212,7 +299,7 @@ const Dashboard = () => {
 
   const searchResults = globalSearch.length > 0 ? {
     products: mockProducts.filter(p => p.name.toLowerCase().includes(globalSearch.toLowerCase()) || p.sku.toLowerCase().includes(globalSearch.toLowerCase())).slice(0, 3),
-    orders: []
+    orders: initialOrders.filter(o => o.id.toLowerCase().includes(globalSearch.toLowerCase()) || o.customer.toLowerCase().includes(globalSearch.toLowerCase())).slice(0, 3)
   } : null;
 
   return (
@@ -371,7 +458,7 @@ const Dashboard = () => {
                 {/* Middle Welcome Text */}
                 <div style={{ marginTop: '10px' }}>
                   <h1 style={{ fontFamily: '"Inter", sans-serif', fontSize: '56px', fontWeight: '400', color: '#1a1614', margin: 0, lineHeight: '1.15' }}>
-                    Welcome,<br />{adminProfile.name.split(' ')[0]}
+                    Welcome,<br />Admin
                   </h1>
                   <p style={{ fontSize: '17px', color: '#685c53', marginTop: '16px', maxWidth: '300px', lineHeight: '1.5' }}>
                     Here's what's happening with your store today.
@@ -388,7 +475,7 @@ const Dashboard = () => {
                         <ShoppingBag size={20} color="#c8a883" strokeWidth={1.5} />
                       </div>
                       <div>
-                        <div style={{ fontSize: '24px', fontWeight: '600', color: '#fff' }}>{dashboardData?.kpis?.totalOrders || '0'}</div>
+                        <div style={{ fontSize: '24px', fontWeight: '600', color: '#fff' }}>245</div>
                         <div style={{ fontSize: '13px', color: '#8a7d73', marginTop: '2px' }}>Total Orders</div>
                       </div>
                     </div>
@@ -400,7 +487,7 @@ const Dashboard = () => {
                         <Package size={20} color="#c8a883" strokeWidth={1.5} />
                       </div>
                       <div>
-                        <div style={{ fontSize: '24px', fontWeight: '600', color: '#fff' }}>{dashboardData?.kpis?.totalProducts || '0'}</div>
+                        <div style={{ fontSize: '24px', fontWeight: '600', color: '#fff' }}>128</div>
                         <div style={{ fontSize: '13px', color: '#8a7d73', marginTop: '2px' }}>Products</div>
                       </div>
                     </div>
@@ -412,7 +499,7 @@ const Dashboard = () => {
                         <Users size={20} color="#c8a883" strokeWidth={1.5} />
                       </div>
                       <div>
-                        <div style={{ fontSize: '24px', fontWeight: '600', color: '#fff' }}>{dashboardData?.kpis?.totalCustomers || '0'}</div>
+                        <div style={{ fontSize: '24px', fontWeight: '600', color: '#fff' }}>1,450</div>
                         <div style={{ fontSize: '13px', color: '#8a7d73', marginTop: '2px' }}>Customers</div>
                       </div>
                     </div>
@@ -424,7 +511,7 @@ const Dashboard = () => {
                         <DollarSign size={20} color="#c8a883" strokeWidth={1.5} />
                       </div>
                       <div>
-                        <div style={{ fontSize: '24px', fontWeight: '600', color: '#fff' }}>₹{dashboardData?.kpis?.totalRevenue?.toLocaleString('en-IN') || '0'}</div>
+                        <div style={{ fontSize: '24px', fontWeight: '600', color: '#fff' }}>$12,680</div>
                         <div style={{ fontSize: '13px', color: '#8a7d73', marginTop: '2px' }}>Total Sales</div>
                       </div>
                     </div>
@@ -447,7 +534,7 @@ const Dashboard = () => {
                   <MoreHorizontal size={20} color="#8a7d73" />
                 </div>
                 <div style={{ fontSize: '32px', fontFamily: '"Inter", sans-serif', color: '#1a1614', marginBottom: '16px', fontWeight: '400' }}>
-                  ₹{dashboardData?.kpis?.totalRevenue?.toLocaleString('en-IN') || '0'}
+                  $12,680
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', height: '60px' }}>
@@ -478,7 +565,7 @@ const Dashboard = () => {
                   <div className="stat-icon gold"><span style={{ fontSize: '18px', fontWeight: 'bold' }}>₹</span></div>
                   <div className="stat-info">
                     <span className="stat-title">Total Revenue</span>
-                    <h2 className="stat-value gold-text">₹{dashboardData?.kpis?.totalRevenue?.toLocaleString('en-IN') || '0'}</h2>
+                    <h2 className="stat-value gold-text">₹8,75,420</h2>
                     <div className="stat-bottom">
                       <span className="stat-change positive">↑ 12.5%</span> <span className="stat-change-text">vs yesterday</span>
                     </div>
@@ -486,7 +573,7 @@ const Dashboard = () => {
                 </div>
                 <div className="stat-chart-sparkline">
                   <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={sparklineTotalOrders}>
+                    <AreaChart data={sparklineTotalRevenue}>
                       <defs>
                         <linearGradient id="glowDark" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="5%" stopColor="#c9a05b" stopOpacity={0.8} />
@@ -504,9 +591,35 @@ const Dashboard = () => {
                   <div className="stat-icon gold"><ShoppingBag size={18} color="#554422" /></div>
                   <div className="stat-info">
                     <span className="stat-title">Total Orders</span>
-                    <h2 className="stat-value">{dashboardData?.kpis?.totalOrders || '0'}</h2>
+                    <h2 className="stat-value">1,245</h2>
                     <div className="stat-bottom">
                       <span className="stat-change positive">↑ 18</span> <span className="stat-change-text">new today</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="stat-chart-sparkline">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={sparklineTotalOrders}>
+                      <defs>
+                        <linearGradient id="glowLight" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#c9a05b" stopOpacity={0.5} />
+                          <stop offset="95%" stopColor="#c9a05b" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <Area type="monotone" dataKey="v" stroke="#c9a05b" strokeWidth={2} fill="url(#glowLight)" dot={{ r: 2.5, fill: '#c9a05b', strokeWidth: 0 }} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              <div className="stat-card light">
+                <div className="stat-top">
+                  <div className="stat-icon gold"><Users size={18} color="#554422" /></div>
+                  <div className="stat-info">
+                    <span className="stat-title">Total Customers</span>
+                    <h2 className="stat-value">3,528</h2>
+                    <div className="stat-bottom">
+                      <span className="stat-change positive">↑ 35</span> <span className="stat-change-text">new today</span>
                     </div>
                   </div>
                 </div>
@@ -525,40 +638,14 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              <div className="stat-card light">
-                <div className="stat-top">
-                  <div className="stat-icon gold"><Users size={18} color="#554422" /></div>
-                  <div className="stat-info">
-                    <span className="stat-title">Total Customers</span>
-                    <h2 className="stat-value">{dashboardData?.kpis?.totalCustomers || '0'}</h2>
-                    <div className="stat-bottom">
-                      <span className="stat-change positive">↑ 35</span> <span className="stat-change-text">new today</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="stat-chart-sparkline">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={sparklineTotalProducts}>
-                      <defs>
-                        <linearGradient id="glowLight" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#c9a05b" stopOpacity={0.5} />
-                          <stop offset="95%" stopColor="#c9a05b" stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <Area type="monotone" dataKey="v" stroke="#c9a05b" strokeWidth={2} fill="url(#glowLight)" dot={{ r: 2.5, fill: '#c9a05b', strokeWidth: 0 }} />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-
               <div className="stat-card dark">
                 <div className="stat-top">
                   <div className="stat-icon gold"><Package size={18} color="#c9a05b" /></div>
                   <div className="stat-info">
                     <span className="stat-title">Total Products</span>
-                    <h2 className="stat-value gold-text">{dashboardData?.kpis?.totalProducts || '0'}</h2>
+                    <h2 className="stat-value gold-text">560</h2>
                     <div className="stat-bottom">
-                      <span className="stat-change negative">{dashboardData?.lowStockAlerts?.length || '0'}</span> <span className="stat-change-text">low stock items</span>
+                      <span className="stat-change negative">12</span> <span className="stat-change-text">low stock items</span>
                     </div>
                   </div>
                 </div>
@@ -624,7 +711,12 @@ const Dashboard = () => {
                     <ResponsiveContainer width="100%" height="100%">
                       <RechartsPieChart>
                         <Pie
-                          data={(dashboardData?.orderStatusBreakdown?.length > 0 ? dashboardData.orderStatusBreakdown : [{_id:'No Orders', count:1}]).map(item => ({ name: item._id, value: item.count, color: item._id === 'Pending' ? '#8c673d' : item._id === 'Processing' ? '#1f1f1f' : item._id === 'Shipped' ? '#b98e54' : item._id === 'No Orders' ? '#f0f0f0' : '#dfbc88' })) || []}
+                          data={[
+                            { name: 'Pending', value: 35, color: '#8c673d' },
+                            { name: 'Processing', value: 15, color: '#dfbc88' },
+                            { name: 'Shipped', value: 22, color: '#b98e54' },
+                            { name: 'Delivered', value: 28, color: '#1f1f1f' }
+                          ]}
                           cx="50%"
                           cy="50%"
                           innerRadius={50}
@@ -633,33 +725,39 @@ const Dashboard = () => {
                           dataKey="value"
                           stroke="none"
                         >
-                          {(dashboardData?.orderStatusBreakdown?.length > 0 ? dashboardData.orderStatusBreakdown : [{_id:'No Orders', count:1}]).map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry._id === 'Pending' ? '#8c673d' : entry._id === 'Processing' ? '#1f1f1f' : entry._id === 'Shipped' ? '#b98e54' : entry._id === 'No Orders' ? '#eaeaea' : '#dfbc88'} />
+                          {[
+                            { name: 'Pending', value: 35, color: '#8c673d' },
+                            { name: 'Processing', value: 15, color: '#1f1f1f' },
+                            { name: 'Shipped', value: 22, color: '#b98e54' },
+                            { name: 'Delivered', value: 28, color: '#dfbc88' }
+                          ].map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
                           ))}
                         </Pie>
                       </RechartsPieChart>
                     </ResponsiveContainer>
 
                     <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
-                      <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#222', lineHeight: '1' }}>{dashboardData?.kpis?.totalOrders || 0}</span>
+                      <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#222', lineHeight: '1' }}>121</span>
                       <span style={{ fontSize: '10px', color: '#888', marginTop: '4px', lineHeight: '1' }}>Orders</span>
                     </div>
                   </div>
 
                   <div className="donut-legend-list" style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%', marginTop: '24px' }}>
-                    {(dashboardData?.orderStatusBreakdown?.length > 0 ? dashboardData.orderStatusBreakdown : [{_id:'No Orders', count:1}]).map((item, index) => {
-                      const percentage = dashboardData?.kpis?.totalOrders > 0 ? Math.round((item.count / dashboardData.kpis.totalOrders) * 100) : 0;
-                      const color = item._id === 'Pending' ? '#8c673d' : item._id === 'Processing' ? '#1f1f1f' : item._id === 'Shipped' ? '#b98e54' : '#dfbc88';
-                      return (
-                        <div className="legend-item" key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <div style={{ width: '8px', height: '8px', borderRadius: '2px', backgroundColor: color }}></div>
-                            <span style={{ fontSize: '12px', color: '#444' }}>{item._id}</span>
-                          </div>
-                          <span style={{ fontSize: '12px', fontWeight: '500', color: '#222' }}>{percentage}%</span>
+                    {[
+                      { name: 'Pending', value: 35, color: '#8c673d' },
+                      { name: 'Processing', value: 15, color: '#1f1f1f' },
+                      { name: 'Shipped', value: 22, color: '#b98e54' },
+                      { name: 'Delivered', value: 28, color: '#dfbc88' }
+                    ].map((item, index) => (
+                      <div className="legend-item" key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <div style={{ width: '8px', height: '8px', borderRadius: '2px', backgroundColor: item.color }}></div>
+                          <span style={{ fontSize: '12px', color: '#444' }}>{item.name}</span>
                         </div>
-                      );
-                    })}
+                        <span style={{ fontSize: '12px', fontWeight: '500', color: '#222' }}>{item.value}%</span>
+                      </div>
+                    ))}
                   </div>
 
                 </div>
@@ -667,54 +765,6 @@ const Dashboard = () => {
 
 
             </div>
-
-            {/* Cloth-wise Rating Breakdown Widget */}
-            <div className="premium-glass-card" style={{ marginBottom: '32px', padding: '24px', backgroundColor: '#fff', borderRadius: '16px', border: '1px solid #eaeaea', boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.24)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                <h3 style={{ fontSize: '16px', fontWeight: '700', margin: 0, color: '#222' }}>Cloth-wise Rating Breakdown</h3>
-                <span style={{ fontSize: '12px', color: '#666', background: '#f5f5f5', padding: '4px 10px', borderRadius: '20px' }}>Based on verified reviews</span>
-              </div>
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                  <thead>
-                    <tr style={{ borderBottom: '1px solid #eaeaea' }}>
-                      <th style={{ padding: '12px', color: '#888', fontSize: '12px', fontWeight: '600' }}>Product (Cloth)</th>
-                      <th style={{ padding: '12px', color: '#888', fontSize: '12px', fontWeight: '600', textAlign: 'center' }}>Total Reviews</th>
-                      <th style={{ padding: '12px', color: '#888', fontSize: '12px', fontWeight: '600', textAlign: 'center' }}>5 Star (%)</th>
-                      <th style={{ padding: '12px', color: '#888', fontSize: '12px', fontWeight: '600', textAlign: 'center' }}>4 Star (%)</th>
-                      <th style={{ padding: '12px', color: '#888', fontSize: '12px', fontWeight: '600', textAlign: 'center' }}>3 Star (%)</th>
-                      <th style={{ padding: '12px', color: '#888', fontSize: '12px', fontWeight: '600', textAlign: 'center' }}>2 Star (%)</th>
-                      <th style={{ padding: '12px', color: '#888', fontSize: '12px', fontWeight: '600', textAlign: 'center' }}>1 Star (%)</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {ratingData.length > 0 ? ratingData.map((item) => (
-                      <tr key={item.productId} style={{ borderBottom: '1px solid #f9f9f9', transition: 'background 0.2s' }}>
-                        <td style={{ padding: '12px', display: 'flex', alignItems: 'center', gap: '12px' }}>
-                          {item.productImage ? (
-                            <img src={item.productImage} alt={item.productName} style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'cover' }} />
-                          ) : (
-                            <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: '#eaeaea', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Shirt size={16} color="#999" /></div>
-                          )}
-                          <span style={{ fontWeight: '600', fontSize: '13px', color: '#222' }}>{item.productName}</span>
-                        </td>
-                        <td style={{ padding: '12px', textAlign: 'center', fontSize: '13px', fontWeight: '500', color: '#555' }}>{item.totalReviews}</td>
-                        <td style={{ padding: '12px', textAlign: 'center', fontSize: '13px', fontWeight: '600', color: '#10b981' }}>{item.percentages[5]}%</td>
-                        <td style={{ padding: '12px', textAlign: 'center', fontSize: '13px', fontWeight: '600', color: '#84cc16' }}>{item.percentages[4]}%</td>
-                        <td style={{ padding: '12px', textAlign: 'center', fontSize: '13px', fontWeight: '600', color: '#f59e0b' }}>{item.percentages[3]}%</td>
-                        <td style={{ padding: '12px', textAlign: 'center', fontSize: '13px', fontWeight: '600', color: '#f97316' }}>{item.percentages[2]}%</td>
-                        <td style={{ padding: '12px', textAlign: 'center', fontSize: '13px', fontWeight: '600', color: '#ef4444' }}>{item.percentages[1]}%</td>
-                      </tr>
-                    )) : (
-                      <tr>
-                        <td colSpan="7" style={{ padding: '24px', textAlign: 'center', color: '#888', fontSize: '13px' }}>No review data available yet.</td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
             <div className="new-layout-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '20px', marginBottom: '20px' }}>
 
 
@@ -729,18 +779,23 @@ const Dashboard = () => {
                     {/* Premium Threshold Line */}
                     <div style={{ position: 'absolute', bottom: '71px', left: '8%', right: '8%', borderBottom: '1px dashed rgba(201, 160, 91, 0.5)', zIndex: 1 }}></div>
 
-                    {(dashboardData?.lowStockAlerts || []).slice(0, 4).map((item, idx) => {
+                    {[
+                      { name: 'T-Shirts', count: 12, img: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=100' },
+                      { name: 'Jeans', count: 8, img: 'https://images.unsplash.com/photo-1565084888279-aca607ecce0c?w=100' },
+                      { name: 'Hoodies', count: 25, img: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=100' },
+                      { name: 'Shoes', count: 6, img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=100' },
+                    ].map((item, idx) => {
                       const max = 40;
-                      const percent = Math.min((item.countInStock / max) * 100, 100);
-                      const isLow = item.countInStock < 10;
+                      const percent = Math.min((item.count / max) * 100, 100);
+                      const isLow = item.count < 10;
                       const themeBarColor = isLow ? 'linear-gradient(135deg, #e87e74 0%, #c84b41 100%)' : 'linear-gradient(135deg, #e3c18b 0%, #b98e54 100%)';
                       const glowColor = isLow ? 'rgba(200, 75, 65, 0.35)' : 'rgba(201, 160, 91, 0.35)';
 
                       return (
-                        <div key={item._id || idx} className="floating-lite" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2, height: '100%', justifyContent: 'flex-end', position: 'relative', animationDelay: `${idx * 0.3}s` }}>
+                        <div key={idx} className="floating-lite" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', zIndex: 2, height: '100%', justifyContent: 'flex-end', position: 'relative', animationDelay: `${idx * 0.3}s` }}>
                           {/* Top Badge */}
                           <div className="premium-glass-card" style={{ backgroundColor: '#fff', border: '1px solid #f0f0f0', borderRadius: '12px', padding: '6px 14px', display: 'flex', flexDirection: 'column', alignItems: 'center', boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.24)', zIndex: 3, marginBottom: '-12px', position: 'relative' }}>
-                            <span style={{ fontSize: '15px', fontWeight: '800', color: isLow ? '#c84b41' : '#b98e54', lineHeight: '1' }}>{item.countInStock}</span>
+                            <span style={{ fontSize: '15px', fontWeight: '800', color: isLow ? '#c84b41' : '#b98e54', lineHeight: '1' }}>{item.count}</span>
                             <span style={{ fontSize: '9px', color: '#888', marginTop: '3px', textTransform: 'uppercase', letterSpacing: '0.5px', fontWeight: '600' }}>Units</span>
                           </div>
 
@@ -759,9 +814,9 @@ const Dashboard = () => {
                           {/* Bottom Image and Label */}
                           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'absolute', bottom: '-64px' }}>
                             <div style={{ width: '38px', height: '38px', borderRadius: '50%', backgroundColor: '#fff', boxShadow: '0 4px 12px rgba(0,0,0,0.08)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', border: isLow ? '2px solid rgba(200, 75, 65, 0.2)' : '2px solid rgba(201, 160, 91, 0.2)' }}>
-                              <img src={item.images?.[0]?.url || 'https://via.placeholder.com/100'} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                              <img src={item.img} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                             </div>
-                            <span style={{ fontSize: '12px', fontWeight: '600', color: '#444', marginTop: '6px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '80px' }}>{item.name}</span>
+                            <span style={{ fontSize: '12px', fontWeight: '600', color: '#444', marginTop: '6px' }}>{item.name}</span>
                           </div>
                         </div>
                       );
@@ -796,34 +851,30 @@ const Dashboard = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {(dashboardData?.recentOrders || []).map((order, i) => (
-                          <tr key={order._id || i} style={{ backgroundColor: i % 2 !== 0 ? '#f8f9fa' : '#fff' }}>
-                            <td style={{ padding: '20px 24px', fontSize: '15px', fontWeight: '700', color: '#111' }}>
-                              #{order._id?.substring(order._id.length - 6).toUpperCase()}
-                            </td>
+                        {newRecentOrdersTableData.map((order, i) => (
+                          <tr key={i} style={{ backgroundColor: i % 2 !== 0 ? '#f8f9fa' : '#fff' }}>
+                            <td style={{ padding: '20px 24px', fontSize: '15px', fontWeight: '700', color: '#111' }}>{order.id}</td>
                             <td style={{ padding: '20px 24px' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                                <span style={{ fontSize: '15px', fontWeight: '600', color: '#222' }}>{order.customer?.customerId?.name || 'Guest'}</span>
+                                <span style={{ fontSize: '15px', fontWeight: '600', color: '#222' }}>{order.customer}</span>
                               </div>
                             </td>
                             <td style={{ padding: '20px 24px' }}>
                               <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                                <div style={{ width: '40px', height: '40px', borderRadius: '8px', backgroundColor: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Package size={16} color="#888" /></div>
+                                <img src={order.productImg} alt={order.product} style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'cover' }} />
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                  <span style={{ fontSize: '15px', fontWeight: '600', color: '#222' }}>Order items</span>
-                                  <span style={{ fontSize: '13px', color: '#888' }}>{new Date(order.createdAt).toLocaleDateString()}</span>
+                                  <span style={{ fontSize: '15px', fontWeight: '600', color: '#222' }}>{order.product}</span>
+                                  <span style={{ fontSize: '13px', color: '#888' }}>{order.variant}</span>
                                 </div>
                               </div>
                             </td>
-                            <td style={{ padding: '20px 24px', textAlign: 'left', fontSize: '15px', fontWeight: '700', color: '#111' }}>
-                              ₹{order.grandTotal?.toLocaleString('en-IN')}
-                            </td>
+                            <td style={{ padding: '20px 24px', textAlign: 'left', fontSize: '15px', fontWeight: '700', color: '#111' }}>{order.amount}</td>
                             <td style={{ padding: '20px 24px', textAlign: 'center' }}>
                               <span style={{
                                 padding: '6px 14px', borderRadius: '20px', fontSize: '12px', fontWeight: '600',
-                                backgroundColor: order.orderStatus === 'Delivered' ? '#e8f5e9' : order.orderStatus === 'Processing' ? '#fff4e5' : order.orderStatus === 'Pending' ? '#fff4e5' : '#ffebee',
-                                color: order.orderStatus === 'Delivered' ? '#2e7d32' : order.orderStatus === 'Processing' ? '#d97706' : order.orderStatus === 'Pending' ? '#d97706' : '#d32f2f'
-                              }}>{order.orderStatus}</span>
+                                backgroundColor: order.status === 'Delivered' ? '#e8f5e9' : order.status === 'Processing' ? '#fff4e5' : order.status === 'Pending' ? '#fff4e5' : '#ffebee',
+                                color: order.status === 'Delivered' ? '#2e7d32' : order.status === 'Processing' ? '#d97706' : order.status === 'Pending' ? '#d97706' : '#d32f2f'
+                              }}>{order.status}</span>
                             </td>
                           </tr>
                         ))}
@@ -877,8 +928,8 @@ const Dashboard = () => {
 
                   {/* List */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    {(notifications || []).slice(0, 4).map((notif, index) => {
-                      const Icon = Bell;
+                    {notificationsData.slice(0, 4).map((notif, index) => {
+                      const Icon = notif.icon;
 
                       let iconColor = '#6b7280';
                       let bgColor = '#f3f4f6';
@@ -945,26 +996,26 @@ const Dashboard = () => {
                   </div>
 
                   <div className="hide-scrollbar" style={{ display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
-                    {(dashboardData?.topSellingProducts || []).slice(0, 3).map((item, index, arr) => (
-                      <div key={item._id || index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: index !== arr.length - 1 ? '1px solid #f5f5f5' : 'none' }}>
+                    {newArrivalsData.slice(0, 3).map((item, index, arr) => (
+                      <div key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: index !== arr.length - 1 ? '1px solid #f5f5f5' : 'none' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: 0 }}>
                           <div style={{ width: '40px', height: '40px', borderRadius: '8px', overflow: 'hidden', backgroundColor: '#f9f9f9', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            <img src={item.images?.[0]?.url || 'https://via.placeholder.com/100'} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            <img src={item.img} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                           </div>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', overflow: 'hidden' }}>
                             <span style={{ fontSize: '13px', fontWeight: '600', color: '#333', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.name}</span>
-                            <span style={{ fontSize: '12px', color: '#888', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.category || 'Clothing'}</span>
+                            <span style={{ fontSize: '12px', color: '#888', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.category}</span>
                           </div>
                         </div>
                         <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
                           <span style={{ fontSize: '13px', fontWeight: '700', color: '#333' }}>
-                            ₹{item.price?.toLocaleString('en-IN') || 0}
+                            {item.price}
                           </span>
                         </div>
                         <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end' }}>
-                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 10px', borderRadius: '20px', backgroundColor: '#fcf6eb' }}>
-                            <div style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: '#f57c00' }}></div>
-                            <span style={{ fontSize: '11px', fontWeight: '600', color: '#e65100' }}>{item.badge || 'Trending'}</span>
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 10px', borderRadius: '20px', backgroundColor: item.badge === 'New' ? '#eef4ed' : item.badge === 'Trending' ? '#fcf6eb' : '#fcedeb' }}>
+                            <div style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: item.badge === 'New' ? '#689f38' : item.badge === 'Trending' ? '#f57c00' : '#d32f2f' }}></div>
+                            <span style={{ fontSize: '11px', fontWeight: '600', color: item.badge === 'New' ? '#558b2f' : item.badge === 'Trending' ? '#e65100' : '#c62828' }}>{item.badge}</span>
                           </div>
                         </div>
                       </div>
@@ -1080,7 +1131,7 @@ const Dashboard = () => {
 
       <Modal
         title={null}
-        open={isLogoutModalVisible}
+        visible={isLogoutModalVisible}
         onCancel={() => setIsLogoutModalVisible(false)}
         footer={null}
         width={400}
@@ -1103,13 +1154,7 @@ const Dashboard = () => {
             Cancel
           </button>
           <button
-            onClick={() => {
-              localStorage.removeItem('token');
-              localStorage.removeItem('user');
-              localStorage.removeItem('userInfo');
-              localStorage.removeItem('adminActiveTab');
-              navigate('/login');
-            }}
+            onClick={() => navigate('/')}
             style={{ flex: 1, padding: '12px', background: '#ef4444', border: 'none', borderRadius: '10px', fontSize: '14px', fontWeight: 600, color: '#fff', cursor: 'pointer', boxShadow: '0 4px 12px rgba(239, 68, 68, 0.2)' }}
           >
             Logout
