@@ -112,9 +112,7 @@ export const updateCustomer = (id, data) => axios.put(`${CUSTOMER_API}/${id}`, d
 export const updateCustomerStatus = (id, status) => axios.patch(`${CUSTOMER_API}/${id}/status`, { status });
 export const deleteCustomer = (id) => axios.delete(`${CUSTOMER_API}/${id}`);
 
-// -----------------------------------------------------
-// PRODUCT APIs
-// -----------------------------------------------------
+
 const PRODUCT_API = `${API_BASE_URL}/products`;
 
 export const fetchProducts = () => axios.get(PRODUCT_API);
@@ -127,18 +125,13 @@ export const deleteProductApi = (id) => axios.delete(`${PRODUCT_API}/${id}`);
 
 
 
-// -----------------------------------------------------
-// OFFER APIs
-// -----------------------------------------------------
 const OFFER_API = `${API_BASE_URL}/offers`;
 export const getOffers = () => axios.get(OFFER_API);
 export const createOffer = (data) => axios.post(OFFER_API, data);
 export const updateOffer = (id, data) => axios.put(`${OFFER_API}/${id}`, data);
 export const deleteOffer = (id) => axios.delete(`${OFFER_API}/${id}`);
 
-// -----------------------------------------------------
-// BANNER APIs
-// -----------------------------------------------------
+
 const BANNER_API = `${API_BASE_URL}/banners`;
 export const getBanners = () => axios.get(BANNER_API);
 export const createBanner = (data) => axios.post(BANNER_API, data);
@@ -147,15 +140,11 @@ export const deleteBanner = (id) => axios.delete(`${BANNER_API}/${id}`);
 export const toggleBannerStatus = (id, status) => axios.patch(`${BANNER_API}/${id}/status`, { status });
 export const getActiveBanners = () => axios.get(`${BANNER_API}/active`);
 
-// -----------------------------------------------------
-// PAYMENT APIs
-// -----------------------------------------------------
+
 const PAYMENT_API = `${API_BASE_URL}/payments`;
 export const processPaymentApi = (data) => axios.post(`${PAYMENT_API}/process`, data);
 
-// -----------------------------------------------------
-// ORDER APIs
-// -----------------------------------------------------
+
 const ORDER_API = `${API_BASE_URL}/orders`;
 export const getOrders = (params) => axios.get(ORDER_API, { params });
 export const getOrderStats = () => axios.get(`${ORDER_API}/stats`);
@@ -184,9 +173,7 @@ export const replyToReviewApi = (id, adminReply) => axios.post(`${ADMIN_REVIEW_A
 
 export const getShippingFeeApi = () => axios.get(`${API_BASE_URL}/checkout/shipping-fee`);
 
-// -----------------------------------------------------
-// NOTIFICATION APIs
-// -----------------------------------------------------
+
 const NOTIFICATION_API = `${API_BASE_URL}/notifications`;
 
 export const getAdminNotificationsApi = () => axios.get(NOTIFICATION_API);
@@ -203,9 +190,6 @@ const PREFERENCES_API = `${API_BASE_URL}/admin/settings/preferences`;
 export const getPreferencesApi = () => axios.get(PREFERENCES_API);
 export const updatePreferencesApi = (data) => axios.put(PREFERENCES_API, data);
 
-// -----------------------------------------------------
-// ANALYTICS APIs
-// -----------------------------------------------------
 const ANALYTICS_API = `${API_BASE_URL}/analytics`;
-export const getDashboardAnalyticsApi = () => axios.get(`${ANALYTICS_API}/dashboard`);
+export const getDashboardAnalyticsApi = (params) => axios.get(`${ANALYTICS_API}/dashboard`, { params });
 export const getRatingAnalyticsApi = () => axios.get(`${ANALYTICS_API}/ratings`);
