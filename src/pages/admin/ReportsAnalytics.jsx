@@ -7,45 +7,16 @@ import {
   BarChart2, Percent, CreditCard, Smartphone, MessageCircle, Wallet, ArrowRight
 } from 'lucide-react';
 
-const areaData = [
-  { name: '01 May', sales: 20000 }, { name: '02 May', sales: 45000 }, { name: '03 May', sales: 65000 }, { name: '04 May', sales: 85000 }, { name: '05 May', sales: 110000 },
-  { name: '06 May', sales: 80000 }, { name: '07 May', sales: 95000 }, { name: '08 May', sales: 100000 }, { name: '09 May', sales: 75000 }, { name: '10 May', sales: 90000 },
-  { name: '11 May', sales: 115000 }, { name: '12 May', sales: 140000 }, { name: '13 May', sales: 110000 }, { name: '14 May', sales: 110000 }, { name: '15 May', sales: 85000 },
-  { name: '16 May', sales: 105000 }, { name: '17 May', sales: 140000 }, { name: '18 May', sales: 120000 }, { name: '19 May', sales: 145000 }, { name: '20 May', sales: 170000 },
-  { name: '21 May', sales: 140000 }, { name: '22 May', sales: 105000 }, { name: '23 May', sales: 140000 }, { name: '24 May', sales: 160000 }, { name: '25 May', sales: 180000 },
-  { name: '26 May', sales: 145000 }, { name: '27 May', sales: 115000 }, { name: '28 May', sales: 140000 }, { name: '29 May', sales: 140000 }, { name: '30 May', sales: 160000 },
-  { name: '31 May', sales: 140000 },
-];
+const areaData = [];
 
-const areaDataWeekly = [
-  { name: 'May 18', sales: 20000 },
-  { name: 'May 19', sales: 35000 },
-  { name: 'May 20', sales: 52000 },
-  { name: 'May 21', sales: 38000 },
-  { name: 'May 22', sales: 65000 },
-  { name: 'May 23', sales: 78000 },
-  { name: 'May 24', sales: 100000 }
-];
+const sparklineTotalRevenue = [];
+const sparklineTotalOrders = [];
+const sparklineTotalCustomers = [];
+const sparklineTotalProducts = [];
 
-const sparklineTotalRevenue = [{ v: 40 }, { v: 30 }, { v: 60 }, { v: 45 }, { v: 70 }, { v: 90 }, { v: 120 }];
-const sparklineTotalOrders = [{ v: 10 }, { v: 15 }, { v: 12 }, { v: 22 }, { v: 18 }, { v: 28 }, { v: 25 }];
-const sparklineTotalCustomers = [{ v: 20 }, { v: 25 }, { v: 20 }, { v: 35 }, { v: 30 }, { v: 45 }, { v: 40 }];
-const sparklineTotalProducts = [{ v: 5 }, { v: 10 }, { v: 15 }, { v: 12 }, { v: 20 }, { v: 18 }, { v: 30 }];
+const pieData = [];
 
-const pieData = [
-  { name: 'Website', value: 645800, color: '#d59441', pct: '51.8%' },
-  { name: 'Mobile App', value: 345200, color: '#2d2d2d', pct: '27.7%' },
-  { name: 'Android App', value: 145300, color: '#8b5a2b', pct: '11.7%' },
-  { name: 'Others', value: 109500, color: '#e5d3b3', pct: '8.8%' },
-];
-
-const orderStatusData = [
-  { name: 'Delivered', value: 785, color: '#10b981' },
-  { name: 'Processing', value: 245, color: '#f59e0b' },
-  { name: 'Shipped', value: 145, color: '#d59441' },
-  { name: 'Cancelled', value: 70, color: '#dc2626' },
-  { name: 'Returned', value: 48, color: '#ef4444' }
-];
+const orderStatusData = [];
 
 const ReportsAnalytics = () => {
   return (
@@ -85,9 +56,9 @@ const ReportsAnalytics = () => {
               <div className="stat-icon gold"><span style={{ fontSize: '18px', fontWeight: 'bold' }}>₹</span></div>
               <div className="stat-info">
                 <span className="stat-title">Total Revenue</span>
-                <h2 className="stat-value gold-text">₹8,75,420</h2>
+                <h2 className="stat-value gold-text">₹0</h2>
                 <div className="stat-bottom">
-                  <span className="stat-change positive">â†‘ 12.5%</span> <span className="stat-change-text">vs yesterday</span>
+                  <span className="stat-change positive">0%</span> <span className="stat-change-text">vs yesterday</span>
                 </div>
               </div>
             </div>
@@ -111,9 +82,9 @@ const ReportsAnalytics = () => {
               <div className="stat-icon gold"><ShoppingBag size={18} color="#554422" /></div>
               <div className="stat-info">
                 <span className="stat-title">Total Orders</span>
-                <h2 className="stat-value">1,245</h2>
+                <h2 className="stat-value">0</h2>
                 <div className="stat-bottom">
-                  <span className="stat-change positive">â†‘ 18</span> <span className="stat-change-text">new today</span>
+                  <span className="stat-change positive">0</span> <span className="stat-change-text">new today</span>
                 </div>
               </div>
             </div>
@@ -137,9 +108,9 @@ const ReportsAnalytics = () => {
               <div className="stat-icon gold"><Users size={18} color="#554422" /></div>
               <div className="stat-info">
                 <span className="stat-title">Total Customers</span>
-                <h2 className="stat-value">3,528</h2>
+                <h2 className="stat-value">0</h2>
                 <div className="stat-bottom">
-                  <span className="stat-change positive">â†‘ 35</span> <span className="stat-change-text">new today</span>
+                  <span className="stat-change positive">0</span> <span className="stat-change-text">new today</span>
                 </div>
               </div>
             </div>
@@ -163,9 +134,9 @@ const ReportsAnalytics = () => {
               <div className="stat-icon gold"><Package size={18} color="#c9a05b" /></div>
               <div className="stat-info">
                 <span className="stat-title">Average Order Value</span>
-                <h2 className="stat-value gold-text">₹999</h2>
+                <h2 className="stat-value gold-text">₹0</h2>
                 <div className="stat-bottom">
-                  <span className="stat-change positive">â†‘ 2.4%</span> <span className="stat-change-text">vs yesterday</span>
+                  <span className="stat-change positive">0%</span> <span className="stat-change-text">vs yesterday</span>
                 </div>
               </div>
             </div>
