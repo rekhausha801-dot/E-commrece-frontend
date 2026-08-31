@@ -56,7 +56,7 @@ const AutofillResistantInput = (props) => {
   );
 };
 
-const WebsiteSetting = ({ initialTab = 'Security' }) => {
+const WebsiteSetting = ({ initialTab = 'Security', onProfileUpdate }) => {
   const [activeTab, setActiveTab] = useState(initialTab);
   const [profileForm] = Form.useForm();
   const [passwordForm] = Form.useForm();
@@ -116,7 +116,9 @@ const WebsiteSetting = ({ initialTab = 'Security' }) => {
       
       if (profileRes?.data && profileRes.data.user) {
         const user = profileRes.data.user;
-        setProfileData(user);
+        // Load cached profile image (stored separately to avoid quota issues)
+        const cachedImage = localStorage.getItem('adminProfileImage');
+        setProfileData({ ...user, profileImage: cachedImage || user.profileImage || '' });
         
         const nameParts = (user.fullName || '').split(' ');
         const firstName = nameParts[0] || '';
@@ -132,7 +134,8 @@ const WebsiteSetting = ({ initialTab = 'Security' }) => {
         });
       } else {
         // Fallback for visual mock if API is disconnected
-        const defaultData = { firstName: 'Admin', lastName: 'User', email: 'admin@relietech.com' };
+        const cachedImage = localStorage.getItem('adminProfileImage');
+        const defaultData = { firstName: 'Admin', lastName: 'User', email: 'admin@relietech.com', profileImage: cachedImage || '' };
         setProfileData(defaultData);
         profileForm.setFieldsValue(defaultData);
       }
@@ -148,18 +151,30 @@ const WebsiteSetting = ({ initialTab = 'Security' }) => {
     }
   };
 
+  const handleSave = () => {
+    message.success('Settings saved successfully!');
+  };
+
   const handleUpdateProfile = async (values) => {
     try {
+      // Send profile data WITHOUT base64 image (too large for API/DB)
       const payload = {
         fullName: `${values.firstName || ''} ${values.lastName || ''}`.trim(),
         email: values.email,
         phone: values.phone,
-        gender: values.gender
+        gender: values.gender,
       };
       const response = await updateUserProfile(payload);
       
       if (response.data && response.data.user) {
-        localStorage.setItem('user', JSON.stringify(response.data.user));
+        // Save user WITHOUT base64 image (avoids localStorage QuotaExceededError)
+        const updatedUser = { ...response.data.user };
+        delete updatedUser.profileImage;
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        // Direct callback → most reliable way to update Dashboard navbar
+        if (onProfileUpdate) onProfileUpdate();
+        // Also fire event as fallback
+        window.dispatchEvent(new Event('localStorageUpdated'));
       }
       
       message.success("Profile details updated successfully!");
@@ -245,7 +260,23 @@ const WebsiteSetting = ({ initialTab = 'Security' }) => {
                     <AntUpload
                       showUploadList={false}
                       beforeUpload={(file) => {
-                        message.success(`${file.name} uploaded successfully!`);
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                          const base64 = e.target.result;
+                          setProfileData(prev => ({ ...(prev || {}), profileImage: base64 }));
+                          // Save image in separate key (avoids user-object quota overflow)
+                          try {
+                            localStorage.setItem('adminProfileImage', base64);
+                          } catch (quotaErr) {
+                            console.warn('localStorage quota exceeded, image only in session', quotaErr);
+                          }
+                          // Direct callback updates Dashboard navbar immediately
+                          if (onProfileUpdate) onProfileUpdate();
+                          // Fallback event
+                          window.dispatchEvent(new Event('localStorageUpdated'));
+                          message.success(`Photo selected! Click "Save Changes" to apply.`);
+                        };
+                        reader.readAsDataURL(file);
                         return false;
                       }}
                     >

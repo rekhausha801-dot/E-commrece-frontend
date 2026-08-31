@@ -26,9 +26,13 @@ const Login = () => {
           if (data.user) {
             localStorage.setItem('user', JSON.stringify(data.user));
           }
-          alert('Login successful!');
           window.scrollTo(0, 0);
-          navigate('/');
+          // Redirect based on role
+          if (data.user?.role === 'admin') {
+            navigate('/dashboard');
+          } else {
+            navigate('/');
+          }
         } else {
           setErrorMsg(data.message || 'Login failed');
         }
