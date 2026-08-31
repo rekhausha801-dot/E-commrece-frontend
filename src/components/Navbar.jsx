@@ -418,29 +418,18 @@ const Navbar = () => {
               <span className="icon-label">Wishlist</span>
             </Link>
 
-            {/* Notifications Dropdown */}
-            <div 
-              className="icon-btn action-item has-dropdown desktop-only"
-              onMouseEnter={() => {
-                if (unreadNotificationCount > 0 && markAllAsRead) {
-                  markAllAsRead();
-                }
-              }}
+            {/* Notifications Link */}
+            <Link 
+              to="/account/notifications"
+              className="icon-btn action-item desktop-only"
+              style={{ textDecoration: 'none', color: 'inherit' }}
             >
               <div className="icon-badge-wrapper">
                 <Bell size={22} />
                 {unreadNotificationCount > 0 && <span className="nav-alert-badge">{unreadNotificationCount}</span>}
               </div>
               <span className="icon-label">Alerts</span>
-              <div className="dropdown-menu standard-dropdown">
-                <div className="dropdown-header">Notifications</div>
-                <ul className="dropdown-list">
-                  {notificationItems.map((item, idx) => (
-                    <li key={idx}><Link to="/account/notifications">{item}</Link></li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+            </Link>
 
             {/* Cart Link */}
             <Link to="/cart" className="icon-btn action-item" style={{ textDecoration: 'none', color: 'inherit' }} id="navbar-cart-icon">

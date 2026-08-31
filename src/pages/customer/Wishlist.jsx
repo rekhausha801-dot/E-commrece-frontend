@@ -18,14 +18,7 @@ import mens1Img from '../../assets/images/mens1.png';
 import mens2Img from '../../assets/images/mens2.png';
 
 // Dummy data for sections
-const recommended = [
-  { id: 'r1', brand: 'MANGO', title: 'Linen Blend Shirt', price: '$49.99', image: westren4Img },
-  { id: 'r2', brand: 'ZARA', title: 'Straight Fit Jeans', price: '$59.99', image: mens1Img },
-  { id: 'r3', brand: 'ALDO', title: 'Quilted Chain Bag', price: '$69.99', image: westren3Img },
-  { id: 'r4', brand: 'H&M', title: 'Ribbed Tank Top', price: '$19.99', image: kurtiImg },
-  { id: 'r5', brand: 'NIKE', title: 'Court Vision Low', price: '$74.99', image: mens2Img },
-  { id: 'r6', brand: 'ZARA', title: 'Knit Cardigan', price: '$49.99', image: westren4Img }
-];
+
 
 const CustomSelect = ({ value, onChange, options }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -332,68 +325,6 @@ const Wishlist = () => {
             ))}
           </div>
         )}
-
-        {/* Recommended */}
-        <div style={{ marginBottom: '40px' }}>
-          <div className="lux-section-header">
-            <h3 className="lux-section-title">Recommended for You</h3>
-            <a href="#" className="lux-section-link">View All <ArrowRight size={14} /></a>
-          </div>
-          <div className="unified-products-grid">
-            {recommended.slice(0, 4).map(item => (
-              <div
-                className="unified-product-card"
-                key={item.id}
-                onClick={() => navigate(`/product/${item.id}`, { state: { product: item } })}
-              >
-                <div className="unified-card-image-wrap">
-                  <button
-                    className="unified-wishlist-btn"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleWishlist(item);
-                    }}
-                  >
-                    <Heart
-                      size={16}
-                      fill={isInWishlist(item.id) ? "#ff4d4f" : "none"}
-                      color={isInWishlist(item.id) ? "#ff4d4f" : "#555"}
-                      style={{ transition: 'all 0.3s ease' }}
-                    />
-                  </button>
-                  <img src={item.image} alt={item.title} />
-                </div>
-
-                <div className="unified-card-info">
-                  <h3 className="unified-card-title">{item.title}</h3>
-
-                  <div className="unified-card-rating">
-                    <div className="unified-stars">
-                      {[1, 2, 3, 4, 5].map((_, i) => (
-                        <Star key={i} size={14} fill={i < (item.rating || 5) ? "#8f7a5b" : "#e0e0e0"} color={i < (item.rating || 5) ? "#8f7a5b" : "#e0e0e0"} />
-                      ))}
-                    </div>
-                    <span className="unified-reviews">({item.reviews || '1.2k'})</span>
-                  </div>
-
-                  <div className="unified-card-price">
-                    <span className="unified-price-new">{item.price}</span>
-                    {item.oldPrice && <span className="unified-price-old">{item.oldPrice}</span>}
-                  </div>
-
-                  <button
-                    className="unified-explore-btn"
-                    onClick={(e) => handleCartClick(e, item)}
-                  >
-                    <ShoppingBag size={16} />
-                    {addedToCart[item.id] ? "GO TO CART" : "ADD TO CART"}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
 
         {/* Recommended Products */}
         {recommendedProducts.length > 0 && (

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, RotateCcw, MoreVertical, X, Mail, Phone, MapPin, Home, Edit, Ban, MessageSquare, Users, UserCheck, UserMinus, UserPlus, ChevronLeft, ChevronRight, Plus, User, Calendar, Hash, FileText, Lock, EyeOff, Globe, Map, FileSignature, UploadCloud, Save, RefreshCw, ArrowLeft, ChevronDown, Heart, Bell, Image, ShieldCheck, Info, Check, Loader } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area } from 'recharts';
-import { getCustomers, getCustomerStats, createCustomer, updateCustomer, updateCustomerStatus, deleteCustomer } from '../../services/api';
+import { getCustomers, getCustomerStats, createCustomer, updateCustomer, updateCustomerStatus, deleteCustomer, getOrders } from '../../services/api';
 import './CustomerManagement.css';
 import './Dashboard.css';
 
@@ -18,15 +18,7 @@ const renderCustomDot = (props) => {
   return null;
 };
 
-const mockCustomers = [
-  { id: '#CUST1001', name: 'Priya Kumar', email: 'priya.kumar@gmail.com', phone: '+91 98765 43210', orders: 12, totalSpent: '₹24,500', joined: '12 Aug 2026', status: 'Active', avatar: 'https://randomuser.me/api/portraits/women/44.jpg' },
-  { id: '#CUST1002', name: 'Rahul S', email: 'rahul.singh@gmail.com', phone: '+91 91234 56789', orders: 5, totalSpent: '₹8,200', joined: '08 Aug 2026', status: 'Active', avatar: 'https://randomuser.me/api/portraits/men/32.jpg' },
-  { id: '#CUST1003', name: 'Anitha R', email: 'anitha.r@gmail.com', phone: '+91 99887 76655', orders: 0, totalSpent: '₹0', joined: '02 Aug 2026', status: 'Inactive', avatar: 'https://randomuser.me/api/portraits/women/68.jpg' },
-  { id: '#CUST1004', name: 'Vikram J', email: 'vikram.j@gmail.com', phone: '+91 97865 11122', orders: 8, totalSpent: '₹15,300', joined: '28 Jul 2026', status: 'Active', avatar: 'https://randomuser.me/api/portraits/men/46.jpg' },
-  { id: '#CUST1005', name: 'Sneha M', email: 'sneha.m@gmail.com', phone: '+91 96789 43210', orders: 3, totalSpent: '₹4,750', joined: '24 Jul 2026', status: 'Blocked', avatar: 'https://randomuser.me/api/portraits/women/12.jpg' },
-  { id: '#CUST1006', name: 'Arun Kumar', email: 'arun.kumar@gmail.com', phone: '+91 90011 22334', orders: 15, totalSpent: '₹31,600', joined: '20 Jul 2026', status: 'Active', avatar: 'https://randomuser.me/api/portraits/men/22.jpg' },
-  { id: '#CUST1007', name: 'Meena Patel', email: 'meena.patel@gmail.com', phone: '+91 98980 66554', orders: 2, totalSpent: '₹3,250', joined: '18 Jul 2026', status: 'Inactive', avatar: 'https://randomuser.me/api/portraits/women/29.jpg' },
-];
+
 
 const mockRecentOrders = [
   { id: '#ORD12540', date: '12 Aug 2026', amount: '₹2,450', status: 'Delivered' },
@@ -46,6 +38,9 @@ const CustomerManagement = () => {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  
+  const [customerOrders, setCustomerOrders] = useState([]);
+  const [isOrdersLoading, setIsOrdersLoading] = useState(false);
   
   const defaultFormData = {
     name: '', email: '', phone: '', address: '', city: '', state: '', country: '', pincode: '', status: 'Active'
@@ -75,9 +70,9 @@ const CustomerManagement = () => {
           phone: c.phone,
           status: c.status,
           joined: new Date(c.createdAt).toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'}),
-          avatar: 'https://randomuser.me/api/portraits/lego/1.jpg',
-          orders: 0,
-          totalSpent: '₹0'
+          avatar: c.profileImage || 'https://randomuser.me/api/portraits/lego/1.jpg',
+          orders: c.totalOrders || 0,
+          totalSpent: `₹${(c.totalSpent || 0).toLocaleString('en-IN')}`
         }));
         setCustomers(mapped);
       }
@@ -92,6 +87,28 @@ const CustomerManagement = () => {
     fetchStats();
     fetchCustomers();
   }, []);
+
+  useEffect(() => {
+    if (selectedCustomer) {
+      const fetchCustomerOrders = async () => {
+        setIsOrdersLoading(true);
+        try {
+          const { data } = await getOrders({ user: selectedCustomer.id, limit: 5 });
+          if (data.success) {
+            setCustomerOrders(data.data || []);
+          } else {
+            setCustomerOrders([]);
+          }
+        } catch (error) {
+          console.error("Error fetching customer orders", error);
+          setCustomerOrders([]);
+        } finally {
+          setIsOrdersLoading(false);
+        }
+      };
+      fetchCustomerOrders();
+    }
+  }, [selectedCustomer]);
 
   const handleSaveCustomer = async () => {
     if (!formData.name || !formData.email || !formData.phone) {
@@ -170,19 +187,12 @@ const CustomerManagement = () => {
           </div>
         </div>
         
-        {isAddingCustomer ? (
+        {isAddingCustomer && (
           <button 
             onClick={() => { setIsAddingCustomer(false); setSelectedCustomer(null); }}
             style={{ background: '#fff', color: '#374151', border: '1px solid #e5e7eb', padding: '10px 20px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontWeight: '600', fontSize: '14px' }}
           >
             <ArrowLeft size={16} strokeWidth={2.5} /> Back
-          </button>
-        ) : (
-          <button 
-            onClick={() => { setIsAddingCustomer(true); setFormData(defaultFormData); setSelectedCustomer(null); }}
-            style={{ background: 'linear-gradient(90deg, #d97706 0%, #b45309 100%)', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontWeight: '600', fontSize: '14px', boxShadow: '0 4px 12px rgba(217, 119, 6, 0.2)' }}
-          >
-            <Plus size={16} strokeWidth={2.5} /> Add Customer
           </button>
         )}
       </div>
@@ -440,14 +450,20 @@ const CustomerManagement = () => {
               Recent Orders <span>View All</span>
             </div>
             <div className="cm-recent-orders">
-              {mockRecentOrders.map(order => (
-                <div key={order.id} className="cm-ro-item">
-                  <div className="cm-ro-id">{order.id}</div>
-                  <div className="cm-ro-date">{order.date}</div>
-                  <div className="cm-ro-amount">{order.amount}</div>
-                  <span className={`cm-tag ${order.status.toLowerCase()}`}>{order.status}</span>
-                </div>
-              ))}
+              {isOrdersLoading ? (
+                <div style={{ padding: '20px', textAlign: 'center', fontSize: '13px' }}>Loading orders...</div>
+              ) : customerOrders.length === 0 ? (
+                <div style={{ padding: '20px', textAlign: 'center', fontSize: '13px', color: '#888' }}>No recent orders found.</div>
+              ) : (
+                customerOrders.map((order, idx) => (
+                  <div key={idx} className="cm-ro-item">
+                    <div className="cm-ro-id">{order.orderId || `#${order._id.substring(order._id.length - 6).toUpperCase()}`}</div>
+                    <div className="cm-ro-date">{new Date(order.createdAt).toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'})}</div>
+                    <div className="cm-ro-amount">₹{(order.totalAmount || order.grandTotal || 0).toLocaleString('en-IN')}</div>
+                    <span className={`cm-tag ${(order.orderStatus || order.status || 'Pending').toLowerCase()}`}>{order.orderStatus || order.status || 'Pending'}</span>
+                  </div>
+                ))
+              )}
             </div>
 
             <div className="cm-section-title">

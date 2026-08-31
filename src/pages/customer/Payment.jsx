@@ -21,7 +21,7 @@ import CheckoutStepper from '../../components/CheckoutStepper';
 import { useCart } from '../../context/CartContext';
 import { useOrders } from '../../context/OrderContext';
 import { useNotification } from '../../context/NotificationContext';
-import { createOrderApi, processPaymentApi } from '../../services/api';
+import { createOrderApi, processPaymentApi, getOffers } from '../../services/api';
 
 const Payment = () => {
   const navigate = useNavigate();
@@ -60,11 +60,37 @@ const Payment = () => {
   const appliedShippingFee = baseSubtotal > 0 ? baseShippingFee : 0;
   const grandTotal = baseSubtotal > 0 ? Math.max(0, baseSubtotal - baseProductDiscount - couponDiscount + tax + appliedShippingFee) : 0;
 
-  const availableCoupons = [
-    { code: 'MYNTRAEXCLUSIVE1', save: 157, desc: '35% off on minimum purchase of Rs. 300.', expiry: '30th September 2026 | 11:55 PM' },
-    { code: 'MYNTRA300', save: 300, desc: 'Rs. 300 off on minimum purchase of Rs. 1499.', expiry: '30th September 2026 | 11:05 AM' },
-    { code: 'MYNTRA400', save: 400, desc: 'Rs. 400 off on minimum purchase of Rs. 3999.', expiry: '09th August 2026 | 11:59 PM' }
-  ];
+  const [availableCoupons, setAvailableCoupons] = useState([]);
+
+  useEffect(() => {
+    const fetchCoupons = async () => {
+      try {
+        const { data } = await getOffers();
+        if (data.success) {
+          const mapped = data.data.filter(c => c.isActive).map(c => {
+            const calculatedSave = c.discountType === 'Percentage' 
+              ? Math.floor((baseSubtotal * c.discountValue) / 100) 
+              : c.discountValue;
+            
+            return {
+              code: c.couponCode,
+              save: calculatedSave,
+              desc: c.description || (c.discountType === 'Percentage' ? `${c.discountValue}% off` : `₹${c.discountValue} off`),
+              expiry: new Date(c.endDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
+              minPurchase: c.minPurchase || 0,
+              discountType: c.discountType,
+              discountValue: c.discountValue,
+              originalCoupon: c
+            };
+          });
+          setAvailableCoupons(mapped);
+        }
+      } catch (e) {
+        console.error("Failed to fetch coupons", e);
+      }
+    };
+    fetchCoupons();
+  }, [baseSubtotal]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -103,8 +129,12 @@ const Payment = () => {
 
   const handleApplyCoupon = () => {
     const codeToApply = enteredCode || selectedCouponCode;
-    const found = availableCoupons.find(c => c.code === codeToApply);
+    const found = availableCoupons.find(c => c.code.toUpperCase() === codeToApply.toUpperCase());
     if (found) {
+      if (baseSubtotal < found.minPurchase) {
+        message.error(`Minimum purchase of ₹${found.minPurchase} required`);
+        return;
+      }
       setAppliedCoupon(found);
       setCouponDiscount(found.save);
       setIsCouponModalOpen(false);

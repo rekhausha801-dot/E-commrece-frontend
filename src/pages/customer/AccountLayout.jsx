@@ -1,14 +1,16 @@
 import React from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { useNotification } from '../../context/NotificationContext';
 import { 
   User, ShoppingBag, MapPin, CreditCard, Ticket, 
-  Bell, Settings, Headphones, LogOut, Heart, RotateCcw
+  Bell, Settings, Headphones, LogOut, Heart, RotateCcw, LayoutDashboard
 } from 'lucide-react';
 import './AccountLayout.css';
 
 const defaultAvatar = 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=150&q=80';
 
 const navItems = [
+  { name: 'Dashboard', path: '/account/dashboard', icon: LayoutDashboard },
   { name: 'My Profile', path: '/account/profile', icon: User },
   { name: 'My Orders', path: '/account/orders', icon: ShoppingBag },
   { name: 'Wishlist', path: '/wishlist', icon: Heart },
@@ -23,6 +25,8 @@ const AccountLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [userData, setUserData] = React.useState({ fullName: '', email: '', profileImage: '' });
+  const { notifications } = useNotification();
+  const unreadCount = notifications.filter(n => !n.read).length;
 
   React.useEffect(() => {
     const userStr = localStorage.getItem('user');
@@ -60,6 +64,9 @@ const AccountLayout = () => {
                 >
                   <Icon size={18} />
                   <span>{item.name}</span>
+                  {item.name === 'Notifications' && unreadCount > 0 && (
+                    <span className="account-nav-badge">{unreadCount}</span>
+                  )}
                 </NavLink>
               </li>
             );

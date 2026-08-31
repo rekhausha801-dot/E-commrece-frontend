@@ -7,7 +7,7 @@ const Notifications = () => {
   const { notifications, markAsRead, deleteNotification, markAllAsRead } = useNotification();
   const [activeTab, setActiveTab] = useState('All');
 
-  const tabs = ['All', 'order', 'offer', 'payment', 'reward'];
+  const tabs = ['All', 'collection', 'ticket', 'order', 'offer', 'payment', 'reward'];
   
   // Format tab names for display
   const getTabDisplayName = (tabName) => {
@@ -18,12 +18,6 @@ const Notifications = () => {
   // Calculate unread count
   const unreadCount = notifications.filter(n => !n.read).length;
 
-  React.useEffect(() => {
-    if (unreadCount > 0 && markAllAsRead) {
-      markAllAsRead();
-    }
-  }, [unreadCount, markAllAsRead]);
-
   // Filter notifications by active tab
   const filteredNotifications = notifications.filter(n => 
     activeTab === 'All' ? true : n.type === activeTab
@@ -31,6 +25,8 @@ const Notifications = () => {
 
   const getIconForType = (type) => {
     switch(type) {
+      case 'collection': return <Tag size={20} />;
+      case 'ticket': return <Bell size={20} />;
       case 'order': return <Package size={20} />;
       case 'offer': return <Tag size={20} />;
       case 'payment': return <CreditCard size={20} />;
@@ -82,6 +78,11 @@ const Notifications = () => {
               <div className="notification-content">
                 <h3 className="notification-title">{notification.title}</h3>
                 <p className="notification-message">{notification.message}</p>
+                {notification.link && (
+                  <a href={notification.link} className="notification-link" style={{ color: '#c99a53', fontSize: '14px', marginTop: '4px', display: 'inline-block', textDecoration: 'none', fontWeight: 'bold' }}>
+                    View Details
+                  </a>
+                )}
                 <span className="notification-time">{notification.time}</span>
               </div>
               

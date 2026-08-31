@@ -247,6 +247,19 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
 
 
   const handleSaveClick = () => {
+    if (!productName || !productName.trim()) {
+      alert("Product name is required.");
+      return;
+    }
+    if (!sku || !sku.trim()) {
+      alert("SKU is required.");
+      return;
+    }
+    if (!category) {
+      alert("Category is required.");
+      return;
+    }
+
     const p = Number(price);
     const d = Number(discount);
     if (!isNaN(p) && !isNaN(d) && d > 0) {
@@ -775,8 +788,45 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
                       })}
                     </div>
                   </div>
-
                   <hr style={{ border: 'none', borderTop: '1px dashed #e5e7eb', margin: '24px 0' }} />
+
+                  <div className="variant-row" style={{ marginBottom: '24px' }}>
+                    <label style={{ display: 'block', margin: 0, fontWeight: 700, fontSize: '13px', color: '#111827', marginBottom: '16px' }}>Color</label>
+                    <div className="variant-options" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+                      {COLORS_LIST.map(color => {
+                        const isActive = selectedColors.includes(color.name);
+                        return (
+                          <div
+                            key={color.name}
+                            onClick={() => toggleArrayItem(selectedColors, setSelectedColors, color.name)}
+                            className="variant-pill color-pill"
+                            style={{
+                              border: isActive ? '2px solid #a66c24' : '1px solid #e5e7eb',
+                              padding: '8px 16px',
+                              borderRadius: '6px',
+                              fontSize: '12px',
+                              fontWeight: 600,
+                              color: '#374151',
+                              cursor: 'pointer',
+                              background: '#fff',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '8px',
+                              position: 'relative'
+                            }}
+                          >
+                            <span style={{ width: '16px', height: '16px', borderRadius: '50%', background: color.hex, display: 'inline-block', border: '1px solid rgba(0,0,0,0.1)' }}></span>
+                            {color.name}
+                            {isActive && (
+                              <div style={{ position: 'absolute', top: '-6px', right: '-6px', background: '#a66c24', color: '#fff', borderRadius: '50%', width: '16px', height: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <Check size={10} strokeWidth={4} />
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
 
                 </div>
               </div>

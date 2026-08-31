@@ -1,14 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Package, FileText, Wallet, CheckCircle2, ChevronRight, 
   UploadCloud, Headset, Clock, Truck, FileCheck, CheckCircle
 } from 'lucide-react';
+import { getMyOrders, returnOrder } from '../../services/api';
 import './ReturnRefund.css';
 
 const ReturnRefund = () => {
   const [activeTab, setActiveTab] = useState('Request Return');
   const [comments, setComments] = useState('');
   const [uploadedImage, setUploadedImage] = useState(null);
+  
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedItems, setSelectedItems] = useState({});
+  const [returnReason, setReturnReason] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const fetchOrders = async () => {
+    try {
+      setLoading(true);
+      const { data } = await getMyOrders();
+      if (data.success && data.data) {
+        setOrders(data.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch orders', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -18,13 +43,76 @@ const ReturnRefund = () => {
     }
   };
 
+  const toggleItemSelection = (orderId, itemIndex) => {
+    const key = `${orderId}-${itemIndex}`;
+    setSelectedItems(prev => {
+      const next = { ...prev };
+      if (next[key]) delete next[key];
+      else next[key] = true;
+      return next;
+    });
+  };
+
+  const submitReturn = async () => {
+    const selectedKeys = Object.keys(selectedItems);
+    if (selectedKeys.length === 0) {
+      alert("Please select at least one item to return.");
+      return;
+    }
+    if (!returnReason) {
+      alert("Please select a reason for return.");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      // Group by orderId
+      const ordersToReturn = {};
+      selectedKeys.forEach(key => {
+        const [orderId, itemIndex] = key.split('-');
+        if (!ordersToReturn[orderId]) ordersToReturn[orderId] = [];
+        ordersToReturn[orderId].push(itemIndex);
+      });
+
+      for (const orderId of Object.keys(ordersToReturn)) {
+         await returnOrder(orderId, {
+           reason: returnReason,
+           comments: comments
+         });
+      }
+      
+      alert("Return request submitted successfully!");
+      setComments('');
+      setReturnReason('');
+      setSelectedItems({});
+      setUploadedImage(null);
+      fetchOrders();
+    } catch (error) {
+      alert("Failed to submit return: " + (error.response?.data?.message || error.message));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Find eligible return items (Delivered orders)
+  const eligibleItems = [];
+  orders.forEach(order => {
+    if (order.orderStatus === 'Delivered' || order.status === 'Delivered') {
+      const products = order.items || order.products || [];
+      products.forEach((prod, index) => {
+        eligibleItems.push({ order, prod, index });
+      });
+    }
+  });
+
+  const returnedOrders = orders.filter(o => o.orderStatus === 'Returned' || o.orderStatus === 'Return Requested');
+
   return (
     <div className="return-refund-container">
       {/* Header */}
       <div className="rr-header">
         <h1 className="rr-title">Return & Refund</h1>
         <p className="rr-subtitle">Request a return or track your refund status</p>
-        
       </div>
 
       {/* Top Stepper */}
@@ -86,34 +174,47 @@ const ReturnRefund = () => {
             <div className="rr-card">
               <h3 className="rr-card-title">Select Order Item</h3>
               
-              <div className="rr-item-selection">
-                <label className="rr-checkbox-container">
-                  <input type="checkbox" defaultChecked />
-                  <span className="rr-checkmark"></span>
-                </label>
-                <div className="rr-item-box">
-                  <img 
-                    src="https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?auto=format&fit=crop&q=80&w=150" 
-                    alt="Floral Printed Kurti" 
-                    className="rr-item-img" 
-                  />
-                  <div className="rr-item-details">
-                    <h4>Floral Printed Kurti</h4>
-                    <p>Size: M <span className="divider">|</span> Color: Pink</p>
-                    <p>Qty: 1 <span className="divider">|</span> <span className="price">₹699</span></p>
-                    <p>Order ID: #ORD123456</p>
-                    <p>Order Date: 24 Jul 2025</p>
+              {loading ? (
+                <div style={{ padding: '20px', textAlign: 'center' }}>Loading eligible items...</div>
+              ) : eligibleItems.length === 0 ? (
+                <div style={{ padding: '20px', textAlign: 'center', color: '#666' }}>No delivered items eligible for return found.</div>
+              ) : (
+                eligibleItems.map(({ order, prod, index }) => (
+                  <div className="rr-item-selection" key={`${order._id || order.id}-${index}`}>
+                    <label className="rr-checkbox-container">
+                      <input 
+                        type="checkbox" 
+                        checked={!!selectedItems[`${order._id || order.id}-${index}`]}
+                        onChange={() => toggleItemSelection(order._id || order.id, index)} 
+                      />
+                      <span className="rr-checkmark"></span>
+                    </label>
+                    <div className="rr-item-box">
+                      <img 
+                        src={prod.productImage || prod.image || "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?auto=format&fit=crop&q=80&w=150"} 
+                        alt={prod.productName || prod.name} 
+                        className="rr-item-img" 
+                      />
+                      <div className="rr-item-details">
+                        <h4>{prod.productName || prod.name}</h4>
+                        <p>Size: {prod.size || 'Free'} <span className="divider">|</span> Color: {prod.color || 'Default'}</p>
+                        <p>Qty: {prod.quantity || 1} <span className="divider">|</span> <span className="price">?{prod.price || order.totalAmount || order.total}</span></p>
+                        <p>Order ID: {order.orderId || order._id || order.id}</p>
+                        <p>Order Date: {new Date(order.createdAt).toLocaleDateString()}</p>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
+                ))
+              )}
 
               <div className="rr-form-group">
                 <label>Reason for Return <span className="required">*</span></label>
-                <select className="rr-select">
-                  <option>Select a reason</option>
-                  <option>Size issue</option>
-                  <option>Defective product</option>
-                  <option>Item not as described</option>
+                <select className="rr-select" value={returnReason} onChange={(e) => setReturnReason(e.target.value)}>
+                  <option value="">Select a reason</option>
+                  <option value="Size issue">Size issue</option>
+                  <option value="Defective product">Defective product</option>
+                  <option value="Item not as described">Item not as described</option>
+                  <option value="Other">Other</option>
                 </select>
               </div>
 
@@ -137,7 +238,7 @@ const ReturnRefund = () => {
                   {uploadedImage ? (
                     <div className="rr-image-preview">
                       <img src={uploadedImage} alt="Uploaded" className="rr-preview-img" />
-                      <button type="button" className="rr-remove-img-btn" onClick={() => setUploadedImage(null)}>✕</button>
+                      <button type="button" className="rr-remove-img-btn" onClick={() => setUploadedImage(null)}>?</button>
                     </div>
                   ) : (
                     <>
@@ -158,7 +259,9 @@ const ReturnRefund = () => {
                 </div>
               </div>
 
-              <button className="rr-submit-btn">Submit Return Request</button>
+              <button className="rr-submit-btn" onClick={submitReturn} disabled={submitting}>
+                {submitting ? 'Submitting...' : 'Submit Return Request'}
+              </button>
             </div>
           </div>
 
@@ -239,7 +342,7 @@ const ReturnRefund = () => {
         </div>
       )}
 
-      {/* Return Process Bottom Stepper (Moved outside grid to span full width) */}
+      {/* Return Process Bottom Stepper */}
       {activeTab === 'Request Return' && (
         <div className="rr-card rr-process-card">
           <h3 className="rr-card-title">Return Process</h3>
@@ -274,7 +377,20 @@ const ReturnRefund = () => {
 
       {activeTab === 'Return History' && (
         <div className="rr-card" style={{ padding: '60px', textAlign: 'center', color: '#666' }}>
-          No past returns found.
+          {loading ? 'Loading history...' : returnedOrders.length > 0 ? (
+             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                {returnedOrders.map(order => (
+                  <div key={order._id || order.id} style={{ border: '1px solid #eee', padding: '20px', borderRadius: '12px', textAlign: 'left' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                      <strong style={{ fontSize: '16px' }}>Order ID: {order.orderId || order._id || order.id}</strong>
+                      <span style={{ padding: '4px 12px', background: '#fff3e0', color: '#f57c00', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold' }}>{order.orderStatus}</span>
+                    </div>
+                    <p style={{ fontSize: '14px', margin: '0 0 10px 0' }}>Date: {new Date(order.createdAt).toLocaleDateString()}</p>
+                    <p style={{ fontSize: '14px', margin: '0' }}>Amount: ?{order.totalAmount || order.total}</p>
+                  </div>
+                ))}
+             </div>
+          ) : 'No past returns found.'}
         </div>
       )}
 

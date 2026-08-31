@@ -226,7 +226,8 @@
 
 .cm-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
 }
 
 .cm-table th {
@@ -259,22 +260,6 @@
 
 .cm-table tr:hover { background: #fafafa; }
 .cm-table tr:last-child td { border-bottom: none; }
-
-.cm-table th:last-child {
-  position: sticky;
-  right: 0;
-  background: #fdfaf6;
-  z-index: 10;
-  box-shadow: -4px 0 8px rgba(0,0,0,0.02);
-}
-
-.cm-table td:last-child {
-  position: sticky;
-  right: 0;
-  background: #fff;
-  z-index: 9;
-  box-shadow: -4px 0 8px rgba(0,0,0,0.02);
-}
 
 .cm-table tr:hover td:last-child {
   background: #fafafa;
@@ -318,15 +303,22 @@
 
 .cm-action-btn {
   background: transparent;
-  border: 1px solid #e5e7eb;
-  border-radius: 4px;
-  width: 32px;
-  height: 32px;
+  border: none;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #6b7280;
-  cursor: pointer;
+  transition: all 0.2s ease;
+  margin: 0 auto;
+}
+.cm-action-btn:hover,
+.cm-action-btn:focus {
+  background: #f3f4f6;
+  color: #111827;
+  outline: none;
 }
 
 /* Pagination */

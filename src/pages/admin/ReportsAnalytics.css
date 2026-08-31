@@ -806,3 +806,36 @@
   left: 0 !important;
   right: 0 !important;
 }
+@media (max-width: 1200px) {
+  .ra-stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .ra-grid-5 { grid-template-columns: repeat(3, 1fr); }
+  .ra-grid-3 { grid-template-columns: 1fr 1fr; }
+  .ra-grid-sales { grid-template-columns: 1fr; }
+}
+@media (max-width: 992px) {
+  .ra-grid-3-cards { grid-template-columns: 1fr 1fr; }
+  .ra-grid-cust-2 { grid-template-columns: 1fr; }
+  .ra-cust-bottom-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .ra-stats-grid { grid-template-columns: 1fr; }
+  .ra-grid-5 { grid-template-columns: 1fr 1fr; }
+  .ra-grid-3 { grid-template-columns: 1fr; }
+  .ra-grid-2 { grid-template-columns: 1fr; }
+  .ra-grid-3-cards { grid-template-columns: 1fr; }
+  .ra-legend-grid { grid-template-columns: 1fr; }
+  
+  .ra-header { flex-direction: column; gap: 16px; }
+  .ra-actions { flex-direction: column; width: 100%; }
+  .ra-actions button { width: 100%; justify-content: center; }
+}
+@media (max-width: 480px) {
+  .ra-grid-5 { grid-template-columns: 1fr; }
+  .report-ui-redesign { padding: 12px; }
+}
+@media (max-width: 1200px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr) !important; }
+}
+@media (max-width: 768px) {
+  .stats-grid { grid-template-columns: 1fr !important; }
+}

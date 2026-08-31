@@ -431,10 +431,10 @@ const MyOrders = () => {
 
                       <h4 className="mo-ed-title" style={{ marginTop: '32px' }}>Shipping Address</h4>
                       <div className="mo-shipping-address">
-                        <p className="mo-sa-name">John Doe</p>
-                        <p>123 Premium Avenue, Tech Park</p>
-                        <p>Bangalore, Karnataka 560001</p>
-                        <p>Phone: +91 98765 43210</p>
+                        <p className="mo-sa-name">{order.shippingAddress?.fullName || 'N/A'}</p>
+                        <p>{order.shippingAddress?.address || 'N/A'}</p>
+                        <p>{order.shippingAddress?.city}, {order.shippingAddress?.state} {order.shippingAddress?.postalCode}</p>
+                        <p>Phone: {order.shippingAddress?.phoneNumber || 'N/A'}</p>
                       </div>
 
                       <button className="mo-btn-invoice" style={{ width: '100%', marginTop: '16px' }}>Download Invoice</button>
