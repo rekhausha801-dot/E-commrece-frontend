@@ -114,6 +114,12 @@ const BrandManagement = ({ setActiveTab }) => {
     }
   };
 
+  const filteredBrands = brands.filter(brand => {
+    const matchesSearch = brand.name?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = categoryFilter === 'All Categories' || brand.category === categoryFilter;
+    return matchesSearch && matchesCategory;
+  });
+
   if (isAdding || editingBrand || viewingBrand) {
     return (
       <AddNewBrand 
@@ -297,9 +303,14 @@ const BrandManagement = ({ setActiveTab }) => {
               </tr>
             </thead>
             <tbody>
-              {brands.map((brand, index) => (
-                <tr key={brand._id || brand.id || index}>
-                  <td className="bm-text-muted">{index + 1}</td>
+              {filteredBrands.length === 0 ? (
+                <tr>
+                  <td colSpan="8" style={{ textAlign: 'center', padding: '24px' }}>No brands found.</td>
+                </tr>
+              ) : (
+                filteredBrands.map((brand, index) => (
+                  <tr key={brand._id || brand.id || index}>
+                    <td className="bm-text-muted">{index + 1}</td>
                   <td>
                     <div className="bm-brand-cell">
                       <div className="bm-brand-logo">
@@ -337,8 +348,9 @@ const BrandManagement = ({ setActiveTab }) => {
                       </div>
                     )}
                   </td>
-                </tr>
-              ))}
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

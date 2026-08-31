@@ -157,11 +157,13 @@ export const processPaymentApi = (data) => axios.post(`${PAYMENT_API}/process`, 
 // -----------------------------------------------------
 const ORDER_API = `${API_BASE_URL}/orders`;
 export const getOrders = (params) => axios.get(ORDER_API, { params });
+export const getMyOrders = () => axios.get(`${ORDER_API}/myorders`);
 export const getOrderStats = () => axios.get(`${ORDER_API}/stats`);
 export const getOrderById = (id) => axios.get(`${ORDER_API}/${id}`);
 export const createOrderApi = (data) => axios.post(ORDER_API, data);
 export const updateOrderStatus = (id, status) => axios.patch(`${ORDER_API}/${id}/status`, { orderStatus: status });
 export const cancelOrder = (id, data) => axios.patch(`${ORDER_API}/${id}/cancel`, data);
+export const returnOrder = (id, data) => axios.patch(`${ORDER_API}/${id}/return`, data);
 export const reviewReturn = (id, data) => axios.post(`${ORDER_API}/${id}/return/review`, data);
 export const processRefund = (id) => axios.post(`${ORDER_API}/${id}/refund`);
 export const getExportOrdersUrl = () => `${ORDER_API}/export`;
@@ -193,6 +195,12 @@ export const markNotificationAsReadApi = (id) => axios.patch(`${NOTIFICATION_API
 export const markAllNotificationsAsReadApi = () => axios.patch(`${NOTIFICATION_API}/read-all`);
 export const deleteAdminNotificationApi = (id) => axios.delete(`${NOTIFICATION_API}/${id}`);
 
+// Customer Notifications
+const CUSTOMER_NOTIFICATION_API = `${API_BASE_URL}/customer/notifications`;
+export const getCustomerNotificationsApi = () => axios.get(CUSTOMER_NOTIFICATION_API);
+export const markCustomerNotificationAsReadApi = (id) => axios.patch(`${CUSTOMER_NOTIFICATION_API}/${id}/read`);
+export const markAllCustomerNotificationsAsReadApi = () => axios.patch(`${CUSTOMER_NOTIFICATION_API}/read-all`);
+
 
 const SETTINGS_API = `${API_BASE_URL}/settings`;
 export const getSettingsApi = () => axios.get(SETTINGS_API);
@@ -208,3 +216,24 @@ export const updatePreferencesApi = (data) => axios.put(PREFERENCES_API, data);
 const ANALYTICS_API = `${API_BASE_URL}/analytics`;
 export const getDashboardAnalyticsApi = () => axios.get(`${ANALYTICS_API}/dashboard`);
 export const getRatingAnalyticsApi = () => axios.get(`${ANALYTICS_API}/ratings`);
+export const getCustomerAnalyticsApi = () => axios.get(`${API_BASE_URL}/customer/analytics`);
+
+// -----------------------------------------------------
+// SUPPORT & TICKETS APIs
+// -----------------------------------------------------
+const FAQ_API = `${API_BASE_URL}/support/faqs`;
+const ADMIN_FAQ_API = `${API_BASE_URL}/admin/faqs`;
+const ADMIN_TICKET_API = `${API_BASE_URL}/admin/support/tickets`;
+const CUSTOMER_TICKET_API = `${API_BASE_URL}/support/tickets`;
+
+export const getFAQs = () => axios.get(FAQ_API);
+export const createFAQ = (data) => axios.post(ADMIN_FAQ_API, data);
+export const updateFAQ = (id, data) => axios.put(`${ADMIN_FAQ_API}/${id}`, data);
+export const deleteFAQ = (id) => axios.delete(`${ADMIN_FAQ_API}/${id}`);
+
+export const getAdminTickets = () => axios.get(ADMIN_TICKET_API);
+export const resolveTicket = (id, data) => axios.post(`${ADMIN_TICKET_API}/${id}/resolve`, data);
+export const updateTicketStatus = (id, status) => axios.put(`${ADMIN_TICKET_API}/${id}/status`, { status });
+
+export const getCustomerTickets = () => axios.get(CUSTOMER_TICKET_API);
+export const contactSupport = (data) => axios.post(`${CUSTOMER_TICKET_API}/contact`, data);

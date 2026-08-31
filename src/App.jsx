@@ -18,6 +18,7 @@ import OrderConfirmed from "./pages/customer/OrderConfirmed";
 import MyOrders from "./pages/customer/MyOrders";
 import AccountLayout from "./pages/customer/AccountLayout";
 import AccountPlaceholder from "./pages/customer/AccountPlaceholder";
+import CustomerDashboard from "./pages/customer/Dashboard";
 import Profile from "./pages/customer/Profile";
 import AccountSettings from "./pages/customer/AccountSettings";
 import AddAddress from "./pages/customer/AddAddress";
@@ -68,11 +69,11 @@ const AppContent = () => {
 
         <Route path="/account/my-orders" element={<MyOrders />} />
         <Route path="/account" element={<AccountLayout />}>
-          <Route path="dashboard" element={<AccountPlaceholder />} />
+          <Route path="dashboard" element={<CustomerDashboard />} />
           <Route path="profile" element={<Profile />} />
           <Route path="settings" element={<AccountSettings />} />
           <Route path="add-address" element={<AddAddress />} />
-          <Route path="orders" element={<AccountPlaceholder />} />
+          <Route path="orders" element={<MyOrders />} />
           <Route path="addresses" element={<SavedAddresses />} />
           <Route path="payment-methods" element={<PaymentMethods />} />
           <Route path="coupons" element={<Coupons />} />

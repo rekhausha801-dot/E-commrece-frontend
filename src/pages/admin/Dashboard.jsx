@@ -130,23 +130,11 @@ const Dashboard = () => {
   }, [activeTab, notifications]);
 
   const getRevenueValue = () => {
-    switch (revenueFilterLabel) {
-      case 'Today': return '₹1,24,500';
-      case 'Last 7 Days': return '₹8,75,420';
-      case 'Last 30 Days': return '₹34,12,000';
-      case 'This Year': return '₹4,12,50,000';
-      default: return '₹8,75,420';
-    }
+    return `₹${dashboardData?.kpis?.totalRevenue?.toLocaleString('en-IN') || '0'}`;
   };
 
   const getRevenuePercentage = () => {
-    switch (revenueFilterLabel) {
-      case 'Today': return '↑ 5.2%';
-      case 'Last 7 Days': return '↑ 12.5%';
-      case 'Last 30 Days': return '↑ 8.4%';
-      case 'This Year': return '↑ 24.1%';
-      default: return '↑ 12.5%';
-    }
+    return '↑ 12.5%';
   };
 
   const unreadCount = notifications.filter(n => n.unread !== false).length;

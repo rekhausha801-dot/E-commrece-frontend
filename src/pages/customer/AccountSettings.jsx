@@ -22,8 +22,8 @@ const AccountSettings = () => {
   const [saving, setSaving] = useState(false);
   
   const [formData, setFormData] = useState({
-    fullName: 'Rekha R',
-    email: 'rekha.r@email.com',
+    fullName: '',
+    email: '',
     phone: '',
     dob: '',
     gender: 'Female',
