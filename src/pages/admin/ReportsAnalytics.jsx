@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './ReportsAnalytics.css';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { 
-  Calendar, Download, ChevronDown, IndianRupee, ShoppingBag, 
+  Calendar, Download, ChevronDown, ChevronRight, IndianRupee, ShoppingBag, 
   Users, User, Package, ArrowUp, Info, RefreshCw, FileText,
   BarChart2, Percent, CreditCard, Smartphone, MessageCircle, Wallet, ArrowRight
 } from 'lucide-react';
@@ -21,19 +21,29 @@ const orderStatusData = [];
 const ReportsAnalytics = () => {
   return (
     <div className="ra-container report-ui-redesign">
-      <div className="ra-header">
-        <div className="ra-header-left">
-          <h2>Reports</h2>
-          <div className="ra-breadcrumbs">Dashboard <span className="ra-breadcrumb-sep">{'>'}</span> <span className="ra-breadcrumb-active">Reports</span></div>
+      {/* Header */}
+      <div style={{ background: '#fff', padding: '16px 24px', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 2px 12px rgba(0,0,0,0.03)', marginBottom: '24px', border: '1px solid #f9f9f9' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={{ width: '48px', height: '48px', borderRadius: '12px', border: '1.5px solid #fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <BarChart2 size={22} color="#d97706" />
+          </div>
+          <div style={{ width: '2.5px', height: '22px', background: '#d97706', borderRadius: '2px' }}></div>
+          <div>
+            <h1 style={{ margin: 0, fontSize: '20px', fontWeight: '700', color: '#0f172a' }}>Reports & Analytics</h1>
+            <div style={{ fontSize: '13px', color: '#6b7280', margin: '4px 0 0 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              Dashboard <ChevronRight size={12} /> <span style={{ color: '#d97706', fontWeight: '500' }}>Reports</span>
+            </div>
+          </div>
         </div>
-        <div className="ra-header-actions">
-          <div className="ra-date-picker">
-            <Calendar size={16} />
+        
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ background: '#f8f9fa', border: '1px solid #e5e7eb', padding: '10px 16px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#4b5563', cursor: 'pointer', fontWeight: '500' }}>
+            <Calendar size={16} color="#d97706" />
             <span>01 May 2025 - 31 May 2025</span>
             <ChevronDown size={16} />
           </div>
-          <button className="ra-btn-export">
-            <Download size={16} /> Export Report <ChevronDown size={16} className="ml-2" />
+          <button style={{ background: 'linear-gradient(90deg, #d97706 0%, #b45309 100%)', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: '600', fontSize: '14px', boxShadow: '0 4px 12px rgba(217, 119, 6, 0.2)' }}>
+            <Download size={16} strokeWidth={2.5} /> Export Report
           </button>
         </div>
       </div>
@@ -148,27 +158,37 @@ const ReportsAnalytics = () => {
 
         {/* ROW 2: Charts and Breakdowns */}
         <div className="ra-grid-sales">
-          <div className="ra-card">
-            <div className="ra-card-header">
-              <h3 className="ra-card-title">Sales Overview</h3>
-              <div className="ra-card-filter">
-                Daily <ChevronDown size={14} />
+          <div className="ra-card" style={{ background: '#f8f3eb', border: '1px solid #eaddce', borderRadius: '16px', padding: '24px 24px 0 24px', overflow: 'hidden' }}>
+            <div className="ra-card-header" style={{ marginBottom: '16px', borderBottom: 'none', padding: 0 }}>
+              <h3 className="ra-card-title" style={{ color: '#1f2937', fontSize: '16px', fontWeight: '600' }}>Revenue Overview</h3>
+              <div style={{ background: '#1a1a1a', color: '#c8a883', padding: '6px 12px', borderRadius: '6px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontWeight: '500' }}>
+                Last 7 Days <ChevronDown size={14} />
               </div>
             </div>
-            <div className="ra-chart-area">
+            
+            <div style={{ marginBottom: '24px', display: 'flex', alignItems: 'baseline', gap: '12px' }}>
+              <div style={{ fontSize: '32px', fontWeight: '500', color: '#333' }}>
+                ₹8,75,420
+              </div>
+              <div style={{ fontSize: '20px', color: '#4caf50', display: 'flex', alignItems: 'center', fontWeight: '500' }}>
+                ↑ 12.5%
+              </div>
+            </div>
+
+            <div className="ra-chart-area" style={{ height: '300px', margin: '0 -24px' }}>
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={areaData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <AreaChart data={areaDataWeekly} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
                   <defs>
-                    <linearGradient id="colorSalesNew" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#d59441" stopOpacity={0.2}/>
-                      <stop offset="95%" stopColor="#d59441" stopOpacity={0}/>
+                    <linearGradient id="colorSalesWeekly" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#c19d67" stopOpacity={0.5}/>
+                      <stop offset="95%" stopColor="#c19d67" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#6b7280' }} dy={10} ticks={['01 May', '06 May', '11 May', '16 May', '21 May', '26 May', '31 May']} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#6b7280' }} tickFormatter={(val) => val === 0 ? '0' : val >= 100000 ? `${val/100000}L` : `${val/1000}K`} />
-                  <RechartsTooltip contentStyle={{ borderRadius: '8px', border: '1px solid #eee' }} />
-                  <Area type="monotone" dataKey="sales" stroke="#d59441" strokeWidth={2} fill="url(#colorSalesNew)" dot={{ r: 4, fill: '#fff', stroke: '#d59441', strokeWidth: 2 }} activeDot={{ r: 6 }} />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eae1d1" />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#8b8375' }} dy={10} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#8b8375' }} tickFormatter={(val) => val === 0 ? '0' : val >= 1000 ? `${val/1000}K` : val} />
+                  <RechartsTooltip contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
+                  <Area type="natural" dataKey="sales" stroke="#c19d67" strokeWidth={3} fill="url(#colorSalesWeekly)" dot={{ r: 4, fill: '#c19d67', strokeWidth: 0 }} activeDot={{ r: 6, fill: '#c19d67', stroke: '#fff', strokeWidth: 2 }} />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -372,9 +392,9 @@ const ReportsAnalytics = () => {
         {/* ROW 4: Overview Areas */}
         <div className="ra-grid-2">
           {/* Customer Overview */}
-          <div className="ra-card">
+          <div className="ra-card" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             <h3 className="ra-card-title">Customer Overview</h3>
-            <div className="ra-cust-flex">
+            <div className="ra-cust-flex" style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
               <div className="ra-cust-block">
                 <div className="ra-icon-md light"><Users size={20} /></div>
                 <div>
@@ -405,7 +425,7 @@ const ReportsAnalytics = () => {
           </div>
 
           {/* Order Status Overview */}
-          <div className="ra-card">
+          <div className="ra-card" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             <h3 className="ra-card-title">Order Status Overview</h3>
             
             <div className="ra-order-status-wrap" style={{ display: 'flex', alignItems: 'center', gap: '24px', height: '160px', marginTop: '16px' }}>

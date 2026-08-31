@@ -103,7 +103,7 @@ const AppContent = () => {
           <Route path="orders" element={<AccountPlaceholder />} />
           <Route path="addresses" element={<SavedAddresses />} />
           <Route path="payment-methods" element={<PaymentMethods />} />
-          <Route path="coupons" element={<AccountPlaceholder />} />
+          <Route path="coupons" element={<Coupons />} />
           <Route path="notifications" element={<Notifications />} />
           <Route path="returns" element={<ReturnRefund />} />
           <Route path="recently-viewed" element={<AccountPlaceholder />} />

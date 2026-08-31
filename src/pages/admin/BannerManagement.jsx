@@ -283,15 +283,20 @@ const BannerManagement = () => {
   return (
     <div className="banner-management-page">
       {/* Header */}
-      <div className="bam-header-section">
-        <div className="bam-header-title-row">
-          <div>
-            <h1 className="bm-page-title">Banner Management</h1>
+      <div style={{ background: '#fff', padding: '16px 24px', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 2px 12px rgba(0,0,0,0.03)', marginBottom: '24px', border: '1px solid #f9f9f9' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={{ width: '48px', height: '48px', borderRadius: '12px', border: '1.5px solid #fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Copy size={22} color="#d97706" />
           </div>
-          <button className="bam-btn-primary" onClick={() => openDrawer('add')}>
-            <Plus size={16} /> Add Banner
-          </button>
+          <div style={{ width: '2.5px', height: '22px', background: '#d97706', borderRadius: '2px' }}></div>
+          <h1 style={{ margin: 0, fontSize: '20px', fontWeight: '700', color: '#0f172a' }}>Banner Management</h1>
         </div>
+        <button 
+          onClick={() => openDrawer('add')}
+          style={{ background: 'linear-gradient(90deg, #d97706 0%, #b45309 100%)', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontWeight: '600', fontSize: '14px', boxShadow: '0 4px 12px rgba(217, 119, 6, 0.2)' }}
+        >
+          <Plus size={16} strokeWidth={2.5} /> Add Banner
+        </button>
       </div>
 
       {/* Stats Grid */}

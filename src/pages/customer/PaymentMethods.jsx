@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
-import { Plus, CreditCard, Trash2, CheckCircle } from 'lucide-react';
+import { Plus, CreditCard, Trash2, CheckCircle, X } from 'lucide-react';
 import './PaymentMethods.css';
 
 const PaymentMethods = () => {
+  const [isCardModalOpen, setIsCardModalOpen] = useState(false);
+  const [isUpiModalOpen, setIsUpiModalOpen] = useState(false);
+  const [newCard, setNewCard] = useState({ number: '', expiry: '', name: '', type: 'Visa' });
+  const [newUpi, setNewUpi] = useState('');
   const [cards, setCards] = useState([
     {
       id: 1,
@@ -40,6 +44,56 @@ const PaymentMethods = () => {
     }
   };
 
+  const handleSaveCard = (e) => {
+    e.preventDefault();
+    if (!newCard.number || !newCard.expiry || !newCard.name) {
+      alert('Please fill in all fields');
+      return;
+    }
+    
+    // Auto-detect type simply for demo
+    const type = newCard.number.startsWith('5') ? 'Mastercard' : 'Visa';
+    const logo = type === 'Mastercard' 
+      ? 'https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg'
+      : 'https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png';
+
+    // Mask number
+    const last4 = newCard.number.slice(-4);
+    const maskedNumber = `**** **** **** ${last4 || '0000'}`;
+
+    const cardToAdd = {
+      id: Date.now(),
+      type: type,
+      number: maskedNumber,
+      expiry: newCard.expiry,
+      name: newCard.name,
+      isDefault: cards.length === 0,
+      logo: logo
+    };
+
+    setCards([...cards, cardToAdd]);
+    setIsCardModalOpen(false);
+    setNewCard({ number: '', expiry: '', name: '', type: 'Visa' });
+  };
+
+  const handleSaveUpi = (e) => {
+    e.preventDefault();
+    if (!newUpi) {
+      alert('Please enter a valid UPI ID');
+      return;
+    }
+    
+    const upiToAdd = {
+      id: Date.now(),
+      upi: newUpi,
+      isDefault: upiIds.length === 0
+    };
+
+    setUpiIds([...upiIds, upiToAdd]);
+    setIsUpiModalOpen(false);
+    setNewUpi('');
+  };
+
   return (
     <div className="payment-methods-container">
       <div className="pm-header">
@@ -50,7 +104,7 @@ const PaymentMethods = () => {
       <div className="pm-section">
         <div className="pm-section-header">
           <h2 className="pm-section-title">Saved Cards</h2>
-          <button className="pm-add-btn">
+          <button className="pm-add-btn" onClick={() => setIsCardModalOpen(true)}>
             <Plus size={16} /> Add New Card
           </button>
         </div>
@@ -93,7 +147,7 @@ const PaymentMethods = () => {
       <div className="pm-section" style={{ marginTop: '40px' }}>
         <div className="pm-section-header">
           <h2 className="pm-section-title">Saved UPI IDs</h2>
-          <button className="pm-add-btn">
+          <button className="pm-add-btn" onClick={() => setIsUpiModalOpen(true)}>
             <Plus size={16} /> Add UPI ID
           </button>
         </div>
@@ -117,6 +171,118 @@ const PaymentMethods = () => {
           ))}
         </div>
       </div>
+
+      {isCardModalOpen && (
+        <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div className="modal-content" style={{ background: '#fff', padding: '30px', borderRadius: '12px', width: '400px', maxWidth: '90%', position: 'relative', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}>
+            <button 
+              onClick={() => setIsCardModalOpen(false)} 
+              style={{ position: 'absolute', top: '15px', right: '15px', background: 'none', border: 'none', cursor: 'pointer', color: '#666' }}
+            >
+              <X size={20} />
+            </button>
+            <h3 style={{ marginTop: 0, marginBottom: '20px', fontSize: '20px', color: '#1a1a1a', fontWeight: '600' }}>Add New Card</h3>
+            
+            <form onSubmit={handleSaveCard}>
+              <div style={{ marginBottom: '15px' }}>
+                <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', color: '#555', fontWeight: '500' }}>Cardholder Name</label>
+                <input 
+                  type="text" 
+                  required
+                  value={newCard.name}
+                  onChange={(e) => setNewCard({...newCard, name: e.target.value})}
+                  style={{ width: '100%', padding: '10px 12px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '14px' }}
+                  placeholder="e.g. Rekha R" 
+                />
+              </div>
+              
+              <div style={{ marginBottom: '15px' }}>
+                <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', color: '#555', fontWeight: '500' }}>Card Number</label>
+                <input 
+                  type="text" 
+                  required
+                  maxLength="16"
+                  value={newCard.number}
+                  onChange={(e) => setNewCard({...newCard, number: e.target.value.replace(/\D/g, '')})}
+                  style={{ width: '100%', padding: '10px 12px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '14px' }}
+                  placeholder="xxxx xxxx xxxx xxxx" 
+                />
+              </div>
+              
+              <div style={{ display: 'flex', gap: '15px', marginBottom: '20px' }}>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', color: '#555', fontWeight: '500' }}>Expiry Date</label>
+                  <input 
+                    type="text" 
+                    required
+                    maxLength="5"
+                    value={newCard.expiry}
+                    onChange={(e) => setNewCard({...newCard, expiry: e.target.value})}
+                    style={{ width: '100%', padding: '10px 12px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '14px' }}
+                    placeholder="MM/YY" 
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', color: '#555', fontWeight: '500' }}>CVV</label>
+                  <input 
+                    type="password" 
+                    required
+                    maxLength="4"
+                    style={{ width: '100%', padding: '10px 12px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '14px' }}
+                    placeholder="***" 
+                  />
+                </div>
+              </div>
+              
+              <button 
+                type="submit" 
+                style={{ width: '100%', padding: '12px', backgroundColor: '#C89953', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '15px', fontWeight: '600', cursor: 'pointer', transition: 'background-color 0.2s' }}
+                onMouseOver={(e) => e.target.style.backgroundColor = '#b68645'}
+                onMouseOut={(e) => e.target.style.backgroundColor = '#C89953'}
+              >
+                Save Card
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {isUpiModalOpen && (
+        <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div className="modal-content" style={{ background: '#fff', padding: '30px', borderRadius: '12px', width: '400px', maxWidth: '90%', position: 'relative', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}>
+            <button 
+              onClick={() => setIsUpiModalOpen(false)} 
+              style={{ position: 'absolute', top: '15px', right: '15px', background: 'none', border: 'none', cursor: 'pointer', color: '#666' }}
+            >
+              <X size={20} />
+            </button>
+            <h3 style={{ marginTop: 0, marginBottom: '20px', fontSize: '20px', color: '#1a1a1a', fontWeight: '600' }}>Add UPI ID</h3>
+            
+            <form onSubmit={handleSaveUpi}>
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{ display: 'block', marginBottom: '6px', fontSize: '13px', color: '#555', fontWeight: '500' }}>UPI ID / VPA</label>
+                <input 
+                  type="text" 
+                  required
+                  value={newUpi}
+                  onChange={(e) => setNewUpi(e.target.value)}
+                  style={{ width: '100%', padding: '10px 12px', border: '1px solid #ddd', borderRadius: '6px', fontSize: '14px' }}
+                  placeholder="e.g. name@okhdfcbank" 
+                />
+              </div>
+              
+              <button 
+                type="submit" 
+                style={{ width: '100%', padding: '12px', backgroundColor: '#C89953', color: '#fff', border: 'none', borderRadius: '6px', fontSize: '15px', fontWeight: '600', cursor: 'pointer', transition: 'background-color 0.2s' }}
+                onMouseOver={(e) => e.target.style.backgroundColor = '#b68645'}
+                onMouseOut={(e) => e.target.style.backgroundColor = '#C89953'}
+              >
+                Save UPI ID
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
 
     </div>
   );

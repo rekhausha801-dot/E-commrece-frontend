@@ -5,10 +5,10 @@ import { getCustomers, getCustomerStats, createCustomer, updateCustomer, updateC
 import './CustomerManagement.css';
 import './Dashboard.css';
 
-const sparklineTotalCustomers = [{ v: 11000 }, { v: 11200 }, { v: 11500 }, { v: 11800 }, { v: 12000 }, { v: 12200 }, { v: 12450 }];
-const sparklineActiveCustomers = [{ v: 9800 }, { v: 10000 }, { v: 10200 }, { v: 10400 }, { v: 10600 }, { v: 10700 }, { v: 10820 }];
-const sparklineInactiveCustomers = [{ v: 1500 }, { v: 1450 }, { v: 1400 }, { v: 1350 }, { v: 1300 }, { v: 1250 }, { v: 1230 }];
-const sparklineNewCustomers = [{ v: 200 }, { v: 250 }, { v: 280 }, { v: 320 }, { v: 350 }, { v: 380 }, { v: 400 }];
+const sparklineTotalCustomers = [{ v: 40 }, { v: 30 }, { v: 60 }, { v: 45 }, { v: 70 }, { v: 90 }, { v: 120 }];
+const sparklineActiveCustomers = [{ v: 10 }, { v: 15 }, { v: 12 }, { v: 22 }, { v: 18 }, { v: 28 }, { v: 25 }];
+const sparklineInactiveCustomers = [{ v: 20 }, { v: 25 }, { v: 20 }, { v: 35 }, { v: 30 }, { v: 45 }, { v: 40 }];
+const sparklineNewCustomers = [{ v: 5 }, { v: 10 }, { v: 15 }, { v: 12 }, { v: 20 }, { v: 18 }, { v: 30 }];
 
 const renderCustomDot = (props) => {
   const { cx, cy, index } = props;
@@ -156,18 +156,35 @@ const CustomerManagement = () => {
   return (
     <div className="customer-management-page">
       {/* Header Section */}
-      <div className="cm-header-section">
-        <div className="bm-header-title-row">
-          <div>
-            <h1 className="bm-page-title">{isAddingCustomer ? (selectedCustomer ? 'Edit Customer Details' : 'Add New Customer') : 'Customer Management'}</h1>
-            {isAddingCustomer && <p style={{ fontSize: '13px', color: '#4b5563', margin: '4px 0 0 0' }}>{selectedCustomer ? 'Update the details for this customer account.' : 'Create a new customer account and add customer details.'}</p>}
+      <div style={{ background: '#fff', padding: '16px 24px', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 2px 12px rgba(0,0,0,0.03)', marginBottom: '24px', border: '1px solid #f9f9f9' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={{ width: '48px', height: '48px', borderRadius: '12px', border: '1.5px solid #fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Users size={22} color="#d97706" />
           </div>
-          {isAddingCustomer && (
-            <button className="cm-btn-outline-action" onClick={() => { setIsAddingCustomer(false); setSelectedCustomer(null); }}>
-              <ArrowLeft size={16} /> Back to Customers
-            </button>
-          )}
+          <div style={{ width: '2.5px', height: '22px', background: '#d97706', borderRadius: '2px' }}></div>
+          <div>
+            <h1 style={{ margin: 0, fontSize: '20px', fontWeight: '700', color: '#0f172a' }}>
+              {isAddingCustomer ? (selectedCustomer ? 'Edit Customer Details' : 'Add New Customer') : 'Customer Management'}
+            </h1>
+            {isAddingCustomer && <p style={{ fontSize: '13px', color: '#6b7280', margin: '4px 0 0 0' }}>{selectedCustomer ? 'Update the details for this customer account.' : 'Create a new customer account and add customer details.'}</p>}
+          </div>
         </div>
+        
+        {isAddingCustomer ? (
+          <button 
+            onClick={() => { setIsAddingCustomer(false); setSelectedCustomer(null); }}
+            style={{ background: '#fff', color: '#374151', border: '1px solid #e5e7eb', padding: '10px 20px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontWeight: '600', fontSize: '14px' }}
+          >
+            <ArrowLeft size={16} strokeWidth={2.5} /> Back
+          </button>
+        ) : (
+          <button 
+            onClick={() => { setIsAddingCustomer(true); setFormData(defaultFormData); setSelectedCustomer(null); }}
+            style={{ background: 'linear-gradient(90deg, #d97706 0%, #b45309 100%)', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', fontWeight: '600', fontSize: '14px', boxShadow: '0 4px 12px rgba(217, 119, 6, 0.2)' }}
+          >
+            <Plus size={16} strokeWidth={2.5} /> Add Customer
+          </button>
+        )}
       </div>
 
       {!isAddingCustomer ? (
