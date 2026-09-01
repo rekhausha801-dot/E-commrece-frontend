@@ -83,7 +83,7 @@ function Section({ title, children, defaultOpen = true }) {
   );
 }
 
-export default function Collection() {
+export default function Collection({ BannerComponent, title = "Kurtis" }) {
   const navigate = useNavigate();
   const { wishlistItems, toggleWishlist, isInWishlist } = useWishlist();
   const { addToCart } = useCart();
@@ -156,7 +156,7 @@ export default function Collection() {
 
   return (
     <div className="collection-page">
-      <KurtiBanner />
+      {BannerComponent ? <BannerComponent /> : <KurtiBanner />}
 
       <div className="pdp-breadcrumbs" style={{ padding: '20px 5% 0', fontSize: '14px' }}>
         <span onClick={() => navigate('/')} style={{ color: '#666', cursor: 'pointer' }}>Home</span>
@@ -165,7 +165,7 @@ export default function Collection() {
         <span style={{ margin: '0 8px', color: '#ccc' }}>/</span>
         <span onClick={() => navigate('/category/clothing')} style={{ color: '#666', cursor: 'pointer' }}>Clothing</span>
         <span style={{ margin: '0 8px', color: '#ccc' }}>/</span>
-        <span className="current" style={{ color: '#222', fontWeight: '600' }}>Kurtis</span>
+        <span className="current" style={{ color: '#222', fontWeight: '600' }}>{title}</span>
       </div>
 
       <div className="collection-main">

@@ -247,6 +247,13 @@ function Section({ title, children, defaultOpen = true }) {
   );
 }
 
+import { getActiveBanners } from '../services/api';
+
+const getImageUrl = (path) => {
+  if (!path) return '';
+  return path.startsWith('http') ? path : `http://localhost:5000${path}`;
+};
+
 export default function CategoryPage() {
   const navigate = useNavigate();
   const { categoryId } = useParams();
@@ -255,6 +262,24 @@ export default function CategoryPage() {
   const { products: contextProducts } = useProducts();
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [addedToCart, setAddedToCart] = useState({});
+  const [dynamicBanner, setDynamicBanner] = useState(null);
+
+  React.useEffect(() => {
+    const fetchBanners = async () => {
+      try {
+        const { data } = await getActiveBanners();
+        if (data && data.success) {
+          const shopBanners = data.data.filter(b => b.placement === 'Product Page');
+          if (shopBanners.length > 0) {
+            setDynamicBanner(shopBanners[0]);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching banners", error);
+      }
+    };
+    fetchBanners();
+  }, []);
 
   const handleCartClick = async (e, product) => {
     e.stopPropagation();
@@ -272,6 +297,133 @@ export default function CategoryPage() {
     title: "Exclusive Collection",
     banner: bannerImg,
     images: [manImg, shoeImg, watchImg, beautyImg]
+  };
+
+  const renderBanner = () => {
+    if (dynamicBanner) {
+      const bannerImage = getImageUrl(dynamicBanner.image);
+      const titleText = dynamicBanner.title || currentCategory.title;
+      
+      return (
+        <section className="shop-banner-wrapper" style={{ position: 'relative', width: '100%', height: '400px', background: 'none', marginBottom: '30px' }}>
+          <img 
+            src={bannerImage} 
+            alt={titleText} 
+            style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', top: 0, left: 0, zIndex: 0 }} 
+          />
+          
+          {dynamicBanner.type === 'with_text' && (
+            <>
+              <div style={{
+                position: 'absolute',
+                top: 0, left: 0, right: 0, bottom: 0,
+                backgroundColor: 'rgba(0,0,0,0.3)',
+                zIndex: 1
+              }}></div>
+              <div style={{
+                position: 'absolute',
+                top: '50%',
+                left: dynamicBanner.textPosition === 'Center' ? '50%' : dynamicBanner.textPosition === 'Right' ? '80%' : '10%',
+                transform: dynamicBanner.textPosition === 'Center' ? 'translate(-50%, -50%)' : 'translateY(-50%)',
+                textAlign: dynamicBanner.textPosition === 'Center' ? 'center' : 'left',
+                zIndex: 2,
+                color: 'white',
+                maxWidth: '600px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: dynamicBanner.textPosition === 'Center' ? 'center' : 'flex-start'
+              }}>
+                {dynamicBanner.description && (
+                  <div style={{ fontSize: '14px', fontWeight: '600', letterSpacing: '2px', marginBottom: '15px', color: '#e0d0b8' }}>
+                    {dynamicBanner.description}
+                  </div>
+                )}
+                <h2 style={{ fontSize: '48px', fontWeight: '600', lineHeight: '1.2', marginBottom: '25px', whiteSpace: 'pre-line' }}>
+                  {titleText}
+                </h2>
+                {dynamicBanner.link ? (
+                  <a href={dynamicBanner.link} className="shop-btn" style={{ textDecoration: 'none', padding: '14px 32px', backgroundColor: '#e5c398', color: '#111', fontWeight: '600', display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
+                    SHOP NOW <ArrowRight size={18} />
+                  </a>
+                ) : (
+                  <button className="shop-btn" style={{ padding: '14px 32px', backgroundColor: '#e5c398', color: '#111', fontWeight: '600', display: 'inline-flex', alignItems: 'center', gap: '10px', border: 'none', cursor: 'pointer' }}>
+                    SHOP NOW <ArrowRight size={18} />
+                  </button>
+                )}
+              </div>
+            </>
+          )}
+        </section>
+      );
+    }
+    
+    // Fallback static banner
+    if (currentCategory.banner) {
+      return (
+        <div style={{ position: 'relative', width: '100%', height: '400px', overflow: 'hidden', marginBottom: '30px' }}>
+          <img 
+            src={currentCategory.banner} 
+            alt={currentCategory.title} 
+            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center', display: 'block' }} 
+          />
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            height: '100%',
+            width: '100%',
+            maxWidth: '600px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            paddingLeft: '8%',
+            background: 'linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0) 100%)',
+            color: '#ffffff'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
+              <span style={{ width: '40px', height: '1px', backgroundColor: '#e5c398' }} />
+              <span style={{ fontSize: '10px', fontWeight: '600', letterSpacing: '3px', color: '#e5c398', textTransform: 'uppercase' }}>NEW SEASON</span>
+              <span style={{ width: '40px', height: '1px', backgroundColor: '#e5c398' }} />
+            </div>
+            
+            {categoryId === 'menswear' ? (
+              <>
+                <h2 style={{ fontSize: '64px', fontWeight: '400', letterSpacing: '2px', margin: '0', lineHeight: 1 }}>MENS</h2>
+                <h3 style={{ fontSize: '32px', fontWeight: '400', letterSpacing: '7px', color: '#e5c398', margin: '8px 0 0 0' }}>WEAR</h3>
+              </>
+            ) : (
+              <h2 style={{ fontSize: '48px', fontWeight: '400', letterSpacing: '2px', margin: '0', lineHeight: 1.2, textTransform: 'uppercase' }}>
+                {currentCategory.title}
+              </h2>
+            )}
+            
+            <button style={{
+              marginTop: '30px',
+              padding: '14px 32px',
+              backgroundColor: '#e5c398',
+              color: '#111',
+              border: 'none',
+              borderRadius: '4px',
+              fontSize: '14px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '10px',
+              width: 'fit-content',
+              letterSpacing: '1px',
+              transition: 'background-color 0.3s'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#d4b082'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#e5c398'}
+            >
+              SHOP NOW <ArrowRight size={18} />
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return null;
   };
 
   // Use real products from context, filtered by category name
@@ -377,69 +529,7 @@ export default function CategoryPage() {
 
   return (
     <div className="collection-page">
-      {currentCategory.banner && (
-        <div style={{ position: 'relative', width: '100%', height: '400px', overflow: 'hidden', marginBottom: '30px' }}>
-          <img 
-            src={currentCategory.banner} 
-            alt={currentCategory.title} 
-            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center', display: 'block' }} 
-          />
-          <div style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            height: '100%',
-            width: '100%',
-            maxWidth: '600px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            paddingLeft: '8%',
-            background: 'linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0) 100%)',
-            color: '#ffffff'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-              <span style={{ width: '40px', height: '1px', backgroundColor: '#e5c398' }} />
-              <span style={{ fontSize: '10px', fontWeight: '600', letterSpacing: '3px', color: '#e5c398', textTransform: 'uppercase' }}>NEW SEASON</span>
-              <span style={{ width: '40px', height: '1px', backgroundColor: '#e5c398' }} />
-            </div>
-            
-            {categoryId === 'menswear' ? (
-              <>
-                <h2 style={{ fontSize: '64px', fontWeight: '400', letterSpacing: '2px', margin: '0', lineHeight: 1 }}>MENS</h2>
-                <h3 style={{ fontSize: '32px', fontWeight: '400', letterSpacing: '7px', color: '#e5c398', margin: '8px 0 0 0' }}>WEAR</h3>
-              </>
-            ) : (
-              <h2 style={{ fontSize: '48px', fontWeight: '400', letterSpacing: '2px', margin: '0', lineHeight: 1.2, textTransform: 'uppercase' }}>
-                {currentCategory.title}
-              </h2>
-            )}
-            
-            <button style={{
-              marginTop: '30px',
-              padding: '14px 32px',
-              backgroundColor: '#e5c398',
-              color: '#111',
-              border: 'none',
-              borderRadius: '4px',
-              fontSize: '14px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '10px',
-              width: 'fit-content',
-              letterSpacing: '1px',
-              transition: 'background-color 0.3s'
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#d4b082'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#e5c398'}
-            >
-              SHOP NOW <ArrowRight size={18} />
-            </button>
-          </div>
-        </div>
-      )}
+      {renderBanner()}
 
       <div className="pdp-breadcrumbs" style={{ padding: '20px 5% 0', fontSize: '14px' }}>
         <span onClick={() => navigate('/')} style={{ color: '#666', cursor: 'pointer' }}>Home</span>

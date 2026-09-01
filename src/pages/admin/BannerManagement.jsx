@@ -475,7 +475,7 @@ const BannerManagement = () => {
                 <tr key={banner._id}>
                   <td>
                     {banner.type === 'video' ? (
-                      <video src={getImageUrl(banner.image)} className="bam-preview-img" style={{ objectFit: 'cover' }} muted />
+                      <video src={getImageUrl(banner.image)} style={{ width: '100%', height: '100%', objectFit: 'cover' }} muted autoPlay loop />
                     ) : banner.type === 'text' ? (
                       <div className="bam-preview-img" style={{ background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Type size={16}/></div>
                     ) : (
@@ -608,6 +608,7 @@ const BannerManagement = () => {
                       <option value="Home - Middle">Home - Middle Section</option>
                       <option value="Home - Bottom">Home - Bottom Section</option>
                       <option value="Category Page">Category Page</option>
+                      <option value="Product Page">Product Page</option>
                       <option value="Checkout Page">Checkout Page</option>
                       <option value="Coupon Page">Coupon Page</option>
                     </select>
@@ -635,7 +636,7 @@ const BannerManagement = () => {
                       </div>
                       <div className="bam-upload-text">
                         <b>Click to upload</b>
-                        <p>Images (Max 5MB) or Videos (Max 50MB)</p>
+                        <p>Images (Max 5MB) or Videos (Max 500MB)</p>
                       </div>
                       <input id="banner-media-upload" type="file" accept="image/*, video/*" style={{ display: 'none' }} onChange={handleMediaUpload} disabled={drawerMode === 'view'} />
                     </div>

@@ -9,6 +9,7 @@ import CategoryPage from "./components/CategoryPage";
 import ProductDetail from "./components/ProductDetail";
 import CustomizeTShirt from "./components/CustomizeTShirt";
 import SearchResults from "./pages/customer/SearchResults";
+import ShopBanner from "./components/ShopBanner";
 
 import Wishlist from "./pages/customer/Wishlist";
 import Cart from "./pages/customer/Cart";
@@ -56,14 +57,14 @@ const AppContent = () => {
         <Route path="/collection" element={<Collection />} />
         <Route path="/western" element={<WesternCollection />} />
         <Route path="/category/:categoryId" element={<CategoryPage />} />
-        <Route path="/product/:productId" element={<ProductDetail />} />
         <Route path="/customize/:productId" element={<CustomizeTShirt />} />
         <Route path="/search" element={<SearchResults />} />
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/cart" element={<Cart />} />
-        <Route path="/shop" element={<h1 style={{ padding: "120px 20px", textAlign: "center" }}>Shop Page - Coming Soon!</h1>} />
+        <Route path="/shop" element={<Collection BannerComponent={ShopBanner} title="Shop" />} />
         <Route path="/address" element={<Address />} />
         <Route path="/payment" element={<Payment />} />
+        <Route path="/product/:productId" element={<ProductDetail />} />
         <Route path="/order-confirmed/:orderId" element={<OrderConfirmed />} />
         <Route path="/coupons" element={<Coupons />} />
 
