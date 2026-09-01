@@ -6,8 +6,17 @@ import {
   Users, User, Package, ArrowUp, Info, RefreshCw, FileText,
   BarChart2, Percent, CreditCard, Smartphone, MessageCircle, Wallet, ArrowRight
 } from 'lucide-react';
-import { getReports, exportReports } from '../../services/reportsService';
-import { message } from 'antd';
+
+const areaData = [];
+
+const sparklineTotalRevenue = [];
+const sparklineTotalOrders = [];
+const sparklineTotalCustomers = [];
+const sparklineTotalProducts = [];
+
+const pieData = [];
+
+const orderStatusData = [];
 
 const ReportsAnalytics = () => {
   const [reportData, setReportData] = useState(null);
@@ -130,9 +139,9 @@ const ReportsAnalytics = () => {
               <div className="stat-icon gold"><span style={{ fontSize: '18px', fontWeight: 'bold' }}>₹</span></div>
               <div className="stat-info">
                 <span className="stat-title">Total Revenue</span>
-                <h2 className="stat-value gold-text">{formatCurrency(summary.totalSales)}</h2>
+                <h2 className="stat-value gold-text">₹0</h2>
                 <div className="stat-bottom">
-                  <span className={`stat-change ${summary.salesGrowth >= 0 ? 'positive' : 'negative'}`}>{summary.salesGrowth >= 0 ? '↑' : '↓'} {Math.abs(summary.salesGrowth || 0)}%</span> <span className="stat-change-text">growth</span>
+                  <span className="stat-change positive">0%</span> <span className="stat-change-text">vs yesterday</span>
                 </div>
               </div>
             </div>
@@ -156,9 +165,9 @@ const ReportsAnalytics = () => {
               <div className="stat-icon gold"><ShoppingBag size={18} color="#554422" /></div>
               <div className="stat-info">
                 <span className="stat-title">Total Orders</span>
-                <h2 className="stat-value">{(summary.totalOrders || 0).toLocaleString()}</h2>
+                <h2 className="stat-value">0</h2>
                 <div className="stat-bottom">
-                  <span className={`stat-change ${summary.ordersGrowth >= 0 ? 'positive' : 'negative'}`}>{summary.ordersGrowth >= 0 ? '↑' : '↓'} {Math.abs(summary.ordersGrowth || 0)}%</span> <span className="stat-change-text">growth</span>
+                  <span className="stat-change positive">0</span> <span className="stat-change-text">new today</span>
                 </div>
               </div>
             </div>
@@ -182,9 +191,9 @@ const ReportsAnalytics = () => {
               <div className="stat-icon gold"><Users size={18} color="#554422" /></div>
               <div className="stat-info">
                 <span className="stat-title">Total Customers</span>
-                <h2 className="stat-value">{(summary.totalCustomers || 0).toLocaleString()}</h2>
+                <h2 className="stat-value">0</h2>
                 <div className="stat-bottom">
-                  <span className={`stat-change ${summary.customersGrowth >= 0 ? 'positive' : 'negative'}`}>{summary.customersGrowth >= 0 ? '↑' : '↓'} {Math.abs(summary.customersGrowth || 0)}%</span> <span className="stat-change-text">growth</span>
+                  <span className="stat-change positive">0</span> <span className="stat-change-text">new today</span>
                 </div>
               </div>
             </div>
@@ -208,9 +217,9 @@ const ReportsAnalytics = () => {
               <div className="stat-icon gold"><Package size={18} color="#c9a05b" /></div>
               <div className="stat-info">
                 <span className="stat-title">Average Order Value</span>
-                <h2 className="stat-value gold-text">{formatCurrency(summary.averageOrderValue)}</h2>
+                <h2 className="stat-value gold-text">₹0</h2>
                 <div className="stat-bottom">
-                  <span className={`stat-change ${summary.averageOrderValueGrowth >= 0 ? 'positive' : 'negative'}`}>{summary.averageOrderValueGrowth >= 0 ? '↑' : '↓'} {Math.abs(summary.averageOrderValueGrowth || 0)}%</span> <span className="stat-change-text">growth</span>
+                  <span className="stat-change positive">0%</span> <span className="stat-change-text">vs yesterday</span>
                 </div>
               </div>
             </div>
