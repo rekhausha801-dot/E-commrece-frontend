@@ -9,6 +9,7 @@ import CategoryPage from "./components/CategoryPage";
 import ProductDetail from "./components/ProductDetail";
 import CustomizeTShirt from "./components/CustomizeTShirt";
 import SearchResults from "./pages/customer/SearchResults";
+import ShopBanner from "./components/ShopBanner";
 import Wishlist from "./pages/customer/Wishlist";
 import Cart from "./pages/customer/Cart";
 import Address from "./pages/customer/Address";
@@ -76,6 +77,7 @@ const AppContent = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/admin/login" element={<AdminLogin />} />
 
+
         {/* ── Admin only ── */}
         <Route path="/Dashboard" element={<AdminRoute><Dashboard /></AdminRoute>} />
         <Route path="/dashboard" element={<AdminRoute><Dashboard /></AdminRoute>} />
@@ -90,7 +92,7 @@ const AppContent = () => {
         <Route path="/search" element={<CustomerRoute><SearchResults /></CustomerRoute>} />
         <Route path="/wishlist" element={<CustomerRoute><Wishlist /></CustomerRoute>} />
         <Route path="/cart" element={<CustomerRoute><Cart /></CustomerRoute>} />
-        <Route path="/shop" element={<CustomerRoute><h1 style={{ padding: "120px 20px", textAlign: "center" }}>Shop Page - Coming Soon!</h1></CustomerRoute>} />
+        <Route path="/shop" element={<CustomerRoute><Collection BannerComponent={ShopBanner} title="Shop" /></CustomerRoute>} />
         <Route path="/address" element={<CustomerRoute><Address /></CustomerRoute>} />
         <Route path="/payment" element={<CustomerRoute><Payment /></CustomerRoute>} />
         <Route path="/order-confirmed/:orderId" element={<CustomerRoute><OrderConfirmed /></CustomerRoute>} />

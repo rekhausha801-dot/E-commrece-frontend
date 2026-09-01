@@ -5,7 +5,7 @@ import bannerImage1 from '../assets/banners/musu.png';
 import bannerImageOriginal from '../assets/banners/legha.png';
 import imgNew from '../assets/banners/image.png';
 import girlsImg from '../assets/banners/girls.png';
-import wearImg from '../assets/banners/wear.png';
+import heroVideo from '../assets/banners/8387356-uhd_4096_2160_25fps.mp4';
 import { X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import '../pages/customer/Home.css';
@@ -50,14 +50,21 @@ const OfferCarousel = () => {
 
   const finalCarouselData = dynamicBanners.length > 0 ? dynamicBanners : [
     {
-      img: bannerImage1,
-      type: 'with_text',
-      showText: false
-    },
-    {
       img: bannerImageOriginal,
       type: 'with_text',
-      showText: true
+      title: 'Premium Collection',
+      description: 'Discover our exclusive range of luxury wear.',
+      showText: true,
+      textPosition: 'Left'
+    },
+    {
+      // Using the local fashion video
+      img: heroVideo,
+      type: 'video',
+      title: 'Summer Trends 2026',
+      description: 'Explore the latest arrivals.',
+      showText: true,
+      textPosition: 'Center'
     }
   ];
 
