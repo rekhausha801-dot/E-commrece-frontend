@@ -572,7 +572,7 @@ const CouponManagement = () => {
       </div>
 
       {/* Main Table Area */}
-      <div className="premium-glass-card" style={{ padding: '0px', borderRadius: '16px', background: '#fff', border: '1px solid #f3f4f6', boxShadow: '0 10px 30px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.02)', overflow: 'hidden' }}>
+      <div className="premium-glass-card" style={{ padding: '0px', borderRadius: '16px', background: '#fff', border: '1px solid #f3f4f6', boxShadow: '0 10px 30px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.02)', overflow: 'hidden', height: 'auto', flex: 'none' }}>
         
         {/* Header matching OrderManagement */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '24px 24px 16px', flexWrap: 'wrap', gap: '16px', background: '#fdfbf7', borderBottom: '1px solid #f3f4f6' }}>
@@ -590,13 +590,13 @@ const CouponManagement = () => {
             .premium-table .ant-table-thead > tr > th::before { display: none !important; }
             .premium-table .ant-pagination { margin: 16px 24px !important; display: flex; align-items: center; justify-content: flex-end; }
             .premium-table .ant-pagination-total-text { margin-right: auto !important; font-size: 13px; color: #6b7280; font-weight: 500; }
-            .premium-table .ant-pagination-item { border: 1px solid #e5e7eb !important; border-radius: 8px !important; background: #fff; font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,0.02); transition: all 0.2s ease; }
-            .premium-table .ant-pagination-item:hover { border-color: #d97706 !important; color: #d97706; box-shadow: 0 2px 4px rgba(217,119,6,0.1); }
+            .premium-table .ant-pagination-item { border: 1px solid #e5e7eb !important; border-radius: 4px !important; background: #fff; font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,0.02); transition: all 0.2s ease; }
+            .premium-table .ant-pagination-item:hover { border-color: #c9a05b !important; color: #c9a05b; box-shadow: 0 2px 4px rgba(201,160,91,0.1); }
             .premium-table .ant-pagination-item a { color: #4b5563 !important; }
-            .premium-table .ant-pagination-item-active { border-color: #d97706 !important; background: #d97706 !important; box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25) !important; }
+            .premium-table .ant-pagination-item-active { border-color: #c9a05b !important; background: #c9a05b !important; box-shadow: 0 4px 12px rgba(201, 160, 91, 0.25) !important; }
             .premium-table .ant-pagination-item-active a { color: #fff !important; }
-            .premium-table .ant-pagination-prev .ant-pagination-item-link, .premium-table .ant-pagination-next .ant-pagination-item-link { border: 1px solid #e5e7eb !important; border-radius: 8px !important; background: #fff !important; color: #6b7280 !important; box-shadow: 0 1px 2px rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: center; }
-            .premium-table .ant-pagination-prev:hover .ant-pagination-item-link, .premium-table .ant-pagination-next:hover .ant-pagination-item-link { border-color: #d97706 !important; color: #d97706 !important; }
+            .premium-table .ant-pagination-prev .ant-pagination-item-link, .premium-table .ant-pagination-next .ant-pagination-item-link { border: 1px solid #e5e7eb !important; border-radius: 4px !important; background: #fff !important; color: #6b7280 !important; box-shadow: 0 1px 2px rgba(0,0,0,0.02); display: flex; align-items: center; justify-content: center; }
+            .premium-table .ant-pagination-prev:hover .ant-pagination-item-link, .premium-table .ant-pagination-next:hover .ant-pagination-item-link { border-color: #c9a05b !important; color: #c9a05b !important; }
             .premium-table .ant-pagination-options-size-changer.ant-select { border-radius: 8px !important; }
             .premium-table .ant-pagination-options-size-changer .ant-select-selector { border-radius: 8px !important; border: 1px solid #e5e7eb !important; box-shadow: 0 1px 2px rgba(0,0,0,0.02) !important; font-weight: 500; color: #4b5563; }
             .premium-table .ant-checkbox-checked .ant-checkbox-inner { background-color: #10b981; border-color: #10b981; }
@@ -617,8 +617,8 @@ const CouponManagement = () => {
             rowSelection={{ type: 'checkbox' }}
             pagination={{
               pageSize: 6,
-              showSizeChanger: true,
-              showTotal: (total, range) => `Showing ${range[0]} to ${range[1]} of ${total} coupons`,
+              showSizeChanger: false,
+              showTotal: (total, range) => `of ${total} results`,
               itemRender: (current, type, originalElement) => {
                 if (type === 'prev') {
                   return <a style={{ display: 'flex', alignItems: 'center' }}><ChevronLeft size={16} /></a>;

@@ -7,10 +7,7 @@ const CartContext = createContext();
 const initialCart = [];
 
 export const CartProvider = ({ children }) => {
-  const [buyNowData, setBuyNowData] = useState(() => {
-    const saved = localStorage.getItem('buyNowData');
-    return saved ? JSON.parse(saved) : null;
-  });
+  const [buyNowData, setBuyNowData] = useState(null);
   
   const [selectedAddress, setSelectedAddress] = useState(() => {
     const saved = localStorage.getItem('selectedAddress');
@@ -38,13 +35,7 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem('cartItems', JSON.stringify(cartItems));
   }, [cartItems]);
 
-  useEffect(() => {
-    if (buyNowData) {
-      localStorage.setItem('buyNowData', JSON.stringify(buyNowData));
-    } else {
-      localStorage.removeItem('buyNowData');
-    }
-  }, [buyNowData]);
+
 
   useEffect(() => {
     if (selectedAddress) {
@@ -190,6 +181,9 @@ export const CartProvider = ({ children }) => {
   };
 
   const addToCart = (product) => {
+    // If the user adds something to their cart, clear any pending "Buy Now" flow
+    // so they can see their full cart instead of just the Buy Now item.
+    setBuyNowData(null);
     setCartItems(prev => {
       const existing = prev.find(item => 
         (item.productId === product.id || item.id === product.id) &&

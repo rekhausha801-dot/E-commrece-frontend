@@ -4,7 +4,7 @@ import shopImg from '../assets/images/kurthi5.png';
 import { FaArrowRight } from 'react-icons/fa';
 import { getActiveBanners } from '../services/api';
 
-const ShopBanner = () => {
+const ShopBanner = ({ selectedCategories = [] }) => {
   const [dynamicBanner, setDynamicBanner] = useState(null);
   const [debugInfo, setDebugInfo] = useState('');
 
@@ -14,9 +14,23 @@ const ShopBanner = () => {
         const { data } = await getActiveBanners();
         setDebugInfo(JSON.stringify(data));
         if (data && data.success) {
-          const shopBanners = data.data.filter(b => b.placement === 'Product Page');
+          // Determine the target placement based on selected categories
+          let targetPlacement = 'Product Page (All)';
+          if (selectedCategories.length > 0) {
+            targetPlacement = `Product Page - ${selectedCategories[0]}`;
+          }
+          
+          let shopBanners = data.data.filter(b => b.placement === targetPlacement);
+          
+          // Fallback to "Product Page (All)" or "Product Page" if specific category banner is not found
+          if (shopBanners.length === 0) {
+             shopBanners = data.data.filter(b => b.placement === 'Product Page (All)' || b.placement === 'Product Page');
+          }
+
           if (shopBanners.length > 0) {
             setDynamicBanner(shopBanners[0]);
+          } else {
+            setDynamicBanner(null);
           }
         }
       } catch (error) {
@@ -25,7 +39,7 @@ const ShopBanner = () => {
       }
     };
     fetchBanners();
-  }, []);
+  }, [selectedCategories]);
 
   const getImageUrl = (path) => {
     if (!path) return '';

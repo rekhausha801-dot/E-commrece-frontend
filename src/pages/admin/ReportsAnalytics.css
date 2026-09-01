@@ -1,5 +1,4 @@
 .report-ui-redesign {
-  background-color: #f9fafb;
   min-height: 100vh;
   padding: 24px;
   font-family: 'Inter', sans-serif;
@@ -621,8 +620,14 @@
 
 .ra-grid-3-cards {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
+}
+
+.ra-grid-3-cards .ra-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .ra-legend-grid {

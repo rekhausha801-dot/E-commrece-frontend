@@ -10,7 +10,7 @@ import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
 import { useProducts } from '../context/ProductContext';
 import { handleFlyingCartAnimation } from '../utils/cartAnimation';
-import KurtiBanner from './KurtiBanner';
+import ShopBanner from './ShopBanner';
 
 import kurthi5Img from '../assets/images/kurthi5.png';
 import top3Img from '../assets/images/top3.png';
@@ -156,7 +156,7 @@ export default function Collection({ BannerComponent, title = "Kurtis" }) {
 
   return (
     <div className="collection-page">
-      {BannerComponent ? <BannerComponent /> : <KurtiBanner />}
+      {BannerComponent ? <BannerComponent selectedCategories={selectedCategories} /> : <ShopBanner selectedCategories={selectedCategories} />}
 
       <div className="pdp-breadcrumbs" style={{ padding: '20px 5% 0', fontSize: '14px' }}>
         <span onClick={() => navigate('/')} style={{ color: '#666', cursor: 'pointer' }}>Home</span>

@@ -52,7 +52,7 @@ const megaMenus = [
 
 const wishlistItems = ["My Wishlist", "Saved for Later", "Recently Wishlisted", "Price Drop Alerts", "Back in Stock", "Move to Cart", "Share Wishlist"];
 const notificationItems = ["Order Updates", "Shipping Updates", "Delivered Orders", "Flash Sale Alerts", "Price Drop Notifications", "New Arrivals", "Exclusive Offers", "Coupons", "Back in Stock", "Reward Points"];
-const accountItems = ["My Profile", "My Orders", "Track Order", "Wishlist", "Saved Addresses", "Payment Methods", "Wallet", "Gift Cards", "Coupons", "Reward Points", "Returns & Refunds", "Notifications", "Help Center", "Customer Support", "Settings", "Logout"];
+const accountItems = ["My Profile", "My Orders", "Wishlist", "Coupons", "Notifications", "Help Center", "Settings", "Logout"];
 
 const getCategoryIcon = (title) => {
   const premiumProps = {
@@ -160,8 +160,8 @@ const Navbar = () => {
       'register': '/register',
       'signup': '/register',
       'sign up': '/register',
-      'account': '/account/profile',
-      'profile': '/account/profile',
+      'account': '/account/orders',
+      'profile': '/account/orders',
       'orders': '/account/my-orders',
       'my orders': '/account/my-orders',
       'home': '/',
@@ -522,7 +522,7 @@ const Navbar = () => {
               </li>
             ))}
             <div className="sidebar-divider"></div>
-            <li className="sidebar-item"><Link to="/account/profile"><User size={18} /> My Account</Link></li>
+            <li className="sidebar-item"><Link to="/account/orders"><User size={18} /> My Account</Link></li>
             <li className="sidebar-item"><Link to="/wishlist"><Heart size={18} /> Wishlist</Link></li>
             <li className="sidebar-item"><Link to="/account/notifications"><Bell size={18} /> Notifications</Link></li>
           </ul>

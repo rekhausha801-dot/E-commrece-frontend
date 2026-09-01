@@ -31,12 +31,15 @@ const Coupons = () => {
     try {
       const { data } = await getActiveBanners();
       if (data && data.data && data.data.length > 0) {
-        const active = data.data[0];
-        setActiveBanner(active);
-        if (active.image) {
-          const imagePath = active.image.replace(/\\/g, '/');
-          const imgUrl = imagePath.startsWith('http') ? imagePath : `http://localhost:5000${imagePath.startsWith('/') ? '' : '/'}${imagePath}`;
-          setBannerUrl(imgUrl);
+        const couponsBanners = data.data.filter(b => b.placement === 'Coupons');
+        if (couponsBanners.length > 0) {
+          const active = couponsBanners[0];
+          setActiveBanner(active);
+          if (active.image) {
+            const imagePath = active.image.replace(/\\/g, '/');
+            const imgUrl = imagePath.startsWith('http') ? imagePath : `http://localhost:5000${imagePath.startsWith('/') ? '' : '/'}${imagePath}`;
+            setBannerUrl(imgUrl);
+          }
         }
       }
     } catch (error) {

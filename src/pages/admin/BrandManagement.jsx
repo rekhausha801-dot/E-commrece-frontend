@@ -36,6 +36,12 @@ const BrandManagement = ({ setActiveTab }) => {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [editingBrand, setEditingBrand] = useState(null);
   const [viewingBrand, setViewingBrand] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 5;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, categoryFilter]);
 
   const fetchBrands = async () => {
     try {
@@ -119,6 +125,9 @@ const BrandManagement = ({ setActiveTab }) => {
     const matchesCategory = categoryFilter === 'All Categories' || brand.category === categoryFilter;
     return matchesSearch && matchesCategory;
   });
+
+  const totalPages = Math.ceil(filteredBrands.length / pageSize);
+  const currentBrands = filteredBrands.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   if (isAdding || editingBrand || viewingBrand) {
     return (
@@ -303,14 +312,45 @@ const BrandManagement = ({ setActiveTab }) => {
               </tr>
             </thead>
             <tbody>
-              {filteredBrands.length === 0 ? (
+              {currentBrands.length === 0 ? (
                 <tr>
-                  <td colSpan="8" style={{ textAlign: 'center', padding: '24px' }}>No brands found.</td>
+                  <td colSpan="8" style={{ textAlign: 'center', padding: '60px 20px', background: '#fff' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '12px' }}>
+                      <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: '#fdf3e1', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '8px', boxShadow: '0 4px 12px rgba(217, 119, 6, 0.1)' }}>
+                        <Tag size={32} color="#d97706" />
+                      </div>
+                      <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600', color: '#111827' }}>No Brands Found</h3>
+                      <p style={{ margin: 0, fontSize: '14px', color: '#6b7280', maxWidth: '340px' }}>
+                        {searchQuery || categoryFilter !== 'All Categories' 
+                          ? "We couldn't find any brands matching your current search or category filter. Try adjusting them."
+                          : "Your brand list is currently empty. Start by adding a new brand to your catalog."}
+                      </p>
+                      {searchQuery || categoryFilter !== 'All Categories' ? (
+                        <button 
+                          onClick={() => { setSearchQuery(''); setCategoryFilter('All Categories'); }}
+                          style={{ marginTop: '16px', padding: '8px 16px', background: '#f3f4f6', border: '1px solid #e5e7eb', borderRadius: '6px', color: '#374151', fontSize: '14px', fontWeight: '500', cursor: 'pointer', transition: 'all 0.2s' }}
+                          onMouseOver={(e) => { e.currentTarget.style.background = '#e5e7eb'; }}
+                          onMouseOut={(e) => { e.currentTarget.style.background = '#f3f4f6'; }}
+                        >
+                          Clear Filters
+                        </button>
+                      ) : (
+                        <button 
+                          onClick={() => setIsAdding(true)}
+                          style={{ marginTop: '16px', padding: '8px 16px', background: '#d97706', border: 'none', borderRadius: '6px', color: '#fff', fontSize: '14px', fontWeight: '500', cursor: 'pointer', transition: 'all 0.2s' }}
+                          onMouseOver={(e) => { e.currentTarget.style.background = '#b45309'; }}
+                          onMouseOut={(e) => { e.currentTarget.style.background = '#d97706'; }}
+                        >
+                          Add New Brand
+                        </button>
+                      )}
+                    </div>
+                  </td>
                 </tr>
               ) : (
-                filteredBrands.map((brand, index) => (
+                currentBrands.map((brand, index) => (
                   <tr key={brand._id || brand.id || index}>
-                    <td className="bm-text-muted">{index + 1}</td>
+                    <td className="bm-text-muted">{(currentPage - 1) * pageSize + index + 1}</td>
                   <td>
                     <div className="bm-brand-cell">
                       <div className="bm-brand-logo">
@@ -356,15 +396,33 @@ const BrandManagement = ({ setActiveTab }) => {
         </div>
 
         <div className="bm-pagination-container">
-          <span className="bm-pagination-info">Showing 1 to 5 of 28 results</span>
+          <span className="bm-pagination-info">
+            Showing {filteredBrands.length === 0 ? 0 : (currentPage - 1) * pageSize + 1} to {Math.min(currentPage * pageSize, filteredBrands.length)} of {filteredBrands.length} results
+          </span>
           <div className="bm-pagination-controls">
-            <button className="bm-page-btn"><ChevronLeft size={16} /></button>
-            <button className="bm-page-btn active">1</button>
-            <button className="bm-page-btn">2</button>
-            <button className="bm-page-btn">3</button>
-            <span className="bm-page-ellipsis">...</span>
-            <button className="bm-page-btn">6</button>
-            <button className="bm-page-btn"><ChevronRight size={16} /></button>
+            <button className="bm-page-btn" disabled={currentPage === 1} onClick={() => setCurrentPage(p => Math.max(1, p - 1))} style={{ opacity: currentPage === 1 ? 0.5 : 1, cursor: currentPage === 1 ? 'not-allowed' : 'pointer' }}>
+              <ChevronLeft size={16} />
+            </button>
+            
+            {(() => {
+              const pages = [];
+              for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || Math.abs(currentPage - i) <= 1) {
+                  pages.push(
+                    <button key={i} className={`bm-page-btn ${currentPage === i ? 'active' : ''}`} onClick={() => setCurrentPage(i)}>
+                      {i}
+                    </button>
+                  );
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                  pages.push(<span key={i} className="bm-page-ellipsis">...</span>);
+                }
+              }
+              return pages;
+            })()}
+
+            <button className="bm-page-btn" disabled={currentPage === totalPages || totalPages === 0} onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} style={{ opacity: currentPage === totalPages || totalPages === 0 ? 0.5 : 1, cursor: currentPage === totalPages || totalPages === 0 ? 'not-allowed' : 'pointer' }}>
+              <ChevronRight size={16} />
+            </button>
           </div>
         </div>
       </div>
