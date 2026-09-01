@@ -113,6 +113,11 @@ import tshirt6Img from '../assets/images/t-shirt6.png';
 import tshirt7Img from '../assets/images/t-shirt7.png';
 import tshirt8Img from '../assets/images/t-shirt8.png';
 const CATEGORY_DATA = {
+  'custom-t-shirts': {
+    title: "Custom T-Shirts",
+    banner: banner15Img,
+    images: []
+  },
   'girls-t-shirts': {
     title: "Girls T-Shirts Collection",
     banner: banner15Img,
@@ -433,8 +438,25 @@ export default function CategoryPage() {
     
     // Convert backend format to frontend UI format for the Category Page
     const filtered = contextProducts.filter(p => {
-      const pCat = (p.category || '').toLowerCase();
-      return pCat.includes(catName) || catName.includes(pCat) || pCat === 'uncategorized';
+      const pCat = (p.category?.name || p.category || '').toLowerCase();
+      const pSubCat = (p.subCategory || '').toLowerCase();
+      const titleLower = currentCategory.title.toLowerCase();
+      
+      if (!pCat && !pSubCat) return false;
+      
+      const categoryIdSpace = categoryId ? categoryId.replace(/-/g, ' ') : '';
+      
+      // Strict matching to prevent "men" matching inside "women"
+      const matchCat = pCat === categoryIdSpace || 
+                       pCat === titleLower || 
+                       (categoryIdSpace && pCat.split(' ').includes(categoryIdSpace)) ||
+                       (titleLower !== 'exclusive collection' && pCat.includes(titleLower));
+                       
+      const matchSubCat = pSubCat === categoryIdSpace || 
+                          pSubCat === titleLower ||
+                          (categoryIdSpace && pSubCat.includes(categoryIdSpace));
+                          
+      return matchCat || matchSubCat || pCat === 'uncategorized';
     });
     
     return filtered.map(p => {

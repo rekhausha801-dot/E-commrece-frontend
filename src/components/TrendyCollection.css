@@ -21,7 +21,7 @@
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 3px;
-  color: #b58d4e; /* Brighter gold to match image */
+  color: var(--primary-color); /* Brighter gold to match image */
   margin-bottom: 12px;
 }
 
@@ -46,7 +46,7 @@
 }
 
 .trendy-title-accent {
-  color: #b58d4e; /* Brighter gold matching the image */
+  color: var(--primary-color); /* Brighter gold matching the image */
 }
 
 .trendy-subtitle {

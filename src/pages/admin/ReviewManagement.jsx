@@ -29,7 +29,7 @@ const ReviewManagement = () => {
           customerImage: r.user?.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(r.user?.name || 'A')}&background=fef3c7&color=d97706&size=100`,
           rating: r.rating,
           reviewText: r.comment || '',
-          reviewImages: r.images || [],
+          reviewImages: (r.images || []).slice(0, 3),
           moreImagesCount: Math.max(0, (r.images?.length || 0) - 3),
           status: r.status.charAt(0).toUpperCase() + r.status.slice(1),
           verified: r.isVerifiedPurchase || false,

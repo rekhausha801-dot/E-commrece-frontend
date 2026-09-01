@@ -191,15 +191,23 @@ export const CartProvider = ({ children }) => {
 
   const addToCart = (product) => {
     setCartItems(prev => {
-      const existing = prev.find(item => item.id === product.id);
+      const existing = prev.find(item => 
+        (item.productId === product.id || item.id === product.id) &&
+        item.selectedColor === product.selectedColor &&
+        item.selectedSize === product.selectedSize &&
+        item.selectedDesign?.id === product.selectedDesign?.id
+      );
+
       if (existing) {
-        return prev.map(item => item.id === product.id ? { ...item, qty: item.qty + 1 } : item);
+        return prev.map(item => item === existing ? { ...item, qty: item.qty + (product.quantity || 1) } : item);
       }
      
       const newProduct = {
         ...product,
+        productId: product.id,
+        id: `${product.id}-${Date.now()}`,
         price: typeof product.price === 'string' ? parseFloat(product.price.replace(/[^0-9.-]+/g, "")) || 499 : product.price || 499,
-        qty: 1
+        qty: product.quantity || 1
       };
       return [newProduct, ...prev];
     });

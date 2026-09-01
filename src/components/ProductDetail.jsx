@@ -8,7 +8,7 @@ import {
   Star, ShoppingCart, ChevronRight, ChevronLeft, ArrowRight, Ruler,
   CheckCircle2, ShieldCheck, RefreshCcw, Heart, Plus, Minus, Check, Eye,
   Truck, CreditCard, Box, Navigation, MoreHorizontal, MoreVertical, Trash2, ThumbsUp, ShoppingBag, Palette, Shield,
-  Camera, MessageCircle, Edit2, Info, Award, X, Leaf, ArrowDown, Zap,
+  Camera, MessageCircle, Edit2, Info, Award, X, Leaf, ArrowDown, Zap, Sparkles, RotateCcw, CheckCircle,
   Flower2, Mountain, Feather, Flame, Rocket, Compass, Send, Headphones, Palmtree, Upload
 } from 'lucide-react';
 import CustomerReviews from './CustomerReviews';
@@ -19,7 +19,7 @@ import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
 import { useProducts } from '../context/ProductContext';
 import { handleFlyingCartAnimation } from '../utils/cartAnimation';
-import { getPredefinedDesigns, uploadDesign } from '../services/customDesignService';
+import { uploadDesign } from '../services/customDesignService';
 import { createReviewApi, getProductReviewsApi, getProductRatingSummaryApi, markReviewHelpfulApi, deleteCustomerReviewApi } from '../services/api';
 
 function ParallaxHighlightCard({ children }) {
@@ -180,7 +180,7 @@ export default function ProductDetail() {
       });
     }
   }, [productId, contextProducts]);
-
+  const DESIGN_COLORS = ['#000000', '#FFFFFF', '#FF0000', '#0000FF', '#008000', '#FFFF00', '#FFC0CB', '#808080'];
   const product = baseProduct ? {
     ...baseProduct,
     category: baseProduct.category || baseProduct._backendData?.category?.name || baseProduct._backendData?.category || 'Uncategorized',
@@ -194,21 +194,23 @@ export default function ProductDetail() {
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('description');
   const [showSizeGuide, setShowSizeGuide] = useState(false);
-  const [activeDesign, setActiveDesign] = useState(product?.designs ? product.designs[0] : null);
+  const [activeDesign, setActiveDesign] = useState(null);
+  const [activeDesignColor, setActiveDesignColor] = useState('#000000');
+  const [showRgbPicker, setShowRgbPicker] = useState(false);
+  const [rgbColor, setRgbColor] = useState({ r: 0, g: 0, b: 0 });
+  const [colorizeImage, setColorizeImage] = useState(false);
+
   const [activePosition, setActivePosition] = useState('front');
   const [isUploading, setIsUploading] = useState(false);
-  const [customDesignsList, setCustomDesignsList] = useState([]);
+
 
   useEffect(() => {
-    if (product?.customizable) {
-      getPredefinedDesigns().then(designs => {
-        setCustomDesignsList(designs);
-        if (!activeDesign && designs.length > 0) {
-          setActiveDesign(designs[0]);
-        }
-      });
+    if (product?.customizable && product?.designs?.length > 0) {
+      if (!activeDesign || !product.designs.some(d => d.id === activeDesign.id)) {
+        setActiveDesign(product.designs[0]);
+      }
     }
-  }, [product?.customizable]);
+  }, [product?.customizable, product?.designs]);
 
   const isAdded = product ? cartItems.some(item => item.id === product.id) : false;
 
@@ -221,41 +223,48 @@ export default function ProductDetail() {
 
   const [ratingSummary, setRatingSummary] = useState(null);
 
-  useEffect(() => {
-    if (productId) {
-      getProductReviewsApi(productId)
-        .then(res => {
-          if (res.data && res.data.success) {
-            const fetchedReviews = res.data.data.map(r => ({
-              id: r._id,
-              userId: r.user?._id || r.user,
-              name: r.user?.name || 'Anonymous',
-              avatar: r.user?.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(r.user?.name || 'A')}&background=fef3c7&color=d97706&size=100`,
-              purchased: product?.title || "Product",
-              rating: r.rating,
-              title: r.title || 'Feedback',
-              content: r.comment,
-              image: r.images && r.images.length > 0 ? r.images[0] : null,
-              date: new Date(r.createdAt).toLocaleDateString(),
-              verified: r.isVerifiedPurchase,
-              helpfulCount: r.helpfulCount || 0,
-              hasVotedHelpful: false
-            }));
-            setReviews(fetchedReviews);
-            setCustomerPhotos(fetchedReviews.filter(r => r.image).map(r => r.image));
-          }
-        })
-        .catch(err => console.error("Error fetching product reviews:", err));
+  const fetchReviewsData = (targetId) => {
+    const idToFetch = targetId || product?._id || product?.id || productId;
+    if (!idToFetch) return;
 
-      getProductRatingSummaryApi(productId)
-        .then(res => {
-          if (res.data && res.data.success) {
-            setRatingSummary(res.data);
-          }
-        })
-        .catch(err => console.error("Error fetching rating summary:", err));
+    getProductReviewsApi(idToFetch)
+      .then(res => {
+        if (res.data && res.data.success) {
+          const fetchedReviews = res.data.data.map(r => ({
+            id: r._id,
+            userId: r.user?._id || r.user,
+            name: r.user?.fullName || r.user?.name || 'Customer',
+            avatar: r.user?.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(r.user?.fullName || r.user?.name || 'Customer')}&background=fef3c7&color=d97706&size=100`,
+            purchased: product?.title || "Product",
+            rating: r.rating,
+            title: r.title || '',
+            content: r.comment,
+            image: r.images && r.images.length > 0 ? r.images[0] : null,
+            date: new Date(r.createdAt).toLocaleDateString(),
+            verified: r.isVerifiedPurchase,
+            helpfulCount: r.helpfulCount || 0,
+            hasVotedHelpful: false
+          }));
+          setReviews(fetchedReviews);
+          setCustomerPhotos(fetchedReviews.filter(r => r.image).map(r => r.image));
+        }
+      })
+      .catch(err => console.error("Error fetching product reviews:", err));
+
+    getProductRatingSummaryApi(idToFetch)
+      .then(res => {
+        if (res.data && res.data.success) {
+          setRatingSummary(res.data);
+        }
+      })
+      .catch(err => console.error("Error fetching rating summary:", err));
+  };
+
+  useEffect(() => {
+    if (productId || product?._id || product?.id) {
+      fetchReviewsData(product?._id || product?.id || productId);
     }
-  }, [productId, product?.title]);
+  }, [productId, product?._id, product?.id, product?.title]);
 
   const scrollCustomizer = (direction) => {
     if (customizerScrollRef.current) {
@@ -277,25 +286,43 @@ export default function ProductDetail() {
 
   const [customerPhotos, setCustomerPhotos] = useState([]);
 
-
-
   const handleSubmitReview = async (e) => {
     e.preventDefault();
+    const token = localStorage.getItem('token');
+    if (!token) {
+      message.warning('Please log in to submit a review');
+      navigate('/login');
+      return;
+    }
+
+    if (!reviewForm.rating || Number(reviewForm.rating) <= 0) {
+      message.warning('Please select a star rating between 1 and 5');
+      return;
+    }
+
+    if (!reviewForm.content || !reviewForm.content.trim()) {
+      message.warning('Please enter your review comments');
+      return;
+    }
+
     try {
+      const actualProdId = product?._id || product?.id || productId;
       const formData = new FormData();
-      formData.append('productId', productId);
-      formData.append('rating', reviewForm.rating || 0);
-      formData.append('title', reviewForm.title);
-      formData.append('comment', reviewForm.content);
+      formData.append('productId', actualProdId);
+      formData.append('rating', Number(reviewForm.rating));
+      formData.append('title', reviewForm.title || '');
+      formData.append('comment', reviewForm.content.trim());
       if (reviewForm.file) {
         formData.append('images', reviewForm.file);
       }
 
       const res = await createReviewApi(formData);
       if (res.data && res.data.success) {
-        message.success('Review submitted successfully and is pending approval.');
+        message.success(res.data.message || 'Review submitted successfully!');
         setIsReviewModalOpen(false);
         setReviewForm({ rating: 0, title: '', content: '', image: null, file: null });
+        // Immediately refresh reviews and rating summary on the page
+        fetchReviewsData(actualProdId);
       } else {
         message.error(res.data?.message || 'Failed to submit review');
       }
@@ -356,7 +383,7 @@ export default function ProductDetail() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    setActiveDesign(product?.designs ? product.designs[0] : null);
+    setActiveDesign(null);
   }, [productId, product?.id]);
 
   const handleQtyChange = (type) => {
@@ -373,78 +400,6 @@ export default function ProductDetail() {
   };
 
   const [zoomStyle, setZoomStyle] = useState({});
-
-  const adsData = React.useMemo(() => {
-    if (!contextProducts || contextProducts.length === 0) return [];
-    // Determine current product type from title
-    const currentTitle = (product?.title || '').toLowerCase();
-    const isKurti = currentTitle.includes('kurti') || currentTitle.includes('kurta');
-    const isTshirt = currentTitle.includes('t-shirt') || currentTitle.includes('tshirt') || currentTitle.includes('shirt') || currentTitle.includes('top');
-    const isDress = currentTitle.includes('dress');
-
-    // Get all products with >= 30% discount
-    let discountedProducts = contextProducts.filter(p => {
-      const isNotCurrent = p.id !== product?.id;
-
-      const cleanPrice = (val) => typeof val === 'string' ? parseFloat(val.replace(/[^\d.]/g, '')) : val;
-      const oPrice = cleanPrice(p.originalPrice);
-      const cPrice = cleanPrice(p.price);
-
-      const calcDiscount = oPrice && cPrice ? Math.round(((oPrice - cPrice) / oPrice) * 100) : 0;
-
-      // The backend returns things like "20 OFF", "10 OFF", "10% OFF". Extract the raw number.
-      const rawDiscount = p._backendData?.discount || p.discount;
-      const discountValue = rawDiscount ? parseFloat(rawDiscount.toString().replace(/[^\d.]/g, '')) : 0;
-
-      const isHighDiscount = calcDiscount >= 10 || discountValue >= 10;
-
-      return isHighDiscount && isNotCurrent;
-    });
-
-    // Prioritize products that match the current category or keyword
-    let filtered = discountedProducts.filter(p => {
-      const isSameCategory = p.categoryId === product?.categoryId || p.category === product?.category;
-      const pTitle = (p.title || '').toLowerCase();
-
-      if (isKurti) {
-        return pTitle.includes('kurti') || pTitle.includes('kurta');
-      } else if (isTshirt) {
-        return pTitle.includes('t-shirt') || pTitle.includes('tshirt') || pTitle.includes('shirt') || pTitle.includes('top');
-      } else if (isDress) {
-        return pTitle.includes('dress');
-      }
-
-      // If it's not a kurti, tshirt, or dress, fallback to strict category matching
-      return isSameCategory;
-    });
-
-    return filtered
-      .slice(0, 5) // Keep up to 5 items
-      .map(p => {
-        const cleanPrice = (val) => typeof val === 'string' ? parseFloat(val.replace(/[^\d.]/g, '')) : val;
-        const oPrice = cleanPrice(p.originalPrice);
-        const cPrice = cleanPrice(p.price);
-        return {
-          id: p.id,
-          image: p.image,
-          title: p.title,
-          discount: p.discount || (oPrice && cPrice && oPrice > cPrice ? `${Math.round(((oPrice - cPrice) / oPrice) * 100)}% OFF` : null),
-          oldPrice: p.originalPrice,
-          newPrice: p.price,
-          _backendData: p._backendData
-        };
-      });
-  }, [contextProducts, product?.id]);
-
-  const [currentAdIndex, setCurrentAdIndex] = useState(0);
-
-  useEffect(() => {
-    if (adsData.length === 0) return;
-    const interval = setInterval(() => {
-      setCurrentAdIndex((prev) => (prev + 1) % adsData.length);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [adsData.length]);
 
   const [currentUser, setCurrentUser] = useState(null);
   const [activeReviewMenu, setActiveReviewMenu] = useState(null);
@@ -510,16 +465,22 @@ export default function ProductDetail() {
 
   return (
     <>
-      <div className="pdp-top-banner">
-        <Truck size={16} style={{ marginRight: '8px', verticalAlign: 'middle' }} />
-        Free Shipping on all orders over ₹10
-      </div>
-
       <div className="pdp-page-wrapper">
         <div className="pdp-breadcrumbs">
-          <span>Home</span> <ChevronRight size={12} />
-          <span>Women</span> <ChevronRight size={12} />
-          <span>Kurtis & Kurtas</span> <ChevronRight size={12} />
+          <span style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>Home</span>
+          {product?.category && (
+            <>
+              <ChevronRight size={12} />
+              <span>{typeof product.category === 'object' ? product.category.name : product.category}</span>
+            </>
+          )}
+          {product?.subCategory && (
+            <>
+              <ChevronRight size={12} />
+              <span>{product.subCategory}</span>
+            </>
+          )}
+          <ChevronRight size={12} />
           <span className="current">{product?.title}</span>
         </div>
 
@@ -538,9 +499,62 @@ export default function ProductDetail() {
                   >
                     <img src={img} alt={`Thumbnail ${idx}`} />
                     {product?.customizable && (
-                      <div style={{ position: 'absolute', top: '55%', left: '56%', transform: 'translate(-50%, -50%)', width: '40%', height: '40%', mixBlendMode: 'multiply', pointerEvents: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                        {activeDesign?.icon && !activeDesign?.isBaseImage && (
-                          <img src={activeDesign.icon} alt={activeDesign.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                      <div style={{ position: 'absolute', top: '55%', left: '50%', transform: 'translate(-50%, -50%)', width: '35%', height: '35%', mixBlendMode: 'multiply', pointerEvents: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                        {activeDesign && !activeDesign?.isBaseImage && (
+                          activeDesign.icon ? (
+                            <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                              {colorizeImage && activeDesignColor !== '#000000' ? (
+                                <div style={{
+                                  width: '100%', height: '100%',
+                                  backgroundColor: activeDesignColor,
+                                  WebkitMaskImage: `url(${activeDesign.icon})`,
+                                  WebkitMaskSize: 'contain',
+                                  WebkitMaskPosition: 'center',
+                                  WebkitMaskRepeat: 'no-repeat',
+                                  maskImage: `url(${activeDesign.icon})`,
+                                  maskSize: 'contain',
+                                  maskPosition: 'center',
+                                  maskRepeat: 'no-repeat'
+                                }} title={activeDesign.name} />
+                              ) : (
+                                <>
+                                  <img src={activeDesign.icon} alt={activeDesign.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                                  {activeDesignColor && activeDesignColor !== '#000000' && (
+                                    <div style={{
+                                      position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                                      backgroundColor: activeDesignColor,
+                                      mixBlendMode: 'screen',
+                                      pointerEvents: 'none',
+                                      WebkitMaskImage: `url(${activeDesign.icon})`,
+                                      WebkitMaskSize: 'contain',
+                                      WebkitMaskPosition: 'center',
+                                      WebkitMaskRepeat: 'no-repeat',
+                                      maskImage: `url(${activeDesign.icon})`,
+                                      maskSize: 'contain',
+                                      maskPosition: 'center',
+                                      maskRepeat: 'no-repeat'
+                                    }} />
+                                  )}
+                                </>
+                              )}
+                            </div>
+                          ) : (
+                            (() => {
+                              const iconKey = (activeDesign.iconName || activeDesign.name || '').toLowerCase();
+                              let IconComp = null;
+                              if (iconKey.includes('flower')) IconComp = Flower2;
+                              else if (iconKey.includes('mountain')) IconComp = Mountain;
+                              else if (iconKey.includes('feather')) IconComp = Feather;
+                              else if (iconKey.includes('flame')) IconComp = Flame;
+                              else if (iconKey.includes('rocket')) IconComp = Rocket;
+                              else if (iconKey.includes('compass')) IconComp = Compass;
+                              else if (iconKey.includes('send') || iconKey.includes('paper')) IconComp = Send;
+                              else if (iconKey.includes('headphone')) IconComp = Headphones;
+                              else if (iconKey.includes('palm') || iconKey.includes('tree')) IconComp = Palmtree;
+
+                              return IconComp ? <IconComp size={64} color={activeDesignColor} strokeWidth={1.5} /> : null;
+                            })()
+                          )
                         )}
                       </div>
                     )}
@@ -562,16 +576,69 @@ export default function ProductDetail() {
                       toggleWishlist(product);
                     }
                   }}>
-                    <Heart size={18} fill={isInWishlist(product?.id) ? '#8B4513' : 'none'} color={isInWishlist(product?.id) ? '#8B4513' : '#666'} />
+                    <Heart size={18} fill={isInWishlist(product?.id) ? 'var(--primary-color)' : 'none'} color={isInWishlist(product?.id) ? 'var(--primary-color)' : '#666'} />
                   </button>
 
                   <button className="pdp-nav-btn pdp-prev" onClick={prevImage}><ChevronLeft size={20} /></button>
                   <div style={{ width: '100%', height: '100%', transition: 'transform 0.1s ease-out', ...zoomStyle }}>
                     <img src={displayImages[activeImage]} alt="Main Product" className="pdp-main-image" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     {product?.customizable && (
-                      <div style={{ position: 'absolute', top: '65%', left: '56%', transform: 'translate(-50%, -50%)', width: '35%', height: '35%', mixBlendMode: 'multiply', pointerEvents: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                        {activeDesign?.icon && !activeDesign?.isBaseImage && (
-                          <img src={activeDesign.icon} alt={activeDesign.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                      <div style={{ position: 'absolute', top: '55%', left: '50%', transform: 'translate(-50%, -50%)', width: '35%', height: '35%', mixBlendMode: 'multiply', pointerEvents: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                        {activeDesign && !activeDesign?.isBaseImage && (
+                          activeDesign.icon ? (
+                            <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                              {colorizeImage && activeDesignColor !== '#000000' ? (
+                                <div style={{
+                                  width: '100%', height: '100%',
+                                  backgroundColor: activeDesignColor,
+                                  WebkitMaskImage: `url(${activeDesign.icon})`,
+                                  WebkitMaskSize: 'contain',
+                                  WebkitMaskPosition: 'center',
+                                  WebkitMaskRepeat: 'no-repeat',
+                                  maskImage: `url(${activeDesign.icon})`,
+                                  maskSize: 'contain',
+                                  maskPosition: 'center',
+                                  maskRepeat: 'no-repeat'
+                                }} title={activeDesign.name} />
+                              ) : (
+                                <>
+                                  <img src={activeDesign.icon} alt={activeDesign.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                                  {activeDesignColor && activeDesignColor !== '#000000' && (
+                                    <div style={{
+                                      position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                                      backgroundColor: activeDesignColor,
+                                      mixBlendMode: 'screen',
+                                      pointerEvents: 'none',
+                                      WebkitMaskImage: `url(${activeDesign.icon})`,
+                                      WebkitMaskSize: 'contain',
+                                      WebkitMaskPosition: 'center',
+                                      WebkitMaskRepeat: 'no-repeat',
+                                      maskImage: `url(${activeDesign.icon})`,
+                                      maskSize: 'contain',
+                                      maskPosition: 'center',
+                                      maskRepeat: 'no-repeat'
+                                    }} />
+                                  )}
+                                </>
+                              )}
+                            </div>
+                          ) : (
+                            (() => {
+                              const iconKey = (activeDesign.iconName || activeDesign.name || '').toLowerCase();
+                              let IconComp = null;
+                              if (iconKey.includes('flower')) IconComp = Flower2;
+                              else if (iconKey.includes('mountain')) IconComp = Mountain;
+                              else if (iconKey.includes('feather')) IconComp = Feather;
+                              else if (iconKey.includes('flame')) IconComp = Flame;
+                              else if (iconKey.includes('rocket')) IconComp = Rocket;
+                              else if (iconKey.includes('compass')) IconComp = Compass;
+                              else if (iconKey.includes('send') || iconKey.includes('paper')) IconComp = Send;
+                              else if (iconKey.includes('headphone')) IconComp = Headphones;
+                              else if (iconKey.includes('palm') || iconKey.includes('tree')) IconComp = Palmtree;
+
+                              return IconComp ? <IconComp size={140} color={activeDesignColor} strokeWidth={1.5} /> : null;
+                            })()
+                          )
                         )}
                       </div>
                     )}
@@ -584,299 +651,401 @@ export default function ProductDetail() {
           </div>
 
           <div className="pdp-info-section">
-            {adsData.length > 0 && (
-              <div style={{ overflow: 'hidden', width: '100%', borderRadius: '12px', marginBottom: '16px' }}>
-                <div
-                  style={{
-                    display: 'flex',
-                    transition: 'transform 0.5s ease-in-out',
-                    transform: `translateX(-${currentAdIndex * 100}%)`
-                  }}
-                >
-                  {adsData.map((ad) => (
-                    <div key={ad.id} className="pdp-ad-banner" style={{ minWidth: '100%', flex: '0 0 100%', boxSizing: 'border-box', margin: 0, cursor: 'pointer' }} onClick={() => navigate(`/product/${ad.id}`)}>
-                      <img src={ad.image} alt="Ad Product" className="pdp-ad-img" />
-                      <div className="pdp-ad-content">
-                        <div className="pdp-ad-title">{ad.title}</div>
-                        <div className="pdp-ad-price-row">
-                          <span className="pdp-ad-discount"><ArrowDown size={12} strokeWidth={3} /> {ad.discount}</span>
-                          <span className="pdp-ad-old-price">{ad.oldPrice}</span>
-                          <span className="pdp-ad-new-price">{ad.newPrice}</span>
-                        </div>
-                      </div>
-                      <div className="pdp-ad-badge">Ads</div>
-                    </div>
-                  ))}
+
+            {/* Brand, Badges, SKU Header */}
+            <div className="pdp-luxury-header-row">
+              <div className="pdp-brand-tag">
+                <span className="pdp-brand-name">{product?.brand || 'PREMIUM SELECTION'}</span>
+              </div>
+              {product?.badge && (
+                <div className="pdp-luxury-badge-pill">
+                  <Sparkles size={13} className="pdp-badge-sparkle" /> {product.badge}
                 </div>
-              </div>
-            )}
-
-            {product?.badge && (
-              <div className="pdp-collection-tag-new">
-                {product.badge}
-              </div>
-            )}
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginBottom: '8px' }}>
-              <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#666', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                {product?.brand}
-              </span>
-              <h1 className="pdp-product-title-new" style={{ margin: 0 }}>{product?.title}</h1>
-              {product?.sku && <span style={{ fontSize: '12px', color: '#999' }}>SKU: {product.sku}</span>}
+              )}
+              {product?.sku && (
+                <span className="pdp-sku-pill">SKU: {product.sku}</span>
+              )}
             </div>
 
-            <div 
-              className="pdp-rating-summary-new" 
+            {/* Product Title */}
+            <h1 className="pdp-luxury-product-title">{product?.title}</h1>
+
+            {/* Rating & Social Proof Bar */}
+            <div
+              className="pdp-luxury-rating-bar"
               style={{ cursor: 'pointer' }}
               onClick={() => {
                 document.getElementById('reviews-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
               }}
             >
-              <Star size={14} fill="#C89953" color="#C89953" />
-              <span className="pdp-rating-num-new">{product?.rating || 0}</span>
-              <span className="pdp-rating-text-new">({product?.reviews || 0} Ratings)</span>
-              <span className="pdp-rating-divider-new">|</span>
-              <Box size={14} className="pdp-sold-icon-new" />
-              <span className="pdp-sold-text-new">{product?.soldCount || 0} Sold</span>
-            </div>
-
-
-            <div className="pdp-short-description" style={{ marginTop: '12px', marginBottom: '16px', color: '#666', fontSize: '14px', lineHeight: '1.6' }}>
-              <p>{product?.description}</p>
-
-
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '12px' }}>
-                {(product?.tags || []).map(tag => (
-                  <span key={tag} style={{ background: '#f5f5f5', color: '#666', padding: '4px 10px', borderRadius: '16px', fontSize: '11px', fontWeight: 'bold' }}>#{tag}</span>
-                ))}
+              <div className="pdp-rating-stars-badge">
+                <Star size={14} fill="#C89953" color="#C89953" />
+                <span className="pdp-rating-score-bold">{Number(product?.rating || 5).toFixed(1)}</span>
               </div>
-            </div>
-
-            <div className="pdp-price-block-new">
-              <span className="pdp-current-price-new">
-                {product?.price?.toString().startsWith('₹') ? product.price : `₹${product?.price || 0}`}
+              <span className="pdp-rating-reviews-count">({product?.reviews || product?.numReviews || 1} Customer Reviews)</span>
+              <span className="pdp-rating-sep">•</span>
+              <span className="pdp-sold-badge-pill">
+                <CheckCircle size={13} color="#059669" /> {product?.soldCount ? `${product.soldCount} Sold` : 'Verified Quality'}
               </span>
-              {product?.originalPrice && (
-                <span className="pdp-original-price-new">
-                  {product.originalPrice.toString().startsWith('₹') ? product.originalPrice : `₹${product.originalPrice}`}
-                </span>
-              )}
-              {product?.discount && (
-                <span className="pdp-discount-text-new">{product.discount}</span>
-              )}
-            </div>
-            <div className="pdp-status-badges-new">
-              {(product?.stock !== undefined || product?.countInStock !== undefined) && (
-                <div className="pdp-stock-status-new" style={{ color: (product.stock > 0 || product.countInStock > 0) ? '#2e7d32' : '#d32f2f', background: (product.stock > 0 || product.countInStock > 0) ? '#e8f5e9' : '#ffebee' }}>
-                  <span className="pdp-status-dot-new" style={{ background: (product.stock > 0 || product.countInStock > 0) ? '#2e7d32' : '#d32f2f' }}></span> {(product.stock > 0 || product.countInStock > 0) ? 'In Stock' : 'Out of Stock'}
-                </div>
-              )}
-
-              {product?.customizable && (
-                <div className="pdp-right-col-customizer" style={{ marginTop: '20px' }}>
-                  <div className="pdp-customizer-header" style={{ padding: '0', marginBottom: '12px' }}>
-                    <h3 style={{ fontSize: '13px', fontWeight: '700', letterSpacing: '0.5px' }}>CHOOSE YOUR DESIGN</h3>
-                  </div>
-                  <div className="pdp-customizer-designs" style={{ padding: '16px 0', display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <button className="pdp-customizer-nav" onClick={() => scrollCustomizer('left')} style={{ background: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', border: 'none', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}><ChevronLeft size={16} /></button>
-                    <div ref={customizerScrollRef} className="pdp-customizer-designs-scroll" style={{ display: 'flex', gap: '16px', overflowX: 'auto', scrollbarWidth: 'none', flex: 1, padding: '4px' }}>
-                      {product.designs.map((design, idx) => (
-                        <div
-                          key={design.id}
-                          className={`pdp-design-option-full ${activeDesign?.id === design.id ? 'active' : ''}`}
-                          onClick={() => setActiveDesign(design)}
-                          style={{
-                            display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', cursor: 'pointer',
-                            minWidth: '70px', padding: '12px 8px', borderRadius: '8px',
-                            background: activeDesign?.id === design.id ? '#fff' : 'transparent',
-                            border: activeDesign?.id === design.id ? '1px solid #b58d4e' : '1px solid transparent',
-                            position: 'relative',
-                            boxShadow: activeDesign?.id === design.id ? '0 2px 8px rgba(181,141,78,0.1)' : 'none',
-                            transition: 'all 0.2s'
-                          }}
-                        >
-                          {activeDesign?.id === design.id && (
-                            <div style={{
-                              position: 'absolute', top: '-6px', right: '-6px', background: '#b58d4e',
-                              borderRadius: '50%', width: '18px', height: '18px', display: 'flex',
-                              alignItems: 'center', justifyContent: 'center', color: '#fff', zIndex: 2
-                            }}>
-                              <Check size={10} strokeWidth={3} />
-                            </div>
-                          )}
-                          <div style={{ width: '50px', height: '50px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            {design.icon ? (
-                              <div style={{
-                                width: '100%',
-                                height: '100%',
-                                backgroundImage: `url(${design.icon})`,
-                                backgroundSize: design.id === 1 ? '500%' : 'contain',
-                                backgroundPosition: design.id === 1 ? 'center 40%' : 'center',
-                                backgroundRepeat: 'no-repeat',
-                                mixBlendMode: 'multiply'
-                              }} />
-                            ) : (
-                              (() => {
-                                const IconComp = {
-                                  Flower2, Mountain, Feather, Flame, Leaf, Rocket, Compass, Send, Headphones, Palmtree
-                                }[design.iconName];
-                                return IconComp ? <IconComp size={30} color={design.iconColor} strokeWidth={1.5} /> : null;
-                              })()
-                            )}
-                          </div>
-                          <span style={{ fontSize: '11px', fontWeight: '600', color: '#333' }}>
-                            {(idx + 1).toString().padStart(2, '0')}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                    <button className="pdp-customizer-nav" onClick={() => scrollCustomizer('right')} style={{ background: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', border: 'none', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}><ChevronRight size={16} /></button>
-                  </div>
-                </div>
-              )}
             </div>
 
-            <div className="pdp-options-horizontal-divider"></div>
+            {/* Luxury Price Presentation Card */}
+            <div className="pdp-luxury-price-card">
+              <div className="pdp-price-primary-row">
+                <div className="pdp-price-amount-wrap">
+                  <span className="pdp-luxury-currency">₹</span>
+                  <span className="pdp-luxury-current-price">
+                    {typeof product?.price === 'number'
+                      ? product.price.toLocaleString('en-IN')
+                      : (product?.price?.toString().replace(/[^\d.]/g, '') || '0')}
+                  </span>
+                </div>
 
-            <div className="pdp-options-grid-new">
-              <div className="pdp-options-left">
-                {colors.length > 0 && (
-                  <div className="pdp-option-section-new">
-                    <div className="pdp-option-title-new">COLOR: <span className="font-normal">{activeColor}</span></div>
-                    <div className="pdp-color-swatches-new">
-                      {colors.map(color => (
-                        <div
-                          key={color.name}
-                          className={`pdp-color-swatch-new ${activeColor === color.name ? 'active' : ''}`}
-                          style={{ backgroundColor: color.hex }}
-                          onClick={async (e) => {
-                            if (activeColor === color.name) return;
+                {product?.originalPrice && (
+                  <span className="pdp-luxury-original-price">
+                    {product.originalPrice.toString().startsWith('₹') ? product.originalPrice : `₹${product.originalPrice}`}
+                  </span>
+                )}
 
-                            const pageX = e.clientX;
-                            const pageY = e.clientY;
-
-                            const update = () => {
-                              flushSync(() => {
-                                setActiveColor(color.name);
-                                setActiveImage(0);
-                              });
-                            };
-
-                            if (!document.startViewTransition) {
-                              update();
-                              return;
-                            }
-
-                            try {
-                              const animation = await animateView(update, {
-                                duration: 0.4,
-                                ease: [0.28, 0.02, 0.1, 0.99],
-                              }).new(
-                                {
-                                  clipPath: [
-                                    `circle(0% at ${pageX}px ${pageY}px)`,
-                                    `circle(150% at ${pageX}px ${pageY}px)`,
-                                  ],
-                                },
-                                { duration: 0.6, ease: "easeIn" }
-                              );
-                            } catch (err) {
-                              update();
-                            }
-                          }}
-                        ></div>
-                      ))}
-                    </div>
+                {product?.discount && (
+                  <div className="pdp-luxury-discount-tag">
+                    <Zap size={13} fill="#d97706" color="#d97706" /> {product.discount}
                   </div>
                 )}
               </div>
 
-              <div className="pdp-options-right pdp-quantity-section-new">
-                <div className="pdp-option-section-new">
-                  <div className="pdp-option-title-new">QUANTITY</div>
-                  <div className="pdp-qty-wrapper-new">
-                    <div className="pdp-qty-controls-new">
-                      <button onClick={() => handleQtyChange('dec')}><Minus size={14} /></button>
-                      <span>{quantity}</span>
-                      <button onClick={() => handleQtyChange('inc')}><Plus size={14} /></button>
-                    </div>
-                    {product?.stock !== undefined && (
-                      <span className="pdp-qty-left-new" style={{ color: product.stock <= (product?.lowStockAlert || 0) ? '#e53e3e' : '#4a5568' }}>
-                        <Box size={12} style={{ marginRight: '4px' }} /> Only {product.stock} Left
-                      </span>
-                    )}
-                  </div>
-                </div>
+              <div className="pdp-price-sub-row">
+                <span className="pdp-tax-notice">Inclusive of all taxes</span>
+                <span className="pdp-price-dot">•</span>
+                <span className="pdp-delivery-notice">🚚 Free Express Delivery Available</span>
               </div>
             </div>
 
-            <div className="pdp-options-horizontal-divider"></div>
+            {/* Stock Status Bar */}
+            <div className="pdp-luxury-stock-bar">
+              <div className="pdp-stock-indicator">
+                <span className="pdp-pulse-dot"></span>
+                <span className="pdp-stock-text">
+                  {(product?.stock > 0 || product?.countInStock > 0 || product?.stock === undefined)
+                    ? 'In Stock — Ready for Immediate Dispatch'
+                    : 'Currently Out of Stock'}
+                </span>
+              </div>
+            </div>
 
-            {sizes.length > 0 && (
-              <div className="pdp-option-section-new pdp-size-section-new" style={{ marginBottom: '8px' }}>
-                <div className="pdp-option-header-new">
-                  <div className="pdp-option-title-new">SIZE</div>
-                  <button className="pdp-size-guide-btn-new" onClick={() => setShowSizeGuide(true)}>
-                    <Ruler size={14} style={{ transform: 'rotate(-45deg)', marginRight: '6px' }} /> Size Guide <ChevronRight size={14} style={{ marginLeft: '2px' }} />
-                  </button>
-                </div>
-                <div className="pdp-size-selector-new">
-                  {sizes.map(size => (
-                    <button
-                      key={size}
-                      className={`pdp-size-btn-new ${activeSize === size ? 'active' : ''}`}
-                      onClick={() => setActiveSize(size)}
-                    >
-                      {size}
-                    </button>
-                  ))}
-                </div>
-                <div className="pdp-selected-size-text">Selected Size: {activeSize}</div>
+            {/* Description & Tags */}
+            {product?.description && (
+              <div className="pdp-luxury-description">
+                <p>{product.description}</p>
+                {product?.tags && product.tags.length > 0 && (
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '10px' }}>
+                    {product.tags.map(tag => (
+                      <span key={tag} style={{ background: '#f5efe6', color: '#8f6c34', padding: '3px 8px', borderRadius: '12px', fontSize: '11px', fontWeight: '600' }}>#{tag}</span>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
-            <div className="pdp-options-horizontal-divider" style={{ marginTop: '0' }}></div>
+            {/* Customizer Option (If product is customizable) */}
+            {product?.customizable && (
+              <div className="pdp-right-col-customizer" style={{ marginBottom: '20px' }}>
+                <div className="pdp-customizer-header" style={{ padding: '0', marginBottom: '12px' }}>
+                  <h3 style={{ fontSize: '12px', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase', color: '#1a1614' }}>CHOOSE YOUR DESIGN</h3>
+                </div>
+                <div className="pdp-customizer-designs" style={{ padding: '12px 0', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <button className="pdp-customizer-nav" onClick={() => scrollCustomizer('left')} style={{ background: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', border: 'none', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}><ChevronLeft size={16} /></button>
+                  <div ref={customizerScrollRef} className="pdp-customizer-designs-scroll" style={{ display: 'flex', gap: '12px', overflowX: 'auto', scrollbarWidth: 'none', flex: 1, padding: '4px' }}>
+                    {product.designs.map((design, idx) => (
+                      <div
+                        key={design.id}
+                        className={`pdp-design-option-full ${activeDesign?.id === design.id ? 'active' : ''}`}
+                        onClick={() => setActiveDesign(design)}
+                        style={{
+                          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px', cursor: 'pointer',
+                          minWidth: '65px', padding: '10px 6px', borderRadius: '10px',
+                          background: activeDesign?.id === design.id ? '#faf5eb' : '#fff',
+                          border: activeDesign?.id === design.id ? '1.5px solid var(--primary-color)' : '1px solid #e5e7eb',
+                          position: 'relative',
+                          boxShadow: activeDesign?.id === design.id ? '0 2px 8px rgba(var(--primary-color-rgb),0.2)' : 'none',
+                          transition: 'all 0.2s'
+                        }}
+                      >
+                        {activeDesign?.id === design.id && (
+                          <div style={{
+                            position: 'absolute', top: '-5px', right: '-5px', background: 'var(--primary-color)',
+                            borderRadius: '50%', width: '16px', height: '16px', display: 'flex',
+                            alignItems: 'center', justifyContent: 'center', color: '#fff', zIndex: 2
+                          }}>
+                            <Check size={10} strokeWidth={3} />
+                          </div>
+                        )}
+                        <div style={{ width: '42px', height: '42px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          {design.icon ? (
+                            <div style={{
+                              width: '100%',
+                              height: '100%',
+                              backgroundImage: `url(${design.icon})`,
+                              backgroundSize: design.id === 1 ? '500%' : 'contain',
+                              backgroundPosition: design.id === 1 ? 'center 40%' : 'center',
+                              backgroundRepeat: 'no-repeat',
+                              mixBlendMode: 'multiply'
+                            }} />
+                          ) : (
+                            (() => {
+                              const iconKey = (design.iconName || design.name || '').toLowerCase();
+                              let IconComp = null;
+                              if (iconKey.includes('flower')) IconComp = Flower2;
+                              else if (iconKey.includes('mountain')) IconComp = Mountain;
+                              else if (iconKey.includes('feather')) IconComp = Feather;
+                              else if (iconKey.includes('flame')) IconComp = Flame;
+                              else if (iconKey.includes('rocket')) IconComp = Rocket;
+                              else if (iconKey.includes('compass')) IconComp = Compass;
+                              else if (iconKey.includes('send') || iconKey.includes('paper')) IconComp = Send;
+                              else if (iconKey.includes('headphone')) IconComp = Headphones;
+                              else if (iconKey.includes('palm') || iconKey.includes('tree')) IconComp = Palmtree;
 
-            <div className="pdp-action-buttons" style={{ marginTop: '24px', display: 'flex', gap: '12px' }}>
+                              return IconComp ? <IconComp size={26} color={design.iconColor || '#000'} strokeWidth={1.5} /> : <span style={{ fontSize: '10px' }}>{design.name?.substring(0, 4)}</span>;
+                            })()
+                          )}
+                        </div>
+                        <span style={{ fontSize: '11px', fontWeight: '700', color: '#333' }}>
+                          {(idx + 1).toString().padStart(2, '0')}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  <button className="pdp-customizer-nav" onClick={() => scrollCustomizer('right')} style={{ background: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', border: 'none', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}><ChevronRight size={16} /></button>
+                </div>
+
+                {/* Design Color Picker */}
+                {activeDesign && (
+                  <div style={{ marginTop: '16px', padding: '0', animation: 'fadeIn 0.3s ease-in-out' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                      <h3 style={{ fontSize: '12px', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase', color: '#1a1614' }}>DESIGN COLOR :</h3>
+                    </div>
+                    <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+                      {/* Standard colors */}
+                      {['#000000', '#FFFFFF', '#FF0000', '#0000FF', '#008000', '#FFFF00', '#FFC0CB', '#808080'].map(color => (
+                        <button
+                          key={color}
+                          onClick={() => { setActiveDesignColor(color); setShowRgbPicker(false); }}
+                          style={{
+                            width: '28px', height: '28px', borderRadius: '50%',
+                            backgroundColor: color,
+                            cursor: 'pointer',
+                            border: color === '#FFFFFF' ? '1px solid #e5e7eb' : 'none',
+                            outline: activeDesignColor === color && !showRgbPicker ? '2px solid var(--primary-color)' : 'none',
+                            outlineOffset: '2px',
+                            padding: 0
+                          }}
+                          title={`Color: ${color}`}
+                        />
+                      ))}
+                      {/* Custom RGB Color Picker Toggle */}
+                      <button
+                        onClick={() => setShowRgbPicker(!showRgbPicker)}
+                        style={{
+                          width: '28px', height: '28px', borderRadius: '50%',
+                          background: 'linear-gradient(to right, #ff0000, #00ff00, #0000ff)',
+                          cursor: 'pointer',
+                          border: showRgbPicker ? '2px solid var(--primary-color)' : '1px solid #ccc',
+                          padding: 0
+                        }}
+                        title="Custom RGB Color"
+                      />
+
+                      {/* Reset Button */}
+                      <button
+                        onClick={() => { setActiveDesignColor('#000000'); setShowRgbPicker(false); setRgbColor({ r: 0, g: 0, b: 0 }); }}
+                        style={{ fontSize: '11px', fontWeight: '600', padding: '6px 10px', borderRadius: '4px', border: '1px solid #e5e7eb', background: '#fff', cursor: 'pointer', color: '#333' }}
+                      >
+                        Reset
+                      </button>
+                    </div>
+
+                    {/* Colorize Image Toggle */}
+                    {activeDesign.icon && (
+                      <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', gap: '6px', fontSize: '11px', fontWeight: '600', color: '#444' }}>
+                          <input
+                            type="checkbox"
+                            checked={colorizeImage}
+                            onChange={(e) => setColorizeImage(e.target.checked)}
+                            style={{ accentColor: 'var(--primary-color)', cursor: 'pointer' }}
+                          />
+                          Colorize Image (Transparent logos only)
+                        </label>
+                      </div>
+                    )}
+
+                    {/* RGB Sliders */}
+                    {showRgbPicker && (
+                      <div style={{ marginTop: '16px', padding: '16px', background: '#faf5eb', borderRadius: '10px', border: '1px solid #f0e6d2' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                          {['r', 'g', 'b'].map((channel) => (
+                            <div key={channel} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                              <span style={{ width: '16px', fontWeight: '800', fontSize: '12px', color: channel === 'r' ? '#ef4444' : channel === 'g' ? '#22c55e' : '#3b82f6', textTransform: 'uppercase' }}>{channel}</span>
+                              <input
+                                type="range"
+                                min="0" max="255"
+                                value={rgbColor[channel]}
+                                onChange={(e) => {
+                                  const newRgb = { ...rgbColor, [channel]: parseInt(e.target.value) };
+                                  setRgbColor(newRgb);
+                                  setActiveDesignColor(`#${(1 << 24 | newRgb.r << 16 | newRgb.g << 8 | newRgb.b).toString(16).slice(1)}`);
+                                }}
+                                style={{ flex: 1, accentColor: channel === 'r' ? '#ef4444' : channel === 'g' ? '#22c55e' : '#3b82f6' }}
+                              />
+                              <span style={{ width: '30px', fontSize: '12px', fontWeight: '600', color: '#444', textAlign: 'right' }}>{rgbColor[channel]}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+              </div>
+            )}
+
+            {/* Color Swatches */}
+            {colors.length > 0 && (
+              <div className="pdp-luxury-option-card">
+                <div className="pdp-luxury-option-header">
+                  <span className="pdp-opt-label">COLOR:</span>
+                  <span className="pdp-opt-val">{activeColor}</span>
+                </div>
+                <div className="pdp-luxury-swatches">
+                  {colors.map(color => (
+                    <button
+                      key={color.name}
+                      className={`pdp-luxury-swatch ${activeColor === color.name ? 'active' : ''}`}
+                      style={{ backgroundColor: color.hex }}
+                      title={color.name}
+                      onClick={async (e) => {
+                        if (activeColor === color.name) return;
+
+                        const pageX = e.clientX;
+                        const pageY = e.clientY;
+
+                        const update = () => {
+                          flushSync(() => {
+                            setActiveColor(color.name);
+                            setActiveImage(0);
+                          });
+                        };
+
+                        if (!document.startViewTransition) {
+                          update();
+                          return;
+                        }
+
+                        try {
+                          await animateView(update, {
+                            duration: 0.4,
+                            ease: [0.28, 0.02, 0.1, 0.99],
+                          }).new(
+                            {
+                              clipPath: [
+                                `circle(0% at ${pageX}px ${pageY}px)`,
+                                `circle(150% at ${pageX}px ${pageY}px)`,
+                              ],
+                            },
+                            { duration: 0.6, ease: "easeIn" }
+                          );
+                        } catch (err) {
+                          update();
+                        }
+                      }}
+                    >
+                      {activeColor === color.name && <Check size={12} color={color.hex === '#fff' || color.hex === '#ffffff' ? '#000' : '#fff'} strokeWidth={3} />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Quantity & Size Selection Container */}
+            <div className="pdp-options-selection-grid">
+              {/* Quantity */}
+              <div className="pdp-luxury-qty-card">
+                <div>
+                  <span className="pdp-opt-label">QUANTITY</span>
+                  {product?.stock !== undefined && (
+                    <div style={{ fontSize: '11px', color: product.stock <= (product?.lowStockAlert || 5) ? '#e53e3e' : '#6b7280', marginTop: '2px', fontWeight: '600' }}>
+                      Only {product.stock} units available
+                    </div>
+                  )}
+                </div>
+                <div className="pdp-luxury-stepper">
+                  <button className="pdp-step-btn" onClick={() => handleQtyChange('dec')}>
+                    <Minus size={14} />
+                  </button>
+                  <span className="pdp-step-count">{quantity}</span>
+                  <button className="pdp-step-btn" onClick={() => handleQtyChange('inc')}>
+                    <Plus size={14} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Sizes */}
+              {sizes.length > 0 && (
+                <div className="pdp-luxury-size-card">
+                  <div className="pdp-luxury-size-header">
+                    <span className="pdp-opt-label">SELECT SIZE: <span style={{ color: 'var(--primary-color)', textTransform: 'none' }}>{activeSize}</span></span>
+                    <button className="pdp-luxury-guide-btn" onClick={() => setShowSizeGuide(true)}>
+                      <Ruler size={13} style={{ transform: 'rotate(-45deg)' }} /> Size Guide
+                    </button>
+                  </div>
+                  <div className="pdp-luxury-size-grid">
+                    {sizes.map(size => (
+                      <button
+                        key={size}
+                        className={`pdp-luxury-size-pill ${activeSize === size ? 'active' : ''}`}
+                        onClick={() => setActiveSize(size)}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* CTA Action Buttons */}
+            <div className="pdp-luxury-cta-group">
               <button
-                className="pdp-btn-wishlist-large"
+                className="pdp-luxury-btn-wishlist"
                 onClick={() => {
                   if (product) {
                     toggleWishlist(product);
                   }
                 }}
-                style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px 0', background: '#fff', border: '1px solid #ddd', borderRadius: '4px', color: '#8B4513', fontWeight: '600', cursor: 'pointer' }}
+                title="Save to Wishlist"
               >
-                <Heart size={16} fill={isInWishlist(product?.id) ? '#8B4513' : 'none'} color="#8B4513" /> Wishlist
+                <Heart size={20} fill={isInWishlist(product?.id) ? 'var(--primary-color)' : 'none'} color={isInWishlist(product?.id) ? 'var(--primary-color)' : '#4b5563'} />
               </button>
-              {(activeColorObj ? activeColorObj.inStock : (product?.countInStock > 0)) ? (
+
+              {(activeColorObj ? activeColorObj.inStock : (product?.countInStock > 0 || product?.stock === undefined)) ? (
                 <>
-                  {product?.customizable && (
-                    <button
-                      className="pdp-btn-customize"
-                      onClick={() => navigate(`/customize/${product.id}`, { state: { product } })}
-                      style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px 0', background: '#b58d4e', border: 'none', borderRadius: '4px', color: '#fff', fontWeight: '600', cursor: 'pointer' }}
-                    >
-                      <Palette size={16} /> Customize
-                    </button>
-                  )}
+
                   <button
-                    className="pdp-btn-add-cart"
+                    className="pdp-luxury-btn-cart"
                     onClick={async (e) => {
                       if (isAdded) {
                         navigate('/cart');
                       } else {
                         await handleFlyingCartAnimation(e, 'img', '.pdp-image-section');
-                        addToCart({ ...product, selectedColor: activeColor, selectedSize: activeSize, quantity, selectedDesign: activeDesign });
+                        addToCart({ ...product, selectedColor: activeColor, selectedSize: activeSize, quantity, selectedDesign: activeDesign, selectedDesignColor: activeDesignColor, colorizeImage });
                         message.success(`${product?.title || 'Product'} added to cart!`);
                       }
                     }}
-                    style={{ flex: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '14px 0', background: '#8B4513', border: 'none', borderRadius: '4px', color: '#fff', fontWeight: '600', cursor: 'pointer' }}
                   >
-                    <ShoppingCart size={16} /> {isAdded ? "Go to Cart" : "Add to Cart"}
+                    <ShoppingBag size={18} /> {isAdded ? "Go to Cart" : "Add to Cart"}
                   </button>
                   <button
-                    className="pdp-btn-buy-now"
+                    className="pdp-luxury-btn-buy"
                     disabled={isBuyNowLoading}
                     onClick={async () => {
                       if (product.sizes && product.sizes.length > 0 && !activeSize) {
@@ -891,25 +1060,18 @@ export default function ProductDetail() {
 
                       setIsBuyNowLoading(true);
                       try {
-                        // Assuming axios is used for API calls
-                        const response = await fetch('/api/checkout/buy-now', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({
-                            productId: product.id || product._id,
-                            size: activeSize,
-                            color: activeColor,
-                            quantity: quantity
-                          })
-                        });
-                        const data = await response.json();
-
-                        if (data.success) {
-                          setBuyNowData(data);
-                          navigate('/cart');
-                        } else {
-                          message.error(data.message || 'Failed to initiate checkout');
-                        }
+                        const buyNowItem = {
+                          ...product,
+                          selectedColor: activeColor,
+                          selectedSize: activeSize,
+                          quantity: quantity,
+                          selectedDesign: activeDesign,
+                          selectedDesignColor: activeDesignColor,
+                          colorizeImage
+                        };
+                        
+                        setBuyNowData(buyNowItem);
+                        navigate('/cart');
                       } catch (error) {
                         console.error('Buy Now Error:', error);
                         message.error('An error occurred during checkout');
@@ -917,22 +1079,21 @@ export default function ProductDetail() {
                         setIsBuyNowLoading(false);
                       }
                     }}
-                    style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '14px 0', background: '#000', border: 'none', borderRadius: '4px', color: '#fff', fontWeight: '600', cursor: isBuyNowLoading ? 'not-allowed' : 'pointer', opacity: isBuyNowLoading ? 0.7 : 1 }}
                   >
-                    {isBuyNowLoading ? 'Processing...' : 'Buy Now'}
+                    <Zap size={17} /> {isBuyNowLoading ? 'Processing...' : 'Buy Now'}
                   </button>
                 </>
               ) : (
                 <button
                   className="pdp-btn-notify-me"
-                  style={{ flex: 2, padding: '14px 0', background: '#f5f5f5', border: '1px solid #ddd', borderRadius: '4px', color: '#333', fontWeight: '600', cursor: 'pointer' }}
+                  style={{ flex: 2, padding: '14px 0', background: '#f5f5f5', border: '1px solid #ddd', borderRadius: '12px', color: '#333', fontWeight: '600', cursor: 'pointer' }}
                 >
                   Notify Me When Available
                 </button>
               )}
             </div>
 
-            <div className="pdp-service-highlights" style={{ marginTop: '32px' }}>
+            <div className="pdp-service-highlights" style={{ marginTop: '24px' }}>
               <div className="pdp-service-item">
                 <Truck size={20} className="pdp-service-icon" />
                 <div>
@@ -965,355 +1126,242 @@ export default function ProductDetail() {
         {/* Tabs Box Section */}
         <div className="pdp-tabs-box">
           <div className="pdp-tabs-header">
-            {['description', 'specifications', 'sizeGuide', 'reviews', 'faqs'].map((key) => {
-              const labels = {
-                description: 'Product Description',
-                specifications: 'Specifications',
-                sizeGuide: 'Size Guide',
-                reviews: (
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    Customer Reviews {reviews.length > 0 && `(${reviews.length})`}
-                    {product?.rating && <span className="pdp-tab-rating-badge"><Star size={10} fill="#E26A2C" color="#E26A2C" /> {product.rating}</span>}
-                  </span>
-                ),
-                faqs: 'Frequently Asked Questions'
-              };
-              return (
-                <button
-                  key={key}
-                  className={`pdp-tab-btn ${activeTab === key ? 'active' : ''}`}
-                  onClick={() => setActiveTab(key)}
-                >
-                  {labels[key]}
-                </button>
-              );
-            })}
+            {[
+              { key: 'description', label: 'Description', show: Boolean(product?.description) },
+              { key: 'specifications', label: 'Specifications', show: Boolean(product?.specifications && product.specifications.length > 0) },
+              { key: 'sizeGuide', label: 'Size Guide', show: Boolean(sizes.length > 0) },
+              { key: 'faqs', label: 'FAQs', show: Boolean(product?.faqs && product.faqs.length > 0) },
+            ].filter(t => t.show).map((tab) => (
+              <button
+                key={tab.key}
+                className={`pdp-tab-btn ${activeTab === tab.key ? 'active' : ''}`}
+                onClick={() => setActiveTab(tab.key)}
+              >
+                {tab.label}
+              </button>
+            ))}
           </div>
 
           <div className="pdp-tab-content">
-            {activeTab === 'description' && (
-              <div className="pdp-desc-content pdp-desc-split">
-                <div className="pdp-desc-left">
-                  <h3 className="pdp-overview-title"><Star size={18} fill="#E26A2C" color="#E26A2C" className="pdp-star-icon-inline" style={{ clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)', transform: 'scale(0.8)' }} /> Product Overview</h3>
-                  <p>{product?.description}</p>
-                </div>
-              </div>
-            )}
-            {activeTab === 'specifications' && (
-              <div className="pdp-desc-content pdp-desc-split">
-                <div className="pdp-desc-left" style={{ flex: 1 }}>
-                  <h3 className="pdp-overview-title"><Star size={18} fill="#E26A2C" color="#E26A2C" className="pdp-star-icon-inline" style={{ transform: 'scale(0.8)' }} /> Product Specifications</h3>
-                  <ul className="pdp-overview-list">
-                    {product?.specifications ? product.specifications.map((spec, idx) => (
-                      <li key={idx}><div className="pdp-check-icon"><Check size={12} strokeWidth={4} /></div> <strong>{spec.name}:</strong> {spec.value}</li>
-                    )) : (
-                      <li>No specifications available.</li>
-                    )}
-                  </ul>
-                </div>
-              </div>
-            )}
-            {activeTab === 'sizeGuide' && (
+            {activeTab === 'description' && product?.description && (
               <div className="pdp-desc-content">
-                <h3 className="pdp-overview-title"><Star size={18} fill="#E26A2C" color="#E26A2C" className="pdp-star-icon-inline" style={{ transform: 'scale(0.8)' }} /> Size & Fit Guide</h3>
-                <p style={{ color: '#555', fontSize: '14px', marginBottom: '24px' }}>Please refer to the size chart below to find your perfect fit. All measurements are in inches.</p>
-                <div style={{ overflowX: 'auto', background: '#fff', borderRadius: '12px', border: '1px solid #EAEAEA', padding: '16px' }}>
-                  <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse', fontSize: '14px' }}>
+                <p>{product.description}</p>
+              </div>
+            )}
+            {activeTab === 'specifications' && product?.specifications && product.specifications.length > 0 && (
+              <div className="pdp-desc-content">
+                <ul className="pdp-overview-list">
+                  {product.specifications.map((spec, idx) => (
+                    <li key={idx}><strong>{spec.name}:</strong> {spec.value}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {activeTab === 'sizeGuide' && sizes.length > 0 && (
+              <div className="pdp-desc-content">
+                <div style={{ overflowX: 'auto', background: '#fff', borderRadius: '8px', border: '1px solid #eee', padding: '12px' }}>
+                  <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse', fontSize: '13px' }}>
                     <thead>
-                      <tr style={{ borderBottom: '2px solid #F5E6D3' }}>
-                        <th style={{ padding: '12px', color: '#222' }}>Size</th>
-                        <th style={{ padding: '12px', color: '#222' }}>Bust</th>
-                        <th style={{ padding: '12px', color: '#222' }}>Waist</th>
-                        <th style={{ padding: '12px', color: '#222' }}>Length</th>
+                      <tr style={{ borderBottom: '1px solid #eee' }}>
+                        <th style={{ padding: '8px' }}>Size</th>
+                        <th style={{ padding: '8px' }}>Bust</th>
+                        <th style={{ padding: '8px' }}>Waist</th>
+                        <th style={{ padding: '8px' }}>Length</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr style={{ borderBottom: '1px solid #F5F5F5' }}><td style={{ padding: '12px', fontWeight: '600', color: '#E26A2C' }}>S</td><td style={{ padding: '12px', color: '#555' }}>34"</td><td style={{ padding: '12px', color: '#555' }}>30"</td><td style={{ padding: '12px', color: '#555' }}>44"</td></tr>
-                      <tr style={{ borderBottom: '1px solid #F5F5F5' }}><td style={{ padding: '12px', fontWeight: '600', color: '#E26A2C' }}>M</td><td style={{ padding: '12px', color: '#555' }}>36"</td><td style={{ padding: '12px', color: '#555' }}>32"</td><td style={{ padding: '12px', color: '#555' }}>44"</td></tr>
-                      <tr style={{ borderBottom: '1px solid #F5F5F5' }}><td style={{ padding: '12px', fontWeight: '600', color: '#E26A2C' }}>L</td><td style={{ padding: '12px', color: '#555' }}>38"</td><td style={{ padding: '12px', color: '#555' }}>34"</td><td style={{ padding: '12px', color: '#555' }}>44"</td></tr>
-                      <tr><td style={{ padding: '12px', fontWeight: '600', color: '#E26A2C' }}>XL</td><td style={{ padding: '12px', color: '#555' }}>40"</td><td style={{ padding: '12px', color: '#555' }}>36"</td><td style={{ padding: '12px', color: '#555' }}>44"</td></tr>
+                      {sizes.map(s => (
+                        <tr key={s} style={{ borderBottom: '1px solid #f9f9f9' }}>
+                          <td style={{ padding: '8px', fontWeight: '600' }}>{s}</td>
+                          <td style={{ padding: '8px', color: '#666' }}>Standard fit</td>
+                          <td style={{ padding: '8px', color: '#666' }}>Standard fit</td>
+                          <td style={{ padding: '8px', color: '#666' }}>Standard fit</td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
               </div>
             )}
-            {activeTab === 'reviews' && (
-              <div className="pdp-desc-content" style={{ textAlign: 'center', padding: '48px 0' }}>
-                <Star size={48} fill="#FFF2E8" color="#E26A2C" strokeWidth={1} style={{ marginBottom: '16px' }} />
-                <h3 className="pdp-overview-title" style={{ justifyContent: 'center', marginBottom: '8px' }}>Customer Reviews</h3>
-                <p style={{ color: '#777', fontSize: '14px', maxWidth: '400px', margin: '0 auto' }}>Scroll down to the reviews section below to see what our verified buyers are saying about this product.</p>
-              </div>
-            )}
-            {activeTab === 'faqs' && (
+            {activeTab === 'faqs' && product?.faqs && product.faqs.length > 0 && (
               <div className="pdp-desc-content">
-                <h3 className="pdp-overview-title"><Star size={18} fill="#E26A2C" color="#E26A2C" className="pdp-star-icon-inline" style={{ transform: 'scale(0.8)' }} /> Frequently Asked Questions</h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '24px' }}>
-                  {product?.faqs && product.faqs.length > 0 ? product.faqs.map((faq, idx) => (
-                    <div key={idx} style={{ background: '#fff', border: '1px solid #EAEAEA', borderRadius: '12px', padding: '20px' }}>
-                      <h4 style={{ margin: '0 0 8px 0', fontSize: '15px', color: '#222', display: 'flex', alignItems: 'center', gap: '8px' }}><div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#E26A2C' }}></div> {faq.question}</h4>
-                      <p style={{ margin: '0', fontSize: '14px', color: '#666', paddingLeft: '14px' }}>{faq.answer}</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {product.faqs.map((faq, idx) => (
+                    <div key={idx} style={{ background: '#fafafa', border: '1px solid #eee', borderRadius: '8px', padding: '14px' }}>
+                      <h4 style={{ margin: '0 0 6px 0', fontSize: '14px', color: '#111' }}>{faq.question}</h4>
+                      <p style={{ margin: '0', fontSize: '13px', color: '#666' }}>{faq.answer}</p>
                     </div>
-                  )) : (
-                    <p style={{ color: '#777' }}>No frequently asked questions available for this product.</p>
-                  )}
+                  ))}
                 </div>
               </div>
             )}
           </div>
         </div>
 
-        {/* Customer Reviews Redesigned Layout */}
-        <div className="pdp-reviews-redesigned-section" id="reviews-section">
-          <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '10px' }}>
-              <span style={{ width: '40px', height: '1px', background: '#b58d4e' }}></span>
-              <Leaf size={14} color="#b58d4e" />
-              <span style={{ color: '#b58d4e', fontSize: '13px', fontWeight: '600', letterSpacing: '2px', textTransform: 'uppercase' }}>WHAT OUR CUSTOMERS SAY</span>
-              <span style={{ width: '40px', height: '1px', background: '#b58d4e' }}></span>
+        {/* Customer Reviews Section */}
+        <div className="pdp-custom-reviews-section" id="reviews-section">
+          {/* Header */}
+          <div className="pdp-crs-header">
+            <div className="pdp-crs-eyebrow">
+              <span className="pdp-crs-line"></span>
+              <Leaf size={14} color="#C89953" />
+              <span className="pdp-crs-eyebrow-text">WHAT OUR CUSTOMERS SAY</span>
+              <span className="pdp-crs-line"></span>
             </div>
-            <h2 style={{ fontSize: '32px', fontWeight: '800', margin: '0', fontFamily: '"Inter", sans-serif', letterSpacing: '-1px' }}>
-              <span style={{ color: '#4a3f35' }}>Customer</span> <span style={{ color: '#b58d4e' }}>Reviews</span>
+            <h2 className="pdp-crs-title">
+              Customer <span style={{ color: '#C89953' }}>Reviews</span>
             </h2>
           </div>
 
-          {/* Container 1: Summary */}
-          <div className="pdp-reviews-new-summary">
-            <div className="pdp-rns-score-col">
-              <div className="pdp-rns-score-wrap">
-                <span className="pdp-rns-big-score">{ratingSummary?.averageRating || product?.rating || 0}</span>
+          {/* Summary Card */}
+          <div className="pdp-crs-summary-card">
+            {/* Left Score */}
+            <div className="pdp-crs-score-col">
+              <span className="pdp-crs-big-score">{ratingSummary?.averageRating || (product?.rating ? Number(product.rating).toFixed(1) : '5')}</span>
+              <div className="pdp-crs-stars">
+                {[1, 2, 3, 4, 5].map(i => (
+                  <Star
+                    key={i}
+                    size={16}
+                    fill={(ratingSummary?.averageRating || product?.rating || 5) >= i ? "#C89953" : "transparent"}
+                    color="#C89953"
+                    strokeWidth={1.5}
+                  />
+                ))}
               </div>
-              <div className="pdp-rns-stars">
-                {[1, 2, 3, 4, 5].map(i => <Star key={i} size={20} fill={(ratingSummary?.averageRating || product?.rating || 0) >= i ? "#C89953" : "none"} color="#C89953" style={{ clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)' }} />)}
-              </div>
-              <div className="pdp-summary-divider" style={{ width: '60%', margin: '16px auto' }}>
-                <div className="pdp-diamond" style={{ width: '6px', height: '6px', background: '#C89953', border: 'none' }}></div>
-              </div>
-              <span className="pdp-rns-based-on">Based on {ratingSummary?.totalReviews || product?.reviews || 0} Reviews</span>
+              <div className="pdp-crs-diamond">♦</div>
+              <span className="pdp-crs-based-on">Based on {ratingSummary?.totalReviews || reviews.length || 1} Reviews</span>
             </div>
 
-            <div className="pdp-rns-badge-divider" style={{ margin: '0' }}></div>
-
-            <div className="pdp-rns-bars-col">
+            {/* Middle Bars */}
+            <div className="pdp-crs-bars-col">
               {[5, 4, 3, 2, 1].map(star => {
-                const count = ratingSummary?.ratingBreakdown?.[star] || 0;
-                const total = ratingSummary?.totalReviews || 1;
-                const pct = ratingSummary?.totalReviews ? `${(count / total) * 100}%` : '0%';
+                const count = ratingSummary?.ratingBreakdown?.[star] || reviews.filter(r => r.rating === star).length || (star === 5 && reviews.length === 0 ? 1 : 0);
+                const total = ratingSummary?.totalReviews || reviews.length || 1;
+                const pct = total > 0 ? `${(count / total) * 100}%` : '0%';
                 return (
-                <div className="pdp-rns-bar-row" key={star}>
-                  <span className="pdp-rns-bar-label">{star} <Star size={10} fill="#C89953" color="#C89953" style={{ clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)' }} /></span>
-                  <div className="pdp-rns-progress-track">
-                    <div className="pdp-rns-progress-fill" style={{ width: pct }}></div>
+                  <div className="pdp-crs-bar-row" key={star}>
+                    <span className="pdp-crs-bar-label">{star} <Star size={10} fill="#C89953" color="#C89953" /></span>
+                    <div className="pdp-crs-progress-track">
+                      <div className="pdp-crs-progress-fill" style={{ width: pct }}></div>
+                    </div>
+                    <span className="pdp-crs-bar-count">{count}</span>
                   </div>
-                  <span className="pdp-rns-bar-count">{count}</span>
+                );
+              })}
+            </div>
+
+            {/* Badges */}
+            <div className="pdp-crs-badges-col">
+              <div className="pdp-crs-badge">
+                <div className="pdp-crs-badge-icon">
+                  <Award size={24} color="#C89953" strokeWidth={1.5} />
                 </div>
-              )})}
+                <div className="pdp-crs-diamond">♦</div>
+                <strong>Quality You Can Trust</strong>
+                <span>Real experiences from<br />real customers</span>
+              </div>
+              <div className="pdp-crs-badge">
+                <div className="pdp-crs-badge-icon">
+                  <Heart size={24} color="#C89953" strokeWidth={1.5} />
+                </div>
+                <div className="pdp-crs-diamond">♦</div>
+                <strong>Loved by Thousands</strong>
+                <span>Join thousands of happy<br />customers</span>
+              </div>
             </div>
 
-            <div className="pdp-rns-badge-divider"></div>
-
-            <div className="pdp-rns-badge-item">
-              <div className="pdp-rns-badge-icon"><Award size={28} color="#C89953" strokeWidth={1.5} /></div>
-              <div className="pdp-diamond" style={{ marginBottom: '12px', width: '6px', height: '6px', background: '#C89953', border: 'none' }}></div>
-              <span className="pdp-rns-badge-title">Quality You Can Trust</span>
-              <span className="pdp-rns-badge-desc">Real experiences from<br />real customers</span>
-            </div>
-
-            <div className="pdp-rns-badge-divider"></div>
-
-            <div className="pdp-rns-badge-item">
-              <div className="pdp-rns-badge-icon"><Heart size={28} color="#C89953" strokeWidth={1.5} /></div>
-              <div className="pdp-diamond" style={{ marginBottom: '12px', width: '6px', height: '6px', background: '#C89953', border: 'none' }}></div>
-              <span className="pdp-rns-badge-title">Loved by Thousands</span>
-              <span className="pdp-rns-badge-desc">Join thousands of happy<br />customers</span>
-            </div>
-
-            <div className="pdp-rns-badge-divider"></div>
-
-            <div className="pdp-rns-right">
+            {/* Right Button */}
+            <div className="pdp-crs-action-col">
               <button
-                className="pdp-rns-write-btn"
+                className="pdp-crs-write-btn"
                 onClick={() => setIsReviewModalOpen(true)}
-                style={{
-                  background: 'linear-gradient(135deg, #111 0%, #333 100%)',
-                  borderRadius: '30px',
-                  padding: '12px 24px',
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                  fontSize: '13px',
-                  letterSpacing: '0.5px'
-                }}
               >
-                <Edit2 size={16} /> Write a Review
+                <Edit2 size={14} /> Write a Review
               </button>
-              <a href="#" className="pdp-rns-verify-link">How are reviews verified? <Info size={14} /></a>
+              <div className="pdp-crs-verified-text">
+                How are reviews verified? <Info size={12} />
+              </div>
             </div>
           </div>
 
-          {/* Container 3: Review Cards */}
-          <div className="pdp-reviews-new-cards">
-            <div className="pdp-rnc-header" style={{ marginBottom: '24px' }}>
-              <div className="pdp-rnc-title-group">
-                <h3>What Customers Are Saying</h3>
-              </div>
-              <a href="#" className="pdp-rnc-view-more">View All Reviews <ArrowRight size={14} /></a>
+          {/* Reviews List Header */}
+          <div className="pdp-crs-list-header">
+            <h3>What Customers Are Saying</h3>
+            <button className="pdp-crs-view-all">View All Reviews &rarr;</button>
+          </div>
+
+          {/* Reviews Grid/Carousel */}
+          {reviews.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '36px 16px', color: '#6b7280', background: '#fff', borderRadius: '12px', border: '1px solid #eaeaea' }}>
+                <Star size={32} color="#d1d5db" style={{ marginBottom: '8px' }} />
+                <p style={{ margin: 0, fontSize: '14px', fontWeight: '500' }}>No reviews yet for this product.</p>
+                <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#9ca3af' }}>Be the first to share your experience!</p>
             </div>
-            <div className="pdp-rnc-scroll">
+          ) : (
+            <div className="pdp-crs-cards-container">
               {reviews.map((review) => (
-                <div className="pdp-rnc-card" key={review.id}>
-                  {/* Header: Avatar & Name & Menu */}
-                  <div className="pdp-rnc-header-user" style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                      <img src={review.avatar} alt="Avatar" className="pdp-rnc-user-avatar" />
-                      <span className="pdp-rnc-user-name-new">{review.name}</span>
-                    </div>
-                    {currentUser && (currentUser._id === review.userId || currentUser.id === review.userId) && (
-                      <div style={{ position: 'relative' }}>
-                        <button 
-                          onClick={() => setActiveReviewMenu(activeReviewMenu === review.id ? null : review.id)}
-                          style={{ 
-                            background: activeReviewMenu === review.id ? '#f0f0f0' : 'none', 
-                            border: 'none', 
-                            cursor: 'pointer', 
-                            color: activeReviewMenu === review.id ? '#111' : '#888', 
-                            padding: '6px',
-                            borderRadius: '50%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            transition: 'all 0.2s ease'
-                          }}
-                          onMouseOver={(e) => { e.currentTarget.style.backgroundColor = '#f5f5f5'; e.currentTarget.style.color = '#111'; }}
-                          onMouseOut={(e) => { e.currentTarget.style.backgroundColor = activeReviewMenu === review.id ? '#f0f0f0' : 'transparent'; e.currentTarget.style.color = activeReviewMenu === review.id ? '#111' : '#888'; }}
-                        >
-                          <MoreVertical size={18} />
-                        </button>
-                        
-                        {activeReviewMenu === review.id && (
-                          <div style={{
-                            position: 'absolute',
-                            top: '100%',
-                            right: 0,
-                            background: 'rgba(255, 255, 255, 0.85)',
-                            backdropFilter: 'blur(12px)',
-                            WebkitBackdropFilter: 'blur(12px)',
-                            border: '1px solid rgba(255, 255, 255, 0.3)',
-                            borderRadius: '12px',
-                            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04)',
-                            zIndex: 10,
-                            overflow: 'hidden',
-                            minWidth: '120px',
-                            marginTop: '8px',
-                            padding: '4px'
-                          }}>
-                            <button 
-                              onClick={() => {
-                                handleDeleteReview(review.id);
-                                setActiveReviewMenu(null);
-                              }}
-                              style={{ 
-                                background: 'transparent', 
-                                border: 'none', 
-                                color: '#e53e3e', 
-                                fontSize: '13px', 
-                                fontWeight: '500',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px',
-                                padding: '10px 12px',
-                                width: '100%',
-                                textAlign: 'left',
-                                borderRadius: '8px',
-                                transition: 'all 0.2s ease'
-                              }}
-                              onMouseOver={(e) => { e.currentTarget.style.backgroundColor = '#fff5f5'; e.currentTarget.style.color = '#c53030'; }}
-                              onMouseOut={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = '#e53e3e'; }}
-                            >
-                              <Trash2 size={15} /> Delete
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    )}
+                <div className="pdp-crs-card" key={review.id}>
+                  <div className="pdp-crs-card-user">
+                    <img src={review.avatar} alt="Avatar" className="pdp-crs-avatar" />
+                    <span className="pdp-crs-name">{review.name}</span>
                   </div>
-
-                  {/* Meta: Rating Pill & Date */}
-                  <div className="pdp-rnc-meta-new">
-                    <div className="pdp-rnc-rating-pill">
-                      {Number(review.rating).toFixed(1)} <Star size={12} fill="#fff" color="#fff" />
-                    </div>
-                    <span className="pdp-rnc-date-new">• Posted on {review.date}</span>
+                  <div className="pdp-crs-card-meta">
+                    <span className="pdp-crs-rating-pill">
+                      {Number(review.rating).toFixed(1)} <Star size={10} fill="#fff" color="#fff" />
+                    </span>
+                    <span className="pdp-crs-date">• Posted on {review.date}</span>
                   </div>
-
-                  {/* Text */}
-                  <p className="pdp-rnc-text-new">
-                    {review.title && <strong style={{ color: '#111' }}>{review.title} <br/> </strong>}
-                    {review.content}
-                  </p>
-
-                  {/* Images */}
+                  <div className="pdp-crs-card-title">{review.title}</div>
+                  <div className="pdp-crs-card-content">{review.content}</div>
                   {review.image && (
-                    <div className="pdp-rnc-images-new">
-                      <Image 
-                        src={review.image} 
-                        alt="Review attachment" 
-                        width={80} 
-                        height={80} 
-                        style={{ objectFit: 'cover', borderRadius: '8px', border: '1px solid #EAEAEA' }}
-                      />
+                    <div className="pdp-crs-card-image">
+                      <Image src={review.image} alt="Review attachment" width={60} height={80} style={{ objectFit: 'cover', borderRadius: '8px' }} />
                     </div>
                   )}
-
-                    {/* Helpful */}
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '16px' }}>
-                    <div 
-                      className="pdp-rnc-helpful-new" 
-                      onClick={() => handleHelpfulClick(review.id, review.hasVotedHelpful)}
-                      style={{ cursor: review.hasVotedHelpful ? 'default' : 'pointer', margin: 0 }}
-                    >
-                      <ThumbsUp 
-                        size={18} 
-                        fill={review.hasVotedHelpful ? "#03A685" : "#707684"} 
-                        color={review.hasVotedHelpful ? "#03A685" : "#707684"} 
-                        className="pdp-rnc-helpful-icon" 
-                      />
-                      <span style={{ color: review.hasVotedHelpful ? "#03A685" : "#707684" }}>
-                        Helpful ({review.helpfulCount})
-                      </span>
-                    </div>
+                  <div
+                    className="pdp-crs-card-helpful"
+                    onClick={() => handleHelpfulClick(review.id, review.hasVotedHelpful)}
+                  >
+                    <ThumbsUp size={14} fill={review.hasVotedHelpful ? "#888" : "transparent"} /> Helpful ({review.helpfulCount || 0})
                   </div>
                 </div>
               ))}
             </div>
-
-            <div className="pdp-rnc-dots">
-              <span className="pdp-rnc-dot active"></span>
-              <span className="pdp-rnc-dot"></span>
-              <span className="pdp-rnc-dot"></span>
-              <span className="pdp-rnc-dot"></span>
-              <span className="pdp-rnc-dot"></span>
+          )}
+          
+          {/* Carousel Dots */}
+          {reviews.length > 0 && (
+            <div className="pdp-crs-carousel-dots">
+              <span className="pdp-crs-dot active"></span>
+              <span className="pdp-crs-dot"></span>
+              <span className="pdp-crs-dot"></span>
+              <span className="pdp-crs-dot"></span>
             </div>
-          </div>
+          )}
         </div>
 
-        {/* Limited Offers */}
-        <div className="pdp-carousel-section pdp-limited-offers-section">
-          <div className="pdp-lo-header">
-            <h2 className="pdp-lo-title">
-              <span className="pdp-title-dark">Similar</span> <span className="pdp-title-gold">Products</span>
-            </h2>
-          </div>
-          <div className="pdp-carousel-grid-container similar-products-carousel">
-            <div className="pdp-carousel-grid">
-              {similarProducts.map((prod) => (
-                <SimilarProductCard
-                  key={prod.id}
-                  product={prod}
-                  onQuickView={(p) => navigate(`/product/${p.id}`, { state: { product: p } })}
-                />
-              ))}
+        {/* Similar Products */}
+        {similarProducts && similarProducts.length > 0 && (
+          <div className="pdp-carousel-section pdp-limited-offers-section">
+            <div className="pdp-lo-header">
+              <h2 className="pdp-lo-title">
+                <span className="pdp-title-dark">Similar</span> <span className="pdp-title-gold">Products</span>
+              </h2>
+            </div>
+            <div className="pdp-carousel-grid-container similar-products-carousel">
+              <div className="pdp-carousel-grid">
+                {similarProducts.map((prod) => (
+                  <SimilarProductCard
+                    key={prod.id}
+                    product={prod}
+                    onQuickView={(p) => navigate(`/product/${p.id}`, { state: { product: p } })}
+                  />
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Size Guide Modal */}
@@ -1395,7 +1443,6 @@ export default function ProductDetail() {
                   placeholder="Summary of your experience"
                   value={reviewForm.title}
                   onChange={(e) => setReviewForm({ ...reviewForm, title: e.target.value })}
-                  required
                 />
               </div>
 
@@ -1406,7 +1453,6 @@ export default function ProductDetail() {
                   rows={4}
                   value={reviewForm.content}
                   onChange={(e) => setReviewForm({ ...reviewForm, content: e.target.value })}
-                  required
                 ></textarea>
               </div>
 

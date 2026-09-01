@@ -106,7 +106,7 @@
 }
 
 .title-gold {
-  color: #b58d4e;
+  color: var(--primary-color);
 }
 
 .payment-title .premium-accent {

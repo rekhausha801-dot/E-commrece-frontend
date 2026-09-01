@@ -41,26 +41,26 @@ Once we receive your item, we will inspect it and notify you that we have receiv
 const AutofillResistantInput = (props) => {
   const [isReadOnly, setIsReadOnly] = useState(true);
   return (
-    <Input 
-      {...props} 
-      readOnly={isReadOnly} 
+    <Input
+      {...props}
+      readOnly={isReadOnly}
       onFocus={(e) => {
         setIsReadOnly(false);
         if (props.onFocus) props.onFocus(e);
-      }} 
+      }}
       onBlur={(e) => {
         setIsReadOnly(true);
         if (props.onBlur) props.onBlur(e);
-      }} 
+      }}
     />
   );
 };
 
 const WebsiteSetting = ({ initialTab = 'Security', onProfileUpdate }) => {
-  const [activeTab, setActiveTab] = useState(initialTab);
+  const [activeTab, setActiveTab] = useState(initialTab || 'Security');
   const [profileForm] = Form.useForm();
   const [passwordForm] = Form.useForm();
-  
+
   const [profileData, setProfileData] = useState(null);
   const [sessions, setSessions] = useState([
     { id: '1', device: 'Chrome / Windows', location: 'Chennai, India', time: 'Current Session', isCurrent: true, icon: <Globe size={16} color="#3b82f6" /> },
@@ -73,7 +73,7 @@ const WebsiteSetting = ({ initialTab = 'Security', onProfileUpdate }) => {
   const renderOptionalField = (fieldName, label, Component) => {
     const hasValue = profileData?.[fieldName] || profileForm.getFieldValue(fieldName);
     const isShowing = showOptional[fieldName];
-    
+
     if (hasValue || isShowing) {
       return (
         <Form.Item label={label} name={fieldName} className="settings-form-group">
@@ -81,12 +81,12 @@ const WebsiteSetting = ({ initialTab = 'Security', onProfileUpdate }) => {
         </Form.Item>
       );
     }
-    
+
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '24px', flex: 1, minWidth: 'calc(50% - 12px)' }}>
         <span style={{ fontSize: '14px', fontWeight: 500, color: '#111827' }}>{label}</span>
-        <button 
-          type="button" 
+        <button
+          type="button"
           onClick={() => setShowOptional({ ...showOptional, [fieldName]: true })}
           style={{ background: '#f9fafb', border: '1px dashed #d1d5db', borderRadius: '8px', padding: '8px 16px', color: '#6b7280', fontSize: '13px', fontWeight: 500, cursor: 'pointer', textAlign: 'left', width: '100%', height: '40px' }}
         >
@@ -113,33 +113,38 @@ const WebsiteSetting = ({ initialTab = 'Security', onProfileUpdate }) => {
         getUserProfile().catch(() => ({ data: null })),
         getActiveSessions().catch(() => ({ data: null }))
       ]);
-      
+
       if (profileRes?.data && profileRes.data.user) {
         const user = profileRes.data.user;
         // Load cached profile image (stored separately to avoid quota issues)
         const cachedImage = localStorage.getItem('adminProfileImage');
         setProfileData({ ...user, profileImage: cachedImage || user.profileImage || '' });
-        
+
         const nameParts = (user.fullName || '').split(' ');
         const firstName = nameParts[0] || '';
         const lastName = nameParts.slice(1).join(' ') || '';
 
-        profileForm.setFieldsValue({
-          firstName,
-          lastName,
-          email: user.email,
-          phone: user.phoneNumber,
-          role: user.role,
-          gender: user.gender
-        });
+        // Defer setFieldsValue until after React mounts the <Form> element
+        setTimeout(() => {
+          profileForm.setFieldsValue({
+            firstName,
+            lastName,
+            email: user.email,
+            phone: user.phoneNumber,
+            role: user.role,
+            gender: user.gender
+          });
+        }, 0);
       } else {
         // Fallback for visual mock if API is disconnected
         const cachedImage = localStorage.getItem('adminProfileImage');
         const defaultData = { firstName: 'Admin', lastName: 'User', email: 'admin@relietech.com', profileImage: cachedImage || '' };
         setProfileData(defaultData);
-        profileForm.setFieldsValue(defaultData);
+        setTimeout(() => {
+          profileForm.setFieldsValue(defaultData);
+        }, 0);
       }
-      
+
       if (sessionsRes?.data && Array.isArray(sessionsRes.data) && sessionsRes.data.length > 0) {
         setSessions(sessionsRes.data);
       }
@@ -165,7 +170,7 @@ const WebsiteSetting = ({ initialTab = 'Security', onProfileUpdate }) => {
         gender: values.gender,
       };
       const response = await updateUserProfile(payload);
-      
+
       if (response.data && response.data.user) {
         // Save user WITHOUT base64 image (avoids localStorage QuotaExceededError)
         const updatedUser = { ...response.data.user };
@@ -176,7 +181,7 @@ const WebsiteSetting = ({ initialTab = 'Security', onProfileUpdate }) => {
         // Also fire event as fallback
         window.dispatchEvent(new Event('localStorageUpdated'));
       }
-      
+
       message.success("Profile details updated successfully!");
     } catch (err) {
       message.error("Failed to update profile.");
@@ -299,12 +304,12 @@ const WebsiteSetting = ({ initialTab = 'Security', onProfileUpdate }) => {
                   <Form.Item label="Email Address" name="email" className="settings-form-group" tooltip="Email cannot be changed directly for security reasons.">
                     <Input size="large" disabled style={{ background: '#f9fafb', color: '#6b7280' }} />
                   </Form.Item>
-                  
+
                   {renderOptionalField('phone', 'Phone Number', <AutofillResistantInput size="large" />)}
                 </div>
 
                 <div className="settings-form-row">
-                  {renderOptionalField('role', 'Role', 
+                  {renderOptionalField('role', 'Role',
                     <Select size="large">
                       <Option value="Super Admin">Super Admin</Option>
                       <Option value="Manager">Manager</Option>
@@ -315,7 +320,7 @@ const WebsiteSetting = ({ initialTab = 'Security', onProfileUpdate }) => {
                 </div>
 
                 <div className="settings-form-row">
-                  {renderOptionalField('gender', 'Gender', 
+                  {renderOptionalField('gender', 'Gender',
                     <Select size="large">
                       <Option value="Female">Female</Option>
                       <Option value="Male">Male</Option>
@@ -325,7 +330,7 @@ const WebsiteSetting = ({ initialTab = 'Security', onProfileUpdate }) => {
                   )}
                   {renderOptionalField('country', 'Country', <Input size="large" />)}
                 </div>
-                
+
                 <div className="settings-form-actions" style={{ padding: 0, border: 'none', background: 'transparent' }}>
                   <button type="submit" className="settings-btn-save">Save Profile Details</button>
                 </div>
@@ -386,12 +391,12 @@ const WebsiteSetting = ({ initialTab = 'Security', onProfileUpdate }) => {
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '24px' }}>
       {/* Main Content */}
-      <div className="settings-content" style={{ 
-        width: '100%', 
+      <div className="settings-content" style={{
+        width: '100%',
         maxWidth: '1000px',
-        background: '#fff', 
-        borderRadius: '16px', 
-        boxShadow: '0 8px 30px rgba(0,0,0,0.04)', 
+        background: '#fff',
+        borderRadius: '16px',
+        boxShadow: '0 8px 30px rgba(0,0,0,0.04)',
         border: '1px solid #f3f4f6',
         padding: '32px'
       }}>
@@ -437,7 +442,7 @@ const WebsiteSetting = ({ initialTab = 'Security', onProfileUpdate }) => {
 
 export const ShippingTab = () => {
   const [form] = Form.useForm();
-  
+
   const handleSave = () => {
     message.success(`Shipping settings saved successfully!`);
   };

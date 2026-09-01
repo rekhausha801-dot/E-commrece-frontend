@@ -35,14 +35,14 @@ const SectionHeader = ({ eyebrowText, titleDark, titleGold }) => (
   <div style={{ textAlign: 'center', marginBottom: '40px' }}>
     {eyebrowText && (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', marginBottom: '10px' }}>
-        <span style={{ width: '40px', height: '1px', background: '#b58d4e' }}></span>
-        <Leaf size={14} color="#b58d4e" />
-        <span style={{ color: '#b58d4e', fontSize: '13px', fontWeight: '600', letterSpacing: '2px', textTransform: 'uppercase' }}>{eyebrowText}</span>
-        <span style={{ width: '40px', height: '1px', background: '#b58d4e' }}></span>
+        <span style={{ width: '40px', height: '1px', background: 'var(--primary-color)' }}></span>
+        <Leaf size={14} color="var(--primary-color)" />
+        <span style={{ color: 'var(--primary-color)', fontSize: '13px', fontWeight: '600', letterSpacing: '2px', textTransform: 'uppercase' }}>{eyebrowText}</span>
+        <span style={{ width: '40px', height: '1px', background: 'var(--primary-color)' }}></span>
       </div>
     )}
     <h2 style={{ fontSize: '42px', fontWeight: '800', margin: '0', fontFamily: '"Inter", sans-serif', letterSpacing: '-1px' }}>
-      <span style={{ color: '#4a3f35' }}>{titleDark}</span> <span style={{ color: '#b58d4e' }}>{titleGold}</span>
+      <span style={{ color: '#4a3f35' }}>{titleDark}</span> <span style={{ color: 'var(--primary-color)' }}>{titleGold}</span>
     </h2>
   </div>
 );
@@ -178,6 +178,7 @@ const Home = () => {
   }, []);
 
   const categories = [
+    { name: 'Custom T-Shirts', path: '/category/custom-t-shirts' },
     { name: 'Dresses', path: '/category/dresses' },
     { name: 'Tops', path: '/category/tops' },
     { name: 'Bottoms', path: '/category/bottoms' },
@@ -293,12 +294,12 @@ const Home = () => {
       <div className="trendy-header" style={{ marginTop: '10px', marginBottom: '20px' }}>
         <div className="trendy-eyebrow">
           <span className="eyebrow-line" />
-          <span className="eyebrow-icon"><Leaf size={11} color="#b58d4e" /></span>
+          <span className="eyebrow-icon"><Leaf size={11} color="var(--primary-color)" /></span>
           <span>SEASON SPECIAL</span>
           <span className="eyebrow-line" />
         </div>
         <h2 className="trendy-title">
-          Summer <span className="trendy-title-accent" style={{ color: '#b58d4e' }}>Collections</span>
+          Summer <span className="trendy-title-accent" style={{ color: 'var(--primary-color)' }}>Collections</span>
         </h2>
       </div>
       <SummerBanner />

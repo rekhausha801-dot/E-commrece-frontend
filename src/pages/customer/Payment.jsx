@@ -292,8 +292,46 @@ const Payment = () => {
                 <div className="spc-divider"></div>
 
                 <div className="spc-content">
-                  <div className="spc-image-wrap">
+                  <div className="spc-image-wrap" style={{ position: 'relative' }}>
                     <img src={item.image || item.productImage || '/placeholder-product.png'} alt={item.name || item.title || item.productName} className="spc-image" />
+                    {item.selectedDesign && item.selectedDesign.icon && (
+                      <div style={{ position: 'absolute', top: '55%', left: '50%', transform: 'translate(-50%, -50%)', width: '35%', height: '35%', mixBlendMode: 'multiply', pointerEvents: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {item.colorizeImage && item.selectedDesignColor && item.selectedDesignColor !== '#000000' ? (
+                          <div style={{
+                            width: '100%', height: '100%',
+                            backgroundColor: item.selectedDesignColor,
+                            WebkitMaskImage: `url(${item.selectedDesign.icon})`,
+                            WebkitMaskSize: 'contain',
+                            WebkitMaskPosition: 'center',
+                            WebkitMaskRepeat: 'no-repeat',
+                            maskImage: `url(${item.selectedDesign.icon})`,
+                            maskSize: 'contain',
+                            maskPosition: 'center',
+                            maskRepeat: 'no-repeat'
+                          }} title={item.selectedDesign.name} />
+                        ) : (
+                          <>
+                            <img src={item.selectedDesign.icon} alt={item.selectedDesign.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                            {item.selectedDesignColor && item.selectedDesignColor !== '#000000' && (
+                              <div style={{
+                                position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                                backgroundColor: item.selectedDesignColor,
+                                mixBlendMode: 'screen',
+                                pointerEvents: 'none',
+                                WebkitMaskImage: `url(${item.selectedDesign.icon})`,
+                                WebkitMaskSize: 'contain',
+                                WebkitMaskPosition: 'center',
+                                WebkitMaskRepeat: 'no-repeat',
+                                maskImage: `url(${item.selectedDesign.icon})`,
+                                maskSize: 'contain',
+                                maskPosition: 'center',
+                                maskRepeat: 'no-repeat'
+                              }} />
+                            )}
+                          </>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   <div className="spc-details">

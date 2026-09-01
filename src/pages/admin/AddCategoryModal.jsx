@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Form, Input, Select, Switch, Row, Col, Upload, Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import { createCategory, updateCategory } from '../../services/api';
+import { createCategory, updateCategory, createSubcategory, updateSubcategory, getCategories } from '../../services/api';
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -17,11 +17,24 @@ const getBase64 = (file) =>
 const AddCategoryModal = ({ isOpen, onClose, onSuccess, editData }) => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState([]);
 
   const formItemLayout = {
     layout: "vertical",
     style: { marginBottom: '16px' }
   };
+
+  useEffect(() => {
+    const fetchCats = async () => {
+      try {
+        const res = await getCategories();
+        setCategories(res.data.data);
+      } catch (err) {
+        console.error("Failed to fetch categories for dropdown");
+      }
+    };
+    fetchCats();
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
@@ -31,14 +44,13 @@ const AddCategoryModal = ({ isOpen, onClose, onSuccess, editData }) => {
           description: editData.description || editData.desc,
           status: editData.status === 'active' || editData.status === 'Active',
           slug: editData.slug || '',
-          parent: editData.parent || 'none',
           productCreation: editData.productCreation ? editData.productCreation.toLowerCase() : 'enabled',
           image: editData.image || editData.img ? [{ uid: '-1', name: 'image.png', status: 'done', url: editData.image || editData.img }] : [],
           icon: editData.icon ? [{ uid: '-2', name: 'icon.png', status: 'done', url: editData.icon }] : []
         });
       } else {
         form.resetFields();
-        form.setFieldsValue({ status: true, productCreation: 'enabled', parent: 'none' });
+        form.setFieldsValue({ status: true, productCreation: 'enabled' });
       }
     }
   }, [isOpen, editData, form]);
@@ -113,6 +125,8 @@ const AddCategoryModal = ({ isOpen, onClose, onSuccess, editData }) => {
       title={<div style={{ fontSize: '20px', fontWeight: '600', color: '#111827' }}>{editData ? 'Edit Category' : 'Add New Category'}</div>}
       open={isOpen}
       onCancel={onClose}
+      forceRender
+      destroyOnHidden
       width={700}
       footer={[
         <Button key="cancel" onClick={onClose} style={{ borderRadius: '6px' }} disabled={loading}>
@@ -152,19 +166,9 @@ const AddCategoryModal = ({ isOpen, onClose, onSuccess, editData }) => {
           </Col>
         </Row>
         <Row gutter={24}>
-          <Col span={12}>
+          <Col span={24}>
             <Form.Item name="name" label="Category Name (Title)" rules={[{ required: true, message: 'Please enter category name' }]} {...formItemLayout}>
               <Input placeholder="e.g., Western Dresses" size="large" />
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item name="parent" label="Parent Category" {...formItemLayout}>
-              <Select placeholder="Select Parent Category" size="large">
-                <Option value="none">None (Top Level)</Option>
-                <Option value="women">Women</Option>
-                <Option value="men">Men</Option>
-                <Option value="kids">Kids</Option>
-              </Select>
             </Form.Item>
           </Col>
         </Row>
@@ -183,22 +187,6 @@ const AddCategoryModal = ({ isOpen, onClose, onSuccess, editData }) => {
           </Col>
         </Row>
 
-        {/* SEO Settings */}
-        <div style={sectionHeaderStyle}>SEO Settings</div>
-        <Row gutter={24}>
-          <Col span={24}>
-            <Form.Item name="seoTitle" label="SEO Title" {...formItemLayout}>
-              <Input placeholder="e.g., Shop Western Wear | BrandName" size="large" />
-            </Form.Item>
-          </Col>
-        </Row>
-        <Row gutter={24}>
-          <Col span={24}>
-            <Form.Item name="seoDescription" label="SEO Description" {...formItemLayout}>
-              <TextArea rows={3} placeholder="Write a compelling meta description..." />
-            </Form.Item>
-          </Col>
-        </Row>
 
         {/* Display Settings */}
         <div style={sectionHeaderStyle}>Display Settings</div>

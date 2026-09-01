@@ -87,23 +87,28 @@ const CategoryManagement = () => {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const res = await getCategories();
-      const mapped = res.data.data.map((item, index) => ({
+      const catRes = await getCategories().catch(() => null);
+
+      const catList = catRes?.data?.data || [];
+
+      const mappedCategories = catList.map((item, index) => ({
         ...item,
         id: item._id,
         desc: item.description,
         status: item.status === 'active' ? 'Active' : 'Inactive',
         slug: item.name.toLowerCase().replace(/\s+/g, '-'),
-        parent: '', 
+        parent: '',
         products: 0,
         productCreation: 'Enabled',
-        order: 1,
+        order: index + 1,
         created: item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'N/A',
         updated: item.updatedAt ? new Date(item.updatedAt).toLocaleDateString() : 'N/A',
         img: item.image || initialData[index % initialData.length].img,
-        icon: item.icon || ''
+        icon: item.icon || '',
+        isSubcategory: false
       }));
-      setCategories(mapped);
+
+      setCategories(mappedCategories);
     } catch (error) {
       console.error(error);
       message.error("Failed to fetch categories");
@@ -133,7 +138,6 @@ const CategoryManagement = () => {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('All Status');
-  const [parentFilter, setParentFilter] = useState('All Categories');
   const [productCreationFilter, setProductCreationFilter] = useState('All');
   const [sortFilter, setSortFilter] = useState('Newest');
   const [categorySearchFilter, setCategorySearchFilter] = useState(null);
@@ -143,20 +147,14 @@ const CategoryManagement = () => {
   const inactiveCat = categories.filter(c => c.status === 'Inactive').length;
   const totalProducts = categories.reduce((acc, curr) => acc + curr.products, 0);
 
-  const getSubcategories = (parentName) => {
-    return categories.filter(c => c.parent === parentName);
-  };
-
   const filteredCategories = useMemo(() => {
     let result = categories.filter(cat => {
       const q = searchQuery.toLowerCase();
       const matchSearch = cat.name.toLowerCase().includes(q) ||
-        cat.slug.toLowerCase().includes(q) ||
-        (cat.parent && cat.parent.toLowerCase().includes(q));
+        cat.slug.toLowerCase().includes(q);
       const matchStatus = statusFilter === 'All Status' || cat.status === statusFilter;
-      const matchParent = parentFilter === 'All Categories' || cat.parent === parentFilter;
       const matchCreation = productCreationFilter === 'All' || cat.productCreation === productCreationFilter;
-      return matchSearch && matchStatus && matchParent && matchCreation;
+      return matchSearch && matchStatus && matchCreation;
     });
 
     result.sort((a, b) => {
@@ -168,7 +166,7 @@ const CategoryManagement = () => {
     });
 
     return result;
-  }, [categories, searchQuery, statusFilter, parentFilter, productCreationFilter, sortFilter]);
+  }, [categories, searchQuery, statusFilter, productCreationFilter, sortFilter]);
 
   const totalPages = Math.ceil(filteredCategories.length / rowsPerPage);
   const paginatedCategories = filteredCategories.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
@@ -227,11 +225,11 @@ const CategoryManagement = () => {
   const confirmDelete = async () => {
     try {
       await deleteCategory(deleteCandidate.id);
-      message.success('Category deleted successfully');
+      message.success('Deleted successfully');
       setCategories(prev => prev.filter(c => c.id !== deleteCandidate.id));
       if (activeCategory?.id === deleteCandidate.id) setIsDrawerOpen(false);
     } catch (err) {
-      message.error(err.response?.data?.message || 'Failed to delete category');
+      message.error(err.response?.data?.message || 'Failed to delete');
     } finally {
       setDeleteCandidate(null);
     }
@@ -239,7 +237,6 @@ const CategoryManagement = () => {
 
   const clearFilters = () => {
     setStatusFilter('All Status');
-    setParentFilter('All Categories');
     setProductCreationFilter('All');
     setSearchQuery('');
     setSortFilter('Newest');
@@ -310,24 +307,6 @@ const CategoryManagement = () => {
         <span style={{ fontSize: '12px', color: '#6b7280', background: '#f3f4f6', padding: '4px 10px', borderRadius: '12px', fontWeight: '500' }}>
           /{text}
         </span>
-      ),
-    },
-    {
-      title: 'Sub Categories',
-      key: 'subCat',
-      align: 'center',
-      filters: [
-        { text: 'Women', value: 'Women' },
-        { text: 'Men', value: 'Men' },
-        { text: 'Kids', value: 'Kids' },
-      ],
-      filterMultiple: false,
-      filteredValue: parentFilter === 'All Categories' ? null : [parentFilter],
-      render: (_, record) => (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '13px', color: '#374151', fontWeight: '600' }}>
-          <Layers size={15} color="#9ca3af" />
-          {getSubcategories(record.name).length}
-        </div>
       ),
     },
     {
@@ -467,7 +446,6 @@ const CategoryManagement = () => {
           <div style={{ width: '3px', height: '20px', background: '#d97706', borderRadius: '4px' }}></div>
           <div>
             <h1 style={{ margin: 0, fontSize: '20px', fontWeight: '700', color: '#1f2937', letterSpacing: '-0.3px' }}>Category Management</h1>
-            {/* <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#6b7280', fontWeight: '500' }}>Manage your categories, sub categories and product settings</p> */}
           </div>
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
@@ -633,9 +611,6 @@ const CategoryManagement = () => {
             if (filters.name) setCategorySearchFilter(filters.name[0]);
             else setCategorySearchFilter(null);
 
-            if (filters.subCat) setParentFilter(filters.subCat[0] || 'All Categories');
-            else setParentFilter('All Categories');
-
             if (filters.productCreation) setProductCreationFilter(filters.productCreation[0] || 'All');
             else setProductCreationFilter('All');
 
@@ -710,14 +685,6 @@ const CategoryManagement = () => {
                     <div style={{ fontSize: '14px', color: '#222', fontWeight: '500' }}>{activeCategory.slug}</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: '12px', color: '#888', marginBottom: '4px' }}>Parent Category</div>
-                    <div style={{ fontSize: '14px', color: '#222', fontWeight: '500' }}>{activeCategory.parent || 'None'}</div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: '12px', color: '#888', marginBottom: '4px' }}>Sub Categories</div>
-                    <div style={{ fontSize: '14px', color: '#222', fontWeight: '500' }}>{getSubcategories(activeCategory.name).length}</div>
-                  </div>
-                  <div>
                     <div style={{ fontSize: '12px', color: '#888', marginBottom: '4px' }}>Products</div>
                     <div style={{ fontSize: '14px', color: '#222', fontWeight: '500' }}>{activeCategory.products}</div>
                   </div>
@@ -741,37 +708,6 @@ const CategoryManagement = () => {
                     <div style={{ fontSize: '14px', color: '#222', fontWeight: '500' }}>{activeCategory.updated}</div>
                   </div>
                 </div>
-
-                {/* Sub Categories Table */}
-                {getSubcategories(activeCategory.name).length > 0 && (
-                  <div style={{ marginBottom: '32px' }}>
-                    <h3 style={{ fontSize: '15px', color: '#222', fontWeight: '600', marginBottom: '12px' }}>Sub Categories</h3>
-                    <div style={{ border: '1px solid #f0f0f0', borderRadius: '8px', overflow: 'hidden' }}>
-                      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                        <thead>
-                          <tr style={{ background: '#fafafa', borderBottom: '1px solid #f0f0f0' }}>
-                            <th style={{ padding: '10px 12px', textAlign: 'left', fontSize: '12px', color: '#666', fontWeight: '500' }}>Sub Category</th>
-                            <th style={{ padding: '10px 12px', textAlign: 'center', fontSize: '12px', color: '#666', fontWeight: '500' }}>Products</th>
-                            <th style={{ padding: '10px 12px', textAlign: 'right', fontSize: '12px', color: '#666', fontWeight: '500' }}>Status</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {getSubcategories(activeCategory.name).map(sub => (
-                            <tr key={sub.id} style={{ borderBottom: '1px solid #f5f5f5' }}>
-                              <td style={{ padding: '10px 12px', fontSize: '13px', color: '#222', fontWeight: '500' }}>{sub.name}</td>
-                              <td style={{ padding: '10px 12px', fontSize: '13px', color: '#555', textAlign: 'center' }}>{sub.products}</td>
-                              <td style={{ padding: '10px 12px', textAlign: 'right' }}>
-                                <span style={{ fontSize: '11px', color: sub.status === 'Active' ? '#4caf50' : '#f44336', background: sub.status === 'Active' ? '#e8f5e9' : '#ffebee', padding: '2px 6px', borderRadius: '4px' }}>
-                                  {sub.status}
-                                </span>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
 

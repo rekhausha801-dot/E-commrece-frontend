@@ -187,7 +187,7 @@ const Address = () => {
     setAddressForm((prev) => ({ ...prev, [field]: e.target.value }));
   };
 
-  const activeItems = buyNowData ? buyNowData.items : cartItems;
+  const activeItems = buyNowData ? buyNowData.items || [buyNowData] : cartItems;
   const cartItemCount = activeItems.reduce((acc, item) => acc + (item.qty || item.quantity || 1), 0);
 
   const subtotal = cartPricing.subtotal || 0;
@@ -209,7 +209,7 @@ const Address = () => {
     }
 
     if (buyNowData) {
-      if (!buyNowData.items || buyNowData.items.length === 0) {
+      if (!buyNowData.id && !buyNowData._id && !buyNowData.productId && (!buyNowData.items || buyNowData.items.length === 0)) {
         alert("Invalid Buy Now data.");
         return;
       }
@@ -321,7 +321,7 @@ const Address = () => {
             <div className="drawer-content">
               <div className="drawer-section">
                 <div className="section-title-row">
-                  <div className="section-title"><Phone size={18} color="#B58D4E" /> Contact Details</div>
+                  <div className="section-title"><Phone size={18} color="var(--primary-color)" /> Contact Details</div>
                   <button className="location-btn"><Crosshair size={14} /> Use My Location</button>
                 </div>
                 <input
@@ -342,7 +342,7 @@ const Address = () => {
 
               <div className="drawer-section">
                 <div className="section-title-row">
-                  <div className="section-title"><MapPin size={18} color="#B58D4E" /> Address</div>
+                  <div className="section-title"><MapPin size={18} color="var(--primary-color)" /> Address</div>
                 </div>
                 <input
                   type="text"

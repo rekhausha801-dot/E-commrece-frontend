@@ -64,7 +64,7 @@ body {
 .unified-product-card:hover {
   transform: translateY(-6px);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
-  border-color: rgba(181, 141, 78, 0.3);
+  border-color: rgba(var(--primary-color-rgb), 0.3);
 }
 
 .unified-card-image-wrap {

@@ -72,20 +72,20 @@ const Cart = () => {
           <div className="header-left-content">
             <div className="title-row">
               <h1 className="main-title">
-                <span style={{ color: '#4a3f35' }}>My</span> <span style={{ color: '#b58d4e' }}>Cart</span>
+                <span style={{ color: '#4a3f35' }}>My</span> <span style={{ color: 'var(--primary-color)' }}>Cart</span>
               </h1>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '10px' }}>
-              <Leaf size={14} color="#b58d4e" />
-              <span style={{ color: '#b58d4e', fontSize: '13px', fontWeight: '600', letterSpacing: '2px', textTransform: 'uppercase' }}>
+              <Leaf size={14} color="var(--primary-color)" />
+              <span style={{ color: 'var(--primary-color)', fontSize: '13px', fontWeight: '600', letterSpacing: '2px', textTransform: 'uppercase' }}>
                 Review your items and proceed to checkout
               </span>
-              <span style={{ width: '40px', height: '1px', background: '#b58d4e' }}></span>
+              <span style={{ width: '40px', height: '1px', background: 'var(--primary-color)' }}></span>
             </div>
           </div>
           <div className="header-right-content">
             <span className="items-pill">
-              <ShoppingBag size={16} color="#B58D4E" /> {cartItemCount} Items
+              <ShoppingBag size={16} color="var(--primary-color)" /> {cartItemCount} Items
             </span>
           </div>
         </div>
@@ -98,8 +98,46 @@ const Cart = () => {
             <div className="lux-cart-items-container">
               {activeItems.map((item, index) => (
                 <div key={item.id || item.productId + '-' + index} className="lux-cart-item">
-                  <div className="lux-ci-image">
+                  <div className="lux-ci-image" style={{ position: 'relative' }}>
                     <img src={getImageUrl(item.productImage || item.image)} alt={item.title || item.productName} />
+                    {item.selectedDesign && item.selectedDesign.icon && (
+                      <div style={{ position: 'absolute', top: '55%', left: '50%', transform: 'translate(-50%, -50%)', width: '35%', height: '35%', mixBlendMode: 'multiply', pointerEvents: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {item.colorizeImage && item.selectedDesignColor && item.selectedDesignColor !== '#000000' ? (
+                          <div style={{
+                            width: '100%', height: '100%',
+                            backgroundColor: item.selectedDesignColor,
+                            WebkitMaskImage: `url(${item.selectedDesign.icon})`,
+                            WebkitMaskSize: 'contain',
+                            WebkitMaskPosition: 'center',
+                            WebkitMaskRepeat: 'no-repeat',
+                            maskImage: `url(${item.selectedDesign.icon})`,
+                            maskSize: 'contain',
+                            maskPosition: 'center',
+                            maskRepeat: 'no-repeat'
+                          }} title={item.selectedDesign.name} />
+                        ) : (
+                          <>
+                            <img src={item.selectedDesign.icon} alt={item.selectedDesign.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                            {item.selectedDesignColor && item.selectedDesignColor !== '#000000' && (
+                              <div style={{
+                                position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                                backgroundColor: item.selectedDesignColor,
+                                mixBlendMode: 'screen',
+                                pointerEvents: 'none',
+                                WebkitMaskImage: `url(${item.selectedDesign.icon})`,
+                                WebkitMaskSize: 'contain',
+                                WebkitMaskPosition: 'center',
+                                WebkitMaskRepeat: 'no-repeat',
+                                maskImage: `url(${item.selectedDesign.icon})`,
+                                maskSize: 'contain',
+                                maskPosition: 'center',
+                                maskRepeat: 'no-repeat'
+                              }} />
+                            )}
+                          </>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   <div className="lux-ci-content">
@@ -122,8 +160,21 @@ const Cart = () => {
                     </div>
 
                     <div className="lux-ci-variants-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                      <div className="lux-ci-variants" style={{ marginBottom: 0 }}>
-                        Color: <span className="variant-value">{item.color || 'N/A'}</span> <span className="lux-divider">|</span> Size: <span className="variant-value">{item.size || 'N/A'}</span>
+                      <div className="lux-ci-variants" style={{ marginBottom: 0, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                        <span>Color: <span className="variant-value">{item.color || item.selectedColor || 'N/A'}</span></span>
+                        <span className="lux-divider">|</span>
+                        <span>Size: <span className="variant-value">{item.size || item.selectedSize || 'N/A'}</span></span>
+                        {item.selectedDesign && (
+                          <>
+                            <span className="lux-divider">|</span>
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                              Design: <span className="variant-value">{item.selectedDesign.name}</span>
+                              {item.selectedDesignColor && (
+                                <span style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: item.selectedDesignColor, display: 'inline-block', border: '1px solid #ddd' }} title={item.selectedDesignColor} />
+                              )}
+                            </span>
+                          </>
+                        )}
                       </div>
 
                       <div className="lux-qty-pill">
@@ -145,8 +196,8 @@ const Cart = () => {
 
                     <div className="lux-ci-footer" style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px dashed #E6DFD3' }}>
                       <div className="lux-ci-actions-left" style={{ display: 'flex', gap: '20px' }}>
-                        <button className="lux-ci-action-text-btn" onClick={() => handleEditClick(item)} style={{ color: '#B58D4E', fontWeight: 'bold' }}>
-                          <Edit2 size={16} color="#B58D4E" style={{ marginRight: '4px' }} /> Edit
+                        <button className="lux-ci-action-text-btn" onClick={() => handleEditClick(item)} style={{ color: 'var(--primary-color)', fontWeight: 'bold' }}>
+                          <Edit2 size={16} color="var(--primary-color)" style={{ marginRight: '4px' }} /> Edit
                         </button>
                         <span className="lux-divider-light">|</span>
                         <button className="lux-ci-action-text-btn" onClick={() => buyNowData ? handleCancelBuyNow() : removeItem(item.id)} style={{ color: '#D93B3B', fontWeight: 'bold' }}>

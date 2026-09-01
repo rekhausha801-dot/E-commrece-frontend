@@ -110,7 +110,7 @@ const AddAddress = () => {
           </div>
         </div>
 
-        {/* Row 1 */}
+       
         <div className="aa-form-row">
           <div className="aa-form-group">
             <label>Full Name</label>
@@ -128,7 +128,7 @@ const AddAddress = () => {
           </div>
         </div>
 
-        {/* Row 2 */}
+      
         <div className="aa-form-row">
           <div className="aa-form-group">
             <label>Address Line 1</label>
@@ -146,7 +146,7 @@ const AddAddress = () => {
           </div>
         </div>
 
-        {/* Row 3 */}
+      
         <div className="aa-form-row">
           <div className="aa-form-group">
             <label>Landmark (Optional)</label>
@@ -164,7 +164,7 @@ const AddAddress = () => {
           </div>
         </div>
 
-        {/* Row 4 */}
+      
         <div className="aa-form-row three-col">
           <div className="aa-form-group">
             <label>City</label>
@@ -200,7 +200,7 @@ const AddAddress = () => {
           </div>
         </div>
 
-        {/* Row 5: Address Type */}
+       
         <div className="aa-form-group aa-type-section" style={{ marginBottom: '32px' }}>
           <label className="aa-type-header"><Home size={18} className="aa-type-header-icon" /> Address Type</label>
           <div className="aa-flat-type-group">
@@ -234,7 +234,7 @@ const AddAddress = () => {
           </div>
         </div>
 
-        {/* Save As */}
+       
         <div className="aa-form-group aa-save-as-section">
           <label className="aa-save-as-header">Save As</label>
           <label className="aa-flat-checkbox">
@@ -249,7 +249,7 @@ const AddAddress = () => {
           </label>
         </div>
 
-        {/* Bottom Actions */}
+       
         <div className="aa-flat-actions-row">
           <button className="aa-flat-btn-cancel" onClick={() => navigate('/account/addresses')}>Cancel</button>
           <button className="aa-flat-btn-save" onClick={handleSave}>

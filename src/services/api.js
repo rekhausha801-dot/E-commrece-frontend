@@ -82,10 +82,14 @@ export const updateCategoryStatus = (id, status) => axios.patch(`${CATEGORY_API}
 export const deleteCategory = (id) => axios.delete(`${CATEGORY_API}/${id}`);
 
 // -----------------------------------------------------
-// SUBCATEGORY APIs (Add here later)
+// SUBCATEGORY APIs
 // -----------------------------------------------------
 const SUBCATEGORY_API = `${API_BASE_URL}/subcategories`;
-// export const getSubcategories = () => axios.get(SUBCATEGORY_API);
+export const getSubcategories = () => axios.get(SUBCATEGORY_API);
+export const createSubcategory = (data) => axios.post(SUBCATEGORY_API, data);
+export const updateSubcategory = (id, data) => axios.put(`${SUBCATEGORY_API}/${id}`, data);
+export const updateSubcategoryStatus = (id, status) => axios.patch(`${SUBCATEGORY_API}/${id}/status`, { status });
+export const deleteSubcategory = (id) => axios.delete(`${SUBCATEGORY_API}/${id}`);
 
 // -----------------------------------------------------
 // BRAND APIs
@@ -117,7 +121,7 @@ const PRODUCT_API = `${API_BASE_URL}/products`;
 export const fetchProducts = () => axios.get(PRODUCT_API);
 export const fetchProductById = (id) => axios.get(`${PRODUCT_API}/${id}`);
 export const fetchProductsByCategory = (categoryId) => axios.get(`${PRODUCT_API}/category/${categoryId}`);
-export const fetchNextSku = () => axios.get(`${PRODUCT_API}/next-sku`);
+export const fetchNextSku = (category, subCategory) => axios.get(`${PRODUCT_API}/next-sku`, { params: { category, subCategory } });
 export const createProductApi = (data) => axios.post(PRODUCT_API, data);
 export const updateProductApi = (id, data) => axios.put(`${PRODUCT_API}/${id}`, data);
 export const deleteProductApi = (id) => axios.delete(`${PRODUCT_API}/${id}`);
@@ -162,7 +166,7 @@ const REVIEW_API = `${API_BASE_URL}/reviews`;
 const ADMIN_REVIEW_API = `${API_BASE_URL}/admin/reviews`;
 
 export const createReviewApi = (data) => axios.post(REVIEW_API, data);
-export const getProductReviewsApi = (productId) => axios.get(`${REVIEW_API}/product/${productId}`);
+export const getProductReviewsApi = (productId) => axios.get(`${REVIEW_API}/product/${productId}?_t=${Date.now()}`);
 export const getProductRatingSummaryApi = (productId) => axios.get(`${REVIEW_API}/product/${productId}/summary`);
 export const markReviewHelpfulApi = (id) => axios.put(`${REVIEW_API}/${id}/helpful`);
 export const deleteCustomerReviewApi = (id) => axios.delete(`${REVIEW_API}/${id}`);

@@ -13,7 +13,7 @@ const megaMenus = [
     title: "Men",
     path: "/category/men",
     categories: [
-      { title: "Clothing", items: ["T-Shirts", "Shirts", "Polo T-Shirts", "Jeans", "Trousers", "Cargo Pants", "Hoodies", "Sweatshirts", "Jackets", "Blazers", "Ethnic Wear", "Innerwear"] },
+      { title: "Clothing", items: ["T-Shirts", "Custom T-Shirts", "Shirts", "Polo T-Shirts", "Jeans", "Trousers", "Cargo Pants", "Hoodies", "Sweatshirts", "Jackets", "Blazers", "Ethnic Wear", "Innerwear"] },
       { title: "Footwear", items: ["Sneakers", "Casual Shoes", "Formal Shoes", "Sandals", "Sports Shoes"] },
       { title: "Accessories", items: ["Watches", "Wallets", "Belts", "Sunglasses", "Bags", "Caps"] }
     ]
@@ -22,7 +22,7 @@ const megaMenus = [
     title: "Women",
     path: "/category/women",
     categories: [
-      { title: "Clothing", items: ["Kurtis", "Sarees", "Dresses", "Tops", "Women T-Shirts", "Shirts", "Jeans", "Leggings", "Palazzo", "Co-ords", "Ethnic Sets"] },
+      { title: "Clothing", items: ["Kurtis", "Sarees", "Dresses", "Tops", "Women T-Shirts", "Custom T-Shirts", "Shirts", "Jeans", "Leggings", "Palazzo", "Co-ords", "Ethnic Sets"] },
       { title: "Accessories", items: ["Handbags", "Jewellery", "Watches", "Sunglasses", "Dupattas"] },
       { title: "Footwear", items: ["Heels", "Flats", "Sneakers", "Sandals", "Boots"] }
     ]

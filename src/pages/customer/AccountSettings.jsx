@@ -143,7 +143,7 @@ const AccountSettings = () => {
 
       <div className="mp-content-grid">
         
-        {/* Top Section */}
+      
         <div className="mp-top-card">
           
           <div className="mp-info-section">

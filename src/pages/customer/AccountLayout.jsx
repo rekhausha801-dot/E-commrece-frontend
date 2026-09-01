@@ -44,9 +44,9 @@ const AccountLayout = () => {
 
   return (
     <div className="account-layout">
-      {/* Sidebar */}
+      
       <aside className="account-sidebar">
-        {/* User Profile Header */}
+       
         <div className="account-sidebar-profile">
           <img src={userData.profileImage || defaultAvatar} alt="User Avatar" className="account-sidebar-avatar" />
           <h3 className="account-sidebar-name">{userData.fullName || 'Guest'}</h3>
@@ -80,7 +80,7 @@ const AccountLayout = () => {
           </li>
         </ul>
 
-        {/* Need Help Card */}
+       
         <div className="account-sidebar-help">
           <div className="account-help-top">
             <div className="account-help-icon">
@@ -95,7 +95,7 @@ const AccountLayout = () => {
         </div>
       </aside>
 
-      {/* Main Content Area */}
+     
       <main className={`account-content ${location.pathname.includes('/support') ? 'no-bg' : ''}`}>
         <Outlet />
       </main>

@@ -23,27 +23,50 @@ export default function CustomizeTShirt() {
   const { state } = useLocation();
   const navigate = useNavigate();
   const product = state?.product || { image: defaultMainImage, title: "Women's T-Shirt" };
-  const [selectedDesign, setSelectedDesign] = useState(1);
+  const DESIGN_COLORS = ['#000000', '#FFFFFF', '#FF0000', '#0000FF', '#008000', '#FFFF00', '#FFC0CB', '#808080'];
+  const [selectedDesign, setSelectedDesign] = useState(null);
+  const [selectedDesignColor, setSelectedDesignColor] = useState('#000000');
+  const [showRgbPicker, setShowRgbPicker] = useState(false);
+  const [rgbColor, setRgbColor] = useState({ r: 0, g: 0, b: 0 });
+
   const [activeThumb, setActiveThumb] = useState(0);
 
+  const selectedDesignObj = DESIGNS.find(d => d.id === selectedDesign);
   const mainImage = product.image || defaultMainImage;
-  
+
   return (
     <div className="customize-page">
       <div className="customize-container">
-       
+
         <div className="customize-left">
-          <div className="customize-main-img-wrap">
+          <div className="customize-main-img-wrap" style={{ position: 'relative' }}>
             <span className="customize-badge">20% OFF</span>
             <button className="customize-wishlist-btn">
               <Heart size={20} />
             </button>
-            <img src={mainImage} alt="Main Product" className="customize-main-img" />
+            <img src={mainImage} alt="Main Product" className="customize-main-img" style={{ width: '100%', display: 'block' }} />
+
+            {/* Design Overlay */}
+            {selectedDesignObj && (
+              <div style={{
+                position: 'absolute',
+                top: '55%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                pointerEvents: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                mixBlendMode: 'multiply'
+              }}>
+                {React.cloneElement(selectedDesignObj.icon, { size: 140, color: selectedDesignColor })}
+              </div>
+            )}
           </div>
           <div className="customize-thumbnails">
             {[1, 2, 3, 4].map((idx) => (
-              <div 
-                key={idx} 
+              <div
+                key={idx}
                 className={`customize-thumb ${activeThumb === idx - 1 ? 'active' : ''}`}
                 onClick={() => setActiveThumb(idx - 1)}
               >
@@ -53,10 +76,10 @@ export default function CustomizeTShirt() {
           </div>
         </div>
 
-       
+
         <div className="customize-right">
           <h1 className="customize-page-title">Customise Your T-Shirt</h1>
-          
+
           <div className="customize-progress">
             <div className="step-item">
               <div className="step-icon"><PenTool size={16} /></div>
@@ -80,8 +103,8 @@ export default function CustomizeTShirt() {
 
             <div className="designs-grid">
               {DESIGNS.map((design) => (
-                <div 
-                  key={design.id} 
+                <div
+                  key={design.id}
                   className={`design-card ${selectedDesign === design.id ? 'selected' : ''}`}
                   onClick={() => setSelectedDesign(design.id)}
                 >
@@ -97,6 +120,76 @@ export default function CustomizeTShirt() {
                 </div>
               ))}
             </div>
+            {/* Design Color Picker */}
+            {selectedDesign && (
+              <div className="design-color-picker" style={{ marginTop: '24px', animation: 'fadeIn 0.3s ease-in-out' }}>
+                <h3 className="step-subtitle" style={{ marginBottom: '12px', fontWeight: '600', textTransform: 'uppercase' }}>DESIGN COLOR :</h3>
+                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+                  {DESIGN_COLORS.map(color => (
+                    <button
+                      key={color}
+                      onClick={() => { setSelectedDesignColor(color); setShowRgbPicker(false); }}
+                      style={{
+                        width: '36px', height: '36px', borderRadius: '50%',
+                        backgroundColor: color,
+                        cursor: 'pointer',
+                        border: color === '#FFFFFF' ? '1px solid #e5e7eb' : 'none',
+                        outline: selectedDesignColor === color && !showRgbPicker ? '2px solid var(--primary-color)' : 'none',
+                        outlineOffset: '2px',
+                        padding: 0
+                      }}
+                      title={`Color: ${color}`}
+                    />
+                  ))}
+                  {/* Custom RGB Color Picker Toggle */}
+                  <button
+                    onClick={() => setShowRgbPicker(!showRgbPicker)}
+                    style={{
+                      width: '36px', height: '36px', borderRadius: '50%',
+                      background: 'linear-gradient(to right, #ff0000, #00ff00, #0000ff)',
+                      cursor: 'pointer',
+                      border: showRgbPicker ? '2px solid var(--primary-color)' : '1px solid #ccc',
+                      padding: 0
+                    }}
+                    title="Custom RGB Color"
+                  />
+
+                  {/* Reset Button */}
+                  <button
+                    onClick={() => { setSelectedDesignColor('#000000'); setShowRgbPicker(false); setRgbColor({ r: 0, g: 0, b: 0 }); }}
+                    style={{ fontSize: '13px', fontWeight: '600', padding: '8px 12px', borderRadius: '4px', border: '1px solid #e5e7eb', background: '#fff', cursor: 'pointer', color: '#333' }}
+                  >
+                    Reset
+                  </button>
+                </div>
+
+                {/* RGB Sliders */}
+                {showRgbPicker && (
+                  <div style={{ marginTop: '16px', padding: '16px', background: '#faf5eb', borderRadius: '10px', border: '1px solid #f0e6d2' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      {['r', 'g', 'b'].map((channel) => (
+                        <div key={channel} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                          <span style={{ width: '16px', fontWeight: '800', fontSize: '12px', color: channel === 'r' ? '#ef4444' : channel === 'g' ? '#22c55e' : '#3b82f6', textTransform: 'uppercase' }}>{channel}</span>
+                          <input
+                            type="range"
+                            min="0" max="255"
+                            value={rgbColor[channel]}
+                            onChange={(e) => {
+                              const newRgb = { ...rgbColor, [channel]: parseInt(e.target.value) };
+                              setRgbColor(newRgb);
+                              setSelectedDesignColor(`#${(1 << 24 | newRgb.r << 16 | newRgb.g << 8 | newRgb.b).toString(16).slice(1)}`);
+                            }}
+                            style={{ flex: 1, accentColor: channel === 'r' ? '#ef4444' : channel === 'g' ? '#22c55e' : '#3b82f6' }}
+                          />
+                          <span style={{ width: '30px', fontSize: '12px', fontWeight: '600', color: '#444', textAlign: 'right' }}>{rgbColor[channel]}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
           </div>
         </div>
       </div>
@@ -113,7 +206,7 @@ export default function CustomizeTShirt() {
               <p>Color: White &nbsp;|&nbsp; Fabric: 180 GSM Cotton</p>
             </div>
           </div>
-          
+
           <div className="bottom-bar-right">
             <div className="bottom-price-info">
               <span className="price-current">₹699</span>

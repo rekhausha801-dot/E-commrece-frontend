@@ -43,6 +43,9 @@ const MyOrders = () => {
       image: firstProduct.productImage || firstProduct.image || o.image || img1,
       size: firstProduct.selectedSize || firstProduct.size || o.size,
       color: firstProduct.selectedColor || firstProduct.color || o.color,
+      selectedDesign: firstProduct.selectedDesign || o.selectedDesign,
+      selectedDesignColor: firstProduct.selectedDesignColor || o.selectedDesignColor,
+      colorizeImage: firstProduct.colorizeImage !== undefined ? firstProduct.colorizeImage : (o.colorizeImage !== undefined ? o.colorizeImage : true),
       total: String(o.grandTotal || o.amount || o.total || 0).replace(/[^0-9.-]+/g, ''),
       status: o.orderStatus || o.status || 'Pending',
       statusColorClass: '',
@@ -282,14 +285,54 @@ const MyOrders = () => {
 
                       {/* Card Body */}
                       <div className="mo-card-body">
-                        <img src={order.image} alt={order.title} className="mo-product-img" />
+                        <div className="mo-product-img" style={{ position: 'relative', overflow: 'hidden' }}>
+                          <img src={order.image} alt={order.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          {order.selectedDesign && order.selectedDesign.icon && (
+                            <div style={{ position: 'absolute', top: '55%', left: '50%', transform: 'translate(-50%, -50%)', width: '35%', height: '35%', mixBlendMode: 'multiply', pointerEvents: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              {order.colorizeImage && order.selectedDesignColor && order.selectedDesignColor !== '#000000' ? (
+                                <div style={{
+                                  width: '100%', height: '100%',
+                                  backgroundColor: order.selectedDesignColor,
+                                  WebkitMaskImage: `url(${order.selectedDesign.icon})`,
+                                  WebkitMaskSize: 'contain',
+                                  WebkitMaskPosition: 'center',
+                                  WebkitMaskRepeat: 'no-repeat',
+                                  maskImage: `url(${order.selectedDesign.icon})`,
+                                  maskSize: 'contain',
+                                  maskPosition: 'center',
+                                  maskRepeat: 'no-repeat'
+                                }} title={order.selectedDesign.name} />
+                              ) : (
+                                <>
+                                  <img src={order.selectedDesign.icon} alt={order.selectedDesign.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                                  {order.selectedDesignColor && order.selectedDesignColor !== '#000000' && (
+                                    <div style={{
+                                      position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                                      backgroundColor: order.selectedDesignColor,
+                                      mixBlendMode: 'screen',
+                                      pointerEvents: 'none',
+                                      WebkitMaskImage: `url(${order.selectedDesign.icon})`,
+                                      WebkitMaskSize: 'contain',
+                                      WebkitMaskPosition: 'center',
+                                      WebkitMaskRepeat: 'no-repeat',
+                                      maskImage: `url(${order.selectedDesign.icon})`,
+                                      maskSize: 'contain',
+                                      maskPosition: 'center',
+                                      maskRepeat: 'no-repeat'
+                                    }} />
+                                  )}
+                                </>
+                              )}
+                            </div>
+                          )}
+                        </div>
 
                         <div className="mo-product-details">
                           <h4>{order.title}</h4>
                           <div className="mo-meta">
                             {order.size && <span>Size: {order.size} &bull; </span>}
                             {order.color && <span>Color: {order.color} </span>}
-                            {order.moreItems > 0 && <span style={{ color: '#B58D4E', fontWeight: '500', marginLeft: '10px' }}>+{order.moreItems} more items</span>}
+                            {order.moreItems > 0 && <span style={{ color: 'var(--primary-color)', fontWeight: '500', marginLeft: '10px' }}>+{order.moreItems} more items</span>}
                           </div>
                           <div className="mo-qty-price">
                             <span>Qty: {order.qty}</span> <span className="mo-divider-pipe">|</span> <span>Price: ₹{order.total}</span>

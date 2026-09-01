@@ -87,6 +87,7 @@ const Dashboard = () => {
   const [globalSearch, setGlobalSearch] = useState('');
   const [isLogoutModalVisible, setIsLogoutModalVisible] = useState(false);
   const [categoriesFilterLabel, setCategoriesFilterLabel] = useState('Last 6 Months');
+  const [notifications, setNotifications] = useState([]);
 
   const unreadCount = dashboardData?.notifications?.length || 0;
 
@@ -164,7 +165,7 @@ const Dashboard = () => {
 
   const searchResults = globalSearch.length > 0 ? {
     products: mockProducts.filter(p => p.name.toLowerCase().includes(globalSearch.toLowerCase()) || p.sku.toLowerCase().includes(globalSearch.toLowerCase())).slice(0, 3),
-    orders: initialOrders.filter(o => o.id.toLowerCase().includes(globalSearch.toLowerCase()) || o.customer.toLowerCase().includes(globalSearch.toLowerCase())).slice(0, 3)
+    orders: [].filter(o => o.id.toLowerCase().includes(globalSearch.toLowerCase()) || o.customer.toLowerCase().includes(globalSearch.toLowerCase())).slice(0, 3)
   } : null;
 
   return (

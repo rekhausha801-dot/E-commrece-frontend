@@ -806,7 +806,7 @@
 }
 
 .lux-feature-icon {
-  color: #B58D4E;
+  color: var(--primary-color);
 }
 
 .lux-feature-text h4 {
@@ -914,8 +914,8 @@
 }
 
 .lux-btn-outline:hover {
-  border-color: #B58D4E;
-  color: #B58D4E;
+  border-color: var(--primary-color);
+  color: var(--primary-color);
   background: #FCF9F5;
 }
 

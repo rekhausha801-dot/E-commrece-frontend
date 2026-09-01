@@ -43,15 +43,15 @@ import designHeadphones from '../assets/images/design_headphones_1785562209967.p
 import designPalmtree from '../assets/images/design_palmtree_1785562219713.png';
 
 export const customizableDesigns = [
-  { id: 2, name: 'Adventure', icon: designMountain, iconName: null, iconColor: null, modelImage: tshirt8Img },
-  { id: 3, name: 'Believe', icon: designBelieve, iconName: null, iconColor: null, modelImage: tshirt8Img },
-  { id: 4, name: 'Lion', icon: designLion, iconName: null, iconColor: null, modelImage: tshirt8Img },
-  { id: 5, name: 'Leaf', icon: designLeaf, iconName: null, iconColor: null, modelImage: tshirt8Img },
-  { id: 6, name: 'Astronaut', icon: designAstronaut, iconName: null, iconColor: null, modelImage: tshirt8Img },
-  { id: 7, name: 'Compass', icon: designCompass, iconName: null, iconColor: null, modelImage: tshirt8Img },
-  { id: 8, name: 'Paper Plane', icon: designPaperplane, iconName: null, iconColor: null, modelImage: tshirt8Img },
-  { id: 9, name: 'Headphones', icon: designHeadphones, iconName: null, iconColor: null, modelImage: tshirt8Img },
-  { id: 10, name: 'Palm Tree', icon: designPalmtree, iconName: null, iconColor: null, modelImage: tshirt8Img }
+  { id: 2, name: 'Adventure', icon: null, iconName: 'mountain', iconColor: null, modelImage: tshirt8Img },
+  { id: 3, name: 'Believe', icon: null, iconName: 'flower', iconColor: null, modelImage: tshirt8Img },
+  { id: 4, name: 'Lion', icon: null, iconName: 'rocket', iconColor: null, modelImage: tshirt8Img },
+  { id: 5, name: 'Leaf', icon: null, iconName: 'leaf', iconColor: null, modelImage: tshirt8Img },
+  { id: 6, name: 'Astronaut', icon: null, iconName: 'rocket', iconColor: null, modelImage: tshirt8Img },
+  { id: 7, name: 'Compass', icon: null, iconName: 'compass', iconColor: null, modelImage: tshirt8Img },
+  { id: 8, name: 'Paper Plane', icon: null, iconName: 'send', iconColor: null, modelImage: tshirt8Img },
+  { id: 9, name: 'Headphones', icon: null, iconName: 'headphone', iconColor: null, modelImage: tshirt8Img },
+  { id: 10, name: 'Palm Tree', icon: null, iconName: 'palm', iconColor: null, modelImage: tshirt8Img }
 ];
 
 export const GLOBAL_PRODUCTS = [
