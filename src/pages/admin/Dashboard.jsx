@@ -164,7 +164,7 @@ const Dashboard = () => {
 
   const searchResults = globalSearch.length > 0 ? {
     products: mockProducts.filter(p => p.name.toLowerCase().includes(globalSearch.toLowerCase()) || p.sku.toLowerCase().includes(globalSearch.toLowerCase())).slice(0, 3),
-    orders: initialOrders.filter(o => o.id.toLowerCase().includes(globalSearch.toLowerCase()) || o.customer.toLowerCase().includes(globalSearch.toLowerCase())).slice(0, 3)
+    orders: [].filter(o => o.id.toLowerCase().includes(globalSearch.toLowerCase()) || o.customer.toLowerCase().includes(globalSearch.toLowerCase())).slice(0, 3)
   } : null;
 
   return (
@@ -408,22 +408,25 @@ const Dashboard = () => {
 
             <div className="middle-grid">
 
-              <div className="dashboard-card premium-glass-card">
-                <div className="card-header">
-                  <h3>Revenue Overview</h3>
+              <div className="dashboard-card" style={{ backgroundColor: '#fcfaf5', borderRadius: '12px', padding: '24px', border: '1px solid #f2eadc', boxShadow: 'none' }}>
+                <div className="card-header" style={{ marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#333', margin: 0 }}>Revenue Overview</h3>
                   <Dropdown trigger={['click']} menu={{
                     items: [{ key: 'Last 7 Days', label: 'Last 7 Days' }, { key: 'Last 30 Days', label: 'Last 30 Days' }, { key: 'Last 6 Months', label: 'Last 6 Months' }, { key: 'Last 12 Months', label: 'Last 12 Months' }],
                     onClick: ({ key }) => setRevenueFilterLabel(key)
                   }}>
-                    <button style={{ background: 'linear-gradient(180deg, #2a2a2a 0%, #111 100%)', border: '1px solid #444', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '500', color: '#e5c07b', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer', boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.24)', whiteSpace: 'nowrap', flexShrink: 0, letterSpacing: '0.5px' }}>{revenueFilterLabel} <ChevronDown size={12} /></button>
+                    <button style={{ background: 'linear-gradient(180deg, #2a2a2a 0%, #111 100%)', border: '1px solid #444', padding: '6px 12px', borderRadius: '6px', fontSize: '11px', fontWeight: '500', color: '#e5c07b', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer', boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.24)', whiteSpace: 'nowrap', flexShrink: 0, letterSpacing: '0.5px' }}>{revenueFilterLabel} <ChevronDown size={12} /></button>
                   </Dropdown>
                 </div>
-                <div className="card-sub-header">
-                  <h2>{loading ? '...' : `₹${dashboardData?.revenueOverview?.totalRevenue?.toLocaleString('en-IN') || '0'}`} <span className={`stat-change ${dashboardData?.revenueOverview?.percentageChange >= 0 ? 'positive' : 'negative'} text-sm`}>
-                    {dashboardData?.revenueOverview?.percentageChange >= 0 ? '↑' : '↓'} {Math.abs(dashboardData?.revenueOverview?.percentageChange || 0).toFixed(1)}%
-                  </span></h2>
+                <div className="card-sub-header" style={{ marginBottom: '24px' }}>
+                  <h2 style={{ fontSize: '28px', color: '#333', display: 'flex', alignItems: 'center', gap: '12px', margin: 0 }}>
+                    {loading ? '...' : `₹${dashboardData?.revenueOverview?.totalRevenue?.toLocaleString('en-IN') || '0'}`}
+                    <span style={{ fontSize: '18px', fontWeight: '600', color: dashboardData?.revenueOverview?.percentageChange >= 0 ? '#4caf50' : '#ef4444' }}>
+                      {dashboardData?.revenueOverview?.percentageChange >= 0 ? '↑' : '↓'} {Math.abs(dashboardData?.revenueOverview?.percentageChange || 0).toFixed(1)}%
+                    </span>
+                  </h2>
                 </div>
-                <div className="revenue-chart-container" style={{ height: '250px', marginTop: '20px' }}>
+                <div className="revenue-chart-container" style={{ height: '280px', marginTop: '20px' }}>
                   {error ? (
                     <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100%', color: '#888', fontSize: '14px' }}>
                       <span style={{ color: '#c84b41', marginBottom: '8px' }}>{error}</span>
@@ -442,12 +445,12 @@ const Dashboard = () => {
                           <stop offset="95%" stopColor="#c9a05b" stopOpacity={0} />
                         </linearGradient>
                       </defs>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eae1d1" />
                       <XAxis
                         dataKey="name"
                         axisLine={false}
                         tickLine={false}
-                        tick={{ fontSize: 11, fill: '#888' }}
+                        tick={{ fontSize: 12, fill: '#8b8375' }}
                         dy={10}
                         minTickGap={20}
                         tickFormatter={(tick) => {
@@ -455,12 +458,21 @@ const Dashboard = () => {
                           return isNaN(d.getTime()) ? tick : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                         }}
                       />
-                      <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#888' }} tickFormatter={(value) => `${value === 0 ? '0' : value / 1000 + 'K'}`} />
+                      <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#8b8375' }} tickFormatter={(value) => `${value === 0 ? '0' : value / 1000 + 'K'}`} />
                       <RechartsTooltip
                         cursor={{ stroke: '#e0e0e0', strokeWidth: 1, strokeDasharray: '4 4' }}
-                        labelFormatter={(label) => {
-                          const d = new Date(label);
-                          return isNaN(d.getTime()) ? label : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                        content={({ active, payload, label }) => {
+                          if (active && payload && payload.length) {
+                            const d = new Date(label);
+                            const dateStr = isNaN(d.getTime()) ? label : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                            return (
+                              <div style={{ background: '#fff', padding: '10px 14px', border: '1px solid #e5e7eb', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
+                                <div style={{ color: '#1f2937', fontSize: '14px', fontWeight: '500', marginBottom: '6px' }}>{dateStr}</div>
+                                <div style={{ color: '#c9a05b', fontSize: '14px' }}>revenue : {payload[0].value}</div>
+                              </div>
+                            );
+                          }
+                          return null;
                         }}
                       />
                       <Area type="monotone" dataKey="revenue" stroke="#c9a05b" strokeWidth={2} fillOpacity={1} fill="url(#colorRevenue)" dot={{ r: 4, fill: '#c9a05b', strokeWidth: 0 }} activeDot={{ r: 6, fill: '#fff', stroke: '#c9a05b', strokeWidth: 2 }} />
@@ -471,32 +483,47 @@ const Dashboard = () => {
               </div>
 
 
-              <div className="dashboard-card premium-glass-card">
-                <div className="card-header">
-                  <h3>Orders Overview</h3>
-                  <button style={{ background: 'transparent', border: '1px solid #d5b97d', padding: '4px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: '600', color: '#9c7324', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0, letterSpacing: '0.5px' }} onClick={() => setActiveTab('Orders')}>View All <ArrowRight size={12} /></button>
+              <div className="dashboard-card" style={{ backgroundColor: '#fcfaf5', borderRadius: '12px', padding: '24px', border: '1px solid #f2eadc', display: 'flex', flexDirection: 'column', boxShadow: 'none' }}>
+                <div className="card-header" style={{ marginBottom: '16px' }}>
+                  <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#333' }}>Orders Overview</h3>
+                  <button style={{ background: '#fdfcf9', border: '1px solid #d5b97d', padding: '4px 12px', borderRadius: '4px', fontSize: '12px', fontWeight: '600', color: '#a67c00', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }} onClick={() => setActiveTab('Orders')}>View All <ArrowRight size={14} /></button>
                 </div>
-                <div className="donut-chart-wrapper" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '16px' }}>
+                
+                <div className="donut-chart-wrapper" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
 
-                  <div style={{ position: 'relative', width: '160px', height: '160px' }}>
+                  <div style={{ position: 'relative', width: '180px', height: '180px' }}>
                     <ResponsiveContainer width="100%" height="100%">
                       <RechartsPieChart>
                         <Pie
-                          data={(dashboardData?.ordersOverview?.statuses?.length > 0 ? dashboardData.ordersOverview.statuses : []).map(item => ({
+                          data={(dashboardData?.ordersOverview?.statuses?.length > 0 ? dashboardData.ordersOverview.statuses : [])
+                            .sort((a, b) => {
+                              const order = ['Delivered', 'Placed', 'Pending', 'Processing', 'Cancelled', 'Returned'];
+                              const iA = order.indexOf(a._id); const iB = order.indexOf(b._id);
+                              return (iA === -1 ? 99 : iA) - (iB === -1 ? 99 : iB);
+                            })
+                            .map(item => ({
                             name: item._id,
                             value: item.count,
-                            color: { 'Placed': '#eedda8', 'Pending': '#8c673d', 'Processing': '#1f1f1f', 'Shipped': '#b98e54', 'Delivered': '#dfbc88', 'Cancelled': '#d9534f', 'Returned': '#999999' }[item._id] || '#ccc'
+                            color: { 'Placed': '#eee8aa', 'Pending': '#8b7355', 'Processing': '#1c1c1c', 'Shipped': '#b98e54', 'Delivered': '#deb887', 'Cancelled': '#cd5c5c', 'Returned': '#999999' }[item._id] || '#ccc'
                           }))}
                           cx="50%"
                           cy="50%"
-                          innerRadius={50}
-                          outerRadius={78}
+                          innerRadius={55}
+                          outerRadius={85}
                           paddingAngle={2}
                           dataKey="value"
                           stroke="none"
+                          startAngle={90}
+                          endAngle={-270}
                         >
-                          {(dashboardData?.ordersOverview?.statuses?.length > 0 ? dashboardData.ordersOverview.statuses : []).map((item, index) => {
-                            const colorMap = { 'Placed': '#eedda8', 'Pending': '#8c673d', 'Processing': '#1f1f1f', 'Shipped': '#b98e54', 'Delivered': '#dfbc88', 'Cancelled': '#d9534f', 'Returned': '#999999' };
+                          {(dashboardData?.ordersOverview?.statuses?.length > 0 ? dashboardData.ordersOverview.statuses : [])
+                            .sort((a, b) => {
+                              const order = ['Delivered', 'Placed', 'Pending', 'Processing', 'Cancelled', 'Returned'];
+                              const iA = order.indexOf(a._id); const iB = order.indexOf(b._id);
+                              return (iA === -1 ? 99 : iA) - (iB === -1 ? 99 : iB);
+                            })
+                            .map((item, index) => {
+                            const colorMap = { 'Placed': '#eee8aa', 'Pending': '#8b7355', 'Processing': '#1c1c1c', 'Shipped': '#b98e54', 'Delivered': '#deb887', 'Cancelled': '#cd5c5c', 'Returned': '#999999' };
                             return <Cell key={`cell-${index}`} fill={colorMap[item._id] || '#ccc'} />;
                           })}
                         </Pie>
@@ -504,24 +531,28 @@ const Dashboard = () => {
                     </ResponsiveContainer>
 
                     <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
-                      <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#222', lineHeight: '1' }}>{loading ? '...' : (dashboardData?.ordersOverview?.totalOrders || '0')}</span>
-                      <span style={{ fontSize: '10px', color: '#888', marginTop: '4px', lineHeight: '1' }}>Orders</span>
+                      <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#222', lineHeight: '1' }}>{loading ? '...' : (dashboardData?.ordersOverview?.totalOrders || '0')}</span>
+                      <span style={{ fontSize: '11px', color: '#888', marginTop: '6px', lineHeight: '1' }}>Orders</span>
                     </div>
                   </div>
 
-                  <div className="donut-legend-list" style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '100%', marginTop: '24px' }}>
-                    {(dashboardData?.ordersOverview?.statuses || []).map((item, index) => {
-                      const total = dashboardData?.ordersOverview?.totalOrders || 1;
-                      const percentage = Math.round((item.count / total) * 100);
-                      const colorMap = { 'Placed': '#eedda8', 'Pending': '#8c673d', 'Processing': '#1f1f1f', 'Shipped': '#b98e54', 'Delivered': '#dfbc88', 'Cancelled': '#d9534f', 'Returned': '#999999' };
+                  <div className="donut-legend-list" style={{ display: 'flex', flexDirection: 'column', gap: '16px', width: '100%', marginTop: '40px', padding: '0 10px' }}>
+                    {(dashboardData?.ordersOverview?.statuses || [])
+                      .sort((a, b) => {
+                        const order = ['Delivered', 'Placed', 'Pending', 'Processing', 'Cancelled', 'Returned'];
+                        const iA = order.indexOf(a._id); const iB = order.indexOf(b._id);
+                        return (iA === -1 ? 99 : iA) - (iB === -1 ? 99 : iB);
+                      })
+                      .map((item, index) => {
+                      const colorMap = { 'Placed': '#eee8aa', 'Pending': '#8b7355', 'Processing': '#1c1c1c', 'Shipped': '#b98e54', 'Delivered': '#deb887', 'Cancelled': '#cd5c5c', 'Returned': '#999999' };
                       const color = colorMap[item._id] || '#ccc';
                       return (
                         <div className="legend-item" key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <div style={{ width: '8px', height: '8px', borderRadius: '2px', backgroundColor: color }}></div>
-                            <span style={{ fontSize: '12px', color: '#444' }}>{item._id}</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <div style={{ width: '10px', height: '10px', borderRadius: '2px', backgroundColor: color }}></div>
+                            <span style={{ fontSize: '13px', color: '#555', fontWeight: '500' }}>{item._id}</span>
                           </div>
-                          <span style={{ fontSize: '12px', fontWeight: '500', color: '#222' }}>{item.count}</span>
+                          <span style={{ fontSize: '13px', fontWeight: '600', color: '#333' }}>{item.count}</span>
                         </div>
                       );
                     })}
@@ -933,7 +964,7 @@ const Dashboard = () => {
         {activeTab === 'Coupons' && <CouponManagement />}
         {activeTab === 'Reviews' && <ReviewManagement />}
         {activeTab === 'Settings' && <WebsiteSetting initialTab={settingsTab} onProfileUpdate={refreshProfileImage} />}
-        {activeTab === 'Notifications' && <NotificationManagement setActiveTab={setActiveTab} notifications={notifications} setNotifications={setNotifications} />}
+        {activeTab === 'Notifications' && <NotificationManagement setActiveTab={setActiveTab} />}
         {activeTab === 'ActivityLog' && <ActivityLogManagement />}
         {activeTab === 'HelpSupport' && <HelpSupport />}
         {activeTab === 'Brands' && <BrandManagement setActiveTab={setActiveTab} />}

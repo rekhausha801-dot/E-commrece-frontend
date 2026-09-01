@@ -269,9 +269,28 @@ export default function CategoryPage() {
       try {
         const { data } = await getActiveBanners();
         if (data && data.success) {
-          const shopBanners = data.data.filter(b => b.placement === 'Product Page');
+          // Try to find a category-specific banner first
+          let shopBanners = data.data.filter(b => b.placement && b.placement.toLowerCase() === `category page - ${categoryId}`.toLowerCase());
+          
+          // Fallback to "Product Page - category"
+          if (shopBanners.length === 0) {
+            shopBanners = data.data.filter(b => b.placement && b.placement.toLowerCase() === `product page - ${categoryId}`.toLowerCase());
+          }
+
+          // Fallback to generic Category Page
+          if (shopBanners.length === 0) {
+            shopBanners = data.data.filter(b => b.placement === 'Category Page');
+          }
+
+          // Ultimate fallback to generic Product Page
+          if (shopBanners.length === 0) {
+            shopBanners = data.data.filter(b => b.placement === 'Product Page (All)' || b.placement === 'Product Page');
+          }
+
           if (shopBanners.length > 0) {
             setDynamicBanner(shopBanners[0]);
+          } else {
+            setDynamicBanner(null);
           }
         }
       } catch (error) {
@@ -279,7 +298,7 @@ export default function CategoryPage() {
       }
     };
     fetchBanners();
-  }, []);
+  }, [categoryId]);
 
   const handleCartClick = async (e, product) => {
     e.stopPropagation();

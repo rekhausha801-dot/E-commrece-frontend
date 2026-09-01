@@ -99,6 +99,7 @@ const AppContent = () => {
         <Route path="/coupons" element={<CustomerRoute><Coupons /></CustomerRoute>} />
         <Route path="/account/my-orders" element={<CustomerRoute><MyOrders /></CustomerRoute>} />
         <Route path="/account" element={<CustomerRoute><AccountLayout /></CustomerRoute>}>
+          <Route index element={<Navigate to="profile" replace />} />
           <Route path="dashboard" element={<AccountPlaceholder />} />
           <Route path="profile" element={<Profile />} />
           <Route path="settings" element={<AccountSettings />} />

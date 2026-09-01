@@ -11,15 +11,7 @@ import { useProducts } from '../../context/ProductContext';
 import { handleFlyingCartAnimation } from '../../utils/cartAnimation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SimilarProductCard } from '../../components/ProductDetail';
-import westren3Img from '../../assets/images/westren3.png';
-import kurtiImg from '../../assets/images/kurti.png';
-import westren4Img from '../../assets/images/westren4.png';
-import mens1Img from '../../assets/images/mens1.png';
-import mens2Img from '../../assets/images/mens2.png';
-
-// Dummy data for sections
-
-
+// No dummy data needed
 const CustomSelect = ({ value, onChange, options }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = React.useRef(null);

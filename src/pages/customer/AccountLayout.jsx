@@ -10,13 +10,10 @@ import './AccountLayout.css';
 const defaultAvatar = 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=150&q=80';
 
 const navItems = [
-  { name: 'Dashboard', path: '/account/dashboard', icon: LayoutDashboard },
   { name: 'My Profile', path: '/account/profile', icon: User },
-  { name: 'My Orders', path: '/account/orders', icon: ShoppingBag },
+  { name: 'My Orders', path: '/account/my-orders', icon: ShoppingBag },
   { name: 'Wishlist', path: '/wishlist', icon: Heart },
   { name: 'My Addresses', path: '/account/addresses', icon: MapPin },
-  { name: 'Return & Refund', path: '/account/returns', icon: RotateCcw },
-  { name: 'Payment Methods', path: '/account/payment-methods', icon: CreditCard },
   { name: 'Notifications', path: '/account/notifications', icon: Bell },
   { name: 'Help & Support', path: '/account/support', icon: Headphones },
 ];

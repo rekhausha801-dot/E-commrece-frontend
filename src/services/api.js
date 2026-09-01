@@ -201,6 +201,8 @@ const ANALYTICS_API = `${API_BASE_URL}/analytics`;
 export const getDashboardAnalyticsApi = (params) => axios.get(`${ANALYTICS_API}/dashboard`, { params });
 export const getRatingAnalyticsApi = () => axios.get(`${ANALYTICS_API}/ratings`);
 export const getCustomerAnalyticsApi = () => axios.get(`${API_BASE_URL}/customer/analytics`);
+export const getReports = (params) => axios.get(`${API_BASE_URL}/admin/reports`, { params });
+export const exportReports = (params) => axios.get(`${API_BASE_URL}/admin/reports/export`, { params, responseType: 'blob' });
 
 // -----------------------------------------------------
 // SUPPORT & TICKETS APIs

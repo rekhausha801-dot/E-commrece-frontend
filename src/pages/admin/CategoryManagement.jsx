@@ -572,7 +572,7 @@ const CategoryManagement = () => {
         </div>
       </div>
 
-      <div className="premium-glass-card" style={{ padding: '0px', borderRadius: '16px', background: '#fff', border: '1px solid #f3f4f6', boxShadow: '0 10px 30px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.02)', overflow: 'hidden' }}>
+      <div className="premium-glass-card" style={{ padding: '0px', borderRadius: '16px', background: '#fff', border: '1px solid #f3f4f6', boxShadow: '0 10px 30px rgba(0,0,0,0.04), 0 2px 4px rgba(0,0,0,0.02)', overflow: 'hidden', height: 'auto', flex: 'none' }}>
         <style>
           {`
             .premium-table .ant-table { background: transparent !important; }

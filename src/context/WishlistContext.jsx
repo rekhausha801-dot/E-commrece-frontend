@@ -11,7 +11,16 @@ export const WishlistProvider = ({ children }) => {
     const saved = localStorage.getItem('wishlist');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        // Clean up the dummy items that were temporarily injected into local storage
+        const dummyIds = ['r1', 'r2', 'r4', 'r5'];
+        const validItems = parsed.filter(item => !dummyIds.includes(String(item.id)));
+        
+        if (validItems.length !== parsed.length) {
+          localStorage.setItem('wishlist', JSON.stringify(validItems));
+        }
+        
+        return validItems;
       } catch (e) {
         return [];
       }

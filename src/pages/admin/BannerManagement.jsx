@@ -9,7 +9,7 @@ import gloImg from '../../assets/banners/glo.png';
 import wearImg from '../../assets/banners/wear.png';
 import './BannerManagement.css';
 import './Dashboard.css';
-import { getBanners, createBanner, updateBanner, deleteBanner, toggleBannerStatus } from '../../services/api';
+import { getBanners, createBanner, updateBanner, deleteBanner, toggleBannerStatus, getCategories } from '../../services/api';
 import Swal from 'sweetalert2';
 const API_BASE_URL = 'http://localhost:5000';
 
@@ -109,9 +109,22 @@ const BannerManagement = () => {
   });
   const [selectedFile, setSelectedFile] = useState(null);
 
+  const [dynamicCategories, setDynamicCategories] = useState([]);
+
   useEffect(() => {
     fetchBanners();
+    fetchCategoriesList();
   }, []);
+
+  const fetchCategoriesList = async () => {
+    try {
+      const { data } = await getCategories();
+      const activeCats = data.data.filter(c => c.status === 'active');
+      setDynamicCategories(activeCats);
+    } catch (err) {
+      console.error("Failed to load categories for placement options", err);
+    }
+  };
 
   const fetchBanners = async () => {
     try {
@@ -526,19 +539,16 @@ const BannerManagement = () => {
 
         {/* Pagination */}
         <div className="bam-pagination">
-          <div className="bam-page-info">Showing 1 to 6 of 24 banners</div>
+          <div className="bam-page-info">of 24 results</div>
           <div className="bam-page-controls">
             <button className="bam-page-btn"><ChevronLeft size={16} /></button>
             <button className="bam-page-btn active">1</button>
             <button className="bam-page-btn">2</button>
             <button className="bam-page-btn">3</button>
             <span className="bam-page-dots">...</span>
-            <button className="bam-page-btn">4</button>
+            <button className="bam-page-btn">6</button>
             <button className="bam-page-btn"><ChevronRight size={16} /></button>
           </div>
-          <select className="bam-select" style={{ minWidth: '100px' }}>
-            <option>10 / page</option>
-          </select>
         </div>
       </div>
 
@@ -608,7 +618,20 @@ const BannerManagement = () => {
                       <option value="Home - Middle">Home - Middle Section</option>
                       <option value="Home - Bottom">Home - Bottom Section</option>
                       <option value="Category Page">Category Page</option>
-                      <option value="Product Page">Product Page</option>
+                      <option value="Product Page (All)">Product Page (All)</option>
+                      {dynamicCategories.map(cat => {
+                        const formattedName = (cat.name || '').toLowerCase().replace(/\s+/g, '-');
+                        return (
+                          <React.Fragment key={cat._id || cat.name}>
+                            <option value={`Category Page - ${formattedName}`}>Category Page - {cat.name}</option>
+                            <option value={`Product Page - ${formattedName}`}>Product Page - {cat.name}</option>
+                          </React.Fragment>
+                        );
+                      })}
+                      <option value="Product Page - Kurti">Product Page - Kurti</option>
+                      <option value="Product Page - T-Shirt">Product Page - T-Shirt</option>
+                      <option value="Product Page - Shirt">Product Page - Shirt</option>
+                      <option value="Product Page - Suit">Product Page - Suit</option>
                       <option value="Checkout Page">Checkout Page</option>
                       <option value="Coupon Page">Coupon Page</option>
                     </select>

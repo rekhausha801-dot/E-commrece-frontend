@@ -448,7 +448,23 @@ const Payment = () => {
                       <button className="sp-remove-coupon" onClick={() => { setAppliedCoupon(null); setCouponDiscount(0); }}>Remove</button>
                     </div>
                   ) : (
-                    <button className="sp-apply-coupon" onClick={() => setIsCouponModalOpen(true)}>Apply Coupon</button>
+                    <button 
+                      className="sp-apply-coupon" 
+                      onClick={() => {
+                        if (baseSubtotal >= 2000) {
+                          setIsCouponModalOpen(true);
+                        } else {
+                          Modal.warning({
+                            title: 'Minimum Purchase Required',
+                            content: 'Minimum purchase of ₹2000 is required to apply coupons.',
+                            okText: 'OK',
+                            centered: true
+                          });
+                        }
+                      }}
+                    >
+                      Apply Coupon
+                    </button>
                   )}
                 </div>
                 <div className="sp-row">
