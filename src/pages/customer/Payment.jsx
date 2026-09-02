@@ -255,7 +255,8 @@ const Payment = () => {
 
     } catch (error) {
       console.error('Failed to place order:', error);
-      message.error(`Failed to place order: ${error.response?.data?.message || error.message}`);
+      alert('Backend Error:\n' + (error.response?.data?.stack || error.response?.data?.message || error.message));
+      message.error(`Failed to place order`);
       setPaymentStatus('failed');
       setPaymentError('Order creation failed after payment. Please contact support.');
     } finally {

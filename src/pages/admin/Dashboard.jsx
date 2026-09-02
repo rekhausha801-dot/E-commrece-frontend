@@ -142,8 +142,6 @@ const Dashboard = () => {
       },
       { type: 'divider' },
       { key: 'profile', label: <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '4px 0' }}><User size={16} color="#4b5563" /> <span style={{ fontWeight: 500, color: '#374151' }}>My Profile</span></div>, onClick: () => { setActiveTab('Settings'); setSettingsTab('Security'); } },
-      { key: 'password', label: <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '4px 0' }}><Lock size={16} color="#4b5563" /> <span style={{ fontWeight: 500, color: '#374151' }}>Change Password</span></div>, onClick: () => { setActiveTab('Settings'); setSettingsTab('Security'); } },
-      { key: 'settings', label: <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '4px 0' }}><Settings size={16} color="#4b5563" /> <span style={{ fontWeight: 500, color: '#374151' }}>Account Settings</span></div>, onClick: () => { setActiveTab('Settings'); setSettingsTab('General'); } },
       { type: 'divider' },
       {
         key: 'notifications', label: <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '4px 0', justifyContent: 'space-between', width: '200px' }}>

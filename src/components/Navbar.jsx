@@ -461,7 +461,7 @@ const Navbar = () => {
                       {item === "Logout" ? (
                         <a href="/" onClick={handleLogout}>{item}</a>
                       ) : (
-                        <Link to={item === "Wishlist" ? "/wishlist" : item === "Coupons" ? "/coupons" : item === "My Profile" ? "/account/profile" : `/account/${item.toLowerCase().replace(/\s+/g, '-')}`}>{item}</Link>
+                        <Link to={item === "Wishlist" ? "/wishlist" : item === "Coupons" ? "/coupons" : item === "My Profile" ? "/account/profile" : item === "Help Center" ? "/account/support" : `/account/${item.toLowerCase().replace(/\s+/g, '-')}`}>{item}</Link>
                       )}
                     </li>
                   ))}

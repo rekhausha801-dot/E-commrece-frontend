@@ -15,7 +15,7 @@ const navItems = [
   { name: 'Wishlist', path: '/wishlist', icon: Heart },
   { name: 'My Addresses', path: '/account/addresses', icon: MapPin },
   { name: 'Notifications', path: '/account/notifications', icon: Bell },
-  { name: 'Help & Support', path: '/account/support', icon: Headphones },
+  { name: 'Help Center', path: '/account/support', icon: Headphones },
 ];
 
 const AccountLayout = () => {
