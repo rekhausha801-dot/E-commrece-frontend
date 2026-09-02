@@ -115,6 +115,9 @@ export const getProductById = async (id) => {
     }
     return { success: false, message: 'Product not found' };
   } catch (error) {
+    if (error.response?.status === 404) {
+      return { success: false, message: 'Product not found on server' };
+    }
     console.error("Error fetching product by ID:", error);
     return { success: false, message: 'Error fetching product' };
   }

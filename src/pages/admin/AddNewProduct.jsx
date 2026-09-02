@@ -74,7 +74,7 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
   const [discountType, setDiscountType] = useState(editingProduct?.discountType || 'Percentage');
   const [costPrice, setCostPrice] = useState(editingProduct?.costPrice || '');
   const [lowStockAlert, setLowStockAlert] = useState(editingProduct?.lowStockAlert || '');
-  
+
   const [gstRate, setGstRate] = useState(editingProduct?.gstRate || 0);
   const [isCustomGst, setIsCustomGst] = useState(editingProduct && ![0, 5, 12, 18, 28].includes(editingProduct.gstRate) ? true : false);
   const [customGstRate, setCustomGstRate] = useState(editingProduct && ![0, 5, 12, 18, 28].includes(editingProduct.gstRate) ? editingProduct.gstRate : '');
@@ -126,6 +126,7 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
   const [customDesigns, setCustomDesigns] = useState(editingProduct?.designs || []);
   const [newDesignName, setNewDesignName] = useState('');
   const [newDesignIcon, setNewDesignIcon] = useState('');
+  const [newDesignColor, setNewDesignColor] = useState('#333333');
 
   const [seoTitle, setSeoTitle] = useState(editingProduct?.seoTitle || '');
   const [seoDesc, setSeoDesc] = useState(editingProduct?.seoDesc || '');
@@ -135,7 +136,7 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
   const [faqs, setFaqs] = useState(editingProduct?.faqs || []);
   const [relatedProducts, setRelatedProducts] = useState(editingProduct?.relatedProducts || []);
   const [relatedInput, setRelatedInput] = useState('');
-  
+
   const [homeSection, setHomeSection] = useState(editingProduct?.homeSection || 'None');
   const [isLimitedOffer, setIsLimitedOffer] = useState(editingProduct?.isLimitedOffer || false);
   const [limitedOfferDetails, setLimitedOfferDetails] = useState({
@@ -275,55 +276,91 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
       }
     }
 
-    const productToSave = {
-      id: editingProduct?.id || Date.now(),
-      name: productName,
-      price: !isNaN(Number(price)) ? Number(price) : 0,
-      sku: sku,
-      category: category,
-      brand: brand || 'Generic',
-      countInStock: parseInt(stock) || 0,
-      description: description || "Default product description",
-      status: status,
-      discount: !isNaN(Number(discount)) ? Number(discount) : 0,
-      oldPrice: `₹${price}`,
-      imgFile: coverImage instanceof File ? coverImage : null,
-      existingImgUrl: !(coverImage instanceof File) ? (coverImage || editingProduct?.img || null) : null,
-      existingCoverImagePublicId: !(coverImage instanceof File) && editingProduct?.images?.[0]?.public_id ? editingProduct.images[0].public_id : null,
-      gallery: galleryImages, // this now contains Files and strings
-      existingImages: editingProduct?.images || [], // pass the old images array so we know the public_ids
-      customizable: isCustomizable,
-      designs: customDesigns,
-      discountType,
-      costPrice: !isNaN(Number(costPrice)) ? Number(costPrice) : 0,
-      lowStockAlert: parseInt(lowStockAlert) || 10,
-      gstRate: isCustomGst ? Number(customGstRate) : Number(gstRate),
-      gstIncludedInPrice,
-      deliveryText,
-      returnText,
-      warrantyText,
-      seoTitle,
-      seoDesc,
-      seoKeywords,
-      faqs,
-      relatedProducts,
-      rating: initialRating,
-      numReviews: initialReviews,
-      badge: badgeLabel,
-      sizes: selectedSizes,
-      colors: selectedColors,
-      tags: tags,
-      specs: specs,
-      sizeGuide: sizeGuide,
-      homeSection: homeSection,
-      limitedOfferDetails: (isLimitedOffer || homeSection === 'Limited Offers') ? limitedOfferDetails : null,
-      isLimitedOffer: isLimitedOffer || homeSection === 'Limited Offers',
-      limitedOfferEndDate: (isLimitedOffer || homeSection === 'Limited Offers') && limitedOfferDetails.endDate ? new Date(limitedOfferDetails.endDate).toISOString() : null
-    };
-
     setIsSaving(true);
     try {
+      const options = {
+        maxSizeMB: 0.8,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true,
+      };
+
+      let compressedCoverImage = null;
+      if (coverImage instanceof File) {
+        try {
+          compressedCoverImage = await imageCompression(coverImage, options);
+        } catch (error) {
+          console.error("Cover image compression error:", error);
+          compressedCoverImage = coverImage;
+        }
+      }
+
+      const galleryList = Array.isArray(galleryImages) 
+        ? galleryImages 
+        : (galleryImages ? Object.values(galleryImages).filter(Boolean) : []);
+
+      const compressedGalleryImages = await Promise.all(
+        galleryList.map(async (img) => {
+          if (img instanceof File) {
+            try {
+              return await imageCompression(img, options);
+            } catch (error) {
+              console.error("Gallery image compression error:", error);
+              return img;
+            }
+          }
+          return img;
+        })
+      );
+
+      const productToSave = {
+        id: editingProduct?.id || Date.now(),
+        name: productName,
+        price: !isNaN(Number(price)) ? Number(price) : 0,
+        sku: sku,
+        category: category,
+        brand: brand || 'Generic',
+        countInStock: parseInt(stock) || 0,
+        description: description || "Default product description",
+        status: status,
+        discount: !isNaN(Number(discount)) ? Number(discount) : 0,
+        oldPrice: `₹${price}`,
+        imgFile: compressedCoverImage,
+        existingImgUrl: !(coverImage instanceof File) ? (coverImage || editingProduct?.img || null) : null,
+        existingCoverImagePublicId: !(coverImage instanceof File) && editingProduct?.images?.[0]?.public_id ? editingProduct.images[0].public_id : null,
+        gallery: compressedGalleryImages, // this now contains Files and strings
+        existingImages: editingProduct?.images || [], // pass the old images array so we know the public_ids
+        customizable: isCustomizable,
+        designs: customDesigns,
+        discountType,
+        costPrice: !isNaN(Number(costPrice)) ? Number(costPrice) : 0,
+        lowStockAlert: parseInt(lowStockAlert) || 10,
+        gstRate: isCustomGst ? Number(customGstRate) : Number(gstRate),
+        gstIncludedInPrice,
+        deliveryText,
+        returnText,
+        warrantyText,
+        seoTitle,
+        seoDesc,
+        seoKeywords,
+        faqs,
+        relatedProducts,
+        rating: initialRating,
+        numReviews: initialReviews,
+        badge: badgeLabel,
+        sizes: selectedSizes,
+        colors: selectedColors,
+        tags: tags,
+        specs: specs,
+        sizeGuide: sizeGuide,
+        homeSection: homeSection,
+        limitedOfferDetails: (isLimitedOffer || homeSection === 'Limited Offers') ? limitedOfferDetails : null,
+        isLimitedOffer: isLimitedOffer || homeSection === 'Limited Offers',
+        limitedOfferEndDate: (isLimitedOffer || homeSection === 'Limited Offers') && limitedOfferDetails.endDate ? new Date(limitedOfferDetails.endDate).toISOString() : null
+      };
+
       await onSave(productToSave);
+    } catch (e) {
+      console.error(e);
     } finally {
       setIsSaving(false);
     }
@@ -553,7 +590,7 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
                       <MonitorPlay size={18} color="#a66c24" />
                       Home Page Visibility
                     </h4>
-                    
+
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', alignItems: 'end' }}>
                       <div className="form-group" style={{ margin: 0 }}>
                         <label style={{ fontSize: '12px', fontWeight: '700', marginBottom: '8px', display: 'block', color: '#374151' }}>Select Display Section</label>
@@ -567,10 +604,10 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
 
                       <div style={{ paddingBottom: '10px' }}>
                         <label style={{ fontSize: '13px', fontWeight: '600', color: '#111827', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <input 
-                            type="checkbox" 
-                            checked={homeSection === 'Limited Offers' || isLimitedOffer} 
-                            onChange={(e) => setIsLimitedOffer(e.target.checked)} 
+                          <input
+                            type="checkbox"
+                            checked={homeSection === 'Limited Offers' || isLimitedOffer}
+                            onChange={(e) => setIsLimitedOffer(e.target.checked)}
                             style={{ width: '16px', height: '16px', accentColor: '#a66c24', cursor: 'pointer' }}
                           />
                           Set as Limited Offer (with Countdown Timer)
@@ -681,7 +718,7 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
                       <input type="number" step="0.1" min="0" max="5" placeholder="e.g. 4.5" value={initialRating} onChange={e => setInitialRating(e.target.value)} style={{ width: '100%', boxSizing: 'border-box' }} />
                     </div>
                   </div>
-                  
+
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginTop: '20px' }}>
                     <div className="form-group">
                       <label style={{ fontSize: '11px', fontWeight: '700', marginBottom: '8px', display: 'block', color: '#111827' }}>Number of Reviews</label>
@@ -699,7 +736,7 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
                       )}
                     </div>
                   </div>
-                  
+
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginTop: '20px', padding: '16px', background: '#fdfbf7', borderRadius: '8px', border: '1px solid #f9eedc' }}>
                     <div className="form-group" style={{ margin: 0 }}>
                       <label style={{ fontSize: '11px', fontWeight: '700', marginBottom: '8px', display: 'block', color: '#111827' }}>GST Rate</label>
@@ -786,46 +823,6 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
                       })}
                     </div>
                   </div>
-                  <hr style={{ border: 'none', borderTop: '1px dashed #e5e7eb', margin: '24px 0' }} />
-
-                  <div className="variant-row" style={{ marginBottom: '24px' }}>
-                    <label style={{ display: 'block', margin: 0, fontWeight: 700, fontSize: '13px', color: '#111827', marginBottom: '16px' }}>Color</label>
-                    <div className="variant-options" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
-                      {COLORS_LIST.map(color => {
-                        const isActive = selectedColors.includes(color.name);
-                        return (
-                          <div
-                            key={color.name}
-                            onClick={() => toggleArrayItem(selectedColors, setSelectedColors, color.name)}
-                            className="variant-pill color-pill"
-                            style={{
-                              border: isActive ? '2px solid #a66c24' : '1px solid #e5e7eb',
-                              padding: '8px 16px',
-                              borderRadius: '6px',
-                              fontSize: '12px',
-                              fontWeight: 600,
-                              color: '#374151',
-                              cursor: 'pointer',
-                              background: '#fff',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '8px',
-                              position: 'relative'
-                            }}
-                          >
-                            <span style={{ width: '16px', height: '16px', borderRadius: '50%', background: color.hex, display: 'inline-block', border: '1px solid rgba(0,0,0,0.1)' }}></span>
-                            {color.name}
-                            {isActive && (
-                              <div style={{ position: 'absolute', top: '-6px', right: '-6px', background: '#a66c24', color: '#fff', borderRadius: '50%', width: '16px', height: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <Check size={10} strokeWidth={4} />
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-
                 </div>
               </div>
 
@@ -1096,15 +1093,21 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
               <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', alignItems: 'center' }}>
                 <input value={newDesignName} onChange={e => setNewDesignName(e.target.value)} type="text" placeholder="Design Name" style={{ flex: 1, padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }} />
 
+                <input type="color" value={newDesignColor} onChange={e => setNewDesignColor(e.target.value)} style={{ width: '40px', height: '36px', padding: '0', border: '1px solid #ddd', borderRadius: '4px', cursor: 'pointer' }} title="Design Color" />
+
                 <input
                   type="file"
                   id="adminDesignUpload"
-                  accept="image/png, image/jpeg, image/webp"
+                  accept="image/svg+xml, image/png, image/jpeg, image/webp"
                   style={{ display: 'none' }}
                   onChange={(e) => {
                     const file = e.target.files[0];
                     if (file) {
-                      setNewDesignIcon(URL.createObjectURL(file));
+                      const reader = new FileReader();
+                      reader.onload = (uploadEvent) => {
+                        setNewDesignIcon(uploadEvent.target.result);
+                      };
+                      reader.readAsDataURL(file);
                     }
                   }}
                 />
@@ -1112,7 +1115,7 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
                   onClick={() => document.getElementById('adminDesignUpload').click()}
                   style={{ background: '#f5f5f5', color: '#333', padding: '8px 16px', border: '1px solid #ddd', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap' }}
                 >
-                  <Upload size={14} /> {newDesignIcon && !newDesignIcon.startsWith('http') && !['Mountain', 'Feather', 'Flame', 'Leaf', 'Rocket'].includes(newDesignIcon) ? 'Image Selected' : 'Upload Image'}
+                  <Upload size={14} /> {newDesignIcon && !newDesignIcon.startsWith('http') && !['Mountain', 'Feather', 'Flame', 'Leaf', 'Rocket'].includes(newDesignIcon) ? 'SVG / Image Selected' : 'Upload SVG / Image'}
                 </button>
               </div>
 
@@ -1126,9 +1129,10 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
                 onClick={() => {
                   if (newDesignName.trim() && newDesignIcon) {
                     const isIconName = ['Mountain', 'Feather', 'Flame', 'Leaf', 'Rocket', 'Compass', 'Send', 'Headphones', 'Palmtree', 'Flower2'].includes(newDesignIcon);
-                    setCustomDesigns([...customDesigns, { id: Date.now(), name: newDesignName, [isIconName ? 'iconName' : 'icon']: newDesignIcon, category: isIconName ? 'Predefined' : 'Uploaded' }]);
+                    setCustomDesigns([...customDesigns, { id: Date.now(), name: newDesignName, [isIconName ? 'iconName' : 'icon']: newDesignIcon, iconColor: newDesignColor, category: isIconName ? 'Predefined' : 'Uploaded' }]);
                     setNewDesignName('');
                     setNewDesignIcon('');
+                    setNewDesignColor('#333333');
                     if (document.getElementById('adminDesignUpload')) {
                       document.getElementById('adminDesignUpload').value = '';
                     }

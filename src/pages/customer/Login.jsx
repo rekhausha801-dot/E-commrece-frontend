@@ -56,7 +56,7 @@ const Login = () => {
 
   return (
     <>
-
+      {showWelcome && <WelcomeScreen redirectUrl={welcomeRedirect} />}
       <div className="split-login-wrapper">
         <div className="split-login-container">
 
@@ -64,7 +64,6 @@ const Login = () => {
           <div className="split-login-right">
             <div className="form-wrapper">
               <h2><strong>Login</strong> <span className="text-normal">or</span> <strong>Signup</strong></h2>
-              <p className="welcome-text">Welcome back! Please login to your account</p>
               {errorMsg && <p style={{ color: 'red', textAlign: 'center', marginTop: '-10px', marginBottom: '15px' }}>{errorMsg}</p>}
 
               <form onSubmit={handleLogin}>

@@ -242,7 +242,7 @@
   grid-template-columns: 1fr 1fr;
   gap: 16px;
   align-content: start;
-  align-items: stretch;
+  align-items: start;
 }
 
 .main-col {
