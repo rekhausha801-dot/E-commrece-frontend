@@ -60,6 +60,7 @@ axios.interceptors.request.use(
 const AUTH_API = `${API_BASE_URL}/auth`;
 export const registerUser = (data) => axios.post(`${AUTH_API}/register`, data);
 export const loginUser = (data) => axios.post(`${AUTH_API}/login`, data);
+export const googleLoginApi = (data) => axios.post(`${AUTH_API}/google`, data);
 export const adminLoginApi = (data) => axios.post(`${AUTH_API}/admin/login`, data);
 export const getUserProfile = () => axios.get(`${AUTH_API}/profile`);
 export const updateUserProfile = (data) => axios.put(`${AUTH_API}/profile`, data);

@@ -324,3 +324,24 @@
 body:has(.register-page-wrapper) .footer-container {
   display: none !important;
 }
+
+
+.premium-google-btn-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 25px;
+  padding: 4px;
+  border-radius: 40px;
+  background: white;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  border: 1px solid #eaeaea;
+}
+
+.premium-google-btn-wrapper:hover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
