@@ -300,6 +300,10 @@
 .cm-tag.blocked { background: #fef2f2; color: #dc2626; }
 .cm-tag.delivered { background: #f0fdf4; color: #16a34a; }
 .cm-tag.shipped { background: #fff7ed; color: #ea580c; }
+.cm-tag.pending { background: #fefce8; color: #ca8a04; }
+.cm-tag.cancelled { background: #fef2f2; color: #dc2626; }
+.cm-tag.processing { background: #eff6ff; color: #2563eb; }
+.cm-tag.returned { background: #faf5ff; color: #7c3aed; }
 
 .cm-action-btn {
   background: transparent;

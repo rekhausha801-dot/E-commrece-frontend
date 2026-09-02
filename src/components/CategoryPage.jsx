@@ -158,6 +158,26 @@ const CATEGORY_DATA = {
     banner: banner7Img,
     images: [newFootwear1, footwear2Img, footwear3Img, footwear4Img]
   },
+  'shoes': {
+    title: "Shoes Collection",
+    banner: banner7Img,
+    images: [newFootwear1, footwear2Img, footwear3Img, footwear4Img]
+  },
+  'casual-shoes': {
+    title: "Casual Shoes",
+    banner: banner7Img,
+    images: [newFootwear1, footwear2Img, footwear3Img, footwear4Img]
+  },
+  'formal-shoes': {
+    title: "Formal Shoes",
+    banner: banner7Img,
+    images: [newFootwear1, footwear2Img, footwear3Img, footwear4Img]
+  },
+  'sneakers': {
+    title: "Sneakers",
+    banner: banner7Img,
+    images: [newFootwear1, footwear2Img, footwear3Img, footwear4Img]
+  },
   'westernwear': {
     title: "Western Wear",
     banner: westernBannerImg,
@@ -317,8 +337,13 @@ export default function CategoryPage() {
     }
   };
 
+  const formatCategoryTitle = (id) => {
+    if (!id) return "Exclusive Collection";
+    return id.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  };
+
   const currentCategory = CATEGORY_DATA[categoryId] || {
-    title: "Exclusive Collection",
+    title: formatCategoryTitle(categoryId),
     banner: bannerImg,
     images: [manImg, shoeImg, watchImg, beautyImg]
   };
@@ -457,25 +482,28 @@ export default function CategoryPage() {
     
     // Convert backend format to frontend UI format for the Category Page
     const filtered = contextProducts.filter(p => {
-      const pCat = (p.category?.name || p.category || '').toLowerCase();
-      const pSubCat = (p.subCategory || '').toLowerCase();
-      const titleLower = currentCategory.title.toLowerCase();
+      const pCat = (p.category?.name || p.category || '').toLowerCase().trim();
+      if (!pCat || pCat === 'uncategorized') return false;
       
-      if (!pCat && !pSubCat) return false;
+      const slug = (categoryId || '').toLowerCase();
+      let mappedBackendCategory = '';
       
-      const categoryIdSpace = categoryId ? categoryId.replace(/-/g, ' ') : '';
-      
-      // Strict matching to prevent "men" matching inside "women"
-      const matchCat = pCat === categoryIdSpace || 
-                       pCat === titleLower || 
-                       (categoryIdSpace && pCat.split(' ').includes(categoryIdSpace)) ||
-                       (titleLower !== 'exclusive collection' && pCat.includes(titleLower));
-                       
-      const matchSubCat = pSubCat === categoryIdSpace || 
-                          pSubCat === titleLower ||
-                          (categoryIdSpace && pSubCat.includes(categoryIdSpace));
-                          
-      return matchCat || matchSubCat || pCat === 'uncategorized';
+      // Strict mapping from frontend URL slug to actual backend category name
+      if (['suits', 'suit', 'menswear'].includes(slug)) {
+        mappedBackendCategory = 'suits';
+      } else if (['shoes', 'shoe', 'footwear', 'sneakers', 'casual-shoes', 'formal-shoes'].includes(slug)) {
+        mappedBackendCategory = 'shoes';
+      } else if (['kurtis', 'kurti', 'womenswear'].includes(slug)) {
+        mappedBackendCategory = 'kurti';
+      } else if (['t-shirts', 'shirts', 'customization', 'polo-t-shirts', 'custom-t-shirts', 'women-t-shirts', 'girls-t-shirts'].includes(slug)) {
+        mappedBackendCategory = 'custom tshirts';
+      } else {
+        // For other routes, strictly match the slug with dashes replaced by spaces
+        mappedBackendCategory = slug.replace(/-/g, ' ');
+      }
+
+      // Check strict equality against the backend category
+      return pCat === mappedBackendCategory;
     });
     
     return filtered.map(p => {
@@ -554,7 +582,18 @@ export default function CategoryPage() {
     ));
   };
 
-  const sortedProducts = [...products].sort((a, b) => {
+  const sortedProducts = [...products]
+    .filter(p => {
+      if (selectedCategories.length === 0) return true;
+      const cat = (p._backendData?.category?.name || p._backendData?.category || '').toLowerCase();
+      const subCat = (p._backendData?.subCategory || '').toLowerCase();
+      const sec = (p._backendData?.homeSection || '').toLowerCase();
+      return selectedCategories.some(selected => {
+        const s = selected.toLowerCase();
+        return cat.includes(s) || subCat.includes(s) || sec.includes(s) || s.includes(cat);
+      });
+    })
+    .sort((a, b) => {
     switch (sortBy) {
       case 'Price: Low to High':
         return parseInt(a.price.replace('₹', '')) - parseInt(b.price.replace('₹', ''));
@@ -911,9 +950,22 @@ export default function CategoryPage() {
           </div>
 
           <motion.div layout className={`unified-products-grid ${isMobileFilterOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
-            <AnimatePresence mode="popLayout">
-              {sortedProducts.map(product => (
-                <motion.div
+            {sortedProducts.length === 0 ? (
+              <div style={{ padding: '60px 20px', textAlign: 'center', width: '100%', gridColumn: '1 / -1' }}>
+                <div style={{ fontSize: '48px', marginBottom: '16px', color: '#e0e0e0' }}>🛍️</div>
+                <h3 style={{ fontSize: '24px', fontWeight: '600', color: '#333', marginBottom: '8px' }}>No {currentCategory.title.toLowerCase()} available</h3>
+                <p style={{ color: '#666', marginBottom: '24px' }}>We couldn't find any products in this category at the moment. Please check back later or explore other collections.</p>
+                <button 
+                  onClick={() => navigate('/')} 
+                  style={{ padding: '12px 24px', backgroundColor: '#e5c398', color: '#111', fontWeight: '600', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                >
+                  Continue Shopping
+                </button>
+              </div>
+            ) : (
+              <AnimatePresence mode="popLayout">
+                {sortedProducts.map(product => (
+                  <motion.div
                   key={product.id}
                   layout
                   initial={{ opacity: 0, scale: 0.8, y: 30 }}
@@ -965,10 +1017,11 @@ export default function CategoryPage() {
                     <ShoppingBag size={16} />
                     {addedToCart[product.id] ? "GO TO CART" : "ADD TO CART"}
                   </button>
-                </div>
-              </motion.div>
-            ))}
+                  </div>
+                </motion.div>
+              ))}
             </AnimatePresence>
+            )}
           </motion.div>
         </div>
       </div>

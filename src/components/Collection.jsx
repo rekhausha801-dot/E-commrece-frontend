@@ -142,9 +142,16 @@ export default function Collection({ BannerComponent, title = "Kurtis" }) {
   const [productsList, setProductsList] = useState([]);
 
   const applyFilters = async () => {
-    // For now we just use the context products since filtering is mostly client side or handled globally
     if (contextProducts) {
-      setProductsList(contextProducts);
+      if (title === "Kurtis") {
+        const collectionItems = contextProducts.filter(p => {
+          const pCat = (p.category?.name || p.category || '').toLowerCase().trim();
+          return pCat === 'kurti';
+        });
+        setProductsList(collectionItems);
+      } else {
+        setProductsList(contextProducts);
+      }
     }
   };
 
@@ -152,7 +159,25 @@ export default function Collection({ BannerComponent, title = "Kurtis" }) {
     applyFilters();
   }, [contextProducts]); // Update when contextProducts change
 
-  const sortedProducts = productsList;
+  const sortedProducts = React.useMemo(() => {
+    let filtered = [...productsList];
+    
+    if (selectedCategories.length > 0) {
+      filtered = filtered.filter(p => {
+        const cat = (p.category?.name || p.category || '').toLowerCase();
+        const subCat = (p.subCategory || '').toLowerCase();
+        const sec = (p.homeSection || '').toLowerCase();
+        
+        return selectedCategories.some(selected => {
+          const s = selected.toLowerCase();
+          return cat.includes(s) || subCat.includes(s) || sec.includes(s) || s.includes(cat);
+        });
+      });
+    }
+    
+    // Sort logic (if any) can be added here
+    return filtered;
+  }, [productsList, selectedCategories]);
 
   return (
     <div className="collection-page">

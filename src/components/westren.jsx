@@ -9,6 +9,7 @@ import {
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
 import { handleFlyingCartAnimation } from '../utils/cartAnimation';
+import { useProducts } from '../context/ProductContext';
 
 import bannerImg from '../assets/images/westrenwear.png';
 import westren2Img from '../assets/images/westren2.png';
@@ -175,6 +176,7 @@ export default function WesternCollection() {
   const navigate = useNavigate();
   const { wishlistItems, toggleWishlist, isInWishlist } = useWishlist();
   const { addToCart } = useCart();
+  const { products: contextProducts } = useProducts();
   const [addedToCart, setAddedToCart] = useState({});
 
   const handleCartClick = async (e, product) => {
@@ -220,12 +222,40 @@ export default function WesternCollection() {
     );
   };
 
-  const sortedProducts = [...products].sort((a, b) => {
+  const [productsList, setProductsList] = useState(products); // fallback to dummy
+
+  useEffect(() => {
+    if (contextProducts) {
+      const shirtItems = contextProducts.filter(p => p.homeSection === 'Shirt Collection').map(p => {
+        const rawPrice = Number(String(p.price || 0).replace(/[^0-9.-]+/g, "")) || 0;
+        const rawDiscount = Number(String(p.discount || 0).replace(/[^0-9.-]+/g, "")) || 0;
+        let price = rawPrice - (p.discountType === 'Fixed' ? rawDiscount : ((rawPrice * rawDiscount) / 100));
+
+        return {
+          id: p._id || p.id,
+          image: (Array.isArray(p.images) && p.images.length > 0) ? (p.images[0]?.url || (typeof p.images[0] === 'string' ? p.images[0] : null)) : (typeof p.images === 'string' ? p.images : "https://pngimg.com/uploads/box/box_PNG8.png"),
+          title: p.name || p.title,
+          price: `₹${Math.round(price)}`,
+          originalPrice: rawPrice > 0 ? `₹${rawPrice}` : null,
+          rating: p.rating || 0,
+          reviews: p.numReviews || 0,
+          badge: p.badge || (p.discount > 0 ? 'SALE' : null),
+          colors: ['#222222', '#e0dfdf'], // Fallback colors for now
+          _backendData: p
+        };
+      });
+      if (shirtItems.length > 0) {
+        setProductsList(shirtItems);
+      }
+    }
+  }, [contextProducts]);
+
+  const sortedProducts = [...productsList].sort((a, b) => {
     switch (sortBy) {
       case 'Price: Low to High':
-        return parseInt(a.price.replace('₹', '')) - parseInt(b.price.replace('₹', ''));
+        return parseInt(String(a.price).replace(/[^0-9]/g, '')) - parseInt(String(b.price).replace(/[^0-9]/g, ''));
       case 'Price: High to Low':
-        return parseInt(b.price.replace('₹', '')) - parseInt(a.price.replace('₹', ''));
+        return parseInt(String(b.price).replace(/[^0-9]/g, '')) - parseInt(String(a.price).replace(/[^0-9]/g, ''));
       case 'Rating':
         return b.rating - a.rating;
       case 'Popularity':

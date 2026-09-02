@@ -98,6 +98,11 @@ const OfferCarousel = () => {
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
+          <button className="carousel-close-btn" onClick={() => setShowCarousel(false)}>
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1 1L13 13M1 13L13 1" stroke="#C89953" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
 
           <div className="carousel-images">
             {finalCarouselData.map((banner, idx) => (

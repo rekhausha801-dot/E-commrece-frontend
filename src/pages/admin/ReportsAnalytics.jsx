@@ -69,13 +69,46 @@ const ReportsAnalytics = () => {
   const summary = reportData?.summary || {};
   const salesOverview = reportData?.salesOverview || {};
   const salesByChannel = reportData?.salesByChannel || {};
-  const revenueBreakdown = reportData?.revenueBreakdown || {};
-  const profitMargin = reportData?.profitMargin || {};
+  
+  // Dynamic Mappings based on backend data
+  const revenueBreakdown = {
+    grossSales: (summary.totalRevenue || 0) + (summary.totalDiscount || 0),
+    discounts: summary.totalDiscount || 0,
+    refunds: 0, // Not explicitly tracked in summary
+    shippingRevenue: 0, // Add shipping logic if available
+    netRevenue: summary.totalRevenue || 0
+  };
+
+  const profitMargin = {
+    totalCostOfGoods: 0, // Cost price not in product schema by default
+    grossProfit: summary.totalRevenue || 0,
+    profitMargin: 100 // 100% since cost is 0
+  };
+
   const returnsRefunds = reportData?.returnsRefunds || {};
-  const couponPerformance = reportData?.couponPerformance || {};
-  const paymentMethods = reportData?.paymentMethods || {};
+  
+  const couponPerformance = {
+    couponsUsed: 0, // Require separate aggregate for exact count
+    totalDiscountGiven: summary.totalDiscount || 0,
+    mostUsedCoupon: null,
+    couponOrders: 0
+  };
+
+  const rawPaymentBreakdown = reportData?.paymentBreakdown || [];
+  const paymentMethods = {
+    methods: rawPaymentBreakdown.map(p => ({ method: p._id || 'Unknown', orders: p.count, revenue: p.revenue })),
+    total: {
+      orders: rawPaymentBreakdown.reduce((sum, p) => sum + p.count, 0),
+      revenue: rawPaymentBreakdown.reduce((sum, p) => sum + p.revenue, 0)
+    }
+  };
+
   const lowStockOverview = reportData?.lowStockOverview || {};
-  const customerOverview = reportData?.customerOverview || {};
+  
+  const customerOverview = {
+    newCustomers: summary.newCustomers || 0,
+    returningCustomers: Math.max(0, (summary.totalCustomers || 0) - (summary.newCustomers || 0))
+  };
   const defaultOrderStatusOverview = {
     totalOrders: 1245,
     deliveredRate: 62.9,
@@ -127,7 +160,7 @@ const ReportsAnalytics = () => {
   return (
     <div className="ra-container report-ui-redesign">
       {/* Header */}
-      <div style={{ background: 'transparent', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+      <div style={{ background: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', padding: '12px 20px', borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.02)', border: '1px solid #f3f4f6' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <div style={{ width: '48px', height: '48px', borderRadius: '12px', border: '1.5px solid #fef3c7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <BarChart2 size={22} color="#d97706" />
@@ -135,9 +168,7 @@ const ReportsAnalytics = () => {
           <div style={{ width: '2.5px', height: '22px', background: '#d97706', borderRadius: '2px' }}></div>
           <div>
             <h1 style={{ margin: 0, fontSize: '20px', fontWeight: '700', color: '#0f172a' }}>Reports & Analytics</h1>
-            <div style={{ fontSize: '13px', color: '#6b7280', margin: '4px 0 0 0', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              Dashboard <ChevronRight size={12} /> <span style={{ color: '#d97706', fontWeight: '500' }}>Reports</span>
-            </div>
+
           </div>
         </div>
         
@@ -157,7 +188,7 @@ const ReportsAnalytics = () => {
               <div className="stat-icon gold"><span style={{ fontSize: '18px', fontWeight: 'bold' }}>₹</span></div>
               <div className="stat-info">
                 <span className="stat-title">Total Revenue</span>
-                <h2 className="stat-value gold-text">₹0</h2>
+                <h2 className="stat-value gold-text">₹{summary.totalRevenue?.toLocaleString('en-IN') || 0}</h2>
                 <div className="stat-bottom">
                   <span className="stat-change positive">0%</span> <span className="stat-change-text">vs yesterday</span>
                 </div>
@@ -183,7 +214,7 @@ const ReportsAnalytics = () => {
               <div className="stat-icon gold"><ShoppingBag size={18} color="#554422" /></div>
               <div className="stat-info">
                 <span className="stat-title">Total Orders</span>
-                <h2 className="stat-value">0</h2>
+                <h2 className="stat-value">{summary.totalOrders || 0}</h2>
                 <div className="stat-bottom">
                   <span className="stat-change positive">0</span> <span className="stat-change-text">new today</span>
                 </div>
@@ -209,7 +240,7 @@ const ReportsAnalytics = () => {
               <div className="stat-icon gold"><Users size={18} color="#554422" /></div>
               <div className="stat-info">
                 <span className="stat-title">Total Customers</span>
-                <h2 className="stat-value">0</h2>
+                <h2 className="stat-value">{summary.totalCustomers || 0}</h2>
                 <div className="stat-bottom">
                   <span className="stat-change positive">0</span> <span className="stat-change-text">new today</span>
                 </div>
@@ -235,7 +266,7 @@ const ReportsAnalytics = () => {
               <div className="stat-icon gold"><Package size={18} color="#c9a05b" /></div>
               <div className="stat-info">
                 <span className="stat-title">Average Order Value</span>
-                <h2 className="stat-value gold-text">₹0</h2>
+                <h2 className="stat-value gold-text">₹{summary.avgOrderValue?.toLocaleString('en-IN') || 0}</h2>
                 <div className="stat-bottom">
                   <span className="stat-change positive">0%</span> <span className="stat-change-text">vs yesterday</span>
                 </div>
