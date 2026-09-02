@@ -24,9 +24,15 @@ import {
   MoreVertical,
   CloudUpload,
   Info,
-  C
+  Check,
   X,
   ChevronDown,
+  ShoppingBag,
+  ClipboardList,
+  ChevronUp,
+  Filter,
+  Upload,
+  Search,
   Bell,
   Bold,
   Italic,
@@ -34,20 +40,24 @@ import {
   ListOrdered,
   AlignLeft,
   ChevronsUpDown,
+  UploadCloud,
   Link,
   Lightbulb,
   Camera,
+  Package,
   FileSpreadsheet,
   ArrowRight
+
+
 } from 'lucide-react';
 
 
 const mockProducts = [
-  { id: 1, name: "Classic Black T-Shirt", sku: "TSHIRT001", cat: "Men Clothing", brand: "Roadster", price: "₹699", oldPrice: "₹999", discount: "30% OFF", stock: 120, status: "In Stock", img: "https://pngimg.com/uploads/tshirt/tshirt_PNG5448.png" },
-  { id: 2, name: "Blue Hoodie", sku: "HOODIE002", cat: "Men Clothing", brand: "Nike", price: "₹1,499", oldPrice: "₹1,999", discount: "25% OFF", stock: 35, status: "Low Stock", img: "/blue-hoodie.jpg" },
-  { id: 3, name: "Women Rose Watch", sku: "WATCH003", cat: "Accessories", brand: "Fastrack", price: "₹2,399", oldPrice: "₹2,999", discount: "20% OFF", stock: 18, status: "Low Stock", img: "https://pngimg.com/uploads/watches/watches_PNG9859.png" },
-  { id: 4, name: "Running Shoes", sku: "SHOE004", cat: "Footwear", brand: "Adidas", price: "₹2,999", oldPrice: "₹3,499", discount: "15% OFF", stock: 50, status: "In Stock", img: "https://pngimg.com/uploads/running_shoes/running_shoes_PNG5816.png" },
-  { id: 5, name: "Polarized Sunglasses", sku: "SUNG005", cat: "Accessories", brand: "Ray-Ban", price: "₹1,199", oldPrice: "₹1,599", discount: "25% OFF", stock: 0, status: "Out of Stock", img: "https://pngimg.com/uploads/sunglasses/sunglasses_PNG72.png" }
+  { id: 1, name: "Classic Black T-Shirt", sku: "TSHIRT001", cat: "Men Clothing", brand: "Roadster", price: "₹699", oldPrice: "₹999", discount: "30% OFF", stock: 120, status: "In Stock", img: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600&q=90" },
+  { id: 2, name: "Blue Hoodie", sku: "HOODIE002", cat: "Men Clothing", brand: "Nike", price: "₹1,499", oldPrice: "₹1,999", discount: "25% OFF", stock: 35, status: "Low Stock", img: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600&q=90" },
+  { id: 3, name: "Women Rose Watch", sku: "WATCH003", cat: "Accessories", brand: "Fastrack", price: "₹2,399", oldPrice: "₹2,999", discount: "20% OFF", stock: 18, status: "Low Stock", img: "https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=600&q=90" },
+  { id: 4, name: "Running Shoes", sku: "SHOE004", cat: "Footwear", brand: "Adidas", price: "₹2,999", oldPrice: "₹3,499", discount: "15% OFF", stock: 50, status: "In Stock", img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=90" },
+  { id: 5, name: "Polarized Sunglasses", sku: "SUNG005", cat: "Accessories", brand: "Ray-Ban", price: "₹1,199", oldPrice: "₹1,599", discount: "25% OFF", stock: 0, status: "Out of Stock", img: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=600&q=90" }
 ];
 
 const ProductManagement = () => {
@@ -88,16 +98,6 @@ const ProductManagement = () => {
     { question: "Does this product have a size chart?", answer: "" },
     { question: "Is Cash on Delivery available?", answer: "" },
     { question: "Can I exchange the product if size doesn't fit?", answer: "" },
-    { question: "Is this product available in other colors?", answer: "" },
-    { question: "Is this product suitable for summer?", answer: "" }
-  ]);
-  const [answeringIndex, setAnsweringIndex] = useState(null);
-  const [tempAnswer, setTempAnswer] = useState("");
-
-  const [adminReviewRating, setAdminReviewRating] = useState(0);
-  const [adminReviewHover, setAdminReviewHover] = useState(0);
-  const [adminReviewTitle, setAdminReviewTitle] = useState('');
-  const [adminReviewText, setAdminReviewText] = useState('');
     { question: "Is this product available in other colors?", answer: "" },
     { question: "Is this product suitable for summer?", answer: "" }
   ]);
@@ -438,7 +438,7 @@ const ProductManagement = () => {
                   <tr key={p.id}>
                     <td style={{ paddingLeft: '16px' }}><input type="checkbox" className="custom-checkbox" /></td>
                     <td style={{ width: '48px', paddingRight: 0 }}>
-                      <img src={p.img} alt={p.name} className="table-img-placeholder" />
+                      <img src={p.img} alt={p.name} className="table-img-placeholder" style={{ objectFit: 'cover' }} />
                     </td>
                     <td>
                       <div className="table-product-name">{p.name}</div>
@@ -497,6 +497,20 @@ const ProductManagement = () => {
             <div className="pagination-wrapper">
               <span className="pagination-info">Showing {currentPage === 1 ? "1 to 5" : "0"} of 125 products</span>
               <div className="pagination-controls-right">
+                <div className="pagination-controls">
+                  <button className="page-btn" onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}><ChevronLeft size={14} /></button>
+                  <button className={`page-btn ${currentPage === 1 ? 'active' : ''}`} onClick={() => setCurrentPage(1)}>1</button>
+                  <button className={`page-btn ${currentPage === 2 ? 'active' : ''}`} onClick={() => setCurrentPage(2)}>2</button>
+                  <button className={`page-btn ${currentPage === 3 ? 'active' : ''}`} onClick={() => setCurrentPage(3)}>3</button>
+                  <span className="page-dots">...</span>
+                  <button className="page-btn">25</button>
+                  <button className="page-btn" onClick={() => setCurrentPage(Math.min(25, currentPage + 1))}><ChevronRight size={14} /></button>
+                </div>
+                <div className="items-per-page">
+                  <select className="form-input custom-select small-select">
+                    <option>5 / page</option>
+                    <option>10 / page</option>
+                    <option>20 / page</option>
                   </select>
                   <ChevronDown size={14} className="select-icon" />
                 </div>
@@ -534,20 +548,6 @@ const ProductManagement = () => {
               </button>
             </div>
           </div>
-        </div>
-      )}
-
-
-      {/* Edit View */}
-      {isEditing && (
-        <div className="dashboard-add-product">
-          <div className="dash-header-simple">
-            <div className="breadcrumb">Dashboard &gt; Products &gt; <span>Add New Product</span></div>
-          </div>
-          <div className="dash-title-section-flex">
-            <div>
-              <h2>Add New Product</h2>
-              <p>Fill in the details below to add a new product to your store.</p>
         </div>
       )}
 
@@ -977,6 +977,18 @@ const ProductManagement = () => {
               <div className="dash-card-content" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 <div>
                   <label style={{ fontSize: '13px', fontWeight: '600', color: '#444', display: 'block', marginBottom: '8px' }}>Overall Rating</label>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    {[1, 2, 3, 4, 5].map(s => (
+                      <Star 
+                        key={s} 
+                        size={28} 
+                        style={{ cursor: 'pointer' }}
+                        fill={(adminReviewHover || adminReviewRating) >= s ? "#ccc" : "transparent"}
+                        color="#ccc" 
+                        onMouseEnter={() => setAdminReviewHover(s)}
+                        onMouseLeave={() => setAdminReviewHover(0)}
+                        onClick={() => setAdminReviewRating(s)}
+                      />
                     ))}
                   </div>
                 </div>
@@ -1017,117 +1029,105 @@ const ProductManagement = () => {
           
           <div className="dash-footer-actions" style={{ justifyContent: 'space-between' }}>
             {currentStep === 1 ? (
-                        <td><input type="text" className="table-input center" placeholder="Enter" value={sg.length} onChange={(e) => handleSizeGuideChange(idx, 'length', e.target.value)} /></td>
-                        <td>
-                          <button className="btn-three-dot danger" style={{ padding: '6px' }} onClick={() => handleRemoveSizeGuide(idx)} title="Remove Row"><Trash2 size={14}/></button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <button className="btn-dash-cancel" onClick={handleCancel}>Cancel</button>
+            ) : (
+              <button className="btn-dash-cancel" onClick={prevStep}><ChevronLeft size={16} /> Previous</button>
+            )}
+            
+            {currentStep < 5 ? (
+              <button className="btn-dash-save" onClick={nextStep}>Next Step <ChevronRight size={16} /></button>
+            ) : (
+              <button className="btn-dash-save" onClick={handleSaveProduct}><Save size={16} /> Save Product</button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Import Modal */}
+      {isImportModalOpen && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255, 255, 255, 0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }} onClick={() => setIsImportModalOpen(false)}>
+          <div style={{ background: '#fff', borderRadius: '16px', width: '95%', maxWidth: '550px', maxHeight: '95vh', padding: '24px', position: 'relative', display: 'flex', flexDirection: 'column', gap: '16px', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)' }} onClick={(e) => e.stopPropagation()}>
+            <button style={{ position: 'absolute', top: '24px', right: '24px', background: 'transparent', border: 'none', cursor: 'pointer', color: '#666' }} onClick={() => setIsImportModalOpen(false)}>
+              <X size={20} />
+            </button>
+            
+            <div>
+              <h2 style={{ fontSize: '24px', fontWeight: 'bold', margin: '0 0 6px 0', color: '#111' }}>Import Products</h2>
+              <p style={{ margin: 0, color: '#555', fontSize: '13px' }}>Upload an Excel file (.xls or .xlsx) to import products in bulk.</p>
             </div>
 
+            {/* Stepper */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative', padding: '0 10px', margin: '4px 0' }}>
+              <div style={{ position: 'absolute', top: '16px', left: '30px', right: '30px', height: '2px', background: '#eaeaea', zIndex: 1 }}></div>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', zIndex: 2, position: 'relative', background: '#fff', padding: '0 10px' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#d37920', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px' }}>1</div>
+                <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#d37920' }}>Upload File</span>
               </div>
-            )}
-            {currentStep === 4 && (
-              <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '20px' }}>
-            {/* Card 7: SEO */}
-            <div className="dash-card" style={{ flex: 1, margin: 0 }}>
-              <div className="dash-card-header">
-                <span className="step-number">7</span>
-                <h3>SEO (Optional)</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', zIndex: 2, position: 'relative', background: '#fff', padding: '0 10px' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#f5f5f5', color: '#888', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px' }}>2</div>
+                <span style={{ fontSize: '12px', fontWeight: '500', color: '#888' }}>Map Columns</span>
               </div>
-                <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#f5f5f5', color: '#888', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '12px' }}>2</div>
-                <span style={{ fontSize: '11px', fontWeight: '500', color: '#888' }}>Map Columns</span>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', zIndex: 2, position: 'relative', background: '#fff', padding: '0 10px' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#f5f5f5', color: '#888', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px' }}>3</div>
+                <span style={{ fontSize: '12px', fontWeight: '500', color: '#888' }}>Preview Data</span>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', zIndex: 2, position: 'relative', background: '#fff', padding: '0 8px' }}>
-                <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#f5f5f5', color: '#888', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '12px' }}>3</div>
-                <span style={{ fontSize: '11px', fontWeight: '500', color: '#888' }}>Preview Data</span>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', zIndex: 2, position: 'relative', background: '#fff', padding: '0 8px' }}>
-                <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#f5f5f5', color: '#888', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '12px' }}>4</div>
-                <span style={{ fontSize: '11px', fontWeight: '500', color: '#888' }}>Import</span>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', zIndex: 2, position: 'relative', background: '#fff', padding: '0 10px' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#f5f5f5', color: '#888', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '14px' }}>4</div>
+                <span style={{ fontSize: '12px', fontWeight: '500', color: '#888' }}>Import</span>
               </div>
             </div>
 
             {/* Drag and Drop Area */}
-            <div style={{ border: '2px dashed #eaeaea', borderRadius: '8px', padding: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', background: '#fafafa' }}>
-              <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: '#e0f3e6', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '8px' }}>
-                <FileSpreadsheet size={20} color="#2e7d32" />
+            <div style={{ border: '2px dashed #eaeaea', borderRadius: '12px', padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', background: '#fafafa' }}>
+              <div style={{ width: '48px', height: '48px', borderRadius: '8px', background: '#e0f3e6', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '12px' }}>
+                <FileSpreadsheet size={24} color="#2e7d32" />
               </div>
-              <h3 style={{ fontSize: '14px', fontWeight: '600', margin: '0 0 6px 0', color: '#111' }}>Drag and drop your Excel file here</h3>
-              <p style={{ margin: '0 0 8px 0', color: '#888', fontSize: '11px' }}>or</p>
+              <h3 style={{ fontSize: '15px', fontWeight: '600', margin: '0 0 8px 0', color: '#111' }}>Drag and drop your Excel file here</h3>
+              <p style={{ margin: '0 0 12px 0', color: '#888', fontSize: '12px' }}>or</p>
               <input type="file" accept=".xls,.xlsx" ref={importFileInputRef} style={{ display: 'none' }} />
-              <button style={{ background: '#d37920', color: '#fff', border: 'none', padding: '6px 20px', borderRadius: '6px', fontWeight: '600', fontSize: '12px', cursor: 'pointer', marginBottom: '12px' }} onClick={() => importFileInputRef.current?.click()}>Choose File</button>
-              <p style={{ margin: '0 0 4px 0', color: '#555', fontSize: '11px' }}>Only Excel files (.xls, .xlsx) are supported</p>
-              <p style={{ margin: 0, color: '#888', fontSize: '10px' }}>Maximum file size: 10MB</p>
+              <button style={{ background: '#d37920', color: '#fff', border: 'none', padding: '8px 24px', borderRadius: '8px', fontWeight: '600', fontSize: '13px', cursor: 'pointer', marginBottom: '16px' }} onClick={() => importFileInputRef.current?.click()}>Choose File</button>
+              <p style={{ margin: '0 0 4px 0', color: '#555', fontSize: '12px' }}>Only Excel files (.xls, .xlsx) are supported</p>
+              <p style={{ margin: 0, color: '#888', fontSize: '11px' }}>Maximum file size: 10MB</p>
             </div>
 
             {/* Download Sample */}
-            <div style={{ background: '#f0f9f4', border: '1px solid #dcf0e3', borderRadius: '8px', padding: '10px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <FileSpreadsheet size={18} color="#2e7d32" />
+            <div style={{ background: '#f0f9f4', border: '1px solid #dcf0e3', borderRadius: '8px', padding: '12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <FileSpreadsheet size={20} color="#2e7d32" />
                 <div>
-                  <h4 style={{ margin: '0 0 2px 0', color: '#2e7d32', fontSize: '12px', fontWeight: '600' }}>Download Sample File</h4>
-                  <p style={{ margin: 0, color: '#4a8e57', fontSize: '11px' }}>Get the example format to prepare your Excel file</p>
+                  <h4 style={{ margin: '0 0 2px 0', color: '#2e7d32', fontSize: '13px', fontWeight: '600' }}>Download Sample File</h4>
+                  <p style={{ margin: 0, color: '#4a8e57', fontSize: '12px' }}>Get the example format to prepare your Excel file</p>
                 </div>
               </div>
-              <Download size={16} color="#2e7d32" />
+              <Download size={18} color="#2e7d32" />
             </div>
 
             {/* Important Notes */}
-            <div style={{ background: '#fff9f0', border: '1px solid #f9eedf', borderRadius: '8px', padding: '12px 14px' }}>
-              <h4 style={{ margin: '0 0 6px 0', color: '#b26112', fontSize: '12px', fontWeight: 'bold' }}>Important Notes</h4>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Check size={12} color="#d37920" />
-                  <span style={{ fontSize: '11px', color: '#555' }}>First row of your file should contain column headers.</span>
+            <div style={{ background: '#fff9f0', border: '1px solid #f9eedf', borderRadius: '8px', padding: '16px' }}>
+              <h4 style={{ margin: '0 0 8px 0', color: '#b26112', fontSize: '13px', fontWeight: 'bold' }}>Important Notes</h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Check size={14} color="#d37920" />
+                  <span style={{ fontSize: '12px', color: '#555' }}>First row of your file should contain column headers.</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Check size={12} color="#d37920" />
-                  <span style={{ fontSize: '11px', color: '#555' }}>Make sure your file follows the sample format.</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Check size={14} color="#d37920" />
+                  <span style={{ fontSize: '12px', color: '#555' }}>Make sure your file follows the sample format.</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Check size={12} color="#d37920" />
-                  <span style={{ fontSize: '11px', color: '#555' }}>Image URLs in Excel will be used for product images.</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Check size={14} color="#d37920" />
+                  <span style={{ fontSize: '12px', color: '#555' }}>Image URLs in Excel will be used for product images.</span>
                 </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Check size={12} color="#d37920" />
-                  <span style={{ fontSize: '11px', color: '#555' }}>Duplicate products (by SKU) will be skipped.</span>
-                </div>
-              </div>
-                  <span style={{ fontSize: '11px', color: '#555' }}>First row of your file should contain column headers.</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Check size={12} color="#d37920" />
-                  <span style={{ fontSize: '11px', color: '#555' }}>Make sure your file follows the sample format.</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Check size={12} color="#d37920" />
-                  <span style={{ fontSize: '11px', color: '#555' }}>Image URLs in Excel will be used for product images.</span>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <Check size={12} color="#d37920" />
-                  <span style={{ fontSize: '11px', color: '#555' }}>Duplicate products (by SKU) will be skipped.</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Check size={14} color="#d37920" />
+                  <span style={{ fontSize: '12px', color: '#555' }}>Duplicate products (by SKU) will be skipped.</span>
                 </div>
               </div>
             </div>
 
             {/* Footer Actions */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '24px', marginBottom: '8px' }}>
-              <button style={{ padding: '8px 20px', background: '#fff', border: '1px solid #ddd', borderRadius: '6px', fontWeight: '600', fontSize: '12px', color: '#555', cursor: 'pointer' }} onClick={() => setIsImportModalOpen(false)}>Cancel</button>
-              <button style={{ padding: '8px 20px', background: '#d37920', border: 'none', borderRadius: '6px', fontWeight: '600', fontSize: '12px', color: '#fff', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}>Next <ArrowRight size={14} /></button>
-            </div>
-          </div>
-        </div>
-      )}
-
-    </div>
-  );
-};
-
-export default ProductManagement;
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
               <button style={{ padding: '10px 24px', background: '#fff', border: '1px solid #ddd', borderRadius: '8px', fontWeight: '600', fontSize: '13px', color: '#555', cursor: 'pointer' }} onClick={() => setIsImportModalOpen(false)}>Cancel</button>
               <button style={{ padding: '10px 24px', background: '#d37920', border: 'none', borderRadius: '8px', fontWeight: '600', fontSize: '13px', color: '#fff', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>Next <ArrowRight size={16} /></button>
             </div>
