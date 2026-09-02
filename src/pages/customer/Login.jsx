@@ -2,9 +2,8 @@ import React, { useState, useEffect } from 'react';
 import './Login.css';
 import { useNavigate, Link } from 'react-router-dom';
 import WelcomeScreen from '../../components/WelcomeScreen';
-import { GoogleLogin } from '@react-oauth/google';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
-import { loginUser, googleLoginApi } from '../../services/api';
+import { loginUser } from '../../services/api';
 import bgImage from '../../assets/banners/register_bg.jpg';
 
 const Login = () => {
@@ -21,31 +20,7 @@ const Login = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const handleGoogleSuccess = async (credentialResponse) => {
-    try {
-      setLoading(true);
-      const response = await googleLoginApi({ credential: credentialResponse.credential });
-      const data = response.data;
-      if (data.success || data.token) {
-        localStorage.setItem('token', data.token);
-        if (data.user) {
-          localStorage.setItem('user', JSON.stringify(data.user));
-        }
-        window.scrollTo(0, 0);
-        if (data.user?.role === 'admin') {
-          setWelcomeRedirect('/dashboard'); setShowWelcome(true);
-        } else {
-          setWelcomeRedirect('/'); setShowWelcome(true);
-        }
-      } else {
-        setErrorMsg(data.message || 'Google Login failed');
-      }
-    } catch (err) {
-      setErrorMsg(err.response?.data?.message || 'Google Login failed.');
-    } finally {
-      setLoading(false);
-    }
-  };
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -131,23 +106,7 @@ const Login = () => {
                 </button>
               </form>
 
-              <div className="login-divider">
-                <span>or</span>
-              </div>
 
-              <div className="premium-google-btn-wrapper">
-
-                <GoogleLogin
-                  onSuccess={handleGoogleSuccess}
-                  onError={() => setErrorMsg('Google Login Failed')}
-                  theme="outline"
-                  size="large"
-                  text="continue_with"
-                  shape="pill"
-                  width="360"
-                />
-              
-                </div>
 
               <div className="register-prompt">
                 Don't have an account? <Link to="/register" className="register-link">Register</Link>
