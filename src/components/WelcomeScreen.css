@@ -73,17 +73,12 @@
   font-weight: 800;
   margin: 0 0 12px 0;
   letter-spacing: 2px;
-  background: linear-gradient(90deg, #FFFFFF, #FFC107, #FFFFFF);
-  background-size: 200% auto;
-  color: transparent;
-  -webkit-background-clip: text;
-  background-clip: text;
-  animation: shine 2.5s linear infinite, slideUpFade 1s ease-out forwards;
+  color: #FFFFFF;
+  text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.8), 0px 0px 10px rgba(255, 255, 255, 0.4);
+  animation: slideUpFade 1s ease-out forwards;
   animation-delay: 0.6s;
   opacity: 0;
   transform: translateY(20px);
-  /* Crisp drop shadow instead of heavy blur */
-  filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.8));
 }
 
 .welcome-subtext {

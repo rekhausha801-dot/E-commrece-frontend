@@ -31,7 +31,11 @@ export default function CustomizeTShirt() {
 
   const [activeThumb, setActiveThumb] = useState(0);
 
-  const selectedDesignObj = DESIGNS.find(d => d.id === selectedDesign);
+  const availableDesigns = (product?.designs && product.designs.length > 0)
+    ? product.designs
+    : DESIGNS;
+
+  const selectedDesignObj = availableDesigns.find(d => d.id === selectedDesign || d._id === selectedDesign);
   const mainImage = product.image || defaultMainImage;
 
   return (
@@ -50,16 +54,28 @@ export default function CustomizeTShirt() {
             {selectedDesignObj && (
               <div style={{
                 position: 'absolute',
-                top: '55%',
+                top: '60%',
                 left: '50%',
                 transform: 'translate(-50%, -50%)',
                 pointerEvents: 'none',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                width: '140px',
+                height: '140px',
                 mixBlendMode: 'multiply'
               }}>
-                {React.cloneElement(selectedDesignObj.icon, { size: 140, color: selectedDesignColor })}
+                {typeof selectedDesignObj.icon === 'string' || selectedDesignObj.iconName ? (
+                  selectedDesignObj.icon ? (
+                    <img src={selectedDesignObj.icon} alt={selectedDesignObj.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                  ) : (
+                    <ImageIcon size={140} color={selectedDesignColor} strokeWidth={1} />
+                  )
+                ) : (
+                  React.isValidElement(selectedDesignObj.icon)
+                    ? React.cloneElement(selectedDesignObj.icon, { size: 140, color: selectedDesignColor })
+                    : <ImageIcon size={140} color={selectedDesignColor} strokeWidth={1} />
+                )}
               </div>
             )}
           </div>
@@ -102,23 +118,33 @@ export default function CustomizeTShirt() {
             <p className="step-subtitle">Pick a design that you want to print on your t-shirt.</p>
 
             <div className="designs-grid">
-              {DESIGNS.map((design) => (
-                <div
-                  key={design.id}
-                  className={`design-card ${selectedDesign === design.id ? 'selected' : ''}`}
-                  onClick={() => setSelectedDesign(design.id)}
-                >
-                  {selectedDesign === design.id && (
-                    <div className="design-selected-check">
-                      <Check size={14} color="#fff" strokeWidth={3} />
+              {availableDesigns.map((design) => {
+                const desId = design.id || design._id;
+                const isSelected = selectedDesign === desId;
+                return (
+                  <div
+                    key={desId}
+                    className={`design-card ${isSelected ? 'selected' : ''}`}
+                    onClick={() => setSelectedDesign(desId)}
+                  >
+                    {isSelected && (
+                      <div className="design-selected-check">
+                        <Check size={14} color="#fff" strokeWidth={3} />
+                      </div>
+                    )}
+                    <div className="design-icon-wrap" style={{ width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {typeof design.icon === 'string' ? (
+                        <img src={design.icon} alt={design.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                      ) : React.isValidElement(design.icon) ? (
+                        design.icon
+                      ) : (
+                        <ImageIcon size={48} strokeWidth={1} />
+                      )}
                     </div>
-                  )}
-                  <div className="design-icon-wrap">
-                    {design.icon}
+                    <span className="design-name">{design.name}</span>
                   </div>
-                  <span className="design-name">{design.name}</span>
-                </div>
-              ))}
+                );
+              })}
             </div>
             {/* Design Color Picker */}
             {selectedDesign && (

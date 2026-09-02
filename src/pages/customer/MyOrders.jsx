@@ -274,7 +274,7 @@ const MyOrders = () => {
                                   {expandedOrder === order.id ? 'Hide Details' : 'View Details'}
                                 </button>
                                 <button onClick={() => setMenuOpenId(null)}>Download Invoice</button>
-                                {order.paymentMethod?.type?.toLowerCase() === 'cod' && ['Pending', 'Processing'].includes(order.status) && (
+                                {(order.paymentMethod?.type?.toLowerCase() === 'cod' || order.paymentMethod?.label?.toLowerCase().includes('cash on delivery') || String(order.paymentMethod).toLowerCase().includes('cod')) && ['Pending', 'Processing'].includes(order.status) && (
                                   <button className="mo-text-danger" onClick={() => handleCancelClick(order.id)}>Cancel Order</button>
                                 )}
                               </div>

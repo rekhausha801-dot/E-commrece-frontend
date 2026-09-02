@@ -170,32 +170,21 @@ const AddAddress = () => {
             <label>City</label>
             <div className="aa-input-with-icon">
               <Building size={18} className="aa-input-icon" />
-              <select name="city" value={formData.city} onChange={handleChange} className="aa-select has-icon">
-                <option value="">Select city</option>
-                <option value="Vellore">Vellore</option>
-                <option value="Chennai">Chennai</option>
-              </select>
+              <input type="text" name="city" placeholder="City (e.g. Chennai, Madurai)" value={formData.city} onChange={handleChange} className="aa-input has-icon" />
             </div>
           </div>
           <div className="aa-form-group">
             <label>State</label>
             <div className="aa-input-with-icon">
               <Map size={18} className="aa-input-icon" />
-              <select name="state" value={formData.state} onChange={handleChange} className="aa-select has-icon">
-                <option value="">Select state</option>
-                <option value="Tamil Nadu">Tamil Nadu</option>
-                <option value="Kerala">Kerala</option>
-              </select>
+              <input type="text" name="state" placeholder="State (e.g. Tamil Nadu)" value={formData.state} onChange={handleChange} className="aa-input has-icon" />
             </div>
           </div>
           <div className="aa-form-group">
             <label>Country</label>
             <div className="aa-input-with-icon">
               <Globe size={18} className="aa-input-icon" />
-              <select name="country" value={formData.country} onChange={handleChange} className="aa-select has-icon">
-                <option value="India">India</option>
-                <option value="USA">USA</option>
-              </select>
+              <input type="text" name="country" placeholder="India" value={formData.country} onChange={handleChange} className="aa-input has-icon" />
             </div>
           </div>
         </div>
