@@ -361,11 +361,15 @@ export default function ProductDetail() {
     const isKurti = currentTitle.includes('kurti') || currentTitle.includes('kurta');
     const isTshirt = currentTitle.includes('t-shirt') || currentTitle.includes('tshirt') || currentTitle.includes('shirt') || currentTitle.includes('top');
     const isDress = currentTitle.includes('dress');
+    const isShoe = currentTitle.includes('shoe') || currentTitle.includes('sneaker') || currentTitle.includes('footwear');
 
     return contextProducts.filter(p => {
       if (p.id === product.id) return false;
 
-      const sameCategory = p.categoryId === product.categoryId || p.category?.toLowerCase() === product.category?.toLowerCase();
+      const pCat = (p.category?.name || p.category || 'Uncategorized').toLowerCase();
+      const currCat = (product.category?.name || product.category || 'Uncategorized').toLowerCase();
+      const sameCategory = (p.categoryId === product.categoryId && p.categoryId) || (pCat === currCat && pCat !== 'uncategorized');
+      
       const pTitle = (p.title || '').toLowerCase();
       let keywordMatch = true;
 
@@ -375,9 +379,16 @@ export default function ProductDetail() {
         keywordMatch = pTitle.includes('t-shirt') || pTitle.includes('tshirt') || pTitle.includes('shirt') || pTitle.includes('top');
       } else if (isDress) {
         keywordMatch = pTitle.includes('dress');
+      } else if (isShoe) {
+        keywordMatch = pTitle.includes('shoe') || pTitle.includes('sneaker') || pTitle.includes('footwear');
+      } else {
+        if (pCat === 'uncategorized' && currCat === 'uncategorized') {
+           const firstWord = currentTitle.split(' ')[0];
+           keywordMatch = firstWord ? pTitle.includes(firstWord) : false;
+        }
       }
 
-      return sameCategory && keywordMatch;
+      return sameCategory || keywordMatch;
     }).slice(0, 4);
   }, [contextProducts, product]);
 

@@ -131,11 +131,13 @@ const SummerBanner = () => {
             </div>
 
             <h2 className="summer-title" style={{ fontSize: slides[currentSlide]?.title ? '42px' : '48px', lineHeight: '1.2' }}>
-              {slides[currentSlide]?.title ? slides[currentSlide].title.split(' ')[0] : 'SUMMER'}
+              {slides[currentSlide]?.title ? (slides[currentSlide].title.includes(' ') ? slides[currentSlide].title.split(' ')[0] : slides[currentSlide].title) : 'SUMMER'}
             </h2>
-            <h3 className="summer-subtitle" style={{ fontSize: slides[currentSlide]?.title ? '32px' : '36px' }}>
-              {slides[currentSlide]?.title ? slides[currentSlide].title.substring(slides[currentSlide].title.indexOf(' ') + 1) : 'COLLECTIONS'}
-            </h3>
+            {(!slides[currentSlide]?.title || slides[currentSlide].title.includes(' ')) && (
+              <h3 className="summer-subtitle" style={{ fontSize: slides[currentSlide]?.title ? '32px' : '36px' }}>
+                {slides[currentSlide]?.title ? slides[currentSlide].title.substring(slides[currentSlide].title.indexOf(' ') + 1) : 'COLLECTIONS'}
+              </h3>
+            )}
 
             <p className="summer-desc">
               {slides[currentSlide]?.description || (

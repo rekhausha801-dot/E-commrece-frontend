@@ -14,7 +14,7 @@ const CategoryOptionsBanner = ({ selectedCategories, setSelectedCategories }) =>
     if (selectedCategories.includes(categoryId)) {
       setSelectedCategories(selectedCategories.filter(c => c !== categoryId));
     } else {
-      setSelectedCategories([categoryId]); // Single select or multi-select, let's do single select for banner to easily switch
+      setSelectedCategories([categoryId]); 
     }
   };
 

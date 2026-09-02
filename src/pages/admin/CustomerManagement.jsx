@@ -20,12 +20,6 @@ const renderCustomDot = (props) => {
 
 
 
-const mockRecentOrders = [
-  { id: '#ORD12540', date: '12 Aug 2026', amount: '₹2,450', status: 'Delivered' },
-  { id: '#ORD12510', date: '05 Aug 2026', amount: '₹1,299', status: 'Delivered' },
-  { id: '#ORD12450', date: '28 Jul 2026', amount: '₹3,650', status: 'Shipped' },
-  { id: '#ORD12390', date: '20 Jul 2026', amount: '₹2,199', status: 'Delivered' },
-];
 
 const CustomerManagement = () => {
   const [customers, setCustomers] = useState([]);

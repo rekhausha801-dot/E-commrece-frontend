@@ -63,6 +63,7 @@ const CustomSelect = ({ value, onChange, options, placeholder, disabled }) => {
 
 const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
   const [productName, setProductName] = useState(editingProduct?.name || '');
+  const [isSaving, setIsSaving] = useState(false);
   const [price, setPrice] = useState(editingProduct?.originalPrice?.replace(/[^0-9.]/g, '') || '');
   const [sku, setSku] = useState(editingProduct?.sku || '');
   const [category, setCategory] = useState(editingProduct?.categoryId || editingProduct?.category || '');
@@ -246,7 +247,8 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
   };
 
 
-  const handleSaveClick = () => {
+  const handleSaveClick = async () => {
+    if (isSaving) return;
     if (!productName || !productName.trim()) {
       alert("Product name is required.");
       return;
@@ -319,8 +321,24 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
       limitedOfferEndDate: (isLimitedOffer || homeSection === 'Limited Offers') && limitedOfferDetails.endDate ? new Date(limitedOfferDetails.endDate).toISOString() : null
     };
 
-    onSave(productToSave);
+    setIsSaving(true);
+    try {
+      await onSave(productToSave);
+    } finally {
+      setIsSaving(false);
+    }
   };
+
+  const displaySectionOptions = [
+    'None', 'Trending', 'Limited Offers', 'New Arrivals', 'Best Sellers', 'Featured', 'Kurti Collection', 'Shirt Collection',
+    'Home - Hero Section', 'Home - Middle Section', 'Home - Bottom Section', 'Category Page', 'Product Page (All)',
+    ...categoryOptions.flatMap(cat => [
+      { label: `Category Page - ${cat.label}`, value: `Category Page - ${cat.label.toLowerCase().replace(/\s+/g, '-')}` },
+      { label: `Product Page - ${cat.label}`, value: `Product Page - ${cat.label.toLowerCase().replace(/\s+/g, '-')}` }
+    ]),
+    'Product Page - Kurti', 'Product Page - T-Shirt', 'Product Page - Shirt', 'Product Page - Suit',
+    'Checkout Page', 'Coupon Page'
+  ];
 
   return (
     <div className="add-product-page" style={{ background: '#fff', borderRadius: '12px', padding: '24px', border: '1px solid #f0f0f0', boxShadow: '0 2px 6px rgba(0,0,0,0.02)', display: 'flex', flexDirection: 'column', minHeight: '100%', flex: 1, overflowY: 'auto' }}>
@@ -339,8 +357,8 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
             <p style={{ margin: 0, fontSize: '12px', color: '#4b5563' }}>Fill in the details below to add a new product to your store.</p>
           </div>
           <div className="header-actions" style={{ display: 'flex', gap: '12px' }}>
-            <button className="btn-cancel" onClick={onCancel} style={{ padding: '8px 16px', border: '1px solid #d1d5db', background: '#fff', color: '#111827', borderRadius: '6px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer' }}>Cancel</button>
-            <button className="btn-save" onClick={handleSaveClick} style={{ padding: '8px 16px', border: 'none', background: '#a66c24', color: '#fff', borderRadius: '6px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>Save Product <Save size={16} /></button>
+            <button className="btn-cancel" onClick={onCancel} style={{ padding: '8px 16px', border: '1px solid #d1d5db', background: '#fff', color: '#111827', borderRadius: '6px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer' }} disabled={isSaving}>Cancel</button>
+            <button className="btn-save" onClick={handleSaveClick} disabled={isSaving} style={{ padding: '8px 16px', border: 'none', background: isSaving ? '#d1d5db' : '#a66c24', color: '#fff', borderRadius: '6px', fontSize: '13px', fontWeight: 'bold', cursor: isSaving ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>{isSaving ? 'Saving...' : <>Save Product <Save size={16} /></>}</button>
           </div>
         </div>
       </div>
@@ -542,7 +560,7 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
                         <CustomSelect
                           value={homeSection}
                           onChange={setHomeSection}
-                          options={['None', 'Trending', 'Limited Offers', 'New Arrivals', 'Best Sellers', 'Featured']}
+                          options={displaySectionOptions}
                           placeholder="Select section"
                         />
                       </div>
@@ -566,28 +584,8 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
                           <Timer size={16} />
                           Limited Offer Configuration
                         </h5>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px' }}>
-                          <div className="form-group" style={{ margin: 0 }}>
-                            <label style={{ display: 'block', fontSize: '11px', fontWeight: '600', color: '#4b5563', marginBottom: '6px' }}>Offer Price (₹)</label>
-                            <input
-                              type="number"
-                              placeholder="e.g. 1499"
-                              value={limitedOfferDetails.offerPrice}
-                              onChange={(e) => setLimitedOfferDetails({ ...limitedOfferDetails, offerPrice: e.target.value })}
-                              style={{ width: '100%', padding: '8px 12px', fontSize: '13px', border: '1px solid #e5e7eb', borderRadius: '6px', boxSizing: 'border-box' }}
-                            />
-                          </div>
-                          <div className="form-group" style={{ margin: 0 }}>
-                            <label style={{ display: 'block', fontSize: '11px', fontWeight: '600', color: '#4b5563', marginBottom: '6px' }}>Stock Limit</label>
-                            <input
-                              type="number"
-                              placeholder="e.g. 50"
-                              value={limitedOfferDetails.stockLimit}
-                              onChange={(e) => setLimitedOfferDetails({ ...limitedOfferDetails, stockLimit: e.target.value })}
-                              style={{ width: '100%', padding: '8px 12px', fontSize: '13px', border: '1px solid #e5e7eb', borderRadius: '6px', boxSizing: 'border-box' }}
-                            />
-                          </div>
-                          <div className="form-group" style={{ margin: 0 }}>
+                        <div style={{ display: 'flex', gap: '16px' }}>
+                          <div className="form-group" style={{ margin: 0, flex: 1, minWidth: 0 }}>
                             <label style={{ display: 'block', fontSize: '11px', fontWeight: '600', color: '#4b5563', marginBottom: '6px' }}>Start Time</label>
                             <input
                               type="datetime-local"
@@ -596,7 +594,7 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
                               style={{ width: '100%', padding: '8px 12px', fontSize: '13px', border: '1px solid #e5e7eb', borderRadius: '6px', boxSizing: 'border-box' }}
                             />
                           </div>
-                          <div className="form-group" style={{ margin: 0 }}>
+                          <div className="form-group" style={{ margin: 0, flex: 1, minWidth: 0 }}>
                             <label style={{ display: 'block', fontSize: '11px', fontWeight: '600', color: '#4b5563', marginBottom: '6px' }}>End Time</label>
                             <input
                               type="datetime-local"
@@ -978,7 +976,7 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
                       <p style={{ margin: 0, fontSize: '12px', color: '#6b7280' }}>Help customers find answers to common questions.</p>
                     </div>
                   </div>
-                  <button onClick={() => setFaqs([...faqs, { question: '', answer: '', status: 'Active' }])} style={{ background: '#fff', border: '1px solid #f9eedc', color: '#a66c24', padding: '8px 16px', borderRadius: '6px', fontSize: '12px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer' }}><Plus size={14} color="#a66c24" /> Add FAQ</button>
+                  <button onClick={() => setFaqs([...faqs, { question: '', answer: '', status: 'Active' }])} style={{ background: '#fff', border: '1px solid #f9eedc', color: '#a66c24', padding: '8px 16px', borderRadius: '6px', fontSize: '12px', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', whiteSpace: 'nowrap' }}><Plus size={14} color="#a66c24" /> Add FAQ</button>
                 </div>
                 <div className="card-body" style={{ padding: '0 24px 24px 24px' }}>
                   <div style={{ border: '1px solid #f0f0f0', borderRadius: '8px', overflow: 'hidden' }}>
@@ -1013,34 +1011,7 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
                 </div>
               </div>
 
-              {/* Row 4: Full Width */}
-              <div className="new-card" style={{ gridColumn: '1 / -1' }}>
-                <div className="card-header">
-                  <span className="card-badge">9</span>
-                  <h3>Related Products</h3>
-                </div>
-                <div className="card-body">
-                  <div className="search-row" style={{ display: 'flex', gap: '16px', alignItems: 'center', marginBottom: '16px' }}>
-                    <div className="search-input" style={{ flex: 1, position: 'relative' }}>
-                      <Search size={14} color="#999" style={{ position: 'absolute', left: '12px', top: '10px' }} />
-                      <input type="text" placeholder="Enter Product ID to link..." value={relatedInput} onChange={e => setRelatedInput(e.target.value)} style={{ paddingLeft: '32px', width: '100%', padding: '8px', border: '1px solid #e5e7eb', borderRadius: '6px', boxSizing: 'border-box' }} />
-                    </div>
-                    <button onClick={() => { if (relatedInput) { setRelatedProducts([...relatedProducts, relatedInput]); setRelatedInput(''); } }} className="btn-text-add" style={{ padding: '8px 16px', border: '1px solid #efe5d4', background: '#fff', color: '#d37920', borderRadius: '6px', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer' }}>+ Add Product</button>
-                  </div>
-                  {relatedProducts.length > 0 ? (
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                      {relatedProducts.map((p, i) => (
-                        <div key={i} style={{ background: '#fdfbf7', border: '1px solid #f9eedc', color: '#a66c24', padding: '6px 12px', borderRadius: '4px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: '600' }}>
-                          {p}
-                          <X size={14} style={{ cursor: 'pointer', color: '#ef4444' }} onClick={() => setRelatedProducts(relatedProducts.filter((_, idx) => idx !== i))} />
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="empty-related" style={{ marginTop: '24px', color: '#888', fontSize: '12px', textAlign: 'center' }}>No related products added</div>
-                  )}
-                </div>
-              </div>
+
 
             </>
           )}
@@ -1049,9 +1020,9 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
           <div style={{ gridColumn: '1 / -1', position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 0 24px 0', marginTop: '0' }}>
             <div>
               {activePage === 2 ? (
-                <button style={{ border: '1px solid #d1d5db', background: '#fff', color: '#111827', padding: '12px 20px', borderRadius: '6px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => setActivePage(1)}><span style={{ color: '#111827' }}>&larr;</span> Previous Page</button>
+                <button type="button" style={{ border: '1px solid #d1d5db', background: '#fff', color: '#111827', padding: '12px 20px', borderRadius: '6px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => setActivePage(1)} disabled={isSaving}><span style={{ color: '#111827' }}>&larr;</span> Previous Page</button>
               ) : (
-                <button style={{ border: '1px solid #d1d5db', background: '#fff', color: '#111827', padding: '12px 20px', borderRadius: '6px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer', margin: 0 }} onClick={onCancel}>Cancel</button>
+                <button type="button" style={{ border: '1px solid #d1d5db', background: '#fff', color: '#111827', padding: '12px 20px', borderRadius: '6px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer', margin: 0 }} onClick={onCancel} disabled={isSaving}>Cancel</button>
               )}
             </div>
 
@@ -1062,9 +1033,9 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
 
             <div>
               {activePage === 1 ? (
-                <button style={{ background: '#a66c24', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: '6px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => setActivePage(2)}>Next Page <ArrowRight size={16} /></button>
+                <button type="button" style={{ background: '#a66c24', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: '6px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => setActivePage(2)} disabled={isSaving}>Next Page <ArrowRight size={16} /></button>
               ) : (
-                <button style={{ background: '#a66c24', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: '6px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={handleSaveClick}>Save Product <Save size={16} /></button>
+                <button type="button" style={{ background: isSaving ? '#d1d5db' : '#a66c24', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: '6px', fontSize: '13px', fontWeight: 'bold', cursor: isSaving ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={handleSaveClick} disabled={isSaving}>{isSaving ? 'Saving...' : <>Save Product <Save size={16} /></>}</button>
               )}
             </div>
           </div>
