@@ -329,7 +329,53 @@
 }
 
 @media (max-width: 900px) {
-  .lux-cart-layout {
+  .lux-cart-layout,
+  .lux-address-header-container,
+  .lux-address-cards-container {
     grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .lux-address-header-container {
+    margin-bottom: 16px;
+  }
+}
+
+@media (max-width: 600px) {
+  .lux-address-layout {
+    padding: 0 16px;
+    margin: 20px auto;
+  }
+
+  .lux-address-page {
+    padding-top: 20px;
+    padding-bottom: 40px;
+  }
+
+  .lux-address-card {
+    padding: 16px;
+  }
+
+  .addr-price-details-card {
+    padding: 16px;
+  }
+
+  .deliver-btn {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 16px;
+  }
+
+  .address-name {
+    font-size: 15px;
+  }
+
+  .address-details,
+  .address-phone {
+    margin-left: 0;
+  }
+  
+  .card-top-row {
+    margin-bottom: 8px;
   }
 }

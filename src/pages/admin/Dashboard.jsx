@@ -80,10 +80,17 @@ const Dashboard = () => {
     fetchDashboardData();
   }, [revenueFilterLabel]);
 
-  const [activeTab, setActiveTab] = useState('Dashboard');
+  const [activeTab, setActiveTab] = useState(() => {
+    return localStorage.getItem('adminPanelActiveTab') || 'Dashboard';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('adminPanelActiveTab', activeTab);
+  }, [activeTab]);
+
   const [settingsTab, setSettingsTab] = useState('General');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [globalSearch, setGlobalSearch] = useState('');
   const [isLogoutModalVisible, setIsLogoutModalVisible] = useState(false);
   const [categoriesFilterLabel, setCategoriesFilterLabel] = useState('Last 6 Months');
@@ -168,7 +175,8 @@ const Dashboard = () => {
 
   return (
     <div className={`dashboard-container ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
-      <aside className="dashboard-sidebar">
+      <div className={`sidebar-overlay ${isSidebarOpen ? 'active' : ''}`} onClick={() => setIsSidebarOpen(false)}></div>
+      <aside className={`dashboard-sidebar ${isSidebarOpen ? 'mobile-open' : ''}`}>
         <div className="sidebar-top">
           <div className="sidebar-logo">
             <div className="logo-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -179,19 +187,19 @@ const Dashboard = () => {
           </div>
 
           <nav className="sidebar-nav">
-            <button className={`nav-item ${activeTab === 'Dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('Dashboard')}><LayoutDashboard size={18} className="nav-icon" /> <span className="nav-text">Dashboard</span></button>
-            <button className={`nav-item ${activeTab === 'Products' ? 'active' : ''}`} onClick={() => setActiveTab('Products')}><Package size={18} className="nav-icon" /> <span className="nav-text">Products</span></button>
-            <button className={`nav-item ${activeTab === 'Categories' ? 'active' : ''}`} onClick={() => setActiveTab('Categories')}><Grid size={18} className="nav-icon" /> <span className="nav-text">Categories</span></button>
-            <button className={`nav-item ${activeTab === 'Brands' ? 'active' : ''}`} onClick={() => setActiveTab('Brands')}><Zap size={18} className="nav-icon" /> <span className="nav-text">Brands</span></button>
-            <button className={`nav-item ${activeTab === 'Orders' ? 'active' : ''}`} onClick={() => setActiveTab('Orders')}><ShoppingCart size={18} className="nav-icon" /> <span className="nav-text">Orders</span></button>
-            <button className={`nav-item ${activeTab === 'Customers' ? 'active' : ''}`} onClick={() => setActiveTab('Customers')}><Users size={18} className="nav-icon" /> <span className="nav-text">Customers</span></button>
-            <button className={`nav-item ${activeTab === 'Coupons' ? 'active' : ''}`} onClick={() => setActiveTab('Coupons')}><Zap size={18} className="nav-icon" /> <span className="nav-text">Coupons</span></button>
-            <button className={`nav-item ${activeTab === 'Reviews' ? 'active' : ''}`} onClick={() => setActiveTab('Reviews')}><Settings size={18} className="nav-icon" /> <span className="nav-text">Reviews</span></button>
-            <button className={`nav-item ${activeTab === 'Banners' ? 'active' : ''}`} onClick={() => setActiveTab('Banners')}><FileText size={18} className="nav-icon" /> <span className="nav-text">Banners</span></button>
-            <button className={`nav-item ${activeTab === 'Reports' ? 'active' : ''}`} onClick={() => setActiveTab('Reports')}><PieChart size={18} className="nav-icon" /> <span className="nav-text">Reports</span></button>
-            <button className={`nav-item ${activeTab === 'Notifications' ? 'active' : ''}`} onClick={() => setActiveTab('Notifications')}><Bell size={18} className="nav-icon" /> <span className="nav-text">Notifications</span></button>
-            <button className={`nav-item ${activeTab === 'HelpSupport' ? 'active' : ''}`} onClick={() => setActiveTab('HelpSupport')}><Headphones size={18} className="nav-icon" /> <span className="nav-text">Help Support</span></button>
-            <button className={`nav-item ${activeTab === 'Settings' ? 'active' : ''}`} onClick={() => setActiveTab('Settings')}><Settings size={18} className="nav-icon" /> <span className="nav-text">Settings</span></button>
+            <button className={`nav-item ${activeTab === 'Dashboard' ? 'active' : ''}`} onClick={() => { setActiveTab('Dashboard'); setIsSidebarOpen(false); }}><LayoutDashboard size={18} className="nav-icon" /> <span className="nav-text">Dashboard</span></button>
+            <button className={`nav-item ${activeTab === 'Products' ? 'active' : ''}`} onClick={() => { setActiveTab('Products'); setIsSidebarOpen(false); }}><Package size={18} className="nav-icon" /> <span className="nav-text">Products</span></button>
+            <button className={`nav-item ${activeTab === 'Categories' ? 'active' : ''}`} onClick={() => { setActiveTab('Categories'); setIsSidebarOpen(false); }}><Grid size={18} className="nav-icon" /> <span className="nav-text">Categories</span></button>
+            <button className={`nav-item ${activeTab === 'Brands' ? 'active' : ''}`} onClick={() => { setActiveTab('Brands'); setIsSidebarOpen(false); }}><Zap size={18} className="nav-icon" /> <span className="nav-text">Brands</span></button>
+            <button className={`nav-item ${activeTab === 'Orders' ? 'active' : ''}`} onClick={() => { setActiveTab('Orders'); setIsSidebarOpen(false); }}><ShoppingCart size={18} className="nav-icon" /> <span className="nav-text">Orders</span></button>
+            <button className={`nav-item ${activeTab === 'Customers' ? 'active' : ''}`} onClick={() => { setActiveTab('Customers'); setIsSidebarOpen(false); }}><Users size={18} className="nav-icon" /> <span className="nav-text">Customers</span></button>
+            <button className={`nav-item ${activeTab === 'Coupons' ? 'active' : ''}`} onClick={() => { setActiveTab('Coupons'); setIsSidebarOpen(false); }}><Zap size={18} className="nav-icon" /> <span className="nav-text">Coupons</span></button>
+            <button className={`nav-item ${activeTab === 'Reviews' ? 'active' : ''}`} onClick={() => { setActiveTab('Reviews'); setIsSidebarOpen(false); }}><Settings size={18} className="nav-icon" /> <span className="nav-text">Reviews</span></button>
+            <button className={`nav-item ${activeTab === 'Banners' ? 'active' : ''}`} onClick={() => { setActiveTab('Banners'); setIsSidebarOpen(false); }}><FileText size={18} className="nav-icon" /> <span className="nav-text">Banners</span></button>
+            <button className={`nav-item ${activeTab === 'Reports' ? 'active' : ''}`} onClick={() => { setActiveTab('Reports'); setIsSidebarOpen(false); }}><PieChart size={18} className="nav-icon" /> <span className="nav-text">Reports</span></button>
+            <button className={`nav-item ${activeTab === 'Notifications' ? 'active' : ''}`} onClick={() => { setActiveTab('Notifications'); setIsSidebarOpen(false); }}><Bell size={18} className="nav-icon" /> <span className="nav-text">Notifications</span></button>
+            <button className={`nav-item ${activeTab === 'HelpSupport' ? 'active' : ''}`} onClick={() => { setActiveTab('HelpSupport'); setIsSidebarOpen(false); }}><Headphones size={18} className="nav-icon" /> <span className="nav-text">Help Support</span></button>
+            <button className={`nav-item ${activeTab === 'Settings' ? 'active' : ''}`} onClick={() => { setActiveTab('Settings'); setIsSidebarOpen(false); }}><Settings size={18} className="nav-icon" /> <span className="nav-text">Settings</span></button>
           </nav>
         </div>
 
@@ -213,7 +221,15 @@ const Dashboard = () => {
 
         <header className="dashboard-header">
           <div className="header-left">
-            <button className="menu-toggle" onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}><Menu size={20} color="#a07d4b" /></button>
+            <button className="menu-toggle" onClick={() => {
+              if (window.innerWidth <= 1024) {
+                setIsSidebarOpen(!isSidebarOpen);
+              } else {
+                setIsSidebarCollapsed(!isSidebarCollapsed);
+              }
+            }}>
+              <Menu size={20} color="#a07d4b" />
+            </button>
             <div className="header-title-wrap">
               <h2>Dashboard</h2>
               <div className="breadcrumbs">
@@ -449,11 +465,12 @@ const Dashboard = () => {
                     })()} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
                       <defs>
                         <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#c9a05b" stopOpacity={0.6} />
-                          <stop offset="95%" stopColor="#c9a05b" stopOpacity={0} />
+                          <stop offset="0%" stopColor="#c9a05b" stopOpacity={0.4} />
+                          <stop offset="75%" stopColor="#c9a05b" stopOpacity={0.05} />
+                          <stop offset="100%" stopColor="#c9a05b" stopOpacity={0} />
                         </linearGradient>
                       </defs>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eae1d1" />
+                      <CartesianGrid strokeDasharray="4 4" vertical={false} stroke="#f0e9dc" opacity={0.6} />
                       <XAxis
                         dataKey="name"
                         axisLine={false}
@@ -471,22 +488,25 @@ const Dashboard = () => {
                         return isAllZero ? '0' : `${value === 0 ? '0' : value / 1000 + 'K'}`;
                       }} />
                       <RechartsTooltip
-                        cursor={{ stroke: '#e0e0e0', strokeWidth: 1, strokeDasharray: '4 4' }}
+                        cursor={{ stroke: '#c9a05b', strokeWidth: 1, strokeDasharray: '4 4', opacity: 0.5 }}
                         content={({ active, payload, label }) => {
                           if (active && payload && payload.length) {
                             const d = new Date(label);
                             const dateStr = isNaN(d.getTime()) ? label : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
                             return (
-                              <div style={{ background: '#fff', padding: '10px 14px', border: '1px solid #e5e7eb', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-                                <div style={{ color: '#1f2937', fontSize: '14px', fontWeight: '500', marginBottom: '6px' }}>{dateStr}</div>
-                                <div style={{ color: '#c9a05b', fontSize: '14px' }}>revenue : ₹{payload[0].payload.actualRevenue}</div>
+                              <div style={{ background: 'rgba(255, 255, 255, 0.95)', backdropFilter: 'blur(10px)', padding: '12px 16px', border: '1px solid rgba(229, 231, 235, 0.5)', borderRadius: '12px', boxShadow: '0 8px 30px rgba(0,0,0,0.08)' }}>
+                                <div style={{ color: '#6b7280', fontSize: '12px', fontWeight: '600', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{dateStr}</div>
+                                <div style={{ color: '#111827', fontSize: '16px', fontWeight: '700' }}>
+                                  <span style={{ color: '#c9a05b', marginRight: '6px', fontSize: '12px' }}>●</span>
+                                  ₹{payload[0].payload.actualRevenue.toLocaleString('en-IN')}
+                                </div>
                               </div>
                             );
                           }
                           return null;
                         }}
                       />
-                      <Area type="monotone" dataKey="displayRevenue" stroke="#c9a05b" strokeWidth={2} fillOpacity={1} fill="url(#colorRevenue)" dot={{ r: 4, fill: '#c9a05b', strokeWidth: 0 }} activeDot={{ r: 6, fill: '#fff', stroke: '#c9a05b', strokeWidth: 2 }} />
+                      <Area type="monotone" dataKey="displayRevenue" stroke="#c9a05b" strokeWidth={3} fillOpacity={1} fill="url(#colorRevenue)" style={{ filter: 'drop-shadow(0px 6px 8px rgba(201, 160, 91, 0.2))' }} dot={false} activeDot={{ r: 6, fill: '#fff', stroke: '#c9a05b', strokeWidth: 3, style: { filter: 'drop-shadow(0px 4px 6px rgba(201,160,91,0.4))' } }} />
                     </AreaChart>
                   </ResponsiveContainer>
                   )}
@@ -648,7 +668,7 @@ const Dashboard = () => {
 
                   {/* Table */}
                   <div className="hide-scrollbar" style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '160%', borderCollapse: 'collapse', whiteSpace: 'nowrap', tableLayout: 'fixed' }}>
+                    <table style={{ width: '100%', minWidth: '800px', borderCollapse: 'collapse', whiteSpace: 'nowrap', tableLayout: 'fixed' }}>
                       <thead style={{ position: 'sticky', top: 0, zIndex: 10, backgroundColor: '#fff' }}>
                         <tr>
                           <th style={{ width: '15%', textAlign: 'left', padding: '16px 24px', fontSize: '12px', color: '#999', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', borderBottom: '1px solid #eee' }}>Order ID</th>

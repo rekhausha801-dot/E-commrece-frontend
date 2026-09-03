@@ -57,6 +57,8 @@ const OrderManagement = ({ globalSearch = '' }) => {
           cancelledBy: order.cancelledBy,
           cancelledAt: order.cancelledAt ? dayjs(order.cancelledAt).format('DD MMM YYYY, hh:mm A') : null,
           cancellationReason: order.cancellationReason,
+          coupon: order.couponCode || 'None',
+          discount: order.couponDiscount || 0,
           products: (order.items || []).map(p => ({
             id: p.product,
             image: p.productImage,
@@ -914,7 +916,47 @@ const OrderManagement = ({ globalSearch = '' }) => {
                     <React.Fragment key={item.id}>
                       {idx > 0 && <Divider style={{ margin: '0' }} />}
                       <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                        <img src={item.image} alt={item.name} style={{ width: '64px', height: '64px', borderRadius: '8px', objectFit: 'cover', border: '1px solid #e5e7eb' }} />
+                        <div style={{ position: 'relative', width: '64px', height: '64px', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e5e7eb', flexShrink: 0 }}>
+                          <img src={item.image} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          {item.selectedDesign && item.selectedDesign.icon && (
+                            <div style={{ position: 'absolute', top: '55%', left: '50%', transform: 'translate(-50%, -50%)', width: '35%', height: '35%', mixBlendMode: 'multiply', pointerEvents: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              {item.colorizeImage && item.selectedDesignColor && item.selectedDesignColor !== '#000000' ? (
+                                <div style={{
+                                  width: '100%', height: '100%',
+                                  backgroundColor: item.selectedDesignColor,
+                                  WebkitMaskImage: `url(${item.selectedDesign.icon})`,
+                                  WebkitMaskSize: 'contain',
+                                  WebkitMaskPosition: 'center',
+                                  WebkitMaskRepeat: 'no-repeat',
+                                  maskImage: `url(${item.selectedDesign.icon})`,
+                                  maskSize: 'contain',
+                                  maskPosition: 'center',
+                                  maskRepeat: 'no-repeat'
+                                }} title={item.selectedDesign.name} />
+                              ) : (
+                                <>
+                                  <img src={item.selectedDesign.icon} alt={item.selectedDesign.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                                  {item.selectedDesignColor && item.selectedDesignColor !== '#000000' && (
+                                    <div style={{
+                                      position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                                      backgroundColor: item.selectedDesignColor,
+                                      mixBlendMode: 'screen',
+                                      pointerEvents: 'none',
+                                      WebkitMaskImage: `url(${item.selectedDesign.icon})`,
+                                      WebkitMaskSize: 'contain',
+                                      WebkitMaskPosition: 'center',
+                                      WebkitMaskRepeat: 'no-repeat',
+                                      maskImage: `url(${item.selectedDesign.icon})`,
+                                      maskSize: 'contain',
+                                      maskPosition: 'center',
+                                      maskRepeat: 'no-repeat'
+                                    }} />
+                                  )}
+                                </>
+                              )}
+                            </div>
+                          )}
+                        </div>
                         <div style={{ flex: 1 }}>
                           <h4 style={{ margin: '0 0 4px 0', fontSize: '14px', fontWeight: '600', color: '#111827' }}>{item.name}</h4>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '12px', color: '#6b7280', flexWrap: 'wrap' }}>
