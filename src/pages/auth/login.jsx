@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { FiFacebook, FiInstagram, FiYoutube } from 'react-icons/fi';
 import './auth.css'; // Optional if you have a specific CSS file, or you can use inline styles/Tailwind depending on setup
 
 const Login = () => {
@@ -129,6 +130,24 @@ const Login = () => {
         <p style={styles.footerText}>
           Don't have an account? <Link to="/auth/register" style={styles.link}>Sign Up</Link>
         </p>
+
+        <div style={styles.dividerContainer}>
+          <div style={styles.dividerLine}></div>
+          <span style={styles.dividerText}>Or follow us</span>
+          <div style={styles.dividerLine}></div>
+        </div>
+        
+        <div style={styles.socialLinksContainer}>
+          <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" style={styles.socialIcon}>
+            <FiFacebook />
+          </a>
+          <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" style={styles.socialIcon}>
+            <FiInstagram />
+          </a>
+          <a href="https://www.youtube.com" target="_blank" rel="noopener noreferrer" style={styles.socialIcon}>
+            <FiYoutube />
+          </a>
+        </div>
       </div>
     </div>
     </>
@@ -234,10 +253,45 @@ const styles = {
     cursor: 'not-allowed',
   },
   footerText: {
-    marginTop: '2rem',
+    marginTop: '1.5rem',
     textAlign: 'center',
     fontSize: '0.875rem',
     color: '#718096',
+  },
+  dividerContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    margin: '1.5rem 0',
+  },
+  dividerLine: {
+    flex: 1,
+    height: '1px',
+    backgroundColor: '#e2e8f0',
+  },
+  dividerText: {
+    margin: '0 1rem',
+    color: '#a0aec0',
+    fontSize: '0.875rem',
+  },
+  socialLinksContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    gap: '1.5rem',
+    marginTop: '0.5rem',
+  },
+  socialIcon: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '40px',
+    height: '40px',
+    borderRadius: '50%',
+    backgroundColor: '#f7fafc',
+    color: '#4a5568',
+    fontSize: '1.2rem',
+    textDecoration: 'none',
+    border: '1px solid #e2e8f0',
+    transition: 'all 0.2s',
   },
   modalOverlay: {
     position: 'fixed',

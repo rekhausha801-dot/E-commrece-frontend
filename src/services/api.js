@@ -24,21 +24,16 @@ axios.interceptors.request.use(
   (config) => {
     // Only add token if the request goes to our API
     if (config.url && config.url.startsWith(API_BASE_URL)) {
-      let token = localStorage.getItem("token"); // Used by customer login
+      // Determine if this request is for an admin action
+      // E.g. we might check if the current page is an admin page, or check the URL route.
+      // Easiest is to check the current window location pathname
+      const isAdminContext = window.location.pathname.startsWith('/admin') || window.location.pathname.startsWith('/dashboard');
       
-      // Check for userInfo in localStorage (used by Auth/Admin login)
-      if (!token) {
-        const userInfoStr = localStorage.getItem('userInfo');
-        if (userInfoStr) {
-          try {
-            const userInfo = JSON.parse(userInfoStr);
-            if (userInfo && userInfo.token) {
-              token = userInfo.token;
-            }
-          } catch (e) {
-            console.error("Error parsing userInfo from localStorage", e);
-          }
-        }
+      let token;
+      if (isAdminContext) {
+        token = localStorage.getItem("adminToken");
+      } else {
+        token = localStorage.getItem("token"); // Used by customer login
       }
 
       if (token) {
@@ -115,6 +110,7 @@ export const createCustomer = (data) => axios.post(CUSTOMER_API, data);
 export const updateCustomer = (id, data) => axios.put(`${CUSTOMER_API}/${id}`, data);
 export const updateCustomerStatus = (id, status) => axios.patch(`${CUSTOMER_API}/${id}/status`, { status });
 export const deleteCustomer = (id) => axios.delete(`${CUSTOMER_API}/${id}`);
+export const sendMessageToCustomerApi = (id, data) => axios.post(`${CUSTOMER_API}/${id}/message`, data);
 
 
 const PRODUCT_API = `${API_BASE_URL}/products`;
@@ -135,6 +131,8 @@ export const createOffer = (data) => axios.post(OFFER_API, data);
 export const updateOffer = (id, data) => axios.put(`${OFFER_API}/${id}`, data);
 export const deleteOffer = (id) => axios.delete(`${OFFER_API}/${id}`);
 
+
+export const checkCouponUsageApi = (data) => axios.post(`${API_BASE_URL}/coupons/check-usage`, data);
 
 const BANNER_API = `${API_BASE_URL}/banners`;
 export const getBanners = () => axios.get(BANNER_API);

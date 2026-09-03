@@ -36,9 +36,9 @@ const Footer = () => {
             Your trusted store for quality products and a better shopping experience.
           </p>
           <div className="social-links">
-            <a href="#"><FiFacebook /></a>
-            <a href="#"><FiInstagram /></a>
-            <a href="#"><FiYoutube /></a>
+            <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer"><FiFacebook /></a>
+            <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer"><FiInstagram /></a>
+            <a href="https://www.youtube.com" target="_blank" rel="noopener noreferrer"><FiYoutube /></a>
           </div>
         </div>
 
@@ -52,8 +52,6 @@ const Footer = () => {
             <li><Link to="/coupons">Deals & Discounts</Link></li>
             <li><a href="/#top-brands">Top Brands</a></li>
             <li><a href="/#categories">Categories</a></li>
-            <li><Link to="/coupons">Gift Cards</Link></li>
-            <li><Link to="/category/clearance-sale">Clearance Sale</Link></li>
           </ul>
         </div>
 
@@ -63,12 +61,9 @@ const Footer = () => {
           <ul>
             <li><Link to="/account/support">Help Center</Link></li>
             <li><Link to="/account/my-orders">Track Order</Link></li>
-            <li><Link to="/account/returns">Returns & Refunds</Link></li>
             <li><Link to="/shop">Shipping Policy</Link></li>
             <li><Link to="/account/payment-methods">Payment Methods</Link></li>
             <li><Link to="/account/faqs">FAQ</Link></li>
-            <li><Link to="/shop">Terms & Conditions</Link></li>
-            <li><Link to="/shop">Privacy Policy</Link></li>
           </ul>
         </div>
 
@@ -129,11 +124,6 @@ const Footer = () => {
           </div>
           
           <div className="bottom-links">
-            <Link to="/shop">Privacy Policy</Link>
-            <Link to="/shop">Terms</Link>
-            <Link to="/shop">Cookies</Link>
-            <Link to="/shop">Careers</Link>
-            <Link to="/shop">Sitemap</Link>
           </div>
         </div>
       </div>

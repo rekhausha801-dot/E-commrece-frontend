@@ -56,7 +56,7 @@ const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [revenueFilterLabel, setRevenueFilterLabel] = useState('Last 7 Days');
+  const [revenueFilterLabel, setRevenueFilterLabel] = useState('Last 30 Days');
 
   const fetchDashboardData = async () => {
     try {
@@ -93,7 +93,7 @@ const Dashboard = () => {
 
   const getStoredUser = useCallback(() => {
     try {
-      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const user = JSON.parse(localStorage.getItem('adminUser') || '{}');
       // Profile image is stored separately to avoid localStorage quota issues with base64
       const profileImage = localStorage.getItem('adminProfileImage') || user.profileImage || '';
       return { ...user, profileImage };
@@ -431,13 +431,22 @@ const Dashboard = () => {
                       <span style={{ color: '#c84b41', marginBottom: '8px' }}>{error}</span>
                       <button onClick={fetchDashboardData} style={{ padding: '6px 12px', background: '#c9a05b', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>Retry</button>
                     </div>
-                  ) : (!dashboardData?.revenueOverview?.values || dashboardData.revenueOverview.totalRevenue === 0) ? (
+                  ) : (!dashboardData?.revenueOverview?.values || dashboardData.revenueOverview.values.length === 0) ? (
                     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', color: '#888', fontSize: '14px' }}>
                       No revenue data available for this period
                     </div>
                   ) : (
                   <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={dashboardData?.revenueOverview?.labels?.map((label, i) => ({ name: label, revenue: dashboardData.revenueOverview.values[i] })) || []} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
+                    <AreaChart data={(() => {
+                      const rawData = dashboardData?.revenueOverview?.values || [];
+                      const allZero = rawData.length > 0 && rawData.every(v => v === 0);
+                      const dummyPattern = [10, 25, 15, 30, 20, 35, 40];
+                      return dashboardData?.revenueOverview?.labels?.map((label, i) => ({ 
+                        name: label, 
+                        actualRevenue: rawData[i] || 0,
+                        displayRevenue: allZero ? dummyPattern[i % dummyPattern.length] : (rawData[i] || 0)
+                      })) || [];
+                    })()} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
                       <defs>
                         <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="5%" stopColor="#c9a05b" stopOpacity={0.6} />
@@ -457,7 +466,10 @@ const Dashboard = () => {
                           return isNaN(d.getTime()) ? tick : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                         }}
                       />
-                      <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#8b8375' }} tickFormatter={(value) => `${value === 0 ? '0' : value / 1000 + 'K'}`} />
+                      <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#8b8375' }} domain={[0, dataMax => ((dashboardData?.revenueOverview?.values || []).every(v => v === 0) ? 100 : dataMax)]} tickFormatter={(value) => {
+                        const isAllZero = (dashboardData?.revenueOverview?.values || []).every(v => v === 0);
+                        return isAllZero ? '0' : `${value === 0 ? '0' : value / 1000 + 'K'}`;
+                      }} />
                       <RechartsTooltip
                         cursor={{ stroke: '#e0e0e0', strokeWidth: 1, strokeDasharray: '4 4' }}
                         content={({ active, payload, label }) => {
@@ -467,14 +479,14 @@ const Dashboard = () => {
                             return (
                               <div style={{ background: '#fff', padding: '10px 14px', border: '1px solid #e5e7eb', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                                 <div style={{ color: '#1f2937', fontSize: '14px', fontWeight: '500', marginBottom: '6px' }}>{dateStr}</div>
-                                <div style={{ color: '#c9a05b', fontSize: '14px' }}>revenue : {payload[0].value}</div>
+                                <div style={{ color: '#c9a05b', fontSize: '14px' }}>revenue : ₹{payload[0].payload.actualRevenue}</div>
                               </div>
                             );
                           }
                           return null;
                         }}
                       />
-                      <Area type="monotone" dataKey="revenue" stroke="#c9a05b" strokeWidth={2} fillOpacity={1} fill="url(#colorRevenue)" dot={{ r: 4, fill: '#c9a05b', strokeWidth: 0 }} activeDot={{ r: 6, fill: '#fff', stroke: '#c9a05b', strokeWidth: 2 }} />
+                      <Area type="monotone" dataKey="displayRevenue" stroke="#c9a05b" strokeWidth={2} fillOpacity={1} fill="url(#colorRevenue)" dot={{ r: 4, fill: '#c9a05b', strokeWidth: 0 }} activeDot={{ r: 6, fill: '#fff', stroke: '#c9a05b', strokeWidth: 2 }} />
                     </AreaChart>
                   </ResponsiveContainer>
                   )}
@@ -997,7 +1009,11 @@ const Dashboard = () => {
             Cancel
           </button>
           <button
-            onClick={() => navigate('/')}
+            onClick={() => {
+              localStorage.removeItem('adminToken');
+              localStorage.removeItem('adminUser');
+              navigate('/admin/login');
+            }}
             style={{ flex: 1, padding: '12px', background: '#ef4444', border: 'none', borderRadius: '10px', fontSize: '14px', fontWeight: 600, color: '#fff', cursor: 'pointer', boxShadow: '0 4px 12px rgba(239, 68, 68, 0.2)' }}
           >
             Logout

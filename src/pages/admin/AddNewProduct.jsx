@@ -62,17 +62,17 @@ const CustomSelect = ({ value, onChange, options, placeholder, disabled }) => {
 };
 
 const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
-  const [productName, setProductName] = useState(editingProduct?.name || '');
+  const [productName, setProductName] = useState(editingProduct?._backendData?.name || editingProduct?.name || '');
   const [isSaving, setIsSaving] = useState(false);
-  const [price, setPrice] = useState(editingProduct?.originalPrice?.replace(/[^0-9.]/g, '') || '');
-  const [sku, setSku] = useState(editingProduct?.sku || '');
+  const [price, setPrice] = useState(editingProduct?._backendData?.price || editingProduct?.originalPrice?.replace(/[^0-9.]/g, '') || '');
+  const [sku, setSku] = useState(editingProduct?._backendData?.sku || editingProduct?.sku || '');
   const [category, setCategory] = useState(editingProduct?.categoryId || editingProduct?.category || '');
-  const [brand, setBrand] = useState(editingProduct?.brand || '');
-  const [stock, setStock] = useState(editingProduct?.stock || '');
+  const [brand, setBrand] = useState(editingProduct?._backendData?.brand || editingProduct?.brand || '');
+  const [stock, setStock] = useState(editingProduct?._backendData?.countInStock ?? editingProduct?.stock ?? '');
   const [status, setStatus] = useState(editingProduct?.status || 'Active');
-  const [discount, setDiscount] = useState(editingProduct?.discount?.replace(/[^0-9]/g, '') || '');
+  const [discount, setDiscount] = useState(editingProduct?._backendData?.discount ?? editingProduct?.discount?.replace(/[^0-9]/g, '') ?? '');
   const [discountType, setDiscountType] = useState(editingProduct?.discountType || 'Percentage');
-  const [costPrice, setCostPrice] = useState(editingProduct?.costPrice || '');
+  const [costPrice, setCostPrice] = useState(editingProduct?._backendData?.costPrice || editingProduct?.costPrice || '');
   const [lowStockAlert, setLowStockAlert] = useState(editingProduct?.lowStockAlert || '');
 
   const [gstRate, setGstRate] = useState(editingProduct?.gstRate || 0);
@@ -123,18 +123,18 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
   const [initialReviews, setInitialReviews] = useState(editingProduct?.reviews ?? 2547);
   const [badgeLabel, setBadgeLabel] = useState(editingProduct?.badge ?? 'PREMIUM COLLECTION');
   const [isDesignModalOpen, setIsDesignModalOpen] = useState(false);
-  const [customDesigns, setCustomDesigns] = useState(editingProduct?.designs || []);
+  const [customDesigns, setCustomDesigns] = useState(editingProduct?._backendData?.designs || editingProduct?.designs || []);
   const [newDesignName, setNewDesignName] = useState('');
   const [newDesignIcon, setNewDesignIcon] = useState('');
   const [newDesignColor, setNewDesignColor] = useState('#333333');
 
-  const [seoTitle, setSeoTitle] = useState(editingProduct?.seoTitle || '');
-  const [seoDesc, setSeoDesc] = useState(editingProduct?.seoDesc || '');
-  const [seoKeywords, setSeoKeywords] = useState(editingProduct?.seoKeywords || '');
-  const [description, setDescription] = useState(editingProduct?.description || '');
-  const [tags, setTags] = useState(editingProduct?.tags || []);
-  const [faqs, setFaqs] = useState(editingProduct?.faqs || []);
-  const [relatedProducts, setRelatedProducts] = useState(editingProduct?.relatedProducts || []);
+  const [seoTitle, setSeoTitle] = useState(editingProduct?._backendData?.seoTitle || editingProduct?.seoTitle || '');
+  const [seoDesc, setSeoDesc] = useState(editingProduct?._backendData?.seoDesc || editingProduct?.seoDesc || '');
+  const [seoKeywords, setSeoKeywords] = useState(editingProduct?._backendData?.seoKeywords || editingProduct?.seoKeywords || '');
+  const [description, setDescription] = useState(editingProduct?._backendData?.description || editingProduct?.description || '');
+  const [tags, setTags] = useState(editingProduct?._backendData?.tags || editingProduct?.tags || []);
+  const [faqs, setFaqs] = useState(editingProduct?._backendData?.faqs || editingProduct?.faqs || []);
+  const [relatedProducts, setRelatedProducts] = useState(editingProduct?._backendData?.relatedProducts || editingProduct?.relatedProducts || []);
   const [relatedInput, setRelatedInput] = useState('');
 
   const [homeSection, setHomeSection] = useState(editingProduct?.homeSection || 'None');
@@ -156,7 +156,7 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
     { spec: 'Sleeve', val: '' },
     { spec: 'Occasion', val: '' }
   ];
-  const [specs, setSpecs] = useState(editingProduct?.specs?.length > 0 ? editingProduct.specs : initialSpecs);
+  const [specs, setSpecs] = useState(editingProduct?._backendData?.specs?.length > 0 ? editingProduct._backendData.specs : (editingProduct?.specs?.length > 0 ? editingProduct.specs : initialSpecs));
 
   const initialSizeGuide = [
     { size: 'S', bust: '', waist: '', length: '' },
@@ -164,7 +164,7 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
     { size: 'L', bust: '', waist: '', length: '' },
     { size: 'XL', bust: '', waist: '', length: '' }
   ];
-  const [sizeGuide, setSizeGuide] = useState(editingProduct?.sizeGuide?.length > 0 ? editingProduct.sizeGuide : initialSizeGuide);
+  const [sizeGuide, setSizeGuide] = useState(editingProduct?._backendData?.sizeGuide?.length > 0 ? editingProduct._backendData.sizeGuide : (editingProduct?.sizeGuide?.length > 0 ? editingProduct.sizeGuide : initialSizeGuide));
 
   useEffect(() => {
     if (editingProduct) {

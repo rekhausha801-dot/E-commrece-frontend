@@ -53,7 +53,7 @@ const CustomSelect = ({ value, onChange, options }) => {
 };
 
 const Wishlist = () => {
-  const { wishlistItems, toggleWishlist, isInWishlist } = useWishlist();
+  const { wishlistItems, toggleWishlist, isInWishlist, removeFromWishlist } = useWishlist();
   const { addToCart } = useCart();
   const { products: contextProducts } = useProducts();
   const navigate = useNavigate();
@@ -285,7 +285,7 @@ const Wishlist = () => {
                       style={{ transition: 'all 0.3s ease' }}
                     />
                   </button>
-                  <img src={product.image} alt={product.title} />
+                  <img src={product.image || ''} alt={product.title} onError={(e) => { removeFromWishlist(product.id); }} />
                 </div>
 
                 <div className="unified-card-info">

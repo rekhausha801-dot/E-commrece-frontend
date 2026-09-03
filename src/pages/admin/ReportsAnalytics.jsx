@@ -72,35 +72,31 @@ const ReportsAnalytics = () => {
   
   // Dynamic Mappings based on backend data
   const revenueBreakdown = {
-    grossSales: (summary.totalRevenue || 0) + (summary.totalDiscount || 0),
+    grossSales: (summary.totalSales || 0) + (summary.totalDiscount || 0),
     discounts: summary.totalDiscount || 0,
     refunds: 0, // Not explicitly tracked in summary
     shippingRevenue: 0, // Add shipping logic if available
-    netRevenue: summary.totalRevenue || 0
+    netRevenue: summary.totalSales || 0
   };
 
   const profitMargin = {
     totalCostOfGoods: 0, // Cost price not in product schema by default
-    grossProfit: summary.totalRevenue || 0,
+    grossProfit: summary.totalSales || 0,
     profitMargin: 100 // 100% since cost is 0
   };
 
   const returnsRefunds = reportData?.returnsRefunds || {};
   
-  const couponPerformance = {
-    couponsUsed: 0, // Require separate aggregate for exact count
-    totalDiscountGiven: summary.totalDiscount || 0,
+  const couponPerformance = reportData?.couponPerformance || {
+    couponsUsed: 0,
+    totalDiscountGiven: 0,
     mostUsedCoupon: null,
     couponOrders: 0
   };
 
-  const rawPaymentBreakdown = reportData?.paymentBreakdown || [];
-  const paymentMethods = {
-    methods: rawPaymentBreakdown.map(p => ({ method: p._id || 'Unknown', orders: p.count, revenue: p.revenue })),
-    total: {
-      orders: rawPaymentBreakdown.reduce((sum, p) => sum + p.count, 0),
-      revenue: rawPaymentBreakdown.reduce((sum, p) => sum + p.revenue, 0)
-    }
+  const paymentMethods = reportData?.paymentMethods || {
+    methods: [],
+    total: { orders: 0, revenue: 0 }
   };
 
   const lowStockOverview = reportData?.lowStockOverview || {};
@@ -188,9 +184,11 @@ const ReportsAnalytics = () => {
               <div className="stat-icon gold"><span style={{ fontSize: '18px', fontWeight: 'bold' }}>₹</span></div>
               <div className="stat-info">
                 <span className="stat-title">Total Revenue</span>
-                <h2 className="stat-value gold-text">₹{summary.totalRevenue?.toLocaleString('en-IN') || 0}</h2>
+                <h2 className="stat-value gold-text">₹{summary.totalSales?.toLocaleString('en-IN') || 0}</h2>
                 <div className="stat-bottom">
-                  <span className="stat-change positive">0%</span> <span className="stat-change-text">vs yesterday</span>
+                  <span className={`stat-change ${summary.salesGrowth >= 0 ? 'positive' : 'negative'}`}>
+                    {summary.salesGrowth >= 0 ? '↑' : '↓'} {Math.abs(summary.salesGrowth || 0)}%
+                  </span> <span className="stat-change-text">vs prev period</span>
                 </div>
               </div>
             </div>
@@ -216,7 +214,9 @@ const ReportsAnalytics = () => {
                 <span className="stat-title">Total Orders</span>
                 <h2 className="stat-value">{summary.totalOrders || 0}</h2>
                 <div className="stat-bottom">
-                  <span className="stat-change positive">0</span> <span className="stat-change-text">new today</span>
+                  <span className={`stat-change ${summary.ordersGrowth >= 0 ? 'positive' : 'negative'}`}>
+                    {summary.ordersGrowth >= 0 ? '↑' : '↓'} {Math.abs(summary.ordersGrowth || 0)}%
+                  </span> <span className="stat-change-text">vs prev period</span>
                 </div>
               </div>
             </div>
@@ -242,7 +242,9 @@ const ReportsAnalytics = () => {
                 <span className="stat-title">Total Customers</span>
                 <h2 className="stat-value">{summary.totalCustomers || 0}</h2>
                 <div className="stat-bottom">
-                  <span className="stat-change positive">0</span> <span className="stat-change-text">new today</span>
+                  <span className={`stat-change ${summary.customersGrowth >= 0 ? 'positive' : 'negative'}`}>
+                    {summary.customersGrowth >= 0 ? '↑' : '↓'} {Math.abs(summary.customersGrowth || 0)}%
+                  </span> <span className="stat-change-text">vs prev period</span>
                 </div>
               </div>
             </div>
@@ -266,9 +268,11 @@ const ReportsAnalytics = () => {
               <div className="stat-icon gold"><Package size={18} color="#c9a05b" /></div>
               <div className="stat-info">
                 <span className="stat-title">Average Order Value</span>
-                <h2 className="stat-value gold-text">₹{summary.avgOrderValue?.toLocaleString('en-IN') || 0}</h2>
+                <h2 className="stat-value gold-text">₹{summary.averageOrderValue?.toLocaleString('en-IN') || 0}</h2>
                 <div className="stat-bottom">
-                  <span className="stat-change positive">0%</span> <span className="stat-change-text">vs yesterday</span>
+                  <span className={`stat-change ${summary.averageOrderValueGrowth >= 0 ? 'positive' : 'negative'}`}>
+                    {summary.averageOrderValueGrowth >= 0 ? '↑' : '↓'} {Math.abs(summary.averageOrderValueGrowth || 0)}%
+                  </span> <span className="stat-change-text">vs prev period</span>
                 </div>
               </div>
             </div>

@@ -55,7 +55,8 @@ const OfferCarousel = () => {
       title: 'Premium Collection',
       description: 'Discover our exclusive range of luxury wear.',
       showText: true,
-      textPosition: 'Left'
+      textPosition: 'Left',
+      link: '/category/kurti'
     },
     {
       // Using the local fashion video
@@ -64,7 +65,8 @@ const OfferCarousel = () => {
       title: 'Summer Trends 2026',
       description: 'Explore the latest arrivals.',
       showText: true,
-      textPosition: 'Center'
+      textPosition: 'Center',
+      link: '/category/kurti'
     }
   ];
 
@@ -163,11 +165,9 @@ const OfferCarousel = () => {
                             {banner.description}
                           </p>
                         )}
-                        {banner.link && (
-                          <Link to={banner.link} className="shop-now-btn" style={{ backgroundColor: '#5c101c', color: '#fff', border: 'none' }}>
-                            SHOP NOW
-                          </Link>
-                        )}
+                        <Link to={(!banner.link || banner.link === '#') ? '/category/kurti' : banner.link} className="shop-now-btn" style={{ backgroundColor: '#000', color: '#fff', border: 'none', padding: '12px 30px', fontSize: '16px', letterSpacing: '2px', textTransform: 'uppercase', cursor: 'pointer', display: 'inline-block', marginTop: '10px' }}>
+                          SHOP NOW
+                        </Link>
                       </div>
                     </>
                   )}
@@ -202,7 +202,7 @@ const OfferCarousel = () => {
                           Big Offers on Your<br />Favourite Styles
                         </p>
                         <h3 style={{ fontSize: '24px', fontWeight: '500', marginBottom: '30px', letterSpacing: '1px' }}>UP TO <span style={{ fontSize: '32px', fontWeight: '600' }}>50%</span> OFF</h3>
-                        <Link to="/shop" className="shop-now-btn" style={{ backgroundColor: '#5c101c', color: '#fff', border: 'none' }}>
+                        <Link to={(!banner.link || banner.link === '#') ? '/category/kurti' : banner.link} className="shop-now-btn" style={{ backgroundColor: '#000', color: '#fff', border: 'none', padding: '12px 30px', fontSize: '16px', letterSpacing: '2px', textTransform: 'uppercase', cursor: 'pointer', display: 'inline-block', marginTop: '10px' }}>
                           SHOP NOW
                         </Link>
                       </div>

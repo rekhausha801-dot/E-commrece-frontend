@@ -101,7 +101,7 @@
 }
 
 .kurti-shop-btn {
-  background-color: #a87f4c;
+  background-color: #111111;
   color: #fff;
   border: none;
   border-radius: 2px;
@@ -119,7 +119,7 @@
 }
 
 .kurti-shop-btn:hover {
-  background-color: #8c683c;
+  background-color: #333333;
 }
 
 .kurti-btn-icon {

@@ -4,52 +4,9 @@ import { Search, ShoppingBag, User, Heart, Menu, Bell, ChevronDown, X, ShoppingC
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { useCart } from '../context/CartContext';
 import { useNotification } from '../context/NotificationContext';
+import { getCategories, getSubcategories } from '../services/api';
 import useDebounce from '../hooks/useDebounce';
 import './Navbar.css';
-
-const megaMenus = [
-  { title: "Home", path: "/" },
-  {
-    title: "Men",
-    path: "/category/men",
-    categories: [
-      { title: "Clothing", items: ["T-Shirts", "Custom T-Shirts", "Shirts", "Polo T-Shirts", "Jeans", "Trousers", "Cargo Pants", "Hoodies", "Sweatshirts", "Jackets", "Blazers", "Ethnic Wear", "Innerwear"] },
-      { title: "Footwear", items: ["Sneakers", "Casual Shoes", "Formal Shoes", "Sandals", "Sports Shoes"] },
-      { title: "Accessories", items: ["Watches", "Wallets", "Belts", "Sunglasses", "Bags", "Caps"] }
-    ]
-  },
-  {
-    title: "Women",
-    path: "/category/women",
-    categories: [
-      { title: "Clothing", items: ["Kurtis", "Sarees", "Dresses", "Tops", "Women T-Shirts", "Custom T-Shirts", "Shirts", "Jeans", "Leggings", "Palazzo", "Co-ords", "Ethnic Sets"] },
-      { title: "Accessories", items: ["Handbags", "Jewellery", "Watches", "Sunglasses", "Dupattas"] },
-      { title: "Footwear", items: ["Heels", "Flats", "Sneakers", "Sandals", "Boots"] }
-    ]
-  },
-  {
-    title: "Kids",
-    path: "/category/kids",
-    categories: [
-      { title: "Categories", items: ["Boys Clothing", "Girls Clothing", "Girls T-Shirts", "Baby Clothing", "Footwear", "Toys", "School Essentials", "Accessories", "Newborn Essentials"] }
-    ]
-  },
-  {
-    title: "Beauty",
-    path: "/category/beauty",
-    categories: [
-      { title: "Categories", items: ["Makeup", "Skincare", "Haircare", "Fragrances", "Bath & Body", "Personal Care", "Men's Grooming", "Beauty Tools"] }
-    ]
-  },
-  {
-    title: "Home & Living",
-    path: "/category/home-living",
-    categories: [
-      { title: "Categories", items: ["Bedsheets", "Curtains", "Cushions", "Blankets", "Kitchen Essentials", "Cookware", "Dinner Sets", "Storage", "Home Decor", "Wall Art", "Lighting", "Bathroom Accessories"] }
-    ]
-  }
-];
-
 const wishlistItems = ["My Wishlist", "Saved for Later", "Recently Wishlisted", "Price Drop Alerts", "Back in Stock", "Move to Cart", "Share Wishlist"];
 const notificationItems = ["Order Updates", "Shipping Updates", "Delivered Orders", "Flash Sale Alerts", "Price Drop Notifications", "New Arrivals", "Exclusive Offers", "Coupons", "Back in Stock", "Reward Points"];
 const accountItems = ["My Profile", "My Orders", "Wishlist", "Coupons", "Notifications", "Help Center", "Settings", "Logout"];
@@ -71,6 +28,8 @@ const getCategoryIcon = (title) => {
 };
 
 const Navbar = () => {
+  const [dynamicMenus, setDynamicMenus] = useState([{ title: "Home", path: "/" }]);
+  const [isLoadingMenus, setIsLoadingMenus] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [expandedMenus, setExpandedMenus] = useState({});
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -82,6 +41,117 @@ const Navbar = () => {
   const searchRef = useRef(null);
   
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
+
+  // Fetch dynamic categories and subcategories
+  useEffect(() => {
+    const fetchMenus = async () => {
+      try {
+        setIsLoadingMenus(true);
+        const [catRes, subcatRes] = await Promise.all([getCategories(), getSubcategories()]);
+        
+        const categories = (catRes.data?.data || catRes.data || []).filter(c => c.status === 'Active' || c.status === 'active');
+        const subcategories = (subcatRes.data?.data || subcatRes.data || []).filter(s => s.status === 'Active' || s.status === 'active');
+
+        const newMenus = [{ title: "Home", path: "/" }];
+
+        let menCategory = {
+          title: "Men",
+          path: "/category/menswear",
+          categories: [{ title: "Categories", items: [] }]
+        };
+
+        let womenCategory = {
+          title: "Women",
+          path: "/category/womenswear",
+          categories: [{ title: "Categories", items: [] }]
+        };
+
+        categories.forEach(category => {
+          const catSubs = subcategories.filter(s => {
+             const sCatId = typeof s.category === 'object' ? s.category?._id : s.category;
+             const sCatName = typeof s.category === 'object' ? s.category?.name : s.category;
+             return sCatId === category._id || sCatName === category.name;
+          });
+
+          let menuCategories = null;
+          
+          if (catSubs.length > 0) {
+            // Intercept to add T-Shirts before Custom T-Shirts
+            const processedItems = [];
+            catSubs.forEach(s => {
+              if (s.name === 'Custom Tshirts' || s.name.toLowerCase() === 'custom tshirts') {
+                processedItems.push('T-Shirts');
+                processedItems.push('Custom T-Shirts');
+              } else {
+                processedItems.push(s.name);
+              }
+            });
+
+            // Chunk subcategories into groups of 6 items to create multiple columns
+            const chunkSize = 6;
+            menuCategories = [];
+            for (let i = 0; i < processedItems.length; i += chunkSize) {
+              const chunk = processedItems.slice(i, i + chunkSize);
+              menuCategories.push({
+                title: i === 0 ? "Categories" : "More Categories",
+                items: chunk
+              });
+            }
+          }
+
+          const catNameLower = category.name.toLowerCase();
+
+          if (catNameLower === 'kurti' || catNameLower === 'kurtis') {
+            womenCategory.categories[0].items.push("Kurti");
+            return; // Skip the default push since it's grouped under Women
+          }
+
+          if (catNameLower === 'suits' || catNameLower === 'custom tshirts') {
+            if (catNameLower === 'suits') {
+              menCategory.categories[0].items.push("Suits");
+            }
+            if (catNameLower === 'custom tshirts') {
+              if (!menCategory.categories[0].items.includes("T-Shirts")) {
+                menCategory.categories[0].items.push("T-Shirts", "Custom T-Shirts");
+              }
+              if (!womenCategory.categories[0].items.includes("T-Shirts")) {
+                womenCategory.categories[0].items.push("T-Shirts", "Custom T-Shirts");
+              }
+            }
+            return; // Skip the default push since it's grouped under Men/Women
+          }
+
+          if (catNameLower === 'shoes' || catNameLower === 'footwear') {
+             menCategory.categories[0].items.push("Shoes");
+             womenCategory.categories[0].items.push("Shoes");
+             return; // Skip the default push since it's grouped under both
+          }
+
+          newMenus.push({
+            title: category.name,
+            path: `/category/${category.name.toLowerCase().replace(/\s+/g, '-')}`,
+            categories: menuCategories
+          });
+        });
+
+        // Add grouped categories right after Home
+        if (womenCategory.categories[0].items.length > 0) {
+          newMenus.splice(1, 0, womenCategory);
+        }
+        if (menCategory.categories[0].items.length > 0) {
+          newMenus.splice(1, 0, menCategory);
+        }
+
+        setDynamicMenus(newMenus);
+      } catch (error) {
+        console.error("Failed to load dynamic menus:", error);
+      } finally {
+        setIsLoadingMenus(false);
+      }
+    };
+    
+    fetchMenus();
+  }, []);
 
   // Fetch suggestions when debounced query changes
   useEffect(() => {
@@ -262,7 +332,9 @@ const Navbar = () => {
 
         <nav className="navbar-center desktop-only">
           <ul className="nav-menu">
-            {megaMenus.map((item, index) => (
+            {isLoadingMenus ? (
+              <li className="nav-item"><span className="nav-link" style={{opacity: 0.5}}>Loading menu...</span></li>
+            ) : dynamicMenus.map((item, index) => (
               <li key={index} className="nav-item has-mega-menu">
                 {item.path && !item.categories ? (
                   <Link to={item.path} className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}>
@@ -488,7 +560,9 @@ const Navbar = () => {
         </div>
         <div className="sidebar-content">
           <ul className="sidebar-menu">
-            {megaMenus.map((item, index) => (
+            {isLoadingMenus ? (
+              <li className="sidebar-item" style={{padding: '16px', opacity: 0.5}}>Loading menu...</li>
+            ) : dynamicMenus.map((item, index) => (
               <li key={index} className="sidebar-item">
                 <div className="sidebar-item-header" onClick={() => item.categories ? toggleExpand(item.title) : null}>
                   {item.path && !item.categories ? (

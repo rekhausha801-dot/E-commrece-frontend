@@ -38,11 +38,15 @@ const MyOrders = () => {
     return {
       ...o,
       id: o.orderId || o.orderNumber || o.id,
+      rawDate: o.createdAt || o.date,
       date: new Date(o.createdAt || o.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
       title: firstProduct.productName || o.product || o.title || 'Unknown Product',
       image: firstProduct.productImage || firstProduct.image || o.image || img1,
       size: firstProduct.selectedSize || firstProduct.size || o.size,
       color: firstProduct.selectedColor || firstProduct.color || o.color,
+      customText: firstProduct.customText || o.customText,
+      customTextColor: firstProduct.customTextColor || o.customTextColor,
+      customTextFont: firstProduct.customTextFont || o.customTextFont,
       selectedDesign: firstProduct.selectedDesign || o.selectedDesign,
       selectedDesignColor: firstProduct.selectedDesignColor || o.selectedDesignColor,
       colorizeImage: firstProduct.colorizeImage !== undefined ? firstProduct.colorizeImage : (o.colorizeImage !== undefined ? o.colorizeImage : true),
@@ -56,21 +60,43 @@ const MyOrders = () => {
       deliveryText: (o.orderStatus || o.status) === 'Delivered' ? 'Delivered' : 'Expected soon'
     };
   });
+
+  const getStatusCount = (statusName) => {
+    if (statusName === 'All Orders') return normalizedOrders.length;
+    return normalizedOrders.filter(o => o.status === statusName).length;
+  };
+
   const statuses = [
-    { name: 'All Orders', count: 12, icon: <ShoppingBag size={18} /> },
-    { name: 'Confirmed', count: 3, icon: <CheckCircle size={18} /> },
-    { name: 'Processing', count: 2, icon: <Package size={18} /> },
-    { name: 'Shipped', count: 4, icon: <Truck size={18} /> },
-    { name: 'Out for Delivery', count: 2, icon: <MapPin size={18} /> },
-    { name: 'Delivered', count: 1, icon: <Check size={18} /> },
-    { name: 'Cancelled', count: 0, icon: <XCircle size={18} /> },
-    { name: 'Returned', count: 0, icon: <RotateCcw size={18} /> }
+    { name: 'All Orders', count: getStatusCount('All Orders'), icon: <ShoppingBag size={18} /> },
+    { name: 'Pending', count: getStatusCount('Pending'), icon: <CheckCircle size={18} /> },
+    { name: 'Processing', count: getStatusCount('Processing'), icon: <Package size={18} /> },
+    { name: 'Shipped', count: getStatusCount('Shipped'), icon: <Truck size={18} /> },
+    { name: 'Out for Delivery', count: getStatusCount('Out for Delivery'), icon: <MapPin size={18} /> },
+    { name: 'Delivered', count: getStatusCount('Delivered'), icon: <Check size={18} /> },
+    { name: 'Cancelled', count: getStatusCount('Cancelled'), icon: <XCircle size={18} /> },
+    { name: 'Returned', count: getStatusCount('Returned'), icon: <RotateCcw size={18} /> }
   ];
 
+  const getTimeCount = (timeName) => {
+    if (timeName === 'Custom Range' || timeName === 'All Time') return null;
+    return normalizedOrders.filter(order => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const oDate = new Date(order.rawDate);
+      oDate.setHours(0, 0, 0, 0);
+      const diffDays = (today.getTime() - oDate.getTime()) / (1000 * 3600 * 24);
+      
+      if (timeName === 'Today') return diffDays === 0;
+      if (timeName === 'Last 7 Days') return diffDays >= 0 && diffDays <= 7;
+      if (timeName === 'Last 30 Days') return diffDays >= 0 && diffDays <= 30;
+      return false;
+    }).length;
+  };
+
   const times = [
-    { name: 'Today', count: 2, icon: <Calendar size={18} /> },
-    { name: 'Last 7 Days', count: 5, icon: <Calendar size={18} /> },
-    { name: 'Last 30 Days', count: 10, icon: <Calendar size={18} /> },
+    { name: 'Today', count: getTimeCount('Today'), icon: <Calendar size={18} /> },
+    { name: 'Last 7 Days', count: getTimeCount('Last 7 Days'), icon: <Calendar size={18} /> },
+    { name: 'Last 30 Days', count: getTimeCount('Last 30 Days'), icon: <Calendar size={18} /> },
     { name: 'Custom Range', count: null, icon: <Calendar size={18} /> }
   ];
 
@@ -84,16 +110,13 @@ const MyOrders = () => {
 
     // Time filter
     let matchesTime = true;
-    if (activeTime !== 'All Time') {
-      const orderDate = new Date(order.date);
+    if (activeTime !== 'All Time' && activeTime !== 'Custom Range') {
       const today = new Date();
-      // Reset times to start of day for accurate day differences
       today.setHours(0, 0, 0, 0);
-      const oDate = new Date(orderDate);
+      const oDate = new Date(order.rawDate);
       oDate.setHours(0, 0, 0, 0);
 
-      const diffTime = today.getTime() - oDate.getTime();
-      const diffDays = diffTime / (1000 * 3600 * 24);
+      const diffDays = (today.getTime() - oDate.getTime()) / (1000 * 3600 * 24);
 
       if (activeTime === 'Today') {
         matchesTime = diffDays === 0;
@@ -274,7 +297,7 @@ const MyOrders = () => {
                                   {expandedOrder === order.id ? 'Hide Details' : 'View Details'}
                                 </button>
                                 <button onClick={() => setMenuOpenId(null)}>Download Invoice</button>
-                                {(order.paymentMethod?.type?.toLowerCase() === 'cod' || order.paymentMethod?.label?.toLowerCase().includes('cash on delivery') || String(order.paymentMethod).toLowerCase().includes('cod')) && ['Pending', 'Processing'].includes(order.status) && (
+                                {['Pending', 'Processing'].includes(order.status) && (
                                   <button className="mo-text-danger" onClick={() => handleCancelClick(order.id)}>Cancel Order</button>
                                 )}
                               </div>
@@ -325,6 +348,22 @@ const MyOrders = () => {
                               )}
                             </div>
                           )}
+                          {order.customText && (
+                            <div style={{
+                              position: 'absolute',
+                              top: '40%',
+                              left: '50%',
+                              transform: 'translate(-50%, -50%)',
+                              color: order.customTextColor || '#000',
+                              fontFamily: order.customTextFont || 'inherit',
+                              fontSize: '12px',
+                              pointerEvents: 'none',
+                              whiteSpace: 'nowrap',
+                              zIndex: 10
+                            }}>
+                              {order.customText}
+                            </div>
+                          )}
                         </div>
 
                         <div className="mo-product-details">
@@ -332,6 +371,11 @@ const MyOrders = () => {
                           <div className="mo-meta">
                             {order.size && <span>Size: {order.size} &bull; </span>}
                             {order.color && <span>Color: {order.color} </span>}
+                            {order.customText && (
+                              <div style={{ marginTop: '4px', fontSize: '11px', color: '#666' }}>
+                                Custom Text: <span style={{ fontFamily: order.customTextFont, color: order.customTextColor }}>"{order.customText}"</span>
+                              </div>
+                            )}
                             {order.moreItems > 0 && <span style={{ color: 'var(--primary-color)', fontWeight: '500', marginLeft: '10px' }}>+{order.moreItems} more items</span>}
                           </div>
                           <div className="mo-qty-price">
@@ -432,6 +476,16 @@ const MyOrders = () => {
                             <div className="mo-pm-item-details">
                               <h5>{item.productName || item.name || item.title || order.title}</h5>
                               <p>Qty: {item.quantity || item.qty || order.qty} {(item.selectedSize || item.size) && `| Size: ${item.selectedSize || item.size}`}</p>
+                              {item.customText && (
+                                <p style={{ fontSize: '11px', marginTop: '2px', color: '#666' }}>
+                                  Custom Text: <span style={{ fontFamily: item.customTextFont, color: item.customTextColor }}>"{item.customText}"</span>
+                                </p>
+                              )}
+                              {item.selectedDesign && item.selectedDesign.name && (
+                                <p style={{ fontSize: '11px', marginTop: '2px', color: '#666' }}>
+                                  Design: {item.selectedDesign.name}
+                                </p>
+                              )}
                             </div>
                             <span className="mo-pm-item-price">₹{item.finalUnitPrice || item.price || item.total || order.total}</span>
                           </div>

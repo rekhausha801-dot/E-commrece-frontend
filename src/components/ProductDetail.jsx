@@ -336,7 +336,7 @@ export default function ProductDetail() {
   };
 
   const images = product?.images?.length > 0
-    ? product.images.map(img => img.url)
+    ? product.images.map(img => img?.url || (typeof img === 'string' ? img : ''))
     : product?.image ? [product.image] : [];
 
   const sizes = product?.sizes && product.sizes.length > 0 ? product.sizes : [];
@@ -354,7 +354,7 @@ export default function ProductDetail() {
     ? activeDesign.modelImage
     : (activeColorObj?.image || product?.image || '');
   const displayImages = product?.images?.length > 0
-    ? product.images.map(img => img.url)
+    ? product.images.map(img => img?.url || (typeof img === 'string' ? img : ''))
     : displayImageSrc ? [displayImageSrc] : [];
 
   const similarProducts = React.useMemo(() => {
@@ -940,97 +940,7 @@ export default function ProductDetail() {
                   </div>
                 )}
 
-                {/* Custom Name / Text Input Section */}
-                <div style={{ marginTop: '16px', padding: '14px', background: '#faf5eb', borderRadius: '10px', border: '1px solid #f0e6d2' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-                    <h3 style={{ fontSize: '12px', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase', color: '#1a1614', margin: 0, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <Type size={14} color="var(--primary-color)" /> ADD YOUR NAME / TEXT
-                    </h3>
-                    {customText && (
-                      <button
-                        onClick={() => setCustomText('')}
-                        style={{ background: 'none', border: 'none', color: '#ef4444', fontSize: '11px', fontWeight: '700', cursor: 'pointer' }}
-                      >
-                        Clear Text
-                      </button>
-                    )}
-                  </div>
 
-                  <input
-                    type="text"
-                    placeholder="Type Name / Text (e.g. ALEX #07)"
-                    maxLength={25}
-                    value={customText}
-                    onChange={(e) => setCustomText(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '8px 12px',
-                      borderRadius: '6px',
-                      border: '1px solid #d1d5db',
-                      fontSize: '13px',
-                      fontWeight: '600',
-                      outline: 'none',
-                      marginBottom: '10px',
-                      boxSizing: 'border-box'
-                    }}
-                  />
-
-                  {customText && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                      {/* Font selector */}
-                      <div>
-                        <span style={{ fontSize: '10px', fontWeight: '700', color: '#666', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Font Style:</span>
-                        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                          {[
-                            { label: 'Sans', font: 'sans-serif' },
-                            { label: 'Impact', font: "'Impact', sans-serif" },
-                            { label: 'Serif', font: "'Georgia', serif" },
-                            { label: 'Monospace', font: "'Courier New', monospace" },
-                            { label: 'Cursive', font: "'Brush Script MT', cursive" }
-                          ].map(f => (
-                            <button
-                              key={f.label}
-                              onClick={() => setCustomTextFont(f.font)}
-                              style={{
-                                padding: '4px 8px',
-                                fontSize: '11px',
-                                borderRadius: '4px',
-                                border: customTextFont === f.font ? '1.5px solid var(--primary-color)' : '1px solid #d1d5db',
-                                background: customTextFont === f.font ? '#fff' : '#f9fafb',
-                                fontFamily: f.font,
-                                fontWeight: 'bold',
-                                cursor: 'pointer'
-                              }}
-                            >
-                              {f.label}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Text Color selector */}
-                      <div>
-                        <span style={{ fontSize: '10px', fontWeight: '700', color: '#666', textTransform: 'uppercase', display: 'block', marginBottom: '4px' }}>Text Color:</span>
-                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-                          {['#000000', '#FFFFFF', '#FF0000', '#0000FF', '#FFFF00', '#008000', '#FF1493', '#8A2BE2'].map((color, idx) => (
-                            <button
-                              key={`txt_color_${color}_${idx}`}
-                              onClick={() => setCustomTextColor(color)}
-                              style={{
-                                width: '22px', height: '22px', borderRadius: '50%',
-                                backgroundColor: color,
-                                border: customTextColor === color ? '2px solid var(--primary-color)' : '1px solid #ccc',
-                                cursor: 'pointer',
-                                boxShadow: customTextColor === color ? '0 0 4px rgba(0,0,0,0.3)' : 'none'
-                              }}
-                              title={color}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
 
               </div>
             )}
