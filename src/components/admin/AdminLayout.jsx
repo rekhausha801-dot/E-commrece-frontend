@@ -175,7 +175,7 @@ const AdminLayout = () => {
     const intervalId = setInterval(fetchNotifs, 10000); // Poll every 10 seconds
     
     // Load Admin Profile from LocalStorage
-    const userStr = localStorage.getItem('user');
+    const userStr = localStorage.getItem('adminUser');
     if (userStr) {
       try {
         const user = JSON.parse(userStr);

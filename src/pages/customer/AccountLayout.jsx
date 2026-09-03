@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useNotification } from '../../context/NotificationContext';
+import { getUserProfile } from '../../services/api';
 import { 
   User, ShoppingBag, MapPin, CreditCard, Ticket, 
   Bell, Settings, Headphones, LogOut, Heart, RotateCcw, LayoutDashboard
@@ -11,8 +12,6 @@ const defaultAvatar = 'https://images.unsplash.com/photo-1494790108377-be9c29b29
 
 const navItems = [
   { name: 'My Profile', path: '/account/profile', icon: User },
-  { name: 'My Orders', path: '/account/my-orders', icon: ShoppingBag },
-  { name: 'Wishlist', path: '/wishlist', icon: Heart },
   { name: 'My Addresses', path: '/account/addresses', icon: MapPin },
   { name: 'Notifications', path: '/account/notifications', icon: Bell },
   { name: 'Help Center', path: '/account/support', icon: Headphones },
@@ -26,10 +25,41 @@ const AccountLayout = () => {
   const unreadCount = notifications.filter(n => !n.read).length;
 
   React.useEffect(() => {
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-      setUserData(JSON.parse(userStr));
-    }
+    const fetchUser = async () => {
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        setUserData(JSON.parse(userStr));
+      }
+      
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const response = await getUserProfile();
+          const data = response.data.user;
+          if (data) {
+            setUserData(prev => ({
+              ...prev,
+              fullName: data.fullName || prev.fullName,
+              email: data.email || prev.email,
+              profileImage: data.profileImage || prev.profileImage
+            }));
+            
+            // Optionally update localStorage so other parts of the app are synced
+            const updatedUserStr = JSON.stringify({
+              ...JSON.parse(userStr || '{}'),
+              profileImage: data.profileImage,
+              fullName: data.fullName,
+              email: data.email
+            });
+            localStorage.setItem('user', updatedUserStr);
+          }
+        } catch (error) {
+          console.error('Failed to sync sidebar profile data', error);
+        }
+      }
+    };
+    
+    fetchUser();
   }, []);
 
   const handleLogout = (e) => {

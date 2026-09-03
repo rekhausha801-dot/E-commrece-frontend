@@ -544,3 +544,9 @@
   color: #666;
   margin-top: 8px;
 }
+
+@media (max-width: 900px) {
+  .lux-payment-layout {
+    grid-template-columns: 1fr;
+  }
+}

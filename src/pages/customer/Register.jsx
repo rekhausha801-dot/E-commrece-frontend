@@ -78,14 +78,18 @@ const Register = () => {
     try {
       setLoading(true);
       const response = await registerUser(formData);
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+      }
+      if (response.data.user) {
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+      }
       
       setSuccess(response.data.message || 'Account created successfully!');
       
-      // Redirect to login after 2 seconds
-      setTimeout(() => {
-        navigate('/login');
-      }, 2000);
-
+      // Show welcome screen and redirect to home
+      setWelcomeRedirect('/'); 
+      setShowWelcome(true);
     } catch (err) {
       setError(err.response?.data?.message || 'Something went wrong. Please try again.');
     } finally {

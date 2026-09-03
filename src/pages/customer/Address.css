@@ -327,3 +327,9 @@
   background: #1f2937 !important;
   color: #ffffff !important;
 }
+
+@media (max-width: 900px) {
+  .lux-cart-layout {
+    grid-template-columns: 1fr;
+  }
+}

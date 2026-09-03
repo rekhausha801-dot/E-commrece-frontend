@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, RotateCcw, MoreVertical, X, Mail, Phone, MapPin, Home, Edit, Ban, MessageSquare, Users, UserCheck, UserMinus, UserPlus, ChevronLeft, ChevronRight, Plus, User, Calendar, Hash, FileText, Lock, EyeOff, Globe, Map, FileSignature, UploadCloud, Save, RefreshCw, ArrowLeft, ChevronDown, Heart, Bell, Image, ShieldCheck, Info, Check, Loader } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area } from 'recharts';
-import { getCustomers, getCustomerStats, createCustomer, updateCustomer, updateCustomerStatus, deleteCustomer, getOrders } from '../../services/api';
+import { getCustomers, getCustomerStats, createCustomer, updateCustomer, updateCustomerStatus, deleteCustomer, getOrders, sendMessageToCustomerApi } from '../../services/api';
 import './CustomerManagement.css';
 import './Dashboard.css';
 
@@ -36,6 +36,10 @@ const CustomerManagement = () => {
   const [customerOrders, setCustomerOrders] = useState([]);
   const [isOrdersLoading, setIsOrdersLoading] = useState(false);
   
+  const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
+  const [messageForm, setMessageForm] = useState({ title: '', message: '', type: 'Info' });
+  const [isSendingMessage, setIsSendingMessage] = useState(false);
+
   const defaultFormData = {
     name: '', email: '', phone: '', address: '', city: '', state: '', country: '', pincode: '', status: 'Active'
   };
@@ -137,6 +141,29 @@ const CustomerManagement = () => {
       alert("Error updating status");
     }
     setActiveDropdown(null);
+  };
+
+  const handleSendMessage = async () => {
+    if (!messageForm.title || !messageForm.message) {
+      alert("Title and Message are required");
+      return;
+    }
+    setIsSendingMessage(true);
+    try {
+      const { data } = await sendMessageToCustomerApi(selectedCustomer.id, messageForm);
+      if (data.success) {
+        alert("Message sent successfully!");
+        setIsMessageModalOpen(false);
+        setMessageForm({ title: '', message: '', type: 'Info' });
+      } else {
+        alert(data.message || "Failed to send message");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("An error occurred while sending the message");
+    } finally {
+      setIsSendingMessage(false);
+    }
   };
 
   const handleDeleteCustomer = async (id, name) => {
@@ -481,7 +508,6 @@ const CustomerManagement = () => {
             <div className="cm-section-title">Actions</div>
             <div className="cm-actions-group">
               <button className="cm-btn-action" onClick={() => { setFormData({...selectedCustomer}); setIsAddingCustomer(true); }}><Edit size={16} /> Edit</button>
-              <button className="cm-btn-action" onClick={() => alert('Messaging feature coming soon!')}><MessageSquare size={16} /> Message</button>
             </div>
 
           </div>
@@ -832,7 +858,7 @@ const CustomerManagement = () => {
                     <Check size={12} strokeWidth={3} />
                   </div>
                   <div className="cm-pv-success-content">
-                    <div className="cm-pv-success-title">Notifications are enabled</div>
+                  <div className="cm-pv-success-title">Notifications are enabled</div>
                     <div className="cm-pv-success-text">You will receive important updates and alerts.</div>
                   </div>
                 </div>
@@ -855,6 +881,74 @@ const CustomerManagement = () => {
 
         </div>
       )}
+
+      {/* Message Modal */}
+      {isMessageModalOpen && selectedCustomer && (
+        <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
+          <div className="modal-content" style={{ background: '#fff', padding: '24px', borderRadius: '12px', width: '90%', maxWidth: '500px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600' }}>Message to {selectedCustomer.name}</h3>
+              <button onClick={() => setIsMessageModalOpen(false)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#6b7280' }}><X size={20} /></button>
+            </div>
+            
+            <div className="cm-form-group" style={{ marginBottom: '16px' }}>
+              <label className="cm-label">Subject</label>
+              <input 
+                type="text" 
+                className="cm-input" 
+                placeholder="Message Subject" 
+                value={messageForm.title}
+                onChange={(e) => setMessageForm({...messageForm, title: e.target.value})}
+                style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #e5e7eb', marginTop: '6px' }}
+              />
+            </div>
+
+            <div className="cm-form-group" style={{ marginBottom: '16px' }}>
+              <label className="cm-label">Message Type</label>
+              <select 
+                className="cm-select" 
+                value={messageForm.type}
+                onChange={(e) => setMessageForm({...messageForm, type: e.target.value})}
+                style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #e5e7eb', marginTop: '6px' }}
+              >
+                <option value="Info">Information</option>
+                <option value="Alert">Alert</option>
+                <option value="Offer">Special Offer</option>
+                <option value="Warning">Warning</option>
+              </select>
+            </div>
+            
+            <div className="cm-form-group" style={{ marginBottom: '24px' }}>
+              <label className="cm-label">Message Body</label>
+              <textarea 
+                className="cm-textarea" 
+                placeholder="Type your message here..." 
+                rows="5"
+                value={messageForm.message}
+                onChange={(e) => setMessageForm({...messageForm, message: e.target.value})}
+                style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #e5e7eb', marginTop: '6px', minHeight: '120px', resize: 'vertical' }}
+              ></textarea>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+              <button 
+                onClick={() => setIsMessageModalOpen(false)}
+                style={{ padding: '10px 16px', background: '#f3f4f6', color: '#374151', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '500' }}
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleSendMessage}
+                disabled={isSendingMessage}
+                style={{ padding: '10px 16px', background: '#c9a05b', color: '#fff', border: 'none', borderRadius: '8px', cursor: isSendingMessage ? 'not-allowed' : 'pointer', fontWeight: '500', display: 'flex', alignItems: 'center', gap: '6px' }}
+              >
+                {isSendingMessage ? 'Sending...' : <><MessageSquare size={16} /> Send Message</>}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

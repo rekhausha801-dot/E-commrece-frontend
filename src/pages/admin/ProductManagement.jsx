@@ -61,7 +61,7 @@ const ProductManagement = ({ globalSearch = '' }) => {
           ...p,
           name: p.name || p.title || 'Unknown Product',
           sku: p.sku || `SKU-${p.id}`,
-          cat: p.cat || p.category || 'Uncategorized',
+          cat: typeof p.category === 'object' ? (p.category?.name || 'Uncategorized') : (p.cat || p.category || 'Uncategorized'),
           brand: p.brand || 'Generic',
           price: typeof p.price === 'number' ? `₹${p.price}` : p.price || '₹0',
           oldPrice: typeof p.originalPrice === 'number' ? `₹${p.originalPrice}` : (p.oldPrice || (typeof p.price === 'number' ? `₹${p.price}` : p.price)),
