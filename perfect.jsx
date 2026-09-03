@@ -556,7 +556,7 @@ const ProductManagement = () => {
       {isEditing && (
         <div className="dashboard-add-product">
           <div className="dash-header-simple">
-            <div className="breadcrumb">Dashboard &gt; Products &gt; <span>Add New Product</span></div>
+            <div className="breadcrumb">Dashboard &gt; <span>Add New Product</span></div>
           </div>
           <div className="dash-title-section-flex">
             <div>

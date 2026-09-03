@@ -21,21 +21,35 @@ const ReviewManagement = () => {
       const res = await getAdminReviewsApi();
       if (res.data && res.data.success) {
         // Map backend data to frontend structure
-        const formatted = res.data.data.map(r => ({
-          id: r._id,
-          customerName: r.user?.name || 'Anonymous',
-          productTitle: r.product ? r.product.name : 'Unknown Product',
-          sku: r.product ? (r.product.sku || `ID: ${r.product._id.substring(0, 8)}`) : 'N/A',
-          customerImage: r.user?.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(r.user?.name || 'A')}&background=fef3c7&color=d97706&size=100`,
-          rating: r.rating,
-          reviewText: r.comment || '',
-          reviewImages: (r.images || []).slice(0, 3),
-          moreImagesCount: Math.max(0, (r.images?.length || 0) - 3),
-          status: r.status.charAt(0).toUpperCase() + r.status.slice(1),
-          verified: r.isVerifiedPurchase || false,
-          date: dayjs(r.createdAt).format('DD MMM YYYY'),
-          time: dayjs(r.createdAt).format('hh:mm A')
-        }));
+        const formatted = res.data.data.map(r => {
+          // Deduplicate images by base URL to prevent multiple versions of the same image (e.g. different query params) from inflating the count
+          const uniqueImagesMap = new Map();
+          (r.images || []).forEach(url => {
+             if (typeof url === 'string') {
+               const baseUrl = url.split('?')[0];
+               if (!uniqueImagesMap.has(baseUrl)) {
+                 uniqueImagesMap.set(baseUrl, url);
+               }
+             }
+          });
+          const uniqueImages = Array.from(uniqueImagesMap.values());
+          
+          return {
+            id: r._id,
+            customerName: r.user?.name || 'Anonymous',
+            productTitle: r.product ? r.product.name : 'Unknown Product',
+            sku: r.product ? (r.product.sku || `ID: ${r.product._id.substring(0, 8)}`) : 'N/A',
+            customerImage: r.user?.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(r.user?.name || 'A')}&background=fef3c7&color=d97706&size=100`,
+            rating: r.rating,
+            reviewText: r.comment || '',
+            reviewImages: uniqueImages.slice(0, 3),
+            moreImagesCount: Math.max(0, uniqueImages.length - 3),
+            status: r.status.charAt(0).toUpperCase() + r.status.slice(1),
+            verified: r.isVerifiedPurchase || false,
+            date: dayjs(r.createdAt).format('DD MMM YYYY'),
+            time: dayjs(r.createdAt).format('hh:mm A')
+          };
+        });
         setReviews(formatted);
       }
     } catch (err) {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Heart, ShoppingCart, Check, Shield, Truck, RotateCcw, Award, Camera, Home, PenTool, Image as ImageIcon, Smile, Sun, Wind, Navigation, Headphones, Palmtree, Maximize } from 'lucide-react';
 import './CustomizeTShirt.css';
@@ -6,18 +6,7 @@ import './CustomizeTShirt.css';
 
 import defaultMainImage from '../assets/images/t-shirt8.png';
 
-const DESIGNS = [
-  { id: 1, name: 'Design 1', icon: <ImageIcon size={48} strokeWidth={1} /> },
-  { id: 2, name: 'Design 2', icon: <Camera size={48} strokeWidth={1} /> },
-  { id: 3, name: 'Design 3', icon: <PenTool size={48} strokeWidth={1} /> },
-  { id: 4, name: 'Design 4', icon: <Smile size={48} strokeWidth={1} /> },
-  { id: 5, name: 'Design 5', icon: <Sun size={48} strokeWidth={1} /> },
-  { id: 6, name: 'Design 6', icon: <Wind size={48} strokeWidth={1} /> },
-  { id: 7, name: 'Design 7', icon: <Navigation size={48} strokeWidth={1} /> },
-  { id: 8, name: 'Design 8', icon: <Home size={48} strokeWidth={1} /> },
-  { id: 9, name: 'Design 9', icon: <Headphones size={48} strokeWidth={1} /> },
-  { id: 10, name: 'Design 10', icon: <Palmtree size={48} strokeWidth={1} /> },
-];
+import { getPredefinedDesigns } from '../services/customDesignService';
 
 export default function CustomizeTShirt() {
   const { state } = useLocation();

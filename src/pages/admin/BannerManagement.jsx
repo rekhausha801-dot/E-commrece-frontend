@@ -630,6 +630,7 @@ const BannerManagement = () => {
                       })}
                       <option value="Product Page - Kurti">Product Page - Kurti</option>
                       <option value="Product Page - T-Shirt">Product Page - T-Shirt</option>
+                      <option value="Product Page - Custom T-Shirt">Product Page - Custom T-Shirt</option>
                       <option value="Product Page - Shirt">Product Page - Shirt</option>
                       <option value="Product Page - Suit">Product Page - Suit</option>
                       <option value="Checkout Page">Checkout Page</option>

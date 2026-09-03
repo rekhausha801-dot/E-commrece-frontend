@@ -373,7 +373,7 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
       { label: `Category Page - ${cat.label}`, value: `Category Page - ${cat.label.toLowerCase().replace(/\s+/g, '-')}` },
       { label: `Product Page - ${cat.label}`, value: `Product Page - ${cat.label.toLowerCase().replace(/\s+/g, '-')}` }
     ]),
-    'Product Page - Kurti', 'Product Page - T-Shirt', 'Product Page - Shirt', 'Product Page - Suit',
+    'Product Page - Kurti', 'Product Page - T-Shirt', 'Product Page - Custom T-Shirt', 'Product Page - Shirt', 'Product Page - Suit',
     'Checkout Page', 'Coupon Page'
   ];
 
@@ -383,8 +383,6 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
       <div className="add-product-header" style={{ marginBottom: '24px' }}>
         <div className="header-breadcrumbs" style={{ fontSize: '12px', color: '#6b7280', marginBottom: '16px' }}>
           <span>Dashboard</span>
-          <span style={{ margin: '0 8px' }}>&gt;</span>
-          <span>Products</span>
           <span style={{ margin: '0 8px' }}>&gt;</span>
           <span style={{ color: '#a66c24', fontWeight: 'bold' }}>Add New Product</span>
         </div>
