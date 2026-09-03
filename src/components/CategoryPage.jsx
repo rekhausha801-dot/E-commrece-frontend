@@ -23,6 +23,7 @@ import banner16Img from '../assets/images/banner16.png';
 import dffImg from '../assets/images/dff.png';
 import westernBannerImg from '../assets/images/westrenwear.png';
 import menBannerImg from '../assets/images/men9.png';
+import customTshirtBanner from '../assets/images/custom_tshirt_banner.jpg';
 
 
 import manImg from '../assets/images/man.png';
@@ -115,7 +116,7 @@ import tshirt8Img from '../assets/images/t-shirt8.png';
 const CATEGORY_DATA = {
   'custom-t-shirts': {
     title: "Custom T-Shirts",
-    banner: banner15Img,
+    banner: customTshirtBanner,
     images: []
   },
   'girls-t-shirts': {

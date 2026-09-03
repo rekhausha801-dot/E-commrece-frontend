@@ -560,7 +560,7 @@ export default function Collection({ BannerComponent, title = "Kurtis" }) {
                       style={{ transition: 'all 0.3s ease' }}
                     />
                   </button>
-                  <img src={product.image} alt={product.title} />
+                  <img src={product.image || 'https://placehold.co/400x500/eaeaea/8f7a5b?text=No+Image'} alt={product.title} onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/400x500/eaeaea/8f7a5b?text=No+Image"; }} />
                 </div>
 
                 <div className="unified-card-info">

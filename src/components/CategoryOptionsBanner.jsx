@@ -31,7 +31,8 @@ const CategoryOptionsBanner = ({ selectedCategories, setSelectedCategories }) =>
             <div className="category-icon-wrapper" style={{ background: option.gradient }}>
               {option.icon}
             </div>
-            <h3 className="category-option-title">{option.label}</h3>
+            <h3 className="category-option-title">
+              {option.label}</h3>
           </div>
         ))}
       </div>

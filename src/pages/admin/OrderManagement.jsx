@@ -61,6 +61,15 @@ const OrderManagement = ({ globalSearch = '' }) => {
             id: p.product,
             image: p.productImage,
             name: p.productName,
+            sku: p.product,
+            size: p.selectedSize,
+            color: p.selectedColor,
+            customText: p.customText,
+            customTextColor: p.customTextColor,
+            customTextFont: p.customTextFont,
+            selectedDesign: p.selectedDesign,
+            selectedDesignColor: p.selectedDesignColor,
+            colorizeImage: p.colorizeImage,
             quantity: p.quantity,
             unitPrice: `₹${p.finalUnitPrice || p.originalPrice || 0}`,
             total: `₹${p.totalPrice || 0}`
@@ -908,10 +917,18 @@ const OrderManagement = ({ globalSearch = '' }) => {
                         <img src={item.image} alt={item.name} style={{ width: '64px', height: '64px', borderRadius: '8px', objectFit: 'cover', border: '1px solid #e5e7eb' }} />
                         <div style={{ flex: 1 }}>
                           <h4 style={{ margin: '0 0 4px 0', fontSize: '14px', fontWeight: '600', color: '#111827' }}>{item.name}</h4>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '12px', color: '#6b7280' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '12px', color: '#6b7280', flexWrap: 'wrap' }}>
                             <span>SKU: {item.sku}</span>
-                            <span>Size: {item.size}</span>
-                            <span>Color: {item.color}</span>
+                            {item.size && <span>Size: {item.size}</span>}
+                            {item.color && <span>Color: {item.color}</span>}
+                            {item.customText && (
+                              <span>
+                                Text: <span style={{ fontFamily: item.customTextFont, color: item.customTextColor }}>"{item.customText}"</span>
+                              </span>
+                            )}
+                            {item.selectedDesign && item.selectedDesign.name && (
+                              <span>Design: {item.selectedDesign.name}</span>
+                            )}
                           </div>
                         </div>
                         <div style={{ textAlign: 'right' }}>

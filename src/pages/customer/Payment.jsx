@@ -21,7 +21,7 @@ import CheckoutStepper from '../../components/CheckoutStepper';
 import { useCart } from '../../context/CartContext';
 import { useOrders } from '../../context/OrderContext';
 import { useNotification } from '../../context/NotificationContext';
-import { createOrderApi, processPaymentApi, getOffers } from '../../services/api';
+import { createOrderApi, processPaymentApi, getOffers, checkCouponUsageApi } from '../../services/api';
 
 const Payment = () => {
   const navigate = useNavigate();
@@ -46,6 +46,7 @@ const Payment = () => {
   const [enteredCode, setEnteredCode] = useState('');
   const [selectedCouponCode, setSelectedCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [couponUsedModalOpen, setCouponUsedModalOpen] = useState(false);
 
   // We read the base cartPricing which already has correct subtotal, productDiscount, tax, and shipping.
   // The only thing we override dynamically here is couponDiscount, which updates tax and grandTotal.
@@ -127,7 +128,7 @@ const Payment = () => {
     );
   }
 
-  const handleApplyCoupon = () => {
+  const handleApplyCoupon = async () => {
     const codeToApply = enteredCode || selectedCouponCode;
     const found = availableCoupons.find(c => c.code.toUpperCase() === codeToApply.toUpperCase());
     if (found) {
@@ -135,6 +136,33 @@ const Payment = () => {
         message.error(`Minimum purchase of ₹${found.minPurchase} required`);
         return;
       }
+
+      try {
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+          const user = JSON.parse(userStr);
+          if (user && user.email) {
+            const { data } = await checkCouponUsageApi({ code: codeToApply, email: user.email });
+            if (data.used) {
+              setIsCouponModalOpen(false);
+              setCouponUsedModalOpen(true);
+              return;
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Error checking coupon usage", err);
+        // If the backend returned a 400 with our message about already using a coupon
+        if (err.response && err.response.status === 400 && err.response.data.message.includes('already used a coupon')) {
+           setIsCouponModalOpen(false);
+           setCouponUsedModalOpen(true);
+           return;
+        } else if (err.response && err.response.status === 400) {
+           message.error(err.response.data.message);
+           return;
+        }
+      }
+
       setAppliedCoupon(found);
       setCouponDiscount(found.save);
       setIsCouponModalOpen(false);
@@ -154,6 +182,14 @@ const Payment = () => {
           productId: item.productId || item.id || item._id,
           productName: item.name || item.productName || item.title || 'Product',
           quantity: item.qty || item.quantity || 1,
+          size: item.size || item.selectedSize || 'Free',
+          color: item.color || item.selectedColor || 'Default',
+          customText: item.customText || null,
+          customTextColor: item.customTextColor || null,
+          customTextFont: item.customTextFont || null,
+          selectedDesign: item.selectedDesign || null,
+          selectedDesignColor: item.selectedDesignColor || null,
+          colorizeImage: item.colorizeImage || false
         })),
         paymentMethod: {
           type: 'online',
@@ -200,14 +236,22 @@ const Payment = () => {
           productName: item.name || item.productName || item.title || 'Product',
           quantity: item.qty || item.quantity || 1,
           size: item.size || item.selectedSize || 'Free',
-          color: item.color || item.selectedColor || 'Default'
+          color: item.color || item.selectedColor || 'Default',
+          customText: item.customText || null,
+          customTextColor: item.customTextColor || null,
+          customTextFont: item.customTextFont || null,
+          selectedDesign: item.selectedDesign || null,
+          selectedDesignColor: item.selectedDesignColor || null,
+          colorizeImage: item.colorizeImage || false
         })),
         addressId: selectedAddress._id || selectedAddress.id,
         paymentMethod: {
           type: selectedMethod,
           label: selectedMethod === 'cod' ? 'Cash on Delivery' : 'Pay Online',
           method: selectedMethod === 'online' ? onlineMethod : ''
-        }
+        },
+        couponCode: appliedCoupon ? appliedCoupon.code : '',
+        couponDiscount: couponDiscount || 0
       };
 
       if (paymentId) {
@@ -263,18 +307,13 @@ const Payment = () => {
 
     } catch (error) {
       console.error('Failed to place order:', error);
-      const errorMsg = error.response?.data?.message || error.message;
-      if (errorMsg && errorMsg.includes('old cart items')) {
-        alert(errorMsg + '\n\nYour cart is being cleared automatically.');
-        if (buyNowData) clearBuyNowData();
-        else clearCart();
-        navigate('/cart');
-        return;
-      }
-      alert('Backend Error:\n' + (error.response?.data?.stack || errorMsg));
-      message.error(`Failed to place order`);
+      const backendError = error.response?.data?.message || error.message || 'Order creation failed.';
+      console.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+      console.error('BACKEND ERROR MESSAGE IS: ', backendError);
+      console.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+      message.error(backendError);
       setPaymentStatus('failed');
-      setPaymentError('Order creation failed after payment. Please contact support.');
+      setPaymentError(backendError);
     } finally {
       setIsPlacingOrder(false);
       // We don't close modal here immediately if it failed, so user can read the error
@@ -292,6 +331,33 @@ const Payment = () => {
 
   return (
     <div className="lux-payment-page">
+      {/* Coupon Already Used Modal */}
+      <Modal
+        open={couponUsedModalOpen}
+        onCancel={() => setCouponUsedModalOpen(false)}
+        onOk={() => setCouponUsedModalOpen(false)}
+        okText="OK"
+        cancelButtonProps={{ style: { display: 'none' } }}
+        centered
+        closable={true}
+        title={
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#c0392b' }}>
+            <span style={{ fontSize: '22px' }}>⚠️</span>
+            <span style={{ fontWeight: 700, fontSize: '18px' }}>Coupon Already Used</span>
+          </div>
+        }
+      >
+        <div style={{ padding: '10px 0', textAlign: 'center' }}>
+          <div style={{ fontSize: '52px', marginBottom: '12px' }}>🎟️</div>
+          <p style={{ fontSize: '16px', color: '#333', marginBottom: '8px', fontWeight: 600 }}>
+            You have already used a coupon!
+          </p>
+          <p style={{ fontSize: '14px', color: '#666' }}>
+            Each customer can only use <strong>one coupon in total</strong>. You cannot apply any more coupons.
+          </p>
+        </div>
+      </Modal>
+
       <div className="lux-cart-container">
         <CheckoutStepper currentStep={3} />
 

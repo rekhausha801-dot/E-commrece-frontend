@@ -9,7 +9,7 @@ import {
   CheckCircle2, ShieldCheck, RefreshCcw, Heart, Plus, Minus, Check, Eye,
   Truck, CreditCard, Box, Navigation, MoreHorizontal, MoreVertical, Trash2, ThumbsUp, ShoppingBag, Palette, Shield,
   Camera, MessageCircle, Edit2, Info, Award, X, Leaf, ArrowDown, Zap, Sparkles, RotateCcw, CheckCircle,
-  Flower2, Mountain, Feather, Flame, Rocket, Compass, Send, Headphones, Palmtree, Upload
+  Flower2, Mountain, Feather, Flame, Rocket, Compass, Send, Headphones, Palmtree, Upload, Type
 } from 'lucide-react';
 import CustomerReviews from './CustomerReviews';
 import './ProductDetail.css';
@@ -199,6 +199,9 @@ export default function ProductDetail() {
   const [showRgbPicker, setShowRgbPicker] = useState(false);
   const [rgbColor, setRgbColor] = useState({ r: 0, g: 0, b: 0 });
   const [colorizeImage, setColorizeImage] = useState(false);
+  const [customText, setCustomText] = useState('');
+  const [customTextColor, setCustomTextColor] = useState('#000000');
+  const [customTextFont, setCustomTextFont] = useState('sans-serif');
 
   const [activePosition, setActivePosition] = useState('front');
   const [isUploading, setIsUploading] = useState(false);
@@ -333,7 +336,7 @@ export default function ProductDetail() {
   };
 
   const images = product?.images?.length > 0
-    ? product.images.map(img => img.url)
+    ? product.images.map(img => img?.url || (typeof img === 'string' ? img : ''))
     : product?.image ? [product.image] : [];
 
   const sizes = product?.sizes && product.sizes.length > 0 ? product.sizes : [];
@@ -351,7 +354,7 @@ export default function ProductDetail() {
     ? activeDesign.modelImage
     : (activeColorObj?.image || product?.image || '');
   const displayImages = product?.images?.length > 0
-    ? product.images.map(img => img.url)
+    ? product.images.map(img => img?.url || (typeof img === 'string' ? img : ''))
     : displayImageSrc ? [displayImageSrc] : [];
 
   const similarProducts = React.useMemo(() => {
@@ -369,7 +372,7 @@ export default function ProductDetail() {
       const pCat = (p.category?.name || p.category || 'Uncategorized').toLowerCase();
       const currCat = (product.category?.name || product.category || 'Uncategorized').toLowerCase();
       const sameCategory = (p.categoryId === product.categoryId && p.categoryId) || (pCat === currCat && pCat !== 'uncategorized');
-      
+
       const pTitle = (p.title || '').toLowerCase();
       let keywordMatch = true;
 
@@ -383,8 +386,8 @@ export default function ProductDetail() {
         keywordMatch = pTitle.includes('shoe') || pTitle.includes('sneaker') || pTitle.includes('footwear');
       } else {
         if (pCat === 'uncategorized' && currCat === 'uncategorized') {
-           const firstWord = currentTitle.split(' ')[0];
-           keywordMatch = firstWord ? pTitle.includes(firstWord) : false;
+          const firstWord = currentTitle.split(' ')[0];
+          keywordMatch = firstWord ? pTitle.includes(firstWord) : false;
         }
       }
 
@@ -527,7 +530,7 @@ export default function ProductDetail() {
                   >
                     <img src={img} alt={`Thumbnail ${idx}`} />
                     {product?.customizable && (
-                      <div style={{ position: 'absolute', top: '55%', left: '50%', transform: 'translate(-50%, -50%)', width: '35%', height: '35%', mixBlendMode: 'multiply', pointerEvents: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                      <div style={{ position: 'absolute', top: '60%', left: '50%', transform: 'translate(-50%, -50%)', width: '35%', height: '35%', mixBlendMode: 'multiply', pointerEvents: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                         {activeDesign && !activeDesign?.isBaseImage && (
                           activeDesign.icon ? (
                             <div style={{ position: 'relative', width: '100%', height: '100%' }}>
@@ -611,7 +614,7 @@ export default function ProductDetail() {
                   <div style={{ width: '100%', height: '100%', transition: 'transform 0.1s ease-out', ...zoomStyle }}>
                     <img src={displayImages[activeImage]} alt="Main Product" className="pdp-main-image" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     {product?.customizable && (
-                      <div style={{ position: 'absolute', top: '55%', left: '50%', transform: 'translate(-50%, -50%)', width: '35%', height: '35%', mixBlendMode: 'multiply', pointerEvents: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                      <div style={{ position: 'absolute', top: '60%', left: '50%', transform: 'translate(-50%, -50%)', width: '35%', height: '35%', mixBlendMode: 'multiply', pointerEvents: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                         {activeDesign && !activeDesign?.isBaseImage && (
                           activeDesign.icon ? (
                             <div style={{ position: 'relative', width: '100%', height: '100%' }}>
@@ -667,6 +670,26 @@ export default function ProductDetail() {
                               return IconComp ? <IconComp size={140} color={activeDesignColor} strokeWidth={1.5} /> : null;
                             })()
                           )
+                        )}
+                        {customText && (
+                          <div
+                            style={{
+                              marginTop: activeDesign ? '6px' : '0px',
+                              fontSize: '13px',
+                              fontWeight: '900',
+                              fontFamily: customTextFont,
+                              color: customTextColor,
+                              textTransform: 'uppercase',
+                              letterSpacing: '1.5px',
+                              textAlign: 'center',
+                              wordBreak: 'break-word',
+                              maxWidth: '100%',
+                              textShadow: customTextColor === '#FFFFFF' || customTextColor === '#ffffff' ? '0 1px 3px rgba(0,0,0,0.8)' : '0 1px 2px rgba(255,255,255,0.6)',
+                              lineHeight: 1.2
+                            }}
+                          >
+                            {customText}
+                          </div>
                         )}
                       </div>
                     )}
@@ -854,9 +877,9 @@ export default function ProductDetail() {
                     </div>
                     <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
                       {/* Standard colors */}
-                      {['#000000', '#FFFFFF', '#FF0000', '#0000FF', '#008000', '#FFFF00', '#FFC0CB', '#808080'].map(color => (
+                      {['#000000', '#FFFFFF', '#FF0000', '#0000FF', '#008000', '#FFFF00', '#FFC0CB', '#808080'].map((color, idx) => (
                         <button
-                          key={color}
+                          key={`des_color_${color}_${idx}`}
                           onClick={() => { setActiveDesignColor(color); setShowRgbPicker(false); }}
                           style={{
                             width: '28px', height: '28px', borderRadius: '50%',
@@ -934,6 +957,8 @@ export default function ProductDetail() {
                   </div>
                 )}
 
+
+
               </div>
             )}
 
@@ -945,14 +970,18 @@ export default function ProductDetail() {
                   <span className="pdp-opt-val">{activeColor}</span>
                 </div>
                 <div className="pdp-luxury-swatches">
-                  {colors.map(color => (
-                    <button
-                      key={color.name}
-                      className={`pdp-luxury-swatch ${activeColor === color.name ? 'active' : ''}`}
-                      style={{ backgroundColor: color.hex }}
-                      title={color.name}
-                      onClick={async (e) => {
-                        if (activeColor === color.name) return;
+                  {colors.map((color, idx) => {
+                    const colorName = typeof color === 'object' ? color.name : color;
+                    const colorHex = typeof color === 'object' ? color.hex : color;
+                    const colorKey = colorName || colorHex || `clr_${idx}`;
+                    return (
+                      <button
+                        key={`swatch_${colorKey}_${idx}`}
+                        className={`pdp-luxury-swatch ${activeColor === colorName ? 'active' : ''}`}
+                        style={{ backgroundColor: colorHex }}
+                        title={colorName}
+                        onClick={async (e) => {
+                          if (activeColor === colorName) return;
 
                         const pageX = e.clientX;
                         const pageY = e.clientY;
@@ -987,9 +1016,10 @@ export default function ProductDetail() {
                         }
                       }}
                     >
-                      {activeColor === color.name && <Check size={12} color={color.hex === '#fff' || color.hex === '#ffffff' ? '#000' : '#fff'} strokeWidth={3} />}
+                      {activeColor === colorName && <Check size={12} color={colorHex === '#fff' || colorHex === '#ffffff' ? '#000' : '#fff'} strokeWidth={3} />}
                     </button>
-                  ))}
+                  );
+                })}
                 </div>
               </div>
             )}
@@ -1027,15 +1057,18 @@ export default function ProductDetail() {
                     </button>
                   </div>
                   <div className="pdp-luxury-size-grid">
-                    {sizes.map(size => (
-                      <button
-                        key={size}
-                        className={`pdp-luxury-size-pill ${activeSize === size ? 'active' : ''}`}
-                        onClick={() => setActiveSize(size)}
-                      >
-                        {size}
-                      </button>
-                    ))}
+                    {sizes.map((size, idx) => {
+                      const sizeVal = typeof size === 'object' ? (size.size || size.name) : size;
+                      return (
+                        <button
+                          key={`size_${sizeVal}_${idx}`}
+                          className={`pdp-luxury-size-pill ${activeSize === sizeVal ? 'active' : ''}`}
+                          onClick={() => setActiveSize(sizeVal)}
+                        >
+                          {sizeVal}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -1065,7 +1098,7 @@ export default function ProductDetail() {
                         navigate('/cart');
                       } else {
                         await handleFlyingCartAnimation(e, 'img', '.pdp-image-section');
-                        addToCart({ ...product, selectedColor: activeColor, selectedSize: activeSize, quantity, selectedDesign: activeDesign, selectedDesignColor: activeDesignColor, colorizeImage });
+                        addToCart({ ...product, selectedColor: activeColor, selectedSize: activeSize, quantity, selectedDesign: activeDesign, selectedDesignColor: activeDesignColor, colorizeImage, customText, customTextColor, customTextFont });
                         message.success(`${product?.title || 'Product'} added to cart!`);
                       }
                     }}
@@ -1097,7 +1130,7 @@ export default function ProductDetail() {
                           selectedDesignColor: activeDesignColor,
                           colorizeImage
                         };
-                        
+
                         setBuyNowData(buyNowItem);
                         navigate('/cart');
                       } catch (error) {
@@ -1322,9 +1355,9 @@ export default function ProductDetail() {
           {/* Reviews Grid/Carousel */}
           {reviews.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '36px 16px', color: '#6b7280', background: '#fff', borderRadius: '12px', border: '1px solid #eaeaea' }}>
-                <Star size={32} color="#d1d5db" style={{ marginBottom: '8px' }} />
-                <p style={{ margin: 0, fontSize: '14px', fontWeight: '500' }}>No reviews yet for this product.</p>
-                <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#9ca3af' }}>Be the first to share your experience!</p>
+              <Star size={32} color="#d1d5db" style={{ marginBottom: '8px' }} />
+              <p style={{ margin: 0, fontSize: '14px', fontWeight: '500' }}>No reviews yet for this product.</p>
+              <p style={{ margin: '4px 0 0 0', fontSize: '12px', color: '#9ca3af' }}>Be the first to share your experience!</p>
             </div>
           ) : (
             <div className="pdp-crs-cards-container">
@@ -1357,7 +1390,7 @@ export default function ProductDetail() {
               ))}
             </div>
           )}
-          
+
           {/* Carousel Dots */}
           {reviews.length > 0 && (
             <div className="pdp-crs-carousel-dots">

@@ -47,6 +47,14 @@ const Address = () => {
       const res = await fetch(`${API_URL}/addresses`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
+      
+      if (res.status === 401) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+        return;
+      }
+      
       const data = await res.json();
       if (data.success) {
         setAddresses(data.addresses);
@@ -241,7 +249,29 @@ const Address = () => {
             {isLoading ? (
               <p>Loading addresses...</p>
             ) : addresses.length === 0 ? (
-              <p>No saved addresses found. Please add a new address.</p>
+              <div style={{ padding: '32px 24px', background: '#fff', borderRadius: '12px', border: '2px dashed #e5e7eb', textAlign: 'center' }}>
+                <MapPin size={40} color="var(--primary-color)" style={{ margin: '0 auto 12px', display: 'block', opacity: 0.8 }} />
+                <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#111827', margin: '0 0 6px' }}>No Saved Addresses Found</h3>
+                <p style={{ fontSize: '13px', color: '#6b7280', margin: '0 0 20px' }}>Add a delivery address to complete your order checkout.</p>
+                <button
+                  onClick={openAddDrawer}
+                  style={{
+                    background: 'var(--primary-color)',
+                    color: '#fff',
+                    padding: '12px 24px',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    fontWeight: '700',
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}
+                >
+                  + Add New Delivery Address
+                </button>
+              </div>
             ) : (
               addresses.map(addr => (
                 <div
@@ -365,31 +395,13 @@ const Address = () => {
                   value={addressForm.pincode}
                   onChange={handleFieldChange('pincode')}
                 />
-                <select
+                <input
+                  type="text"
                   className="underline-input"
+                  placeholder="City"
                   value={addressForm.city}
                   onChange={handleFieldChange('city')}
-                  style={{ color: addressForm.city ? '#1a1a1a' : '#757575', padding: '12px 0', border: 'none', borderBottom: '1px solid #e0e0e0', outline: 'none', width: '100%', fontSize: '15px', background: 'transparent', cursor: 'pointer' }}
-                >
-                  <option value="" disabled hidden>Select City</option>
-                  <option value="Chennai">Chennai</option>
-                  <option value="Coimbatore">Coimbatore</option>
-                  <option value="Madurai">Madurai</option>
-                  <option value="Salem">Salem</option>
-                  <option value="Trichy">Trichy</option>
-                  <option value="Vellore">Vellore</option>
-                  <option value="Tirunelveli">Tirunelveli</option>
-                  <option value="Tiruppur">Tiruppur</option>
-                  <option value="Erode">Erode</option>
-                  <option value="Krishnagiri">Krishnagiri</option>
-                  <option value="Dharmapuri">Dharmapuri</option>
-                  <option value="Bangalore">Bangalore</option>
-                  <option value="Hyderabad">Hyderabad</option>
-                  <option value="Kochi">Kochi</option>
-                  <option value="Mumbai">Mumbai</option>
-                  <option value="Delhi">Delhi</option>
-                  <option value="Other">Other</option>
-                </select>
+                />
                 <input
                   type="text"
                   className="underline-input"
@@ -408,7 +420,22 @@ const Address = () => {
             </div>
 
             <div className="drawer-footer">
-              <button className="save-address-btn" onClick={saveAddress}>
+              <button
+                className="save-address-btn"
+                onClick={saveAddress}
+                style={{
+                  background: '#111827',
+                  color: '#ffffff',
+                  padding: '14px 20px',
+                  borderRadius: '8px',
+                  fontSize: '15px',
+                  fontWeight: '700',
+                  border: 'none',
+                  width: '100%',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 14px rgba(0,0,0,0.2)'
+                }}
+              >
                 {isEditing ? 'Save Changes' : 'Save Address and Continue'}
               </button>
             </div>

@@ -289,7 +289,7 @@ const TrendyCollection = () => {
               >
                 {likedIds.includes(product.id) ? <FaHeart color="#ff4d4f" /> : <FaRegHeart color="#555" />}
               </button>
-              <img src={product.image} alt={product.title} />
+              <img src={product.image || 'https://placehold.co/400x500/eaeaea/8f7a5b?text=No+Image'} alt={product.title} onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/400x500/eaeaea/8f7a5b?text=No+Image"; }} />
               {(product.stockLimit <= 0 || product.countInStock <= 0) && (
                 <div style={{
                   position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,

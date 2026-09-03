@@ -40,8 +40,20 @@ export const NotificationProvider = ({ children }) => {
           read: n.isRead,
           link: n.link
         }));
-        
-        setNotifications(serverNotifs);
+        setNotifications(prev => {
+          // Keep local notifications (created with Date.now() numeric IDs)
+          const localNotifs = prev.filter(n => typeof n.id === 'number');
+          
+          // Merge server notifications, preserving their local read state if it exists
+          const mergedServerNotifs = serverNotifs.map(serverNotif => {
+            const existing = prev.find(n => n.id === serverNotif.id);
+            return existing ? { ...serverNotif, read: existing.read } : serverNotif;
+          });
+          
+          // Sort them by time/date so newest is first? 
+          // For simplicity, we just put local first since they are usually newer
+          return [...localNotifs, ...mergedServerNotifs];
+        });
       }
     } catch (error) {
       console.error("Failed to fetch notifications", error);

@@ -24,9 +24,9 @@ const AdminLogin = () => {
         const data = response.data;
         
         if (data.success || data.token) {
-          localStorage.setItem('token', data.token);
+          localStorage.setItem('adminToken', data.token);
           if (data.user) {
-            localStorage.setItem('user', JSON.stringify(data.user));
+            localStorage.setItem('adminUser', JSON.stringify(data.user));
           }
           message.success('Admin Login successful!');
           window.scrollTo(0, 0);

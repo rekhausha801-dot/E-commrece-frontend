@@ -38,13 +38,27 @@ export default function Cards() {
         // Filter only active categories
         const activeCats = res.data.data.filter(c => c.status === 'active');
         if (activeCats.length > 0) {
+          
+          const getCategoryIcon = (categoryName) => {
+            const name = (categoryName || '').toLowerCase();
+            if (name.includes('shoe') || name.includes('footwear')) return <GiRunningShoe />;
+            if (name.includes('kurti') || name.includes('dress') || name.includes('women') || name.includes('female')) return <FaFemale />;
+            if (name.includes('suit') || name.includes('men') || name.includes('boy')) return <FaUserTie />;
+            if (name.includes('kid') || name.includes('child')) return <FaChild />;
+            if (name.includes('home')) return <FaHome />;
+            if (name.includes('beauty')) return <FaMagic />;
+            if (name.includes('watch') || name.includes('access')) return <FaGem />;
+            if (name.includes('tshirt') || name.includes('shirt') || name.includes('wear') || name.includes('cloth')) return <FaTshirt />;
+            return <FaVest />; 
+          };
+
           // Map backend category format to card format
           const mappedCats = activeCats.map((cat, index) => ({
             name: cat.name,
             subtitle: cat.description || 'Explore collection',
             image: cat.image || defaultCategories[index % defaultCategories.length].image,
             icon: cat.icon || null, // Will render image if string, otherwise fallback
-            fallbackIcon: defaultCategories[index % defaultCategories.length].icon,
+            fallbackIcon: getCategoryIcon(cat.name),
             iconColor: '#b38e69',
             iconBg: '#f2ebe1'
           }));
@@ -100,7 +114,7 @@ export default function Cards() {
               return (
                 <div key={`${cat.name}-${index}`} className="category-new-card">
                   <Link to={targetLink} className="category-new-card-image" style={{ display: 'block', position: 'relative' }}>
-                    <img src={cat.image} alt={cat.name} />
+                    <img src={cat.image || 'https://placehold.co/600x400/eaeaea/8f7a5b?text=Category'} alt={cat.name} onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/600x400/eaeaea/8f7a5b?text=Category"; }} />
                   </Link>
                   <div className="category-new-card-content">
                     <div className="category-icon-wrapper" style={{ color: cat.iconColor, backgroundColor: cat.iconBg, overflow: 'hidden' }}>

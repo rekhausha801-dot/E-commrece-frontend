@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { getOffers, getActiveBanners } from '../../services/api';
+import { getOffers, getActiveBanners, checkCouponUsageApi } from '../../services/api';
+import { message, Modal } from 'antd';
 import {
   Gift, ArrowRight, Tag, Monitor,
   Sparkles, Home, MoreHorizontal, ChevronLeft,
@@ -20,6 +21,7 @@ const Coupons = () => {
   const [bannerUrl, setBannerUrl] = useState(couponBanner);
   const [activeBanner, setActiveBanner] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [couponUsedModalOpen, setCouponUsedModalOpen] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -62,10 +64,27 @@ const Coupons = () => {
     }
   };
 
-  const handleCopy = (code) => {
-    navigator.clipboard.writeText(code);
-    setCopiedCode(code);
-    setTimeout(() => setCopiedCode(null), 2000);
+  const handleCopy = async (code) => {
+    try {
+      const userStr = localStorage.getItem('user');
+      if (userStr) {
+        const user = JSON.parse(userStr);
+        if (user && user.email) {
+          const { data } = await checkCouponUsageApi({ code, email: user.email });
+          if (data.used) {
+            setCouponUsedModalOpen(true);
+            return;
+          }
+        }
+      }
+      navigator.clipboard.writeText(code);
+      setCopiedCode(code);
+      message.success('Coupon code copied!');
+      setTimeout(() => setCopiedCode(null), 2000);
+    } catch (error) {
+      console.error('Error checking coupon usage:', error);
+      message.error('Failed to verify coupon usage. Please try again.');
+    }
   };
 
   const tabs = [
@@ -87,6 +106,31 @@ const Coupons = () => {
 
   return (
     <div className="new-coupon-page">
+      {/* Coupon Already Used Modal */}
+      <Modal
+        open={couponUsedModalOpen}
+        onCancel={() => setCouponUsedModalOpen(false)}
+        onOk={() => setCouponUsedModalOpen(false)}
+        okText="OK"
+        cancelButtonProps={{ style: { display: 'none' } }}
+        centered
+        title={
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#c0392b' }}>
+            <span style={{ fontSize: '22px' }}>⚠️</span>
+            <span style={{ fontWeight: 700, fontSize: '18px' }}>Coupon Already Used</span>
+          </div>
+        }
+      >
+        <div style={{ padding: '10px 0', textAlign: 'center' }}>
+          <div style={{ fontSize: '52px', marginBottom: '12px' }}>🎟️</div>
+          <p style={{ fontSize: '16px', color: '#333', marginBottom: '8px', fontWeight: 600 }}>
+            You have already used a coupon!
+          </p>
+          <p style={{ fontSize: '14px', color: '#666' }}>
+            Each customer can only use <strong>one coupon in total</strong>. You cannot apply any more coupons.
+          </p>
+        </div>
+      </Modal>
       {/* Custom Hero Banner Replicating the Image */}
       <div className="nc-hero-container" style={{ position: 'relative', padding: '0', background: 'transparent', boxShadow: 'none', margin: '0 0 24px 0', borderRadius: '0', width: '100%', maxWidth: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <img src={bannerUrl} alt="Coupon Banner" style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'contain', borderRadius: '0', margin: '0', padding: '0' }} onError={(e) => { e.target.onerror = null; e.target.src = couponBanner; console.error("Banner image failed to load, falling back to default"); }} />
@@ -204,6 +248,11 @@ const Coupons = () => {
                         <><Copy size={14} style={{ marginRight: 6 }} /> COPY CODE</>
                       )}
                     </button>
+                    {coupon.endDate && (
+                      <p style={{ marginTop: '12px', fontSize: '11px', color: '#666', fontWeight: 600 }}>
+                        Expires on: {new Date(coupon.endDate).toLocaleDateString('en-GB')}
+                      </p>
+                    )}
                   </div>
                 </div>
               );

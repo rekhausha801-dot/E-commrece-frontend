@@ -43,20 +43,26 @@ import AdminLogin from "./pages/admin/AdminLogin";
 
 /** Only admins can access /dashboard — others get redirected to admin login */
 const AdminRoute = ({ children }) => {
-  const raw = localStorage.getItem('user');
+  const raw = localStorage.getItem('adminUser');
   const user = raw ? (() => { try { return JSON.parse(raw); } catch { return null; } })() : null;
-  const token = localStorage.getItem('token');
-  if (!token || !user) return <Navigate to="/admin/login" replace />;
+  const token = localStorage.getItem('adminToken');
+  if (!token || !user) return <Navigate to="/login" replace />;
   if (user.role !== 'admin') return <Navigate to="/" replace />;
   return children;
 };
 
-/** If admin is logged in and tries to visit a customer page, redirect them to dashboard */
 const CustomerRoute = ({ children }) => {
-  const raw = localStorage.getItem('user');
-  const user = raw ? (() => { try { return JSON.parse(raw); } catch { return null; } })() : null;
+  // Public customer route
+  return children;
+};
+
+const ProtectedCustomerRoute = ({ children }) => {
   const token = localStorage.getItem('token');
-  if (token && user && user.role === 'admin') return <Navigate to="/dashboard" replace />;
+  const user = localStorage.getItem('user');
+  
+  if (!token || !user) {
+    return <Navigate to="/login" replace />;
+  }
   return children;
 };
 
@@ -64,13 +70,15 @@ const CustomerRoute = ({ children }) => {
 
 const AppContent = () => {
   const location = useLocation();
-  const isDashboard =
+  const hideLayout =
     location.pathname.toLowerCase().startsWith('/dashboard') ||
-    location.pathname.toLowerCase().startsWith('/admin/login');
+    location.pathname.toLowerCase().startsWith('/admin/login') ||
+    location.pathname.toLowerCase() === '/login' ||
+    location.pathname.toLowerCase() === '/register';
 
   return (
     <>
-      {!isDashboard && <Navbar />}
+      {!hideLayout && <Navbar />}
       <Routes>
         {/* ── Public auth ── */}
         <Route path="/register" element={<Register />} />
@@ -90,15 +98,17 @@ const AppContent = () => {
         <Route path="/product/:productId" element={<CustomerRoute><ProductDetail /></CustomerRoute>} />
         <Route path="/customize/:productId" element={<CustomerRoute><CustomizeTShirt /></CustomerRoute>} />
         <Route path="/search" element={<CustomerRoute><SearchResults /></CustomerRoute>} />
-        <Route path="/wishlist" element={<CustomerRoute><Wishlist /></CustomerRoute>} />
-        <Route path="/cart" element={<CustomerRoute><Cart /></CustomerRoute>} />
         <Route path="/shop" element={<CustomerRoute><Collection BannerComponent={ShopBanner} title="Shop" /></CustomerRoute>} />
-        <Route path="/address" element={<CustomerRoute><Address /></CustomerRoute>} />
-        <Route path="/payment" element={<CustomerRoute><Payment /></CustomerRoute>} />
-        <Route path="/order-confirmed/:orderId" element={<CustomerRoute><OrderConfirmed /></CustomerRoute>} />
-        <Route path="/coupons" element={<CustomerRoute><Coupons /></CustomerRoute>} />
-        <Route path="/account/my-orders" element={<CustomerRoute><MyOrders /></CustomerRoute>} />
-        <Route path="/account" element={<CustomerRoute><AccountLayout /></CustomerRoute>}>
+        <Route path="/cart" element={<CustomerRoute><Cart /></CustomerRoute>} />
+        
+        {/* ── Protected Customer pages ── */}
+        <Route path="/wishlist" element={<ProtectedCustomerRoute><Wishlist /></ProtectedCustomerRoute>} />
+        <Route path="/address" element={<ProtectedCustomerRoute><Address /></ProtectedCustomerRoute>} />
+        <Route path="/payment" element={<ProtectedCustomerRoute><Payment /></ProtectedCustomerRoute>} />
+        <Route path="/order-confirmed/:orderId" element={<ProtectedCustomerRoute><OrderConfirmed /></ProtectedCustomerRoute>} />
+        <Route path="/coupons" element={<ProtectedCustomerRoute><Coupons /></ProtectedCustomerRoute>} />
+        <Route path="/account/my-orders" element={<ProtectedCustomerRoute><MyOrders /></ProtectedCustomerRoute>} />
+        <Route path="/account" element={<ProtectedCustomerRoute><AccountLayout /></ProtectedCustomerRoute>}>
           <Route index element={<Navigate to="profile" replace />} />
           <Route path="dashboard" element={<AccountPlaceholder />} />
           <Route path="profile" element={<Profile />} />
@@ -115,7 +125,7 @@ const AppContent = () => {
           <Route path="faqs" element={<AccountPlaceholder />} />
         </Route>
       </Routes>
-      {!isDashboard && <Footer />}
+      {!hideLayout && <Footer />}
     </>
   );
 };

@@ -124,25 +124,13 @@ const WebsiteSetting = ({ initialTab = 'Security', onProfileUpdate }) => {
         const firstName = nameParts[0] || '';
         const lastName = nameParts.slice(1).join(' ') || '';
 
-        // Defer setFieldsValue until after React mounts the <Form> element
-        setTimeout(() => {
-          profileForm.setFieldsValue({
-            firstName,
-            lastName,
-            email: user.email,
-            phone: user.phoneNumber,
-            role: user.role,
-            gender: user.gender
-          });
-        }, 0);
+
       } else {
         // Fallback for visual mock if API is disconnected
         const cachedImage = localStorage.getItem('adminProfileImage');
         const defaultData = { firstName: 'Admin', lastName: 'User', email: 'admin@relietech.com', profileImage: cachedImage || '' };
         setProfileData(defaultData);
-        setTimeout(() => {
-          profileForm.setFieldsValue(defaultData);
-        }, 0);
+
       }
 
       if (sessionsRes?.data && Array.isArray(sessionsRes.data) && sessionsRes.data.length > 0) {
@@ -155,6 +143,25 @@ const WebsiteSetting = ({ initialTab = 'Security', onProfileUpdate }) => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (activeTab === 'Security' && profileData) {
+      const nameParts = (profileData.fullName || profileData.firstName || '').split(' ');
+      const firstName = nameParts[0] || profileData.firstName || '';
+      const lastName = nameParts.slice(1).join(' ') || profileData.lastName || '';
+      
+      setTimeout(() => {
+        profileForm.setFieldsValue({
+          firstName,
+          lastName,
+          email: profileData.email,
+          phone: profileData.phoneNumber || profileData.phone,
+          role: profileData.role,
+          gender: profileData.gender
+        });
+      }, 0);
+    }
+  }, [activeTab, profileData, profileForm]);
 
   const handleSave = () => {
     message.success('Settings saved successfully!');
@@ -175,7 +182,7 @@ const WebsiteSetting = ({ initialTab = 'Security', onProfileUpdate }) => {
         // Save user WITHOUT base64 image (avoids localStorage QuotaExceededError)
         const updatedUser = { ...response.data.user };
         delete updatedUser.profileImage;
-        localStorage.setItem('user', JSON.stringify(updatedUser));
+        localStorage.setItem('adminUser', JSON.stringify(updatedUser));
         // Direct callback → most reliable way to update Dashboard navbar
         if (onProfileUpdate) onProfileUpdate();
         // Also fire event as fallback

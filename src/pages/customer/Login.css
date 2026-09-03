@@ -2,8 +2,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: calc(100vh - 120px);
-  padding: 40px 20px;
+  min-height: calc(100vh - 100px);
+  padding: 20px;
   background-color: #f7f7f7;
   font-family: 'Inter', sans-serif;
 }
@@ -12,7 +12,7 @@
   display: flex;
   width: 100%;
   max-width: 950px;
-  min-height: 580px;
+  min-height: 480px; /* Reduced to fit viewport */
   background-color: #fdf9f1;
   border-radius: 20px;
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
@@ -98,7 +98,7 @@
   font-size: 24px;
   font-weight: 400;
   color: #C89953;
-  margin-bottom: 8px;
+  margin-bottom: 40px;
   text-align: center;
 }
 
@@ -185,7 +185,8 @@
 }
 
 .split-submit-btn:disabled {
-  background-color: #a0a0a0;
+  background-color: #C89953;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
