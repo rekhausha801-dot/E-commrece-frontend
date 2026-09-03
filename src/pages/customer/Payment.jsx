@@ -175,8 +175,16 @@ const Payment = () => {
         setPaymentError(response.data.message || 'Payment failed');
       }
     } catch (error) {
+      const errorMsg = error.response?.data?.message || error.message;
+      if (errorMsg && errorMsg.includes('old cart items')) {
+        alert(errorMsg + '\n\nYour cart is being cleared automatically.');
+        if (buyNowData) clearBuyNowData();
+        else clearCart();
+        navigate('/cart');
+        return;
+      }
       setPaymentStatus('failed');
-      setPaymentError(error.response?.data?.message || error.message);
+      setPaymentError(errorMsg);
     }
   };
 
@@ -255,7 +263,15 @@ const Payment = () => {
 
     } catch (error) {
       console.error('Failed to place order:', error);
-      alert('Backend Error:\n' + (error.response?.data?.stack || error.response?.data?.message || error.message));
+      const errorMsg = error.response?.data?.message || error.message;
+      if (errorMsg && errorMsg.includes('old cart items')) {
+        alert(errorMsg + '\n\nYour cart is being cleared automatically.');
+        if (buyNowData) clearBuyNowData();
+        else clearCart();
+        navigate('/cart');
+        return;
+      }
+      alert('Backend Error:\n' + (error.response?.data?.stack || errorMsg));
       message.error(`Failed to place order`);
       setPaymentStatus('failed');
       setPaymentError('Order creation failed after payment. Please contact support.');

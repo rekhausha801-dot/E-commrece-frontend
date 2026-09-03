@@ -482,13 +482,30 @@ export default function ProductDetail() {
           {product?.category && (
             <>
               <ChevronRight size={12} />
-              <span>{typeof product.category === 'object' ? product.category.name : product.category}</span>
+              <span 
+                style={{ cursor: 'pointer' }} 
+                onClick={() => {
+                  const catName = typeof product.category === 'object' ? product.category.name : product.category;
+                  if (catName) {
+                    navigate(`/category/${encodeURIComponent(catName.toLowerCase())}`);
+                  }
+                }}
+              >
+                {typeof product.category === 'object' ? product.category.name : product.category}
+              </span>
             </>
           )}
           {product?.subCategory && (
             <>
               <ChevronRight size={12} />
-              <span>{product.subCategory}</span>
+              <span 
+                style={{ cursor: 'pointer' }} 
+                onClick={() => {
+                  navigate(`/category/${product.subCategory}`);
+                }}
+              >
+                {product.subCategory}
+              </span>
             </>
           )}
           <ChevronRight size={12} />

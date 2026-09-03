@@ -496,14 +496,24 @@ export default function CategoryPage() {
       } else if (['kurtis', 'kurti', 'womenswear'].includes(slug)) {
         mappedBackendCategory = 'kurti';
       } else if (['t-shirts', 'shirts', 'customization', 'polo-t-shirts', 'custom-t-shirts', 'women-t-shirts', 'girls-t-shirts'].includes(slug)) {
-        mappedBackendCategory = 'custom tshirts';
+        const normPCat = pCat.replace(/[^a-z0-9]/g, '');
+        return normPCat.includes('customtshirt') || normPCat.includes('tshirt') || normPCat.includes('shirt') || normPCat.includes('custom');
       } else {
         // For other routes, strictly match the slug with dashes replaced by spaces
         mappedBackendCategory = slug.replace(/-/g, ' ');
       }
 
       // Check strict equality against the backend category
-      return pCat === mappedBackendCategory;
+      let isMatch = pCat === mappedBackendCategory || pCat.replace(/[^a-z0-9]/g, '') === mappedBackendCategory.replace(/[^a-z0-9]/g, '');
+      
+      // Fix potential data entry errors where a shoe is categorized as a suit
+      if (isMatch && mappedBackendCategory === 'suits') {
+        if (p.name && p.name.toLowerCase().includes('shoe')) {
+          isMatch = false;
+        }
+      }
+      
+      return isMatch;
     });
     
     return filtered.map(p => {

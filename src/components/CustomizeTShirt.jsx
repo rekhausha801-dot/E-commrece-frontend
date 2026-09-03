@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Heart, ShoppingCart, Check, Shield, Truck, RotateCcw, Award, Camera, Home, PenTool, Image as ImageIcon, Smile, Sun, Wind, Navigation, Headphones, Palmtree, Maximize } from 'lucide-react';
 import './CustomizeTShirt.css';
@@ -6,18 +6,7 @@ import './CustomizeTShirt.css';
 
 import defaultMainImage from '../assets/images/t-shirt8.png';
 
-const DESIGNS = [
-  { id: 1, name: 'Design 1', icon: <ImageIcon size={48} strokeWidth={1} /> },
-  { id: 2, name: 'Design 2', icon: <Camera size={48} strokeWidth={1} /> },
-  { id: 3, name: 'Design 3', icon: <PenTool size={48} strokeWidth={1} /> },
-  { id: 4, name: 'Design 4', icon: <Smile size={48} strokeWidth={1} /> },
-  { id: 5, name: 'Design 5', icon: <Sun size={48} strokeWidth={1} /> },
-  { id: 6, name: 'Design 6', icon: <Wind size={48} strokeWidth={1} /> },
-  { id: 7, name: 'Design 7', icon: <Navigation size={48} strokeWidth={1} /> },
-  { id: 8, name: 'Design 8', icon: <Home size={48} strokeWidth={1} /> },
-  { id: 9, name: 'Design 9', icon: <Headphones size={48} strokeWidth={1} /> },
-  { id: 10, name: 'Design 10', icon: <Palmtree size={48} strokeWidth={1} /> },
-];
+import { getPredefinedDesigns } from '../services/customDesignService';
 
 export default function CustomizeTShirt() {
   const { state } = useLocation();
@@ -31,7 +20,15 @@ export default function CustomizeTShirt() {
 
   const [activeThumb, setActiveThumb] = useState(0);
 
-  const selectedDesignObj = DESIGNS.find(d => d.id === selectedDesign);
+  const [designs, setDesigns] = useState([]);
+
+  useEffect(() => {
+    getPredefinedDesigns().then(data => {
+      setDesigns(data);
+    });
+  }, []);
+
+  const selectedDesignObj = designs.find(d => d.id === selectedDesign);
   const mainImage = product.image || defaultMainImage;
 
   return (
@@ -59,7 +56,7 @@ export default function CustomizeTShirt() {
                 justifyContent: 'center',
                 mixBlendMode: 'multiply'
               }}>
-                {React.cloneElement(selectedDesignObj.icon, { size: 140, color: selectedDesignColor })}
+                <img src={selectedDesignObj.icon} alt={selectedDesignObj.name} style={{ width: 140, height: 140, objectFit: 'contain' }} />
               </div>
             )}
           </div>
@@ -102,7 +99,7 @@ export default function CustomizeTShirt() {
             <p className="step-subtitle">Pick a design that you want to print on your t-shirt.</p>
 
             <div className="designs-grid">
-              {DESIGNS.map((design) => (
+              {designs.map((design) => (
                 <div
                   key={design.id}
                   className={`design-card ${selectedDesign === design.id ? 'selected' : ''}`}
@@ -114,7 +111,7 @@ export default function CustomizeTShirt() {
                     </div>
                   )}
                   <div className="design-icon-wrap">
-                    {design.icon}
+                    <img src={design.icon} alt={design.name} style={{ width: 48, height: 48, objectFit: 'contain' }} />
                   </div>
                   <span className="design-name">{design.name}</span>
                 </div>
