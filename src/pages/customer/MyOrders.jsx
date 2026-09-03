@@ -376,6 +376,11 @@ const MyOrders = () => {
                                 Custom Text: <span style={{ fontFamily: order.customTextFont, color: order.customTextColor }}>"{order.customText}"</span>
                               </div>
                             )}
+                            {order.selectedDesign && order.selectedDesign.name && (
+                              <div style={{ marginTop: '4px', fontSize: '11px', color: '#666' }}>
+                                Design: <span style={{ color: 'var(--primary-color)' }}>{order.selectedDesign.name}</span>
+                              </div>
+                            )}
                             {order.moreItems > 0 && <span style={{ color: 'var(--primary-color)', fontWeight: '500', marginLeft: '10px' }}>+{order.moreItems} more items</span>}
                           </div>
                           <div className="mo-qty-price">
