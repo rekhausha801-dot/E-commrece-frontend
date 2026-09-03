@@ -59,9 +59,9 @@ const Footer = () => {
         <div className="footer-col">
           <h4>CUSTOMER CARE</h4>
           <ul>
-            <li><Link to="/account/support">Help Center</Link></li>
+            <li><Link to="/support">Help Center</Link></li>
             <li><Link to="/account/my-orders">Track Order</Link></li>
-            <li><Link to="/shop">Shipping Policy</Link></li>
+            <li><Link to="/shipping-policy">Shipping Policy</Link></li>
             <li><Link to="/account/payment-methods">Payment Methods</Link></li>
             <li><Link to="/account/faqs">FAQ</Link></li>
           </ul>
@@ -77,42 +77,41 @@ const Footer = () => {
             <li><Link to="/shop">Press & Media</Link></li>
             <li><Link to="/shop">Become a Seller</Link></li>
             <li><Link to="/shop">Affiliate Program</Link></li>
-            <li><Link to="/account/support">Contact Us</Link></li>
+            <li><Link to="/support">Contact Us</Link></li>
           </ul>
         </div>
 
-        {/* Support Info Box */}
         <div className="footer-support-box">
-          <div className="support-item">
+          <Link to="/support" className="support-item" style={{ textDecoration: 'none', color: 'inherit' }}>
             <div className="support-icon"><FiHeadphones /></div>
             <div className="support-text">
               <h5>CUSTOMER SUPPORT</h5>
               <p>+91 98765 43210</p>
               <p>support@shopease.com</p>
             </div>
-          </div>
+          </Link>
           
           <div className="support-divider"></div>
           
-          <div className="support-item">
+          <Link to="/shipping-policy" className="support-item" style={{ textDecoration: 'none', color: 'inherit' }}>
             <div className="support-icon"><FiTruck /></div>
             <div className="support-text">
               <h5>FREE SHIPPING</h5>
               <p>On orders over ₹999</p>
               <p>Across India</p>
             </div>
-          </div>
+          </Link>
           
           <div className="support-divider"></div>
           
-          <div className="support-item">
+          <Link to="/account/payment-methods" className="support-item" style={{ textDecoration: 'none', color: 'inherit' }}>
             <div className="support-icon"><FiShield /></div>
             <div className="support-text">
               <h5>SECURE PAYMENT</h5>
               <p>100% secure payments</p>
               <p>Multiple payment options</p>
             </div>
-          </div>
+          </Link>
         </div>
       </div>
       
