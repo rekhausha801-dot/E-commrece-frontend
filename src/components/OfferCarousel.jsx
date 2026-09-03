@@ -17,13 +17,12 @@ const OfferCarousel = () => {
   const [isPaused, setIsPaused] = useState(false);
   const [currentOfferIndex, setCurrentOfferIndex] = useState(0);
 
-  const offers = [
+  const [dynamicBanners, setDynamicBanners] = useState([]);
+  const [dynamicOffers, setDynamicOffers] = useState([
     "20% off on your first order - code FIRST20",
     "Free Shipping on all orders over ₹10",
     "Buy 1 Get 2 Free on selected accessories"
-  ];
-
-  const [dynamicBanners, setDynamicBanners] = useState([]);
+  ]);
 
   useEffect(() => {
     const fetchBanners = async () => {
@@ -33,6 +32,14 @@ const OfferCarousel = () => {
           const heroBanners = data.data.filter(b => b.placement === 'Home - Hero' || !b.placement);
           if (heroBanners.length > 0) {
             setDynamicBanners(heroBanners);
+          }
+          
+          const stripBanners = data.data.filter(b => b.placement === 'Top Strip');
+          if (stripBanners.length > 0) {
+            const dynamicText = stripBanners.map(b => b.title || b.description || 'Special Offer!').filter(Boolean);
+            if (dynamicText.length > 0) {
+              setDynamicOffers(dynamicText);
+            }
           }
         }
       } catch (error) {
@@ -81,16 +88,16 @@ const OfferCarousel = () => {
   }, [showCarousel, isPaused, finalCarouselData.length]);
   useEffect(() => {
     const offerInterval = setInterval(() => {
-      setCurrentOfferIndex((prev) => (prev + 1) % offers.length);
+      setCurrentOfferIndex((prev) => (prev + 1) % dynamicOffers.length);
     }, 4000);
     return () => clearInterval(offerInterval);
-  }, [offers.length]);
+  }, [dynamicOffers.length]);
 
   return (
     <div className="offer-carousel-container">
       <div className="offer-bar-container">
         <p className="offer-bar-text" key={currentOfferIndex}>
-          {offers[currentOfferIndex]}
+          {dynamicOffers[currentOfferIndex]}
         </p>
       </div>
 
@@ -165,9 +172,7 @@ const OfferCarousel = () => {
                             {banner.description}
                           </p>
                         )}
-                        <Link to={(!banner.link || banner.link === '#') ? '/category/kurti' : banner.link} className="shop-now-btn" style={{ backgroundColor: '#000', color: '#fff', border: 'none', padding: '12px 30px', fontSize: '16px', letterSpacing: '2px', textTransform: 'uppercase', cursor: 'pointer', display: 'inline-block', marginTop: '10px' }}>
-                          SHOP NOW
-                        </Link>
+
                       </div>
                     </>
                   )}
@@ -202,9 +207,7 @@ const OfferCarousel = () => {
                           Big Offers on Your<br />Favourite Styles
                         </p>
                         <h3 style={{ fontSize: '24px', fontWeight: '500', marginBottom: '30px', letterSpacing: '1px' }}>UP TO <span style={{ fontSize: '32px', fontWeight: '600' }}>50%</span> OFF</h3>
-                        <Link to={(!banner.link || banner.link === '#') ? '/category/kurti' : banner.link} className="shop-now-btn" style={{ backgroundColor: '#000', color: '#fff', border: 'none', padding: '12px 30px', fontSize: '16px', letterSpacing: '2px', textTransform: 'uppercase', cursor: 'pointer', display: 'inline-block', marginTop: '10px' }}>
-                          SHOP NOW
-                        </Link>
+
                       </div>
                     </>
                   )}

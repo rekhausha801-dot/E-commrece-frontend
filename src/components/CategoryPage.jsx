@@ -296,12 +296,18 @@ export default function CategoryPage() {
         const { data } = await getActiveBanners();
         if (data && data.success) {
           // Try to find a category-specific banner first
-          let shopBanners = data.data.filter(b => b.placement && b.placement.toLowerCase() === `category page - ${categoryId}`.toLowerCase());
+          const normCatId = categoryId.toLowerCase().replace(/[^a-z0-9]/g, '');
           
-          // Fallback to "Product Page - category"
-          if (shopBanners.length === 0) {
-            shopBanners = data.data.filter(b => b.placement && b.placement.toLowerCase() === `product page - ${categoryId}`.toLowerCase());
-          }
+          let shopBanners = data.data.filter(b => {
+            if (!b.placement) return false;
+            const p = b.placement.toLowerCase().replace(/[^a-z0-9]/g, '');
+            const catStr = p.replace('categorypage', '').replace('productpage', '');
+            if (p.includes('categorypage') || p.includes('productpage')) {
+              // Match exact or with/without trailing 's'
+              return catStr === normCatId || catStr + 's' === normCatId || catStr === normCatId + 's';
+            }
+            return false;
+          });
 
           // Fallback to generic Category Page
           if (shopBanners.length === 0) {

@@ -615,6 +615,7 @@ const BannerManagement = () => {
                     <label className="bam-label">Placement</label>
                     <select name="placement" className="bam-select-input" value={formData.placement} onChange={handleInputChange} disabled={drawerMode === 'view'}>
                       <option value="Home - Hero">Home - Hero Section</option>
+                      <option value="Top Strip">Top Strip</option>
                       <option value="Home - Middle">Home - Middle Section</option>
                       <option value="Home - Bottom">Home - Bottom Section</option>
                       <option value="Category Page">Category Page</option>

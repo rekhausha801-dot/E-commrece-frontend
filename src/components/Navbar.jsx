@@ -66,6 +66,18 @@ const Navbar = () => {
           categories: [{ title: "Categories", items: [] }]
         };
 
+        let beautyCategory = {
+          title: "Beauty",
+          path: "/category/beauty",
+          categories: [{ title: "Categories", items: ["Makeup", "Skincare", "Fragrances", "Haircare"] }]
+        };
+
+        let homeLivingCategory = {
+          title: "Home & Living",
+          path: "/category/home-and-living",
+          categories: [{ title: "Categories", items: ["Decor", "Lighting", "Bedding", "Furniture"] }]
+        };
+
         categories.forEach(category => {
           const catSubs = subcategories.filter(s => {
              const sCatId = typeof s.category === 'object' ? s.category?._id : s.category;
@@ -134,13 +146,14 @@ const Navbar = () => {
           });
         });
 
-        // Add grouped categories right after Home
         if (womenCategory.categories[0].items.length > 0) {
           newMenus.splice(1, 0, womenCategory);
         }
         if (menCategory.categories[0].items.length > 0) {
           newMenus.splice(1, 0, menCategory);
         }
+        newMenus.push(beautyCategory);
+        newMenus.push(homeLivingCategory);
 
         setDynamicMenus(newMenus);
       } catch (error) {

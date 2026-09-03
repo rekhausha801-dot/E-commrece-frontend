@@ -36,6 +36,7 @@ import Register from "./pages/customer/Register";
 import Login from "./pages/customer/Login";
 import Notifications from "./pages/customer/Notifications";
 import Support from "./pages/customer/Support";
+import ShippingPolicy from "./pages/customer/ShippingPolicy";
 import Dashboard from "./pages/admin/Dashboard";
 import AdminLogin from "./pages/admin/AdminLogin";
 
@@ -100,6 +101,8 @@ const AppContent = () => {
         <Route path="/search" element={<CustomerRoute><SearchResults /></CustomerRoute>} />
         <Route path="/shop" element={<CustomerRoute><Collection BannerComponent={ShopBanner} title="Shop" /></CustomerRoute>} />
         <Route path="/cart" element={<CustomerRoute><Cart /></CustomerRoute>} />
+        <Route path="/support" element={<CustomerRoute><Support /></CustomerRoute>} />
+        <Route path="/shipping-policy" element={<CustomerRoute><ShippingPolicy /></CustomerRoute>} />
         
         {/* ── Protected Customer pages ── */}
         <Route path="/wishlist" element={<ProtectedCustomerRoute><Wishlist /></ProtectedCustomerRoute>} />

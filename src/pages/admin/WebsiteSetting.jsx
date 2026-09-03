@@ -204,7 +204,7 @@ const WebsiteSetting = ({ initialTab = 'Security', onProfileUpdate }) => {
       message.success("Password updated successfully!");
       passwordForm.resetFields();
     } catch (err) {
-      message.error("Failed to update password.");
+      message.error(err.response?.data?.message || "Failed to update password.");
     }
   };
 
@@ -347,9 +347,7 @@ const WebsiteSetting = ({ initialTab = 'Security', onProfileUpdate }) => {
             <div style={{ background: '#fff', border: '1px solid #f3f4f6', borderRadius: '16px', padding: '24px', marginBottom: '32px' }}>
               <h3 className="settings-section-title" style={{ marginTop: 0 }}>Change Password</h3>
               <Form layout="vertical" form={passwordForm} onFinish={handleUpdatePassword}>
-                <Form.Item label="Current Password" name="currentPassword" rules={[{ required: true }]} className="settings-form-group">
-                  <Input.Password className="settings-form-input" prefix={<Lock size={16} color="#9ca3af" />} />
-                </Form.Item>
+
 
                 <div className="settings-form-row">
                   <Form.Item label="New Password" name="newPassword" rules={[{ required: true }]} className="settings-form-group">
