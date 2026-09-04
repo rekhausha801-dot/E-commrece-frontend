@@ -1001,3 +1001,16 @@
 .carousel-control.next {
   right: 20px;
 }
+
+/* OVERRIDES FOR RESPONSIVENESS */
+@media (max-width: 768px) {
+  .hero-section h1, .hero-banner h1, .hero-content h1, .hero-title {
+    font-size: 2rem !important;
+    line-height: 1.2 !important;
+    white-space: normal !important;
+    word-wrap: break-word;
+  }
+  .hero-container {
+    overflow-x: hidden;
+  }
+}

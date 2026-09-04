@@ -4,7 +4,8 @@ import { Search, ShoppingBag, User, Heart, Menu, Bell, ChevronDown, X, ShoppingC
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { useCart } from '../context/CartContext';
 import { useNotification } from '../context/NotificationContext';
-import { getCategories, getSubcategories } from '../services/api';
+import { useCategories } from '../context/CategoryContext';
+import { getSubcategories } from '../services/api';
 import useDebounce from '../hooks/useDebounce';
 import './Navbar.css';
 const wishlistItems = ["My Wishlist", "Saved for Later", "Recently Wishlisted", "Price Drop Alerts", "Back in Stock", "Move to Cart", "Share Wishlist"];
@@ -28,6 +29,7 @@ const getCategoryIcon = (title) => {
 };
 
 const Navbar = () => {
+  const { categories: sharedCategories, loadingCategories } = useCategories();
   const [dynamicMenus, setDynamicMenus] = useState([{ title: "Home", path: "/" }]);
   const [isLoadingMenus, setIsLoadingMenus] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -42,14 +44,14 @@ const Navbar = () => {
   
   const debouncedSearchQuery = useDebounce(searchQuery, 300);
 
-  // Fetch dynamic categories and subcategories
+  // Build dynamic menus from shared CategoryContext + subcategories
   useEffect(() => {
     const fetchMenus = async () => {
       try {
         setIsLoadingMenus(true);
-        const [catRes, subcatRes] = await Promise.all([getCategories(), getSubcategories()]);
+        const subcatRes = await getSubcategories();
         
-        const categories = (catRes.data?.data || catRes.data || []).filter(c => c.status === 'Active' || c.status === 'active');
+        const categories = sharedCategories.filter(c => c.status === 'Active' || c.status === 'active');
         const subcategories = (subcatRes.data?.data || subcatRes.data || []).filter(s => s.status === 'Active' || s.status === 'active');
 
         const newMenus = [{ title: "Home", path: "/" }];
@@ -164,7 +166,7 @@ const Navbar = () => {
     };
     
     fetchMenus();
-  }, []);
+  }, [sharedCategories]);
 
   // Fetch suggestions when debounced query changes
   useEffect(() => {

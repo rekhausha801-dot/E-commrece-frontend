@@ -1,45 +1,46 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import Home from "./pages/customer/Home";
 import Collection from "./components/Collection";
-import WesternCollection from "./components/westren";
-import CategoryPage from "./components/CategoryPage";
-import ProductDetail from "./components/ProductDetail";
-import CustomizeTShirt from "./components/CustomizeTShirt";
-import SearchResults from "./pages/customer/SearchResults";
 import ShopBanner from "./components/ShopBanner";
-import Wishlist from "./pages/customer/Wishlist";
-import Cart from "./pages/customer/Cart";
-import Address from "./pages/customer/Address";
-import Payment from "./pages/customer/Payment";
-import OrderConfirmed from "./pages/customer/OrderConfirmed";
-import MyOrders from "./pages/customer/MyOrders";
-import AccountLayout from "./pages/customer/AccountLayout";
-import AccountPlaceholder from "./pages/customer/AccountPlaceholder";
-import CustomerDashboard from "./pages/customer/Dashboard";
-import Profile from "./pages/customer/Profile";
-import AccountSettings from "./pages/customer/AccountSettings";
-import AddAddress from "./pages/customer/AddAddress";
-import SavedAddresses from "./pages/customer/SavedAddresses";
-import PaymentMethods from "./pages/customer/PaymentMethods";
 import { WishlistProvider } from "./context/WishlistContext";
 import { OrderProvider } from "./context/OrderContext";
 import { CartProvider } from "./context/CartContext";
 import { NotificationProvider } from "./context/NotificationContext";
 import { ProductProvider } from "./context/ProductContext";
 import { SettingsProvider } from "./context/SettingsContext";
-import ReturnRefund from "./pages/customer/ReturnRefund";
-import Coupons from "./pages/customer/Coupons";
-import Register from "./pages/customer/Register";
-import Login from "./pages/customer/Login";
-import Notifications from "./pages/customer/Notifications";
-import Support from "./pages/customer/Support";
-import ShippingPolicy from "./pages/customer/ShippingPolicy";
-import AboutUs from "./pages/customer/AboutUs";
-import Dashboard from "./pages/admin/Dashboard";
-import AdminLogin from "./pages/admin/AdminLogin";
+import { CategoryProvider } from "./context/CategoryContext";
+
+const Home = React.lazy(() => import("./pages/customer/Home"));
+const WesternCollection = React.lazy(() => import("./components/westren"));
+const CategoryPage = React.lazy(() => import("./components/CategoryPage"));
+const ProductDetail = React.lazy(() => import("./components/ProductDetail"));
+const CustomizeTShirt = React.lazy(() => import("./components/CustomizeTShirt"));
+const SearchResults = React.lazy(() => import("./pages/customer/SearchResults"));
+const Wishlist = React.lazy(() => import("./pages/customer/Wishlist"));
+const Cart = React.lazy(() => import("./pages/customer/Cart"));
+const Address = React.lazy(() => import("./pages/customer/Address"));
+const Payment = React.lazy(() => import("./pages/customer/Payment"));
+const OrderConfirmed = React.lazy(() => import("./pages/customer/OrderConfirmed"));
+const MyOrders = React.lazy(() => import("./pages/customer/MyOrders"));
+const AccountLayout = React.lazy(() => import("./pages/customer/AccountLayout"));
+const AccountPlaceholder = React.lazy(() => import("./pages/customer/AccountPlaceholder"));
+const CustomerDashboard = React.lazy(() => import("./pages/customer/Dashboard"));
+const Profile = React.lazy(() => import("./pages/customer/Profile"));
+const AccountSettings = React.lazy(() => import("./pages/customer/AccountSettings"));
+const AddAddress = React.lazy(() => import("./pages/customer/AddAddress"));
+const SavedAddresses = React.lazy(() => import("./pages/customer/SavedAddresses"));
+const PaymentMethods = React.lazy(() => import("./pages/customer/PaymentMethods"));
+const ReturnRefund = React.lazy(() => import("./pages/customer/ReturnRefund"));
+const Coupons = React.lazy(() => import("./pages/customer/Coupons"));
+const Register = React.lazy(() => import("./pages/customer/Register"));
+const Login = React.lazy(() => import("./pages/customer/Login"));
+const Notifications = React.lazy(() => import("./pages/customer/Notifications"));
+const Support = React.lazy(() => import("./pages/customer/Support"));
+const ShippingPolicy = React.lazy(() => import("./pages/customer/ShippingPolicy"));
+const AdminLogin = React.lazy(() => import("./pages/admin/AdminLogin"));
+const Dashboard = React.lazy(() => import("./pages/admin/Dashboard"));
 
 // ─── Route Guards ────────────────────────────────────────────────────────────
 
@@ -68,7 +69,6 @@ const ProtectedCustomerRoute = ({ children }) => {
   return children;
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
 
 const AppContent = () => {
   const location = useLocation();
@@ -81,7 +81,8 @@ const AppContent = () => {
   return (
     <>
       {!hideLayout && <Navbar />}
-      <Routes>
+      <Suspense fallback={<div style={{height: "100vh", display: "flex", justifyContent: "center", alignItems: "center"}}>Loading...</div>}>
+        <Routes>
         {/* ── Public auth ── */}
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
@@ -130,6 +131,7 @@ const AppContent = () => {
           <Route path="faqs" element={<AccountPlaceholder />} />
         </Route>
       </Routes>
+        </Suspense>
       {!hideLayout && <Footer />}
     </>
   );
@@ -143,9 +145,11 @@ function App() {
           <CartProvider>
             <OrderProvider>
               <WishlistProvider>
-                <BrowserRouter>
-                  <AppContent />
-                </BrowserRouter>
+                <CategoryProvider>
+                  <BrowserRouter>
+                    <AppContent />
+                  </BrowserRouter>
+                </CategoryProvider>
               </WishlistProvider>
             </OrderProvider>
           </CartProvider>

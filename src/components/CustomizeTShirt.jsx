@@ -7,7 +7,7 @@ import './CustomizeTShirt.css';
 import defaultMainImage from '../assets/images/t-shirt8.png';
 
 import { getPredefinedDesigns } from '../services/customDesignService';
-
+import Draggable from 'react-draggable';
 export default function CustomizeTShirt() {
   const { state } = useLocation();
   const navigate = useNavigate();
@@ -41,31 +41,35 @@ export default function CustomizeTShirt() {
 
             {/* Design Overlay */}
             {selectedDesignObj && (
-              <div style={{
-                position: 'absolute',
-                top: '60%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                pointerEvents: 'none',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '140px',
-                height: '140px',
-                mixBlendMode: 'multiply'
-              }}>
-                {typeof selectedDesignObj.icon === 'string' || selectedDesignObj.iconName ? (
-                  selectedDesignObj.icon ? (
-                    <img src={selectedDesignObj.icon} alt={selectedDesignObj.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+              <Draggable bounds="parent">
+                <div style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  marginTop: '-70px',
+                  marginLeft: '-70px',
+                  cursor: 'move',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '140px',
+                  height: '140px',
+                  mixBlendMode: 'multiply',
+                  zIndex: 10
+                }}>
+                  {typeof selectedDesignObj.icon === 'string' || selectedDesignObj.iconName ? (
+                    selectedDesignObj.icon ? (
+                      <img src={selectedDesignObj.icon} alt={selectedDesignObj.name} draggable="false" style={{ width: '100%', height: '100%', objectFit: 'contain', pointerEvents: 'none' }} />
+                    ) : (
+                      <ImageIcon size={140} color={selectedDesignColor} strokeWidth={1} style={{ pointerEvents: 'none' }} />
+                    )
                   ) : (
-                    <ImageIcon size={140} color={selectedDesignColor} strokeWidth={1} />
-                  )
-                ) : (
-                  React.isValidElement(selectedDesignObj.icon)
-                    ? React.cloneElement(selectedDesignObj.icon, { size: 140, color: selectedDesignColor })
-                    : <ImageIcon size={140} color={selectedDesignColor} strokeWidth={1} />
-                )}
-              </div>
+                    React.isValidElement(selectedDesignObj.icon)
+                      ? React.cloneElement(selectedDesignObj.icon, { size: 140, color: selectedDesignColor, style: { pointerEvents: 'none' } })
+                      : <ImageIcon size={140} color={selectedDesignColor} strokeWidth={1} style={{ pointerEvents: 'none' }} />
+                  )}
+                </div>
+              </Draggable>
             )}
           </div>
           <div className="customize-thumbnails">

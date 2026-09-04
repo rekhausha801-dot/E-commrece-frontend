@@ -1,7 +1,12 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { getProducts } from '../services/productService';
 
-const ProductContext = createContext();
+const ProductContext = createContext({
+  products: [],
+  loading: false,
+  error: null,
+  refreshProducts: () => {}
+});
 
 export const useProducts = () => {
   return useContext(ProductContext);

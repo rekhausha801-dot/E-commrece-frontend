@@ -49,9 +49,9 @@ const Address = () => {
       });
       
       if (res.status === 401) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        window.location.href = '/login';
+        console.error('Unauthorized access to addresses.');
+        // Don't auto-logout here as it might be an intermittent issue or token mismatch
+        setIsLoading(false);
         return;
       }
       
@@ -352,7 +352,7 @@ const Address = () => {
               <div className="drawer-section">
                 <div className="section-title-row">
                   <div className="section-title"><Phone size={18} color="var(--primary-color)" /> Contact Details</div>
-                  <button className="location-btn"><Crosshair size={14} /> Use My Location</button>
+
                 </div>
                 <input
                   type="text"

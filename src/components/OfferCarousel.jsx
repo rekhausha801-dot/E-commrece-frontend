@@ -5,7 +5,7 @@ import bannerImage1 from '../assets/banners/musu.png';
 import bannerImageOriginal from '../assets/banners/legha.png';
 import imgNew from '../assets/banners/image.png';
 import girlsImg from '../assets/banners/girls.png';
-import heroVideo from '../assets/banners/8387356-uhd_4096_2160_25fps.mp4';
+const heroVideo = '/banners/8387356-uhd_4096_2160_25fps.mp4';
 import { X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import '../pages/customer/Home.css';
@@ -122,10 +122,12 @@ const OfferCarousel = () => {
                 <div className="mega-sale-banner-wrapper" style={{ position: 'relative', width: '100%', height: '100%', display: 'block' }}>
                   {banner.type === 'video' ? (
                     <video
-                      src={banner.image ? getImageUrl(banner.image) : banner.img}
+                      src={(banner.image ? getImageUrl(banner.image) : banner.img) + '?v=1'}
+                      crossOrigin="anonymous"
                       autoPlay
                       loop
                       muted
+                      playsInline
                       className="slide-image"
                       style={{ objectFit: 'cover' }}
                     />

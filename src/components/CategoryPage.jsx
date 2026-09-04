@@ -9,6 +9,7 @@ import {
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
 import { useProducts } from '../context/ProductContext';
+import { useCategories } from '../context/CategoryContext';
 import { handleFlyingCartAnimation } from '../utils/cartAnimation';
 import { FaStar } from 'react-icons/fa';
 
@@ -273,7 +274,7 @@ function Section({ title, children, defaultOpen = true }) {
   );
 }
 
-import { getActiveBanners } from '../services/api';
+import { getActiveBanners, fetchProductsByCategory } from '../services/api';
 
 const getImageUrl = (path) => {
   if (!path) return '';
@@ -286,9 +287,68 @@ export default function CategoryPage() {
   const { cartItems, addToCart } = useCart();
   const { wishlistItems, toggleWishlist, isInWishlist } = useWishlist();
   const { products: contextProducts } = useProducts();
+  const { categories, loadingCategories } = useCategories();
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [addedToCart, setAddedToCart] = useState({});
   const [dynamicBanner, setDynamicBanner] = useState(null);
+  const [localCategoryProducts, setLocalCategoryProducts] = useState(undefined);
+  const [loadingCategoryProducts, setLoadingCategoryProducts] = useState(false);
+
+  React.useEffect(() => {
+    let active = true;
+    const fetchCatProducts = async () => {
+      setLoadingCategoryProducts(true);
+      const slug = (categoryId || '').toLowerCase();
+      let matchedCategory = null;
+      
+      if (categories && categories.length > 0) {
+        if (['suits', 'suit', 'menswear'].includes(slug)) {
+          matchedCategory = categories.find(c => c.name.toLowerCase().includes('suit'));
+        } else if (['shoes', 'shoe', 'footwear', 'sneakers', 'casual-shoes', 'formal-shoes'].includes(slug)) {
+          matchedCategory = categories.find(c => c.name.toLowerCase().includes('shoe') || c.name.toLowerCase().includes('footwear'));
+        } else if (['kurtis', 'kurti', 'womenswear'].includes(slug)) {
+          matchedCategory = categories.find(c => c.name.toLowerCase().includes('kurti'));
+        } else if (['t-shirts', 'shirts', 'customization', 'polo-t-shirts', 'custom-t-shirts', 'women-t-shirts', 'girls-t-shirts'].includes(slug)) {
+          matchedCategory = categories.find(c => {
+            const name = c.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+            return name.includes('customtshirt') || name.includes('tshirt') || name.includes('shirt') || name.includes('custom');
+          });
+        } else {
+          const targetName = slug.replace(/-/g, ' ');
+          matchedCategory = categories.find(c => c.name.toLowerCase() === targetName || c.name.toLowerCase().replace(/[^a-z0-9]/g, '') === targetName.replace(/[^a-z0-9]/g, ''));
+        }
+      }
+      
+      if (matchedCategory) {
+        try {
+          const res = await fetchProductsByCategory(matchedCategory._id);
+          if (active && res.data && res.data.success) {
+            setLocalCategoryProducts(res.data.data || []);
+          }
+        } catch (error) {
+          console.error("Failed to fetch products for category:", error);
+          if (active) {
+             setLocalCategoryProducts(prev => (prev !== undefined && prev !== null) ? prev : []);
+          }
+        }
+      } else {
+         if (active) setLocalCategoryProducts(null);
+      }
+      if (active) setLoadingCategoryProducts(false);
+    };
+
+    // If categories are still loading, do nothing yet. 
+    if (loadingCategories) return;
+    
+    if (categoryId && categories.length > 0) {
+      fetchCatProducts();
+    } else if (categoryId && categories.length === 0) {
+      // Categories loaded but empty, fallback
+      setLocalCategoryProducts(null);
+    }
+    
+    return () => { active = false; };
+  }, [categoryId, categories, loadingCategories]);
 
   React.useEffect(() => {
     const fetchBanners = async () => {
@@ -386,67 +446,51 @@ export default function CategoryPage() {
     return null;
   };
 
-  // Use real products from context, filtered by category name
+  // Use real products directly fetched for this category if available, else fallback to context
   const products = React.useMemo(() => {
-    if (!contextProducts) return [];
-    const catName = currentCategory.title.toLowerCase();
+    let sourceProducts = [];
     
-    // Convert backend format to frontend UI format for the Category Page
-    const filtered = contextProducts.filter(p => {
-      const pCat = (p.category?.name || p.category || '').toLowerCase().trim();
-      const pName = (p.name || '').toLowerCase();
+    if (localCategoryProducts !== undefined && localCategoryProducts !== null) {
+      sourceProducts = localCategoryProducts;
+    } else if (localCategoryProducts === null) {
+      // Explicit fallback requested
+      if (!contextProducts) return [];
       
-      const slug = (categoryId || '').toLowerCase();
-      let mappedBackendCategory = '';
-      
-      // Strict mapping from frontend URL slug to actual backend category name
-      if (['suits', 'suit', 'menswear'].includes(slug)) {
-        mappedBackendCategory = 'suits';
-      } else if (['shoes', 'shoe', 'footwear', 'sneakers', 'casual-shoes', 'formal-shoes'].includes(slug)) {
-        mappedBackendCategory = 'shoes';
-      } else if (['kurtis', 'kurti', 'womenswear'].includes(slug)) {
-        mappedBackendCategory = 'kurti';
-      } else if (['t-shirts', 'shirts', 'customization', 'polo-t-shirts', 'custom-t-shirts', 'women-t-shirts', 'girls-t-shirts'].includes(slug)) {
-        const normPCat = pCat.replace(/[^a-z0-9]/g, '');
-        const normPName = pName.replace(/[^a-z0-9]/g, '');
+      const filtered = contextProducts.filter(p => {
+        const pCat = (p.category?.name || p.category || '').toLowerCase().trim();
+        if (!pCat || pCat === 'uncategorized') return false;
         
-        let match = false;
-        if (pCat && pCat !== 'uncategorized') {
-          match = normPCat.includes('customtshirt') || normPCat.includes('tshirt') || normPCat.includes('shirt') || normPCat.includes('custom');
-        }
+        const slug = (categoryId || '').toLowerCase();
+        let mappedBackendCategory = '';
         
-        // Fallback to name if category doesn't match or is empty
-        if (!match) {
-          match = normPName.includes('customtshirt') || normPName.includes('tshirt') || normPName.includes('shirt') || normPName.includes('custom');
+        if (['suits', 'suit', 'menswear'].includes(slug)) {
+          mappedBackendCategory = 'suits';
+        } else if (['shoes', 'shoe', 'footwear', 'sneakers', 'casual-shoes', 'formal-shoes'].includes(slug)) {
+          mappedBackendCategory = 'shoes';
+        } else if (['kurtis', 'kurti', 'womenswear'].includes(slug)) {
+          mappedBackendCategory = 'kurti';
+        } else if (['t-shirts', 'shirts', 'customization', 'polo-t-shirts', 'custom-t-shirts', 'women-t-shirts', 'girls-t-shirts'].includes(slug)) {
+          const normPCat = pCat.replace(/[^a-z0-9]/g, '');
+          return normPCat.includes('customtshirt') || normPCat.includes('tshirt') || normPCat.includes('shirt') || normPCat.includes('custom');
+        } else {
+          mappedBackendCategory = slug.replace(/-/g, ' ');
         }
-        return match;
-      } else {
-        // For other routes, strictly match the slug with dashes replaced by spaces
-        mappedBackendCategory = slug.replace(/-/g, ' ');
-      }
 
-      // Check strict equality against the backend category
-      let isMatch = false;
-      if (pCat && pCat !== 'uncategorized') {
-        isMatch = pCat === mappedBackendCategory || pCat.replace(/[^a-z0-9]/g, '') === mappedBackendCategory.replace(/[^a-z0-9]/g, '');
-      }
-      
-      // Fallback to product name if no valid category
-      if (!isMatch && (!pCat || pCat === 'uncategorized')) {
-        isMatch = pName.includes(mappedBackendCategory) || pName.replace(/[^a-z0-9]/g, '').includes(mappedBackendCategory.replace(/[^a-z0-9]/g, ''));
-      }
-      
-      // Fix potential data entry errors where a shoe is categorized as a suit
-      if (isMatch && mappedBackendCategory === 'suits') {
-        if (p.name && p.name.toLowerCase().includes('shoe')) {
-          isMatch = false;
+        let isMatch = pCat === mappedBackendCategory || pCat.replace(/[^a-z0-9]/g, '') === mappedBackendCategory.replace(/[^a-z0-9]/g, '');
+        if (isMatch && mappedBackendCategory === 'suits') {
+          if (p.name && p.name.toLowerCase().includes('shoe')) {
+            isMatch = false;
+          }
         }
-      }
-      
-      return isMatch;
-    });
+        return isMatch;
+      });
+      sourceProducts = filtered;
+    } else {
+      // undefined -> still loading categories or fetching
+      return [];
+    }
     
-    return filtered.map(p => {
+    return sourceProducts.map(p => {
       const rawPrice = Number(String(p.price || 0).replace(/[^0-9.-]+/g, "")) || 0;
       const rawDiscount = Number(String(p.discount || 0).replace(/[^0-9.-]+/g, "")) || 0;
       const price = rawPrice - (p.discountType === 'Fixed' ? rawDiscount : ((rawPrice * rawDiscount) / 100));
