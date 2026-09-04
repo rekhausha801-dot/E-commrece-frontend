@@ -141,7 +141,7 @@ const OfferCarousel = () => {
                       style={{ objectPosition: 'center top' }}
                     />
                   )}
-                  {(banner.showText || banner.type === 'with_text' || banner.type === 'image-text') && banner.title && (
+                  {(banner.showText || banner.type === 'with_text' || banner.type === 'image-text') && (banner.title || banner.specialLayout) && (
                     <>
                       <div style={{
                         position: 'absolute',
@@ -166,13 +166,72 @@ const OfferCarousel = () => {
                         alignItems: banner.textPosition === 'Center' ? 'center' : 'flex-start',
                         color: '#ffffff'
                       }}>
-                        <h2 style={{ fontFamily: '"Playfair Display", serif', fontSize: '64px', margin: '0 0 15px 0', fontWeight: 'normal', lineHeight: '1.1' }}>{banner.title}</h2>
-                        {banner.description && (
-                          <p style={{ fontSize: '20px', lineHeight: '1.4', marginBottom: '20px', fontWeight: '400' }}>
-                            {banner.description}
-                          </p>
+                        {(banner.specialLayout === true || banner.specialLayout === 'true') ? (
+                          <>
+                            {(banner.line1Text || !banner.line2Text) && (
+                              <h4 style={{ 
+                                fontFamily: banner.line1Font || "'Montserrat', sans-serif",
+                                fontSize: banner.line1Size || '16px', 
+                                color: banner.line1Color || '#ffffff', 
+                                letterSpacing: '3px', 
+                                marginBottom: '10px', 
+                                fontWeight: '600', 
+                                textTransform: 'uppercase' 
+                              }}>
+                                {banner.line1Text || 'LIMITED TIME OFFER'}
+                              </h4>
+                            )}
+                            <h2 style={{ 
+                              fontFamily: banner.line2Font || "'Playfair Display', serif", 
+                              fontSize: banner.line2Size || banner.fontSize || '64px', 
+                              color: banner.line2Color || '#ffffff', 
+                              margin: '0 0 15px 0', 
+                              fontWeight: 'bold', 
+                              lineHeight: '1.0', 
+                              textTransform: 'uppercase', 
+                              wordBreak: 'break-word', 
+                              whiteSpace: 'pre-line' 
+                            }}>
+                              {banner.line2Text || (() => {
+                                if (banner.title.includes(',')) return banner.title.split(',').map(s=>s.trim()).join('\n');
+                                const words = banner.title.split(' ');
+                                if (words.length <= 2) return banner.title;
+                                const half = Math.ceil(words.length / 2);
+                                return words.slice(0, half).join(' ') + '\n' + words.slice(half).join(' ');
+                              })()}
+                            </h2>
+                            {(banner.line3Text || banner.description) && (
+                              <p style={{ 
+                                fontFamily: banner.line3Font || "'Inter', sans-serif",
+                                fontSize: banner.line3Size || '18px', 
+                                color: banner.line3Color || '#ffffff', 
+                                lineHeight: '1.4', 
+                                marginBottom: '20px', 
+                                fontWeight: '500' 
+                              }}>
+                                {banner.line3Text || banner.description}
+                              </p>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            <h2 style={{ 
+                              fontFamily: '"Playfair Display", serif', 
+                              fontSize: banner.fontSize || '48px', 
+                              margin: '0 0 15px 0', 
+                              fontWeight: 'normal', 
+                              lineHeight: '1.1', 
+                              wordBreak: 'break-word' 
+                            }}>
+                              {banner.title}
+                            </h2>
+                            {banner.description && (
+                              <p style={{ fontSize: '18px', lineHeight: '1.4', marginBottom: '20px', fontWeight: '400', fontFamily: 'sans-serif' }}>
+                                {banner.description}
+                              </p>
+                            )}
+                          </>
                         )}
-
                       </div>
                     </>
                   )}

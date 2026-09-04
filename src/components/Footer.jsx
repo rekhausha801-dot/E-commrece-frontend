@@ -71,7 +71,7 @@ const Footer = () => {
         <div className="footer-col">
           <h4>COMPANY</h4>
           <ul>
-            <li><Link to="/shop">About Us</Link></li>
+            <li><Link to="/about-us">About Us</Link></li>
             <li><Link to="/shop">Our Blog</Link></li>
             <li><Link to="/shop">Careers</Link></li>
             <li><Link to="/shop">Press & Media</Link></li>

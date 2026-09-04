@@ -106,6 +106,23 @@ const BannerManagement = () => {
     status: true,
     textPosition: 'Center',
     placement: 'Home - Hero',
+    fontSize: '48px',
+    specialLayout: false,
+    line1Text: 'LIMITED TIME OFFER',
+    line1Color: '#ffffff',
+    line1Size: '',
+        line1Font: 'Montserrat, sans-serif',
+    line1Font: 'Montserrat, sans-serif',
+    line2Text: 'MEGA SALE',
+    line2Color: '#ffffff',
+    line2Size: '',
+        line2Font: "'Playfair Display', serif",
+    line2Font: "'Playfair Display', serif",
+    line3Text: 'UP TO 50% OFF',
+    line3Color: '#ffffff',
+    line3Size: '',
+        line3Font: 'Inter, sans-serif',
+    line3Font: 'Inter, sans-serif',
   });
   const [selectedFile, setSelectedFile] = useState(null);
 
@@ -211,6 +228,20 @@ const BannerManagement = () => {
       if (formData.startDate) form.append("startDate", formData.startDate);
       if (formData.endDate) form.append("endDate", formData.endDate);
       form.append("status", formData.status);
+      if (formData.fontSize) form.append("fontSize", formData.fontSize);
+      form.append("specialLayout", formData.specialLayout);
+      form.append("line1Text", formData.line1Text !== undefined ? formData.line1Text : 'LIMITED TIME OFFER');
+      form.append("line1Color", formData.line1Color || '#ffffff');
+      form.append("line1Size", formData.line1Size || '');
+      form.append("line1Font", formData.line1Font || 'Montserrat, sans-serif');
+      form.append("line2Text", formData.line2Text !== undefined ? formData.line2Text : 'MEGA SALE');
+      form.append("line2Color", formData.line2Color || '#ffffff');
+      form.append("line2Size", formData.line2Size || '');
+      form.append("line2Font", formData.line2Font || "'Playfair Display', serif");
+      form.append("line3Text", formData.line3Text !== undefined ? formData.line3Text : 'UP TO 50% OFF');
+      form.append("line3Color", formData.line3Color || '#ffffff');
+      form.append("line3Size", formData.line3Size || '');
+      form.append("line3Font", formData.line3Font || 'Inter, sans-serif');
       
       if (selectedFile) {
         form.append("image", selectedFile);
@@ -284,11 +315,45 @@ const BannerManagement = () => {
         status: banner.status !== false,
         textPosition: banner.textPosition || 'Center',
         placement: banner.placement || 'Home - Hero',
+        fontSize: banner.fontSize || '48px',
+        specialLayout: banner.specialLayout || false,
+        line1Text: banner.line1Text !== undefined ? banner.line1Text : 'LIMITED TIME OFFER',
+        line1Color: banner.line1Color || '#ffffff',
+        line1Size: banner.line1Size || '',
+        line1Font: banner.line1Font || 'Montserrat, sans-serif',
+        line2Text: banner.line2Text !== undefined ? banner.line2Text : 'MEGA SALE',
+        line2Color: banner.line2Color || '#ffffff',
+        line2Size: banner.line2Size || '',
+        line2Font: banner.line2Font || "'Playfair Display', serif",
+        line3Text: banner.line3Text !== undefined ? banner.line3Text : 'UP TO 50% OFF',
+        line3Color: banner.line3Color || '#ffffff',
+        line3Size: banner.line3Size || '',
+        line3Font: banner.line3Font || 'Inter, sans-serif',
       });
       setMediaPreview(banner.type !== 'text' ? getImageUrl(banner.image) : null);
     } else {
       setBannerType('image-text');
-      setFormData({ title: '', description: '', link: '', startDate: '', endDate: '', status: true, textPosition: 'Center', placement: 'Home - Hero' });
+      setFormData({
+        title: '',
+        description: '',
+        link: '',
+        startDate: '',
+        endDate: '',
+        status: true,
+        textPosition: 'Center',
+        placement: 'Home - Hero',
+        fontSize: '48px',
+        specialLayout: false,
+        line1Text: 'LIMITED TIME OFFER',
+        line1Color: '#ffffff',
+        line1Size: '',
+        line2Text: 'MEGA SALE',
+        line2Color: '#ffffff',
+        line2Size: '',
+        line3Text: 'UP TO 50% OFF',
+        line3Color: '#ffffff',
+        line3Size: '',
+      });
       setMediaPreview(null);
     }
   };
@@ -646,6 +711,114 @@ const BannerManagement = () => {
                     </select>
                   </div>
                 </div>
+
+                <div className="bam-row-1" style={{ marginTop: '16px' }}>
+                  <div className="bam-form-group" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <input type="checkbox" name="specialLayout" id="specialLayout" checked={formData.specialLayout} onChange={(e) => setFormData(prev => ({...prev, specialLayout: e.target.checked}))} disabled={drawerMode === 'view'} style={{ width: '18px', height: '18px' }} />
+                    <label htmlFor="specialLayout" className="bam-label" style={{ marginBottom: 0, cursor: 'pointer' }}>Use Special Text Layout (3 Separate Custom Lines)</label>
+                  </div>
+                </div>
+
+                {formData.specialLayout && (
+                  <div style={{ marginTop: '16px', padding: '16px', border: '1px solid #fef3c7', borderRadius: '8px', background: '#fffbeb' }}>
+                    <h4 style={{ margin: '0 0 12px 0', fontSize: '14px', fontWeight: '600', color: '#92400e' }}>
+                      Special 3-Line Text, Color & Size Settings
+                    </h4>
+                    
+                    {/* Line 1 */}
+                    <div style={{ marginBottom: '12px', paddingBottom: '12px', borderBottom: '1px dashed #fde68a' }}>
+                      <label className="bam-label" style={{ fontWeight: '600', color: '#78350f' }}>Line 1 (Top Line)</label>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1.2fr 1fr 1.2fr', gap: '10px', marginTop: '6px' }}>
+                        <input type="text" name="line1Text" className="bam-input" placeholder="e.g. LIMITED TIME OFFER" value={formData.line1Text} onChange={handleInputChange} disabled={drawerMode === 'view'} />
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <input type="color" name="line1Color" value={formData.line1Color || '#ffffff'} onChange={handleInputChange} disabled={drawerMode === 'view'} style={{ width: '32px', height: '32px', border: '1px solid #cbd5e1', borderRadius: '4px', cursor: 'pointer', padding: '1px', background: '#fff' }} />
+                          <button 
+                            type="button" 
+                            title="Reset color to default white"
+                            onClick={() => setFormData(prev => ({ ...prev, line1Color: '#ffffff' }))}
+                            disabled={drawerMode === 'view'}
+                            style={{ background: '#fee2e2', color: '#dc2626', border: '1px solid #fca5a5', borderRadius: '4px', padding: '3px 6px', fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '2px', fontWeight: '600', whiteSpace: 'nowrap' }}
+                          >
+                            <X size={11} /> Clear
+                          </button>
+                        </div>
+                        <input type="text" name="line1Size" className="bam-input" placeholder="Size (e.g. 16px)" value={formData.line1Size} onChange={handleInputChange} disabled={drawerMode === 'view'} />
+                        <select name="line1Font" className="bam-select-input" value={formData.line1Font || "Montserrat, sans-serif"} onChange={handleInputChange} disabled={drawerMode === 'view'} style={{ fontSize: '12px' }}>
+                          <option value="Montserrat, sans-serif">Montserrat (Modern Sans)</option>
+                          <option value="'Playfair Display', serif">Playfair Display (Luxury Serif)</option>
+                          <option value="Cinzel, serif">Cinzel (Royal Serif)</option>
+                          <option value="'Bodoni Moda', serif">Bodoni Moda (High-Fashion)</option>
+                          <option value="Prata, serif">Prata (Classic Fashion)</option>
+                          <option value="'Great Vibes', cursive">Great Vibes (Cursive Script)</option>
+                          <option value="Poppins, sans-serif">Poppins (Clean Sans)</option>
+                          <option value="Inter, sans-serif">Inter (Standard Sans)</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Line 2 */}
+                    <div style={{ marginBottom: '12px', paddingBottom: '12px', borderBottom: '1px dashed #fde68a' }}>
+                      <label className="bam-label" style={{ fontWeight: '600', color: '#78350f' }}>Line 2 (Middle Line)</label>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1.2fr 1fr 1.2fr', gap: '10px', marginTop: '6px' }}>
+                        <input type="text" name="line2Text" className="bam-input" placeholder="e.g. MEGA SALE" value={formData.line2Text} onChange={handleInputChange} disabled={drawerMode === 'view'} />
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <input type="color" name="line2Color" value={formData.line2Color || '#ffffff'} onChange={handleInputChange} disabled={drawerMode === 'view'} style={{ width: '32px', height: '32px', border: '1px solid #cbd5e1', borderRadius: '4px', cursor: 'pointer', padding: '1px', background: '#fff' }} />
+                          <button 
+                            type="button" 
+                            title="Reset color to default white"
+                            onClick={() => setFormData(prev => ({ ...prev, line2Color: '#ffffff' }))}
+                            disabled={drawerMode === 'view'}
+                            style={{ background: '#fee2e2', color: '#dc2626', border: '1px solid #fca5a5', borderRadius: '4px', padding: '3px 6px', fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '2px', fontWeight: '600', whiteSpace: 'nowrap' }}
+                          >
+                            <X size={11} /> Clear
+                          </button>
+                        </div>
+                        <input type="text" name="line2Size" className="bam-input" placeholder="Size (e.g. 48px)" value={formData.line2Size} onChange={handleInputChange} disabled={drawerMode === 'view'} />
+                        <select name="line2Font" className="bam-select-input" value={formData.line2Font || "'Playfair Display', serif"} onChange={handleInputChange} disabled={drawerMode === 'view'} style={{ fontSize: '12px' }}>
+                          <option value="'Playfair Display', serif">Playfair Display (Luxury Serif)</option>
+                          <option value="Cinzel, serif">Cinzel (Royal Serif)</option>
+                          <option value="'Bodoni Moda', serif">Bodoni Moda (High-Fashion)</option>
+                          <option value="Prata, serif">Prata (Classic Fashion)</option>
+                          <option value="'Great Vibes', cursive">Great Vibes (Cursive Script)</option>
+                          <option value="Montserrat, sans-serif">Montserrat (Modern Sans)</option>
+                          <option value="Poppins, sans-serif">Poppins (Clean Sans)</option>
+                          <option value="Inter, sans-serif">Inter (Standard Sans)</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Line 3 */}
+                    <div>
+                      <label className="bam-label" style={{ fontWeight: '600', color: '#78350f' }}>Line 3 (Bottom Line)</label>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1.2fr 1fr 1.2fr', gap: '10px', marginTop: '6px' }}>
+                        <input type="text" name="line3Text" className="bam-input" placeholder="e.g. UP TO 50% OFF" value={formData.line3Text} onChange={handleInputChange} disabled={drawerMode === 'view'} />
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <input type="color" name="line3Color" value={formData.line3Color || '#ffffff'} onChange={handleInputChange} disabled={drawerMode === 'view'} style={{ width: '32px', height: '32px', border: '1px solid #cbd5e1', borderRadius: '4px', cursor: 'pointer', padding: '1px', background: '#fff' }} />
+                          <button 
+                            type="button" 
+                            title="Reset color to default white"
+                            onClick={() => setFormData(prev => ({ ...prev, line3Color: '#ffffff' }))}
+                            disabled={drawerMode === 'view'}
+                            style={{ background: '#fee2e2', color: '#dc2626', border: '1px solid #fca5a5', borderRadius: '4px', padding: '3px 6px', fontSize: '11px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '2px', fontWeight: '600', whiteSpace: 'nowrap' }}
+                          >
+                            <X size={11} /> Clear
+                          </button>
+                        </div>
+                        <input type="text" name="line3Size" className="bam-input" placeholder="Size (e.g. 18px)" value={formData.line3Size} onChange={handleInputChange} disabled={drawerMode === 'view'} />
+                        <select name="line3Font" className="bam-select-input" value={formData.line3Font || "Inter, sans-serif"} onChange={handleInputChange} disabled={drawerMode === 'view'} style={{ fontSize: '12px' }}>
+                          <option value="Inter, sans-serif">Inter (Standard Sans)</option>
+                          <option value="Montserrat, sans-serif">Montserrat (Modern Sans)</option>
+                          <option value="'Playfair Display', serif">Playfair Display (Luxury Serif)</option>
+                          <option value="Cinzel, serif">Cinzel (Royal Serif)</option>
+                          <option value="'Bodoni Moda', serif">Bodoni Moda (High-Fashion)</option>
+                          <option value="Prata, serif">Prata (Classic Fashion)</option>
+                          <option value="'Great Vibes', cursive">Great Vibes (Cursive Script)</option>
+                          <option value="Poppins, sans-serif">Poppins (Clean Sans)</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Section 3: Banner Content */}
@@ -691,6 +864,10 @@ const BannerManagement = () => {
                     </div>
 
                     <div className="bam-row-2">
+                      <div className="bam-form-group">
+                        <label className="bam-label">Font Size</label>
+                        <input type="text" name="fontSize" className="bam-input" placeholder="e.g., 48px or 3rem" value={formData.fontSize} onChange={handleInputChange} disabled={drawerMode === 'view'} />
+                      </div>
                       <div className="bam-form-group">
                         <label className="bam-label">Text Position</label>
                         <select name="textPosition" className="bam-select-input" value={formData.textPosition} onChange={handleInputChange} disabled={drawerMode === 'view'}>

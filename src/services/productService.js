@@ -249,8 +249,9 @@ export const updateProduct = async (id, productData) => {
     }
     return { success: false, message: 'Failed to update product' };
   } catch (error) {
-    console.error("Error updating product:", error);
-    return { success: false, message: 'Error updating product' };
+    console.error("Error updating product:", error.response?.data || error);
+    const errMsg = error.response?.data?.error || error.response?.data?.message || 'Error updating product';
+    return { success: false, message: errMsg };
   }
 };
 

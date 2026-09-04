@@ -9,14 +9,16 @@ import {
 } from 'lucide-react';
 import { fetchCategories, fetchNextSku } from '../../services/api';
 
-const CustomSelect = ({ value, onChange, options, placeholder, disabled }) => {
+const CustomSelect = ({ value, onChange, options, placeholder, disabled, showSearch = false, searchPlaceholder = "Search..." }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   const selectRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (selectRef.current && !selectRef.current.contains(event.target)) {
         setIsOpen(false);
+        setSearchTerm('');
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -30,6 +32,13 @@ const CustomSelect = ({ value, onChange, options, placeholder, disabled }) => {
     displayValue = selectedOpt ? (typeof selectedOpt === 'object' ? selectedOpt.label : selectedOpt) : value;
   }
 
+  // Filter options based on search term
+  const filteredOptions = options.filter(opt => {
+    if (!showSearch) return true;
+    const optLabel = typeof opt === 'object' ? opt.label : opt;
+    return optLabel.toString().toLowerCase().includes(searchTerm.toLowerCase());
+  });
+
   return (
     <div className="custom-select-container" ref={selectRef} style={{ position: 'relative', width: '100%' }}>
       <div
@@ -41,20 +50,41 @@ const CustomSelect = ({ value, onChange, options, placeholder, disabled }) => {
       </div>
       {isOpen && (
         <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: '#fff', border: '1px solid #e0d5c1', borderRadius: '8px', marginTop: '4px', zIndex: 100, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', overflow: 'hidden' }}>
-          {options.map((opt) => {
-            const isObj = typeof opt === 'object';
-            const optValue = isObj ? opt.value : opt;
-            const optLabel = isObj ? opt.label : opt;
-            return (
-              <div
-                key={optValue}
-                className="custom-select-option"
-                onClick={() => { if (onChange) onChange(optValue); setIsOpen(false); }}
-              >
-                {optLabel}
+          {showSearch && (
+            <div style={{ padding: '8px', borderBottom: '1px solid #f3f4f6' }}>
+              <div style={{ display: 'flex', alignItems: 'center', background: '#f9fafb', borderRadius: '6px', padding: '6px 10px', border: '1px solid #e5e7eb' }}>
+                <Search size={14} style={{ color: '#9ca3af', marginRight: '8px' }} />
+                <input
+                  type="text"
+                  placeholder={searchPlaceholder}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  style={{ border: 'none', background: 'transparent', outline: 'none', width: '100%', fontSize: '13px', color: '#374151' }}
+                  onClick={(e) => e.stopPropagation()}
+                />
               </div>
-            );
-          })}
+            </div>
+          )}
+          <div style={{ maxHeight: '250px', overflowY: 'auto' }}>
+            {filteredOptions.length > 0 ? (
+              filteredOptions.map((opt) => {
+                const isObj = typeof opt === 'object';
+                const optValue = isObj ? opt.value : opt;
+                const optLabel = isObj ? opt.label : opt;
+                return (
+                  <div
+                    key={optValue}
+                    className="custom-select-option"
+                    onClick={() => { if (onChange) onChange(optValue); setIsOpen(false); setSearchTerm(''); }}
+                  >
+                    {optLabel}
+                  </div>
+                );
+              })
+            ) : (
+              <div style={{ padding: '10px 14px', fontSize: '13px', color: '#6b7280', textAlign: 'center' }}>No sections found</div>
+            )}
+          </div>
         </div>
       )}
     </div>
@@ -597,6 +627,8 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
                           onChange={setHomeSection}
                           options={displaySectionOptions}
                           placeholder="Select section"
+                          showSearch={true}
+                          searchPlaceholder="Search display section..."
                         />
                       </div>
 

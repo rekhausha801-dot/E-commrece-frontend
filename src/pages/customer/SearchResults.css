@@ -72,6 +72,25 @@
   background-color: #b58542;
 }
 
+.clear-search-btn {
+  position: absolute;
+  right: 56px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.clear-search-btn:hover {
+  color: #333;
+}
+
 .search-results-count {
   font-size: 15px;
   color: #666;
