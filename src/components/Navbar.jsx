@@ -538,7 +538,7 @@ const Navbar = () => {
                   <h4 className="welcome-title">{isLoggedIn ? `Welcome, ${userName}` : "Welcome"}</h4>
                   <p className="welcome-subtitle">To access account and manage orders</p>
                   {!isLoggedIn && (
-                    <Link to="/login" className="welcome-login-btn">LOGIN / SIGNUP</Link>
+                    <Link to="/login" className="welcome-login-btn">LOGIN</Link>
                   )}
                 </div>
                 <div className="dropdown-divider"></div>

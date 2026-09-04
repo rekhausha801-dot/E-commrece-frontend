@@ -63,7 +63,7 @@ const Login = () => {
           {/* Form */}
           <div className="split-login-right">
             <div className="form-wrapper">
-              <h2><strong>Login</strong> <span className="text-normal">or</span> <strong>Signup</strong></h2>
+              <h2><strong>Login</strong></h2>
               {errorMsg && <p style={{ color: 'red', textAlign: 'center', marginTop: '-10px', marginBottom: '15px' }}>{errorMsg}</p>}
 
               <form onSubmit={handleLogin}>

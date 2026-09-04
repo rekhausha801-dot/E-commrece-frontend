@@ -56,8 +56,16 @@ const HelpSupport = () => {
     setTimeout(() => message.success({ content: 'Export completed successfully!', key: 'export' }), 1000);
   };
 
-  const handleTicketAction = (action, ticket) => {
+  const handleTicketAction = async (action, ticket) => {
     if (action === 'view') {
+      if ((ticket.status || '').toLowerCase() === 'open') {
+        try {
+          await updateTicketStatus(ticket._id, 'pending');
+          ticket.status = 'pending';
+        } catch (e) {
+          console.error('Failed to update status to pending', e);
+        }
+      }
       setSelectedTicket(ticket);
       setReplyText('');
       setIsTicketReplyVisible(true);

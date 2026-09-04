@@ -196,8 +196,8 @@ const Support = () => {
                     <div key={ticket._id} style={{ border: '1px solid #e5e7eb', borderRadius: '8px', padding: '16px', background: '#fff' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
                         <span style={{ fontWeight: '600', fontSize: '16px', color: '#111827' }}>{ticket.subject}</span>
-                        <span style={{ background: ticket.status === 'resolved' ? '#dcfce7' : ticket.status === 'pending' ? '#fef9c3' : ticket.status === 'escalated' ? '#fee2e2' : '#dbeafe', color: ticket.status === 'resolved' ? '#166534' : ticket.status === 'pending' ? '#854d0e' : ticket.status === 'escalated' ? '#991b1b' : '#1e40af', padding: '4px 10px', borderRadius: '12px', fontSize: '12px', fontWeight: '600', textTransform: 'capitalize' }}>
-                          {ticket.status}
+                        <span style={{ background: ticket.status === 'resolved' ? '#dcfce7' : ticket.status === 'pending' ? '#fef9c3' : ticket.status === 'escalated' ? '#fee2e2' : '#f3f4f6', color: ticket.status === 'resolved' ? '#166534' : ticket.status === 'pending' ? '#854d0e' : ticket.status === 'escalated' ? '#991b1b' : '#4b5563', padding: '4px 10px', borderRadius: '12px', fontSize: '12px', fontWeight: '600', textTransform: 'capitalize' }}>
+                          {ticket.status === 'open' ? 'Not Opened' : ticket.status === 'resolved' ? 'Solved' : ticket.status}
                         </span>
                       </div>
                       <div style={{ fontSize: '13px', color: '#6b7280', marginBottom: '12px' }}>

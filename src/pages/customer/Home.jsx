@@ -276,7 +276,7 @@ const Home = () => {
                   {product.discount && <span className="unified-price-discount">{product.discount}</span>}
                 </div>
 
-                <button className="unified-explore-btn" onClick={(e) => { e.stopPropagation(); navigate(`/product/${product.id}`); }}>
+                <button className="unified-explore-btn" onClick={(e) => { e.stopPropagation(); navigate('/collection'); }}>
                   Explore Collection
                   <span style={{ fontSize: '16px' }}>→</span>
                 </button>
@@ -351,7 +351,7 @@ const Home = () => {
                   {product.discount && <span className="unified-price-discount">{product.discount}</span>}
                 </div>
 
-                <button className="unified-explore-btn" onClick={(e) => { e.stopPropagation(); navigate(`/product/${product.id}`); }}>
+                <button className="unified-explore-btn" onClick={(e) => { e.stopPropagation(); navigate('/collection'); }}>
                   Explore Collection
                   <span style={{ fontSize: '16px' }}>→</span>
                 </button>

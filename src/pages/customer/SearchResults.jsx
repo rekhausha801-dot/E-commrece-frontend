@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
-import { Filter, ChevronDown, Heart, Search, X } from 'lucide-react';
+import { Filter, ChevronDown, Heart, Search, X, Star } from 'lucide-react';
+import { useProducts } from '../../context/ProductContext';
+import { useWishlist } from '../../context/WishlistContext';
 import './SearchResults.css';
 import { searchProductsApi } from '../../services/api';
 
@@ -9,17 +11,10 @@ const SearchResults = () => {
   const navigate = useNavigate();
   const searchParams = new URLSearchParams(location.search);
   const initialKeyword = searchParams.get('q') || '';
-  
+
   const [keyword, setKeyword] = useState(initialKeyword);
-  const [products, setProducts] = useState([]);
-  const [totalResults, setTotalResults] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-  
-  // Filters
   const [sortBy, setSortBy] = useState('relevance');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [priceRange, setPriceRange] = useState([0, 5000]);
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -62,16 +57,22 @@ const SearchResults = () => {
 
   return (
     <div className="search-results-page">
+      {/* Header */}
       <div className="search-header-banner">
         <div className="container">
-          <h1>Search Results</h1>
+          <h1>{initialKeyword ? 'Search Results' : 'All Products'}</h1>
           <form className="search-page-form" onSubmit={handleSearchSubmit}>
-            <input 
-              type="text" 
+            <input
+              type="text"
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
               placeholder="Search for products, brands & categories..."
             />
+            {keyword && (
+              <button type="button" className="clear-search-btn" onClick={() => { setKeyword(''); navigate('/search'); }}>
+                <X size={16} />
+              </button>
+            )}
             <button type="submit" className="search-page-btn"><Search size={20} /></button>
           </form>
           {initialKeyword && (

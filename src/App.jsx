@@ -105,6 +105,7 @@ const AppContent = () => {
         <Route path="/cart" element={<CustomerRoute><Cart /></CustomerRoute>} />
         <Route path="/support" element={<CustomerRoute><Support /></CustomerRoute>} />
         <Route path="/shipping-policy" element={<CustomerRoute><ShippingPolicy /></CustomerRoute>} />
+        <Route path="/about-us" element={<CustomerRoute><AboutUs /></CustomerRoute>} />
         
         {/* ── Protected Customer pages ── */}
         <Route path="/wishlist" element={<ProtectedCustomerRoute><Wishlist /></ProtectedCustomerRoute>} />
