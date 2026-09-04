@@ -3613,3 +3613,22 @@ body {
     width: 100%;
   }
 }
+
+
+/* OVERRIDES FOR RESPONSIVENESS */
+@media (max-width: 768px) {
+  .pdp-main-container {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+  .pdp-gallery-section {
+    flex-direction: column-reverse !important;
+  }
+  .pdp-thumbnails {
+    flex-direction: row !important;
+    overflow-x: auto;
+  }
+  .pdp-page-wrapper {
+    padding: 16px !important;
+  }
+}

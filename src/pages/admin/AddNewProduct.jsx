@@ -127,6 +127,7 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
   const [newDesignName, setNewDesignName] = useState('');
   const [newDesignIcon, setNewDesignIcon] = useState('');
   const [newDesignColor, setNewDesignColor] = useState('#333333');
+  const [newDesignModelImage, setNewDesignModelImage] = useState('');
 
   const [seoTitle, setSeoTitle] = useState(editingProduct?._backendData?.seoTitle || editingProduct?.seoTitle || '');
   const [seoDesc, setSeoDesc] = useState(editingProduct?._backendData?.seoDesc || editingProduct?.seoDesc || '');
@@ -1117,22 +1118,60 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
                 </button>
               </div>
 
-              {newDesignIcon && !['Mountain', 'Feather', 'Flame', 'Leaf', 'Rocket', 'Compass', 'Send', 'Headphones', 'Palmtree', 'Flower2'].includes(newDesignIcon) && (
-                <div style={{ marginBottom: '12px', padding: '8px', border: '1px dashed #ddd', borderRadius: '4px', display: 'inline-block' }}>
-                  <img src={newDesignIcon} alt="Preview" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
-                </div>
-              )}
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', alignItems: 'center' }}>
+                <input
+                  type="file"
+                  id="adminMockupUpload"
+                  accept="image/png, image/jpeg, image/webp"
+                  style={{ display: 'none' }}
+                  onChange={(e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                      const reader = new FileReader();
+                      reader.onload = (uploadEvent) => {
+                        setNewDesignModelImage(uploadEvent.target.result);
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                />
+                <button
+                  onClick={() => document.getElementById('adminMockupUpload').click()}
+                  style={{ background: '#f5f5f5', color: '#333', padding: '8px 16px', border: '1px solid #ddd', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', whiteSpace: 'nowrap', flex: 1, justifyContent: 'center' }}
+                >
+                  <Upload size={14} /> {newDesignModelImage ? 'Mockup Image Selected' : 'Upload Mockup Image (Optional)'}
+                </button>
+              </div>
+
+              <div style={{ display: 'flex', gap: '16px', marginBottom: '12px' }}>
+                {newDesignIcon && !['Mountain', 'Feather', 'Flame', 'Leaf', 'Rocket', 'Compass', 'Send', 'Headphones', 'Palmtree', 'Flower2'].includes(newDesignIcon) && (
+                  <div style={{ padding: '8px', border: '1px dashed #ddd', borderRadius: '4px', display: 'inline-block', textAlign: 'center' }}>
+                    <div style={{ fontSize: '10px', color: '#666', marginBottom: '4px' }}>Logo/Icon</div>
+                    <img src={newDesignIcon} alt="Preview" style={{ width: '40px', height: '40px', objectFit: 'contain' }} />
+                  </div>
+                )}
+                {newDesignModelImage && (
+                  <div style={{ padding: '8px', border: '1px dashed #ddd', borderRadius: '4px', display: 'inline-block', textAlign: 'center' }}>
+                    <div style={{ fontSize: '10px', color: '#666', marginBottom: '4px' }}>Mockup</div>
+                    <img src={newDesignModelImage} alt="Mockup Preview" style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '2px' }} />
+                  </div>
+                )}
+              </div>
 
               <button
                 onClick={() => {
                   if (newDesignName.trim() && newDesignIcon) {
                     const isIconName = ['Mountain', 'Feather', 'Flame', 'Leaf', 'Rocket', 'Compass', 'Send', 'Headphones', 'Palmtree', 'Flower2'].includes(newDesignIcon);
-                    setCustomDesigns([...customDesigns, { id: Date.now(), name: newDesignName, [isIconName ? 'iconName' : 'icon']: newDesignIcon, iconColor: newDesignColor, category: isIconName ? 'Predefined' : 'Uploaded' }]);
+                    setCustomDesigns([...customDesigns, { id: Date.now(), name: newDesignName, [isIconName ? 'iconName' : 'icon']: newDesignIcon, iconColor: newDesignColor, category: isIconName ? 'Predefined' : 'Uploaded', modelImage: newDesignModelImage || null }]);
                     setNewDesignName('');
                     setNewDesignIcon('');
+                    setNewDesignModelImage('');
                     setNewDesignColor('#333333');
                     if (document.getElementById('adminDesignUpload')) {
                       document.getElementById('adminDesignUpload').value = '';
+                    }
+                    if (document.getElementById('adminMockupUpload')) {
+                      document.getElementById('adminMockupUpload').value = '';
                     }
                   } else {
                     alert('Please enter a Design Name and Upload an Image');

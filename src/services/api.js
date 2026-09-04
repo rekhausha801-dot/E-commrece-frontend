@@ -3,10 +3,17 @@ import axios from "axios";
 // Base URL configuration (You can switch this to env variables later)
 const API_BASE_URL = "http://localhost:5000/api";
 
-// Add a response interceptor to handle 401 errors
+// Global timeout: 15 seconds — prevents requests from hanging indefinitely
+axios.defaults.timeout = 15000;
+
+// Add a response interceptor to handle 401 and timeout errors
 axios.interceptors.response.use(
   (response) => response,
   (error) => {
+    if (error.code === 'ECONNABORTED' || error.message?.toLowerCase().includes('timeout')) {
+      // Graceful timeout — do not redirect, just reject with user-friendly message
+      return Promise.reject(new Error('Request timed out. Please check your connection and try again.'));
+    }
     if (error.response && error.response.status === 401) {
       localStorage.removeItem("token");
       localStorage.removeItem("userInfo");
@@ -72,8 +79,8 @@ const CATEGORY_API = `${API_BASE_URL}/categories`;
 
 export const getCategories = () => axios.get(CATEGORY_API);
 export const fetchCategories = () => axios.get(CATEGORY_API);
-export const createCategory = (data) => axios.post(CATEGORY_API, data);
-export const updateCategory = (id, data) => axios.put(`${CATEGORY_API}/${id}`, data);
+export const createCategory = (data) => axios.post(CATEGORY_API, data, { timeout: 60000 });
+export const updateCategory = (id, data) => axios.put(`${CATEGORY_API}/${id}`, data, { timeout: 60000 });
 export const updateCategoryStatus = (id, status) => axios.patch(`${CATEGORY_API}/${id}/status`, { status });
 export const deleteCategory = (id) => axios.delete(`${CATEGORY_API}/${id}`);
 
@@ -82,8 +89,8 @@ export const deleteCategory = (id) => axios.delete(`${CATEGORY_API}/${id}`);
 // -----------------------------------------------------
 const SUBCATEGORY_API = `${API_BASE_URL}/subcategories`;
 export const getSubcategories = () => axios.get(SUBCATEGORY_API);
-export const createSubcategory = (data) => axios.post(SUBCATEGORY_API, data);
-export const updateSubcategory = (id, data) => axios.put(`${SUBCATEGORY_API}/${id}`, data);
+export const createSubcategory = (data) => axios.post(SUBCATEGORY_API, data, { timeout: 60000 });
+export const updateSubcategory = (id, data) => axios.put(`${SUBCATEGORY_API}/${id}`, data, { timeout: 60000 });
 export const updateSubcategoryStatus = (id, status) => axios.patch(`${SUBCATEGORY_API}/${id}/status`, { status });
 export const deleteSubcategory = (id) => axios.delete(`${SUBCATEGORY_API}/${id}`);
 
@@ -116,11 +123,13 @@ export const sendMessageToCustomerApi = (id, data) => axios.post(`${CUSTOMER_API
 const PRODUCT_API = `${API_BASE_URL}/products`;
 
 export const fetchProducts = () => axios.get(PRODUCT_API);
-export const fetchProductById = (id) => axios.get(`${PRODUCT_API}/${id}`);
+// Product detail fetches the full document (designs, faqs, specs, etc.) — allow more time
+export const fetchProductById = (id) => axios.get(`${PRODUCT_API}/${id}`, { timeout: 30000 });
 export const fetchProductsByCategory = (categoryId) => axios.get(`${PRODUCT_API}/category/${categoryId}`);
 export const fetchNextSku = (category, subCategory) => axios.get(`${PRODUCT_API}/next-sku`, { params: { category, subCategory } });
-export const createProductApi = (data) => axios.post(PRODUCT_API, data);
-export const updateProductApi = (id, data) => axios.put(`${PRODUCT_API}/${id}`, data);
+// Product create/update involve Cloudinary image uploads — allow up to 60 seconds
+export const createProductApi = (data) => axios.post(PRODUCT_API, data, { timeout: 60000 });
+export const updateProductApi = (id, data) => axios.put(`${PRODUCT_API}/${id}`, data, { timeout: 60000 });
 export const deleteProductApi = (id) => axios.delete(`${PRODUCT_API}/${id}`);
 
 
@@ -201,9 +210,10 @@ export const getPreferencesApi = () => axios.get(PREFERENCES_API);
 export const updatePreferencesApi = (data) => axios.put(PREFERENCES_API, data);
 
 const ANALYTICS_API = `${API_BASE_URL}/analytics`;
-export const getDashboardAnalyticsApi = (params) => axios.get(`${ANALYTICS_API}/dashboard`, { params });
-export const getRatingAnalyticsApi = () => axios.get(`${ANALYTICS_API}/ratings`);
-export const getCustomerAnalyticsApi = () => axios.get(`${API_BASE_URL}/customer/analytics`);
+// Analytics are aggregate queries on Atlas — allow 30 seconds
+export const getDashboardAnalyticsApi = (params) => axios.get(`${ANALYTICS_API}/dashboard`, { params, timeout: 30000 });
+export const getRatingAnalyticsApi = () => axios.get(`${ANALYTICS_API}/ratings`, { timeout: 30000 });
+export const getCustomerAnalyticsApi = () => axios.get(`${API_BASE_URL}/customer/analytics`, { timeout: 30000 });
 export const getReports = (params) => axios.get(`${API_BASE_URL}/admin/reports`, { params });
 export const exportReports = (params) => axios.get(`${API_BASE_URL}/admin/reports/export`, { params, responseType: 'blob' });
 
@@ -226,3 +236,5 @@ export const updateTicketStatus = (id, status) => axios.put(`${ADMIN_TICKET_API}
 
 export const getCustomerTickets = () => axios.get(CUSTOMER_TICKET_API);
 export const contactSupport = (data) => axios.post(`${CUSTOMER_TICKET_API}/contact`, data);
+
+export const searchProductsApi = (queryStr) => axios.get("${API_BASE_URL}/products/search?${queryStr}");

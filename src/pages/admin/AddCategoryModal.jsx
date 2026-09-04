@@ -6,13 +6,6 @@ import { createCategory, updateCategory, createSubcategory, updateSubcategory, g
 const { TextArea } = Input;
 const { Option } = Select;
 
-const getBase64 = (file) =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = (error) => reject(error);
-  });
 
 const AddCategoryModal = ({ isOpen, onClose, onSuccess, editData }) => {
   const [form] = Form.useForm();
@@ -60,39 +53,30 @@ const AddCategoryModal = ({ isOpen, onClose, onSuccess, editData }) => {
       const values = await form.validateFields();
       setLoading(true);
 
-      let imageUrl = '';
+      const formData = new FormData();
+      formData.append('name', values.name);
+      formData.append('description', values.description || '');
+      formData.append('status', values.status ? 'active' : 'inactive');
+
       if (values.image && Array.isArray(values.image) && values.image.length > 0) {
         const file = values.image[0].originFileObj;
         if (file) {
-          imageUrl = await getBase64(file);
-        } else {
-          imageUrl = values.image[0].url || '';
+          formData.append('image', file);
         }
       }
 
-      let iconUrl = '';
       if (values.icon && Array.isArray(values.icon) && values.icon.length > 0) {
         const file = values.icon[0].originFileObj;
         if (file) {
-          iconUrl = await getBase64(file);
-        } else {
-          iconUrl = values.icon[0].url || '';
+          formData.append('icon', file);
         }
       }
 
-      const payload = {
-        name: values.name,
-        description: values.description,
-        status: values.status ? 'active' : 'inactive',
-        image: imageUrl,
-        icon: iconUrl
-      };
-
       if (editData && editData._id) {
-        await updateCategory(editData._id, payload);
+        await updateCategory(editData._id, formData);
         message.success('Category updated successfully');
       } else {
-        await createCategory(payload);
+        await createCategory(formData);
         message.success('Category created successfully');
       }
 

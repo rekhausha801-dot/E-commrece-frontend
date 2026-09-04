@@ -807,7 +807,7 @@ export default function ProductDetail() {
                 <div className="pdp-customizer-designs" style={{ padding: '12px 0', display: 'flex', alignItems: 'center', gap: '12px' }}>
                   <button className="pdp-customizer-nav" onClick={() => scrollCustomizer('left')} style={{ background: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', border: 'none', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}><ChevronLeft size={16} /></button>
                   <div ref={customizerScrollRef} className="pdp-customizer-designs-scroll" style={{ display: 'flex', gap: '12px', overflowX: 'auto', scrollbarWidth: 'none', flex: 1, padding: '4px' }}>
-                    {product.designs.map((design, idx) => (
+                    {(product.designs || []).map((design, idx) => (
                       <div
                         key={design.id}
                         className={`pdp-design-option-full ${activeDesign?.id === design.id ? 'active' : ''}`}
