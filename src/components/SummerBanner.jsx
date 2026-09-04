@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './SummerBanner.css';
 import seaImg from '../assets/banners/glo.png';
-import bannerVideo from '../assets/banners/8387356-uhd_4096_2160_25fps.mp4';
+const bannerVideo = '/banners/8387356-uhd_4096_2160_25fps.mp4';
 import { FaArrowRight } from 'react-icons/fa';
 import { getActiveBanners } from '../services/api';
 
@@ -75,7 +75,7 @@ const SummerBanner = () => {
               {slide.type === 'image' ? (
                 <img src={slide.src} alt={`Summer Collection ${index + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }} />
               ) : (
-                <video src={slide.src} autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }} />
+                <video src={slide.src + '?v=1'} crossOrigin="anonymous" autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }} />
               )}
             </div>
           ))}

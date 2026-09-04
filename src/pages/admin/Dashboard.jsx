@@ -423,23 +423,23 @@ const Dashboard = () => {
 
             <div className="middle-grid">
 
-              <div className="dashboard-card" style={{ backgroundColor: '#fcfaf5', borderRadius: '12px', padding: '24px', border: '1px solid #f2eadc', boxShadow: 'none' }}>
-                <div className="card-header" style={{ marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#333', margin: 0 }}>Revenue Overview</h3>
+              <div className="dashboard-card" style={{ background: 'linear-gradient(145deg, #ffffff 0%, #fcfaf5 100%)', borderRadius: '16px', padding: '28px', border: '1px solid rgba(201, 160, 91, 0.15)', boxShadow: '0 10px 30px -10px rgba(0,0,0,0.05), 0 4px 10px rgba(201, 160, 91, 0.03)' }}>
+                <div className="card-header" style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <h3 style={{ fontSize: '18px', fontWeight: '700', color: '#1a1a1a', margin: 0, letterSpacing: '-0.3px' }}>Revenue Overview</h3>
                   <Dropdown trigger={['click']} menu={{
                     items: [{ key: 'Last 7 Days', label: 'Last 7 Days' }, { key: 'Last 30 Days', label: 'Last 30 Days' }, { key: 'Last 6 Months', label: 'Last 6 Months' }, { key: 'Last 12 Months', label: 'Last 12 Months' }],
                     onClick: ({ key }) => setRevenueFilterLabel(key)
                   }}>
-                    <button style={{ background: 'linear-gradient(180deg, #2a2a2a 0%, #111 100%)', border: '1px solid #444', padding: '6px 12px', borderRadius: '6px', fontSize: '11px', fontWeight: '500', color: '#e5c07b', display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer', boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.24)', whiteSpace: 'nowrap', flexShrink: 0, letterSpacing: '0.5px' }}>{revenueFilterLabel} <ChevronDown size={12} /></button>
+                    <button style={{ background: 'linear-gradient(135deg, #1f1f1f 0%, #0a0a0a 100%)', border: '1px solid rgba(229, 192, 123, 0.2)', padding: '8px 16px', borderRadius: '8px', fontSize: '12px', fontWeight: '600', color: '#e5c07b', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1)', whiteSpace: 'nowrap', flexShrink: 0, transition: 'all 0.3s ease' }}>{revenueFilterLabel} <ChevronDown size={14} /></button>
                   </Dropdown>
                 </div>
-                <div className="card-sub-header" style={{ marginBottom: '24px' }}>
-                  <h2 style={{ fontSize: '28px', color: '#333', display: 'flex', alignItems: 'center', gap: '12px', margin: 0 }}>
+                <div className="card-sub-header" style={{ marginBottom: '32px', display: 'flex', alignItems: 'baseline', gap: '16px' }}>
+                  <h2 style={{ fontSize: '36px', fontWeight: '800', color: '#111', margin: 0, letterSpacing: '-1px' }}>
                     {loading ? '...' : `₹${dashboardData?.revenueOverview?.totalRevenue?.toLocaleString('en-IN') || '0'}`}
-                    <span style={{ fontSize: '18px', fontWeight: '600', color: dashboardData?.revenueOverview?.percentageChange >= 0 ? '#4caf50' : '#ef4444' }}>
-                      {dashboardData?.revenueOverview?.percentageChange >= 0 ? '↑' : '↓'} {Math.abs(dashboardData?.revenueOverview?.percentageChange || 0).toFixed(1)}%
-                    </span>
                   </h2>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '6px 12px', borderRadius: '20px', background: dashboardData?.revenueOverview?.percentageChange >= 0 ? 'rgba(76, 175, 80, 0.1)' : 'rgba(239, 68, 68, 0.1)', color: dashboardData?.revenueOverview?.percentageChange >= 0 ? '#2e7d32' : '#c62828', fontSize: '14px', fontWeight: '600' }}>
+                    {dashboardData?.revenueOverview?.percentageChange >= 0 ? '↑' : '↓'} {Math.abs(dashboardData?.revenueOverview?.percentageChange || 0).toFixed(1)}%
+                  </span>
                 </div>
                 <div className="revenue-chart-container" style={{ height: '280px', marginTop: '20px' }}>
                   {error ? (
@@ -514,10 +514,10 @@ const Dashboard = () => {
               </div>
 
 
-              <div className="dashboard-card" style={{ backgroundColor: '#fcfaf5', borderRadius: '12px', padding: '24px', border: '1px solid #f2eadc', display: 'flex', flexDirection: 'column', boxShadow: 'none' }}>
-                <div className="card-header" style={{ marginBottom: '16px' }}>
-                  <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#333' }}>Orders Overview</h3>
-                  <button style={{ background: '#fdfcf9', border: '1px solid #d5b97d', padding: '4px 12px', borderRadius: '4px', fontSize: '12px', fontWeight: '600', color: '#a67c00', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', whiteSpace: 'nowrap', flexShrink: 0 }} onClick={() => setActiveTab('Orders')}>View All <ArrowRight size={14} /></button>
+              <div className="dashboard-card" style={{ background: 'linear-gradient(145deg, #ffffff 0%, #fcfaf5 100%)', borderRadius: '16px', padding: '28px', border: '1px solid rgba(201, 160, 91, 0.15)', display: 'flex', flexDirection: 'column', boxShadow: '0 10px 30px -10px rgba(0,0,0,0.05), 0 4px 10px rgba(201, 160, 91, 0.03)' }}>
+                <div className="card-header" style={{ marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <h3 style={{ fontSize: '18px', fontWeight: '700', color: '#1a1a1a', margin: 0, letterSpacing: '-0.3px' }}>Orders Overview</h3>
+                  <button style={{ background: '#fff', border: '1px solid rgba(201, 160, 91, 0.3)', padding: '8px 16px', borderRadius: '8px', fontSize: '12px', fontWeight: '600', color: '#c9a05b', display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', boxShadow: '0 2px 5px rgba(201, 160, 91, 0.1)', whiteSpace: 'nowrap', flexShrink: 0, transition: 'all 0.2s ease' }} onClick={() => setActiveTab('Orders')}>View All <ArrowRight size={14} /></button>
                 </div>
                 
                 <div className="donut-chart-wrapper" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>

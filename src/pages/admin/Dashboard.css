@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap');
 
 :root {
   --dash-bg: #fdfaf6;
@@ -1170,20 +1170,46 @@
    Responsive Design for Admin Panel
 ========================================= */
 
-@media (max-width: 1024px) {
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .middle-grid {
-    grid-template-columns: 1fr;
-  }
-  .bottom-grid {
-    grid-template-columns: 1fr;
-  }
+/* =========================================
+   Responsive Design for Admin Panel
+========================================= */
+
+/* Global responsive layout fixes */
+.dashboard-main,
+.dashboard-container,
+.dashboard-content,
+.dashboard-card,
+.stat-card,
+.premium-glass-card,
+.middle-grid > div,
+.stats-grid > div,
+.bottom-grid > div,
+.middle-grid,
+.bottom-grid,
+.stats-grid,
+.product-management-page,
+.list-view-container {
+  min-width: 0 !important;
 }
 
+/* Ensure all tables are horizontally scrollable without breaking parent layout */
+.hide-scrollbar, .ant-table-wrapper, .ant-table-container, .product-table-wrapper {
+  overflow-x: auto;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Recharts wrappers need relative positioning and no overflow */
+.chart-wrapper, .donut-chart-wrapper {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* TABLET LAYOUT (up to 1024px) */
 @media (max-width: 1024px) {
-  /* Sidebar handling */
+  /* Sidebar Overlay & Off-canvas */
   .dashboard-sidebar {
     position: fixed;
     top: 0;
@@ -1197,12 +1223,6 @@
     left: 0;
   }
 
-  .dashboard-main {
-    margin-left: 0 !important;
-    width: 100%;
-  }
-
-  /* Overlay */
   .sidebar-overlay {
     position: fixed;
     top: 0;
@@ -1221,34 +1241,34 @@
     pointer-events: auto;
   }
 
+  .dashboard-main {
+    margin-left: 0 !important;
+    width: 100%;
+    padding: 16px 20px;
+  }
+
+  /* 2 Column Stats Grid for Tablet */
   .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* 1 Column for other grids */
+  .middle-grid {
     grid-template-columns: 1fr;
   }
-  
+  .bottom-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Wrap Header Actions */
   .dashboard-header {
     flex-wrap: wrap;
     gap: 16px;
     padding: 16px;
   }
-
   .header-left, .header-right {
     width: 100%;
     justify-content: space-between;
-  }
-  
-  .header-right .search-bar {
-    display: none; /* Hide search bar on mobile header to save space, or make it full width */
-  }
-
-  .header-right {
-    justify-content: flex-end;
-  }
-
-  /* Ensure tables can scroll */
-  .hide-scrollbar {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    width: 100%;
   }
   
   /* Modal responsive */
@@ -1257,58 +1277,23 @@
   }
 }
 
-
-  .ant-table-wrapper, .ant-table-container, .product-table-wrapper {
-    overflow-x: auto;
+/* MOBILE LAYOUT (up to 768px) */
+@media (max-width: 768px) {
+  /* 1 Column Stats Grid for Mobile */
+  .stats-grid {
+    grid-template-columns: 1fr;
   }
-  
-  /* Make cards pad less on mobile */
+
+  /* Reduce Card Padding */
   .dashboard-card, .premium-glass-card, .stat-card {
     padding: 16px !important;
   }
 
-
-@media (max-width: 1024px) {
-  .dashboard-main,
-  .dashboard-container,
-  .dashboard-content,
-  .dashboard-card,
-  .stat-card,
-  .premium-glass-card,
-  .middle-grid > div,
-  .stats-grid > div,
-  .bottom-grid > div,
-  .middle-grid,
-  .bottom-grid,
-  .stats-grid,
-  .product-management-page,
-  .list-view-container {
-    min-width: 0 !important;
-    max-width: 100vw !important;
+  /* Hide Search on Mobile Header to save space */
+  .header-right .search-bar {
+    display: none; 
+  }
+  .header-right {
+    justify-content: flex-end;
   }
 }
-
-
-/* Global flex shrink fixes */
-.dashboard-main,
-.dashboard-container,
-.dashboard-content,
-.dashboard-card,
-.stat-card,
-.premium-glass-card,
-.middle-grid > div,
-.stats-grid > div,
-.bottom-grid > div,
-.middle-grid,
-.bottom-grid,
-.stats-grid,
-.product-management-page,
-.list-view-container {
-  min-width: 0 !important;
-}
-
-.product-table-wrapper {
-  overflow-x: auto;
-  max-width: 100%;
-}
-

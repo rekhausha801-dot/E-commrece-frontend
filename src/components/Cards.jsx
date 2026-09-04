@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import './Cards.css';
 import { FiArrowRight, FiWatch, FiChevronLeft, FiChevronRight, FiGrid } from 'react-icons/fi';
@@ -12,7 +12,7 @@ import watchImg from '../assets/images/watch.png';
 import homeImg from '../assets/images/home.png';
 import beautyImg from '../assets/images/beauty.png';
 import kidsImg from '../assets/images/kids.jpeg';
-import { getCategories } from '../services/api';
+import { useCategories } from '../context/CategoryContext';
 
 // Fallback hardcoded categories (used while loading or on error)
 const defaultCategories = [
@@ -28,53 +28,36 @@ const defaultCategories = [
 
 export default function Cards() {
   const scrollRef = useRef(null);
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { categories: sharedCategories, loadingCategories } = useCategories();
 
-  useEffect(() => {
-    const fetchCats = async () => {
-      try {
-        const res = await getCategories();
-        // Filter only active categories
-        const activeCats = res.data.data.filter(c => c.status === 'active');
-        if (activeCats.length > 0) {
-          
-          const getCategoryIcon = (categoryName) => {
-            const name = (categoryName || '').toLowerCase();
-            if (name.includes('shoe') || name.includes('footwear')) return <GiRunningShoe />;
-            if (name.includes('kurti') || name.includes('dress') || name.includes('women') || name.includes('female')) return <FaFemale />;
-            if (name.includes('suit') || name.includes('men') || name.includes('boy')) return <FaUserTie />;
-            if (name.includes('kid') || name.includes('child')) return <FaChild />;
-            if (name.includes('home')) return <FaHome />;
-            if (name.includes('beauty')) return <FaMagic />;
-            if (name.includes('watch') || name.includes('access')) return <FaGem />;
-            if (name.includes('tshirt') || name.includes('shirt') || name.includes('wear') || name.includes('cloth')) return <FaTshirt />;
-            return <FaVest />; 
-          };
+  const getCategoryIcon = (categoryName) => {
+    const name = (categoryName || '').toLowerCase();
+    if (name.includes('shoe') || name.includes('footwear')) return <GiRunningShoe />;
+    if (name.includes('kurti') || name.includes('dress') || name.includes('women') || name.includes('female')) return <FaFemale />;
+    if (name.includes('suit') || name.includes('men') || name.includes('boy')) return <FaUserTie />;
+    if (name.includes('kid') || name.includes('child')) return <FaChild />;
+    if (name.includes('home')) return <FaHome />;
+    if (name.includes('beauty')) return <FaMagic />;
+    if (name.includes('watch') || name.includes('access')) return <FaGem />;
+    if (name.includes('tshirt') || name.includes('shirt') || name.includes('wear') || name.includes('cloth')) return <FaTshirt />;
+    return <FaVest />;
+  };
 
-          // Map backend category format to card format
-          const mappedCats = activeCats.map((cat, index) => ({
-            name: cat.name,
-            subtitle: cat.description || 'Explore collection',
-            image: cat.image || defaultCategories[index % defaultCategories.length].image,
-            icon: cat.icon || null, // Will render image if string, otherwise fallback
-            fallbackIcon: getCategoryIcon(cat.name),
-            iconColor: '#b38e69',
-            iconBg: '#f2ebe1'
-          }));
-          setCategories(mappedCats);
-        } else {
-          setCategories(defaultCategories);
-        }
-      } catch (err) {
-        console.error("Failed to fetch categories:", err);
-        setCategories(defaultCategories);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCats();
-  }, []);
+  // Map backend categories from context to card format
+  const activeCats = sharedCategories.filter(c => c.status === 'active');
+  const categories = activeCats.length > 0
+    ? activeCats.map((cat, index) => ({
+        name: cat.name,
+        subtitle: cat.description || 'Explore collection',
+        image: cat.image || defaultCategories[index % defaultCategories.length].image,
+        icon: cat.icon || null,
+        fallbackIcon: getCategoryIcon(cat.name),
+        iconColor: '#b38e69',
+        iconBg: '#f2ebe1'
+      }))
+    : (loadingCategories ? [] : defaultCategories);
+
+  const loading = loadingCategories;
 
   const scroll = (direction) => {
     if (scrollRef.current) {
