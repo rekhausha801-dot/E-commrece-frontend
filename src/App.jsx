@@ -39,6 +39,7 @@ const Login = React.lazy(() => import("./pages/customer/Login"));
 const Notifications = React.lazy(() => import("./pages/customer/Notifications"));
 const Support = React.lazy(() => import("./pages/customer/Support"));
 const ShippingPolicy = React.lazy(() => import("./pages/customer/ShippingPolicy"));
+const AboutUs = React.lazy(() => import("./pages/customer/AboutUs"));
 const AdminLogin = React.lazy(() => import("./pages/admin/AdminLogin"));
 const Dashboard = React.lazy(() => import("./pages/admin/Dashboard"));
 

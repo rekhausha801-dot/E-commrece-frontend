@@ -320,10 +320,38 @@ export default function CategoryPage() {
       }
       
       if (matchedCategory) {
+        // Use already loaded and formatted products from ProductContext
+        if (contextProducts && contextProducts.length > 0) {
+          const matched = contextProducts.filter(p => {
+            const catId = p.categoryId || (p.category && p.category._id) || (typeof p.category === 'string' ? p.category : null);
+            const catName = typeof p.category === 'object' ? p.category.name : null;
+            return catId === matchedCategory._id || (catName && catName.toLowerCase() === matchedCategory.name.toLowerCase());
+          });
+          
+          if (matched.length > 0) {
+            if (active) setLocalCategoryProducts(matched);
+            if (active) setLoadingCategoryProducts(false);
+            return;
+          }
+        }
+
         try {
           const res = await fetchProductsByCategory(matchedCategory._id);
           if (active && res.data && res.data.success) {
-            setLocalCategoryProducts(res.data.data || []);
+            const rawProducts = res.data.data || [];
+            const filteredProducts = rawProducts.filter(p => p.status !== 'Draft' && p.status !== 'Inactive');
+            // Basic formatting for fallback raw products
+            const formattedFallback = filteredProducts.map(p => ({
+              ...p,
+              id: p._id || p.id,
+              title: p.name || p.title,
+              price: `₹${p.price || 0}`,
+              image: p.images?.[0]?.url || p.images?.[0] || p.image,
+              categoryId: matchedCategory._id
+            }));
+            setLocalCategoryProducts(formattedFallback);
+          } else {
+             if (active) setLocalCategoryProducts([]);
           }
         } catch (error) {
           console.error("Failed to fetch products for category:", error);
@@ -348,7 +376,7 @@ export default function CategoryPage() {
     }
     
     return () => { active = false; };
-  }, [categoryId, categories, loadingCategories]);
+  }, [categoryId, categories, loadingCategories, contextProducts]);
 
   React.useEffect(() => {
     const fetchBanners = async () => {
@@ -477,6 +505,12 @@ export default function CategoryPage() {
         }
 
         let isMatch = pCat === mappedBackendCategory || pCat.replace(/[^a-z0-9]/g, '') === mappedBackendCategory.replace(/[^a-z0-9]/g, '');
+        
+        // Add lenient matching for 'suits'
+        if (mappedBackendCategory === 'suits' && (pCat === 'suit' || pCat.includes('suit'))) {
+          isMatch = true;
+        }
+
         if (isMatch && mappedBackendCategory === 'suits') {
           if (p.name && p.name.toLowerCase().includes('shoe')) {
             isMatch = false;

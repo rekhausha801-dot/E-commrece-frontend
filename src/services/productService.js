@@ -79,6 +79,11 @@ export const getProductById = async (id) => {
     if (res.data && res.data.success) {
       const p = res.data.data;
 
+      // Prevent customer side from viewing Draft or Inactive products directly via URL
+      if (p.status === 'Draft' || p.status === 'Inactive') {
+        return { success: false, message: 'Product not found or unavailable' };
+      }
+
       const basePrice = typeof p.price === 'number' ? p.price : 0;
       let salePrice = basePrice;
       let discountLabel = null;

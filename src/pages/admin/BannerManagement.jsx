@@ -122,7 +122,6 @@ const BannerManagement = () => {
     line3Color: '#ffffff',
     line3Size: '',
         line3Font: 'Inter, sans-serif',
-    line3Font: 'Inter, sans-serif',
   });
   const [selectedFile, setSelectedFile] = useState(null);
 

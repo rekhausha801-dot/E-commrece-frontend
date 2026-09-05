@@ -1014,3 +1014,117 @@
     overflow-x: hidden;
   }
 }
+
+.mega-banner-content {
+  position: absolute;
+  top: 50%;
+  left: 8%;
+  transform: translateY(-50%);
+  text-align: left;
+  padding: 20px;
+  max-width: 500px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  color: #ffffff;
+}
+
+.mega-banner-subtitle {
+  font-size: 16px;
+  letter-spacing: 4px;
+  margin-bottom: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.mega-banner-title {
+  font-family: "Playfair Display", serif;
+  font-size: 72px;
+  margin: 0 0 15px 0;
+  font-weight: normal;
+  line-height: 1.1;
+}
+
+.mega-banner-desc {
+  font-size: 20px;
+  line-height: 1.4;
+  margin-bottom: 20px;
+  font-weight: 400;
+}
+
+.mega-banner-discount {
+  font-size: 24px;
+  font-weight: 500;
+  margin-bottom: 30px;
+  letter-spacing: 1px;
+}
+
+.mega-banner-discount span {
+  font-size: 32px;
+  font-weight: 600;
+}
+
+/* Responsive Styles for Banner Text */
+@media (max-width: 992px) {
+  .mega-banner-content {
+    left: 5%;
+    max-width: 400px;
+  }
+  .mega-banner-title {
+    font-size: 56px;
+  }
+}
+
+@media (max-width: 768px) {
+  .mega-banner-content {
+    left: 50%;
+    transform: translate(-50%, -50%);
+    align-items: center;
+    text-align: center;
+    max-width: 90%;
+    padding: 10px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 12px;
+  }
+  .mega-banner-title {
+    font-size: 42px;
+    margin-bottom: 10px;
+  }
+  .mega-banner-subtitle {
+    font-size: 14px;
+    letter-spacing: 2px;
+  }
+  .mega-banner-desc {
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
+  .mega-banner-discount {
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+  .mega-banner-discount span {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .mega-banner-title {
+    font-size: 32px;
+  }
+  .mega-banner-subtitle {
+    font-size: 12px;
+    margin-bottom: 5px;
+  }
+  .mega-banner-desc {
+    font-size: 14px;
+  }
+  .mega-banner-discount {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+  .mega-banner-discount span {
+    font-size: 20px;
+  }
+}
+
