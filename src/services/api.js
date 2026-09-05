@@ -157,7 +157,7 @@ export const processPaymentApi = (data) => axios.post(`${PAYMENT_API}/process`, 
 
 
 const ORDER_API = `${API_BASE_URL}/orders`;
-export const getOrders = (params) => axios.get(ORDER_API, { params });
+export const getOrders = (params) => axios.get(ORDER_API, { params, timeout: 60000 });
 export const getMyOrders = () => axios.get(`${ORDER_API}/myorders`);
 export const getOrderStats = () => axios.get(`${ORDER_API}/stats`);
 export const getOrderById = (id) => axios.get(`${ORDER_API}/${id}`);
@@ -180,6 +180,7 @@ export const markReviewHelpfulApi = (id) => axios.put(`${REVIEW_API}/${id}/helpf
 export const deleteCustomerReviewApi = (id) => axios.delete(`${REVIEW_API}/${id}`);
 
 export const getAdminReviewsApi = (params) => axios.get(ADMIN_REVIEW_API, { params });
+export const getAdminReviewStatsApi = () => axios.get(`${ADMIN_REVIEW_API}/stats`);
 export const updateReviewStatusApi = (id, status) => axios.patch(`${ADMIN_REVIEW_API}/${id}/status`, { status });
 export const deleteReviewApi = (id) => axios.delete(`${ADMIN_REVIEW_API}/${id}`);
 export const replyToReviewApi = (id, adminReply) => axios.post(`${ADMIN_REVIEW_API}/${id}/reply`, { adminReply });

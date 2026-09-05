@@ -13,6 +13,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { getAdminNotificationsApi, markNotificationAsReadApi, markAllNotificationsAsReadApi, deleteAdminNotificationApi } from '../../services/api';
+import './NotificationManagement.css';
 
 export const initialNotifications = [
   // Keeping this for reference if no API is connected or API fails
@@ -148,8 +149,8 @@ const NotificationManagement = ({ setActiveTab }) => {
   };
 
   return (
-    <div style={{ padding: '10px 20px', background: 'transparent', fontFamily: '"Inter", sans-serif' }}>
-      <div style={{ 
+    <div className="notification-page-wrapper" style={{ padding: '10px 20px', background: 'transparent', fontFamily: '"Inter", sans-serif' }}>
+      <div className="notification-page-container" style={{ 
         background: '#FFFFFF', 
         borderRadius: '24px', 
         padding: '32px 40px', 
@@ -159,7 +160,7 @@ const NotificationManagement = ({ setActiveTab }) => {
       }}>
         
         {/* Header Section */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+        <div className="notif-header-actions" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
             <div style={{ 
               position: 'relative', width: '64px', height: '64px', 
@@ -279,7 +280,7 @@ const NotificationManagement = ({ setActiveTab }) => {
                     const actionBtn = getActionButtonStyle(notif.type || 'Orders');
 
                     return (
-                      <div key={notif._id} style={{ 
+                      <div key={notif._id} className="notification-card-item" style={{ 
                         background: styles.bg,
                         borderLeft: `4px solid ${styles.leftBorder}`,
                         borderRadius: '16px',
@@ -290,7 +291,7 @@ const NotificationManagement = ({ setActiveTab }) => {
                         position: 'relative'
                       }}>
                         {/* Icon */}
-                        <div style={{ 
+                        <div className="notif-icon" style={{ 
                           width: '56px', height: '56px', borderRadius: '50%', 
                           background: '#FFF', color: styles.color,
                           display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
@@ -300,8 +301,8 @@ const NotificationManagement = ({ setActiveTab }) => {
                         </div>
 
                         {/* Content */}
-                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '10px', minWidth: 0 }}>
+                          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                               {notif.unread !== false && <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: styles.dot }}></div>}
                               <h4 style={{ margin: 0, fontSize: '16px', fontWeight: '700', color: '#111' }}>{notif.title || (notif.type === 'Reviews' ? 'New Review Received' : 'New Activity')}</h4>
@@ -328,7 +329,7 @@ const NotificationManagement = ({ setActiveTab }) => {
                           </p>
 
                           {/* Extra info & Action Button */}
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px' }}>
+                          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px', gap: '12px' }}>
                             <div style={{ display: 'flex', gap: '12px' }}>
                               {(notif.meta || (notif.type === 'Orders' ? ['₹1879', '1 Item'] : [])).map((tag, idx) => (
                                 <span key={idx} style={{ 
