@@ -37,7 +37,7 @@ const OrderManagement = ({ globalSearch = '' }) => {
   const fetchOrders = async () => {
     setIsLoading(true);
     try {
-      const response = await getOrders({ search: searchText, limit: 1000 });
+      const response = await getOrders({ search: searchText, limit: 10 });
       if (response.data && response.data.success) {
         // Map backend order format to frontend UI format
         const formattedOrders = response.data.data.map(order => ({

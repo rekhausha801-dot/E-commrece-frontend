@@ -248,26 +248,13 @@ const OfferCarousel = () => {
                         backgroundColor: 'rgba(0,0,0,0.15)',
                         zIndex: 1
                       }}></div>
-                      <div className="mega-banner-content" style={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '8%',
-                        transform: 'translateY(-50%)',
-                        textAlign: 'left',
-                        padding: '20px',
-                        maxWidth: '500px',
-                        zIndex: 2,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'flex-start',
-                        color: '#ffffff'
-                      }}>
-                        <h4 style={{ fontSize: '16px', letterSpacing: '4px', marginBottom: '10px', fontWeight: '500', textTransform: 'uppercase' }}>LIMITED TIME OFFER</h4>
-                        <h2 style={{ fontFamily: '"Playfair Display", serif', fontSize: '72px', margin: '0 0 15px 0', fontWeight: 'normal', lineHeight: '1.1' }}>MEGA SALE</h2>
-                        <p style={{ fontSize: '20px', lineHeight: '1.4', marginBottom: '20px', fontWeight: '400' }}>
+                      <div className="mega-banner-content">
+                        <h4 className="mega-banner-subtitle">LIMITED TIME OFFER</h4>
+                        <h2 className="mega-banner-title">MEGA SALE</h2>
+                        <p className="mega-banner-desc">
                           Big Offers on Your<br />Favourite Styles
                         </p>
-                        <h3 style={{ fontSize: '24px', fontWeight: '500', marginBottom: '30px', letterSpacing: '1px' }}>UP TO <span style={{ fontSize: '32px', fontWeight: '600' }}>50%</span> OFF</h3>
+                        <h3 className="mega-banner-discount">UP TO <span>50%</span> OFF</h3>
 
                       </div>
                     </>

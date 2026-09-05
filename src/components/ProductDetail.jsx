@@ -343,12 +343,15 @@ export default function ProductDetail() {
   const colors = (product?.colors && product.colors.length > 0) ? product.colors : [];
 
   useEffect(() => {
-    if (colors.length > 0 && !colors.find(c => c.name === activeColor)) {
-      setActiveColor(colors[0].name);
+    if (colors.length > 0) {
+      const activeColorExists = colors.find(c => (typeof c === 'object' ? c.name : c) === activeColor);
+      if (!activeColorExists) {
+        setActiveColor(typeof colors[0] === 'object' ? colors[0].name : colors[0]);
+      }
     }
   }, [product, colors, activeColor]);
 
-  const activeColorObj = colors.length > 0 ? (colors.find(c => c.name === activeColor) || colors[0]) : null;
+  const activeColorObj = colors.length > 0 ? (colors.find(c => (typeof c === 'object' ? c.name : c) === activeColor) || colors[0]) : null;
 
   const displayImageSrc = (product?.customizable && activeDesign?.modelImage)
     ? activeDesign.modelImage
@@ -777,7 +780,7 @@ export default function ProductDetail() {
               <div className="pdp-stock-indicator">
                 <span className="pdp-pulse-dot"></span>
                 <span className="pdp-stock-text">
-                  {(product?.stock > 0 || product?.countInStock > 0 || product?.stock === undefined)
+                  {(product?.countInStock !== undefined ? product.countInStock > 0 : (product?.stock !== undefined ? product.stock > 0 : true))
                     ? 'In Stock — Ready for Immediate Dispatch'
                     : 'Currently Out of Stock'}
                 </span>
@@ -963,7 +966,7 @@ export default function ProductDetail() {
             )}
 
             {/* Color Swatches */}
-            {colors.length > 0 && (
+            {false && colors.length > 0 && (
               <div className="pdp-luxury-option-card">
                 <div className="pdp-luxury-option-header">
                   <span className="pdp-opt-label">COLOR:</span>
@@ -1030,11 +1033,17 @@ export default function ProductDetail() {
               <div className="pdp-luxury-qty-card">
                 <div>
                   <span className="pdp-opt-label">QUANTITY</span>
-                  {product?.stock !== undefined && (
-                    <div style={{ fontSize: '11px', color: product.stock <= (product?.lowStockAlert || 5) ? '#e53e3e' : '#6b7280', marginTop: '2px', fontWeight: '600' }}>
-                      Only {product.stock} units available
-                    </div>
-                  )}
+                  {(() => {
+                    const actualStock = product?.countInStock !== undefined ? product.countInStock : product?.stock;
+                    if (actualStock === undefined) return null;
+                    const isLowStock = actualStock > 0 && actualStock <= (product?.lowStockAlert || 5);
+                    if (!isLowStock && actualStock > (product?.lowStockAlert || 5)) {
+                        return <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '2px', fontWeight: '600' }}>{actualStock} units available</div>;
+                    } else if (isLowStock) {
+                        return <div style={{ fontSize: '11px', color: '#e53e3e', marginTop: '2px', fontWeight: '600' }}>Hurry! Only {actualStock} units left</div>;
+                    }
+                    return null;
+                  })()}
                 </div>
                 <div className="pdp-luxury-stepper">
                   <button className="pdp-step-btn" onClick={() => handleQtyChange('dec')}>
@@ -1088,7 +1097,7 @@ export default function ProductDetail() {
                 <Heart size={20} fill={isInWishlist(product?.id) ? 'var(--primary-color)' : 'none'} color={isInWishlist(product?.id) ? 'var(--primary-color)' : '#4b5563'} />
               </button>
 
-              {(activeColorObj ? activeColorObj.inStock : (product?.countInStock > 0 || product?.stock === undefined)) ? (
+              {((activeColorObj && typeof activeColorObj === 'object' && activeColorObj.inStock !== undefined) ? activeColorObj.inStock : (product?.countInStock !== undefined ? product.countInStock > 0 : (product?.stock !== undefined ? product.stock > 0 : true))) ? (
                 <>
 
                   <button
@@ -1148,6 +1157,7 @@ export default function ProductDetail() {
                 <button
                   className="pdp-btn-notify-me"
                   style={{ flex: 2, padding: '14px 0', background: '#f5f5f5', border: '1px solid #ddd', borderRadius: '12px', color: '#333', fontWeight: '600', cursor: 'pointer' }}
+                  onClick={() => message.success('You will be notified when this product is available!')}
                 >
                   Notify Me When Available
                 </button>
