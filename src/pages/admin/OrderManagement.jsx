@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getOrders, getOrderStats, updateOrderStatus as updateStatusApi, cancelOrder as cancelOrderApi, reviewReturn as reviewReturnApi, processRefund as processRefundApi, getExportOrdersUrl } from '../../services/api';
+import { getOrders, getOrderStats, getOrderById, updateOrderStatus as updateStatusApi, cancelOrder as cancelOrderApi, reviewReturn as reviewReturnApi, processRefund as processRefundApi, getExportOrdersUrl } from '../../services/api';
 import { Search, Download, RefreshCw, ShoppingBag, CheckCircle, XCircle, RotateCcw, Calendar, MoreVertical, Eye, ChevronLeft, ChevronRight, RefreshCcw, Clock, Copy, FilterX, X, MapPin, CreditCard, Box, Hash, User, Phone, Mail, AlertTriangle, Truck } from 'lucide-react';
 import { Table, Dropdown, Menu, DatePicker, Select, Button, Input, Space, Drawer, Divider, Steps, Modal, Radio, message } from 'antd';
 import { ShippingTab } from './WebsiteSetting';
@@ -37,7 +37,7 @@ const OrderManagement = ({ globalSearch = '' }) => {
   const fetchOrders = async () => {
     setIsLoading(true);
     try {
-      const response = await getOrders({ search: searchText, limit: 1000 });
+      const response = await getOrders({ search: searchText, limit: 100 });
       if (response.data && response.data.success) {
         // Map backend order format to frontend UI format
         const formattedOrders = response.data.data.map(order => ({
@@ -59,7 +59,7 @@ const OrderManagement = ({ globalSearch = '' }) => {
           cancellationReason: order.cancellationReason,
           coupon: order.couponCode || 'None',
           discount: order.couponDiscount || 0,
-          products: (order.items || []).map(p => ({
+          products: (Array.isArray(order.items) ? order.items : []).map(p => ({
             id: p.product,
             image: p.productImage,
             name: p.productName,
@@ -446,10 +446,42 @@ const OrderManagement = ({ globalSearch = '' }) => {
           {
             key: '1',
             label: <span style={{ fontSize: '13px', fontWeight: '500', padding: '4px 8px', display: 'block' }}>View Details</span>,
-            onClick: ({ domEvent }) => {
+            onClick: async ({ domEvent }) => {
               domEvent.stopPropagation();
-              setSelectedOrder(record);
-              setIsDrawerOpen(true);
+              const hide = message.loading('Loading order details...', 0);
+              try {
+                const response = await getOrderById(record._id);
+                if (response.data && response.data.success) {
+                  const dbOrder = response.data.data;
+                  // Update products with full design images
+                  const updatedProducts = (Array.isArray(dbOrder.items) ? dbOrder.items : []).map(p => ({
+                    id: p.product,
+                    image: p.productImage,
+                    name: p.productName,
+                    sku: p.product,
+                    size: p.selectedSize,
+                    color: p.selectedColor,
+                    customText: p.customText,
+                    customTextColor: p.customTextColor,
+                    customTextFont: p.customTextFont,
+                    selectedDesign: p.selectedDesign,
+                    selectedDesignColor: p.selectedDesignColor,
+                    colorizeImage: p.colorizeImage,
+                    quantity: p.quantity,
+                    unitPrice: `₹${p.finalUnitPrice || p.originalPrice || 0}`,
+                    total: `₹${p.totalPrice || 0}`
+                  }));
+                  setSelectedOrder({ ...record, products: updatedProducts });
+                } else {
+                  setSelectedOrder(record);
+                }
+              } catch (err) {
+                console.error('Error fetching full order details:', err);
+                setSelectedOrder(record);
+              } finally {
+                hide();
+                setIsDrawerOpen(true);
+              }
             }
           },
           {
@@ -549,7 +581,7 @@ const OrderManagement = ({ globalSearch = '' }) => {
     <div style={{ padding: '0 8px 32px 8px' }}>
       {/* Header Actions */}
       <div style={{
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '16px',
         marginBottom: '20px', padding: '12px 20px', background: '#fff',
         borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
         border: '1px solid #f3f4f6'
@@ -567,7 +599,7 @@ const OrderManagement = ({ globalSearch = '' }) => {
             <h1 style={{ margin: 0, fontSize: '20px', fontWeight: '700', color: '#1f2937', letterSpacing: '-0.3px' }}>Order Management</h1>
           </div>
         </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
           <button onClick={() => setIsShippingModalOpen(true)} style={{ background: '#1f2937', color: '#fff', border: 'none', padding: '10px 18px', borderRadius: '8px', fontSize: '13px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.2)' }}>
             <Truck size={15} color="#c99a53" /> Shipping Config
           </button>

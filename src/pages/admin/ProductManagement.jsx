@@ -41,9 +41,11 @@ export const mockProducts = [
 ];
 
 import { getProducts, createProduct, updateProduct, deleteProduct } from '../../services/productService';
+import { useProducts } from '../../context/ProductContext';
 
 const ProductManagement = ({ globalSearch = '' }) => {
   const navigate = useNavigate();
+  const { refreshProducts } = useProducts() || {};
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -71,6 +73,7 @@ const ProductManagement = ({ globalSearch = '' }) => {
           img: p.image || p.img || (p.colors && p.colors.length > 0 ? p.colors[0].image : "https://pngimg.com/uploads/box/box_PNG8.png")
         }));
         setProducts(mappedProducts);
+        if (refreshProducts) refreshProducts();
       }
     } catch (error) {
       console.error("Failed to fetch products", error);

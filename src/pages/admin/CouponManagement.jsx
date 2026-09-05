@@ -448,7 +448,7 @@ const CouponManagement = () => {
     <div style={{ padding: '0 8px 32px 8px' }}>
       {/* Header Actions */}
       <div style={{
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '16px',
         marginBottom: '20px', padding: '12px 20px', background: '#fff',
         borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
         border: '1px solid #f3f4f6'
@@ -466,7 +466,7 @@ const CouponManagement = () => {
             <h1 style={{ margin: 0, fontSize: '20px', fontWeight: '700', color: '#1f2937', letterSpacing: '-0.3px' }}>Coupon Management</h1>
           </div>
         </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
           <button style={{ background: '#fff', color: '#4b5563', border: '1px solid #e5e7eb', padding: '10px 18px', borderRadius: '8px', fontSize: '13px', fontWeight: '600', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', boxShadow: '0 1px 2px rgba(0,0,0,0.02)' }}>
             <Download size={15} /> Export
           </button>

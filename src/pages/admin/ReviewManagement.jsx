@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Search, Download, PenTool, Edit, Eye, MoreVertical, Star, CheckCircle, Shield, Heart, Award, RefreshCcw, Camera, ChevronRight, ChevronLeft, MessageSquare, Filter, Box, X, Clock } from 'lucide-react';
 import { Table, Dropdown, Menu, Select, DatePicker, Button, message } from 'antd';
 import { AreaChart, Area, ResponsiveContainer } from 'recharts';
-import { getAdminReviewsApi, updateReviewStatusApi, deleteReviewApi } from '../../services/api';
+import { getAdminReviewsApi, getAdminReviewStatsApi, updateReviewStatusApi, deleteReviewApi } from '../../services/api';
 import dayjs from 'dayjs';
 
 const sparklineData = [{ v: 40 }, { v: 30 }, { v: 60 }, { v: 45 }, { v: 70 }, { v: 90 }, { v: 120 }];
@@ -14,6 +14,7 @@ const ReviewManagement = () => {
   const [reviews, setReviews] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [loading, setLoading] = useState(false);
+  const [stats, setStats] = useState({ avgRating: 0, verifiedCount: 0, pendingCount: 0, positivePercent: 0, totalReviews: 0 });
 
   const fetchReviews = async () => {
     try {
@@ -22,24 +23,33 @@ const ReviewManagement = () => {
       if (res.data && res.data.success) {
         // Map backend data to frontend structure
         const formatted = res.data.data.map(r => {
-          // Deduplicate images by base URL to prevent multiple versions of the same image (e.g. different query params) from inflating the count
-          const uniqueImagesMap = new Map();
-          (r.images || []).forEach(url => {
-             if (typeof url === 'string') {
-               const baseUrl = url.split('?')[0];
-               if (!uniqueImagesMap.has(baseUrl)) {
-                 uniqueImagesMap.set(baseUrl, url);
-               }
-             }
-          });
-          const uniqueImages = Array.from(uniqueImagesMap.values());
-          
+          // Deduplicate images by Cloudinary path (ignoring version number like /v1234/).
+          // Same image re-uploaded gets a new version but same folder/filename — strip version to catch duplicates.
+          const getCloudinaryPath = (url) => {
+            try {
+              // Cloudinary URL pattern: .../upload/v1234567/folder/filename.ext
+              // We strip the version segment to compare by stable path
+              return url.replace(/\/v\d+\//, '/');
+            } catch { return url; }
+          };
+          const seenPaths = new Set();
+          const uniqueImages = (r.images || [])
+            .filter(url => typeof url === 'string' && url.trim() !== '')
+            .filter(url => {
+              const path = getCloudinaryPath(url);
+              if (seenPaths.has(path)) return false;
+              seenPaths.add(path);
+              return true;
+            });
+
+          const customerName = r.user?.fullName || r.user?.name || 'Unknown';
+
           return {
             id: r._id,
-            customerName: r.user?.name || 'Anonymous',
+            customerName,
             productTitle: r.product ? r.product.name : 'Unknown Product',
             sku: r.product ? (r.product.sku || `ID: ${r.product._id.substring(0, 8)}`) : 'N/A',
-            customerImage: r.user?.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(r.user?.name || 'A')}&background=fef3c7&color=d97706&size=100`,
+            customerImage: r.user?.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(customerName)}&background=fef3c7&color=d97706&size=100`,
             rating: r.rating,
             reviewText: r.comment || '',
             reviewImages: uniqueImages.slice(0, 3),
@@ -59,8 +69,16 @@ const ReviewManagement = () => {
     }
   };
 
+  const fetchStats = async () => {
+    try {
+      const res = await getAdminReviewStatsApi();
+      if (res.data && res.data.success) setStats(res.data.data);
+    } catch {}
+  };
+
   useEffect(() => {
     fetchReviews();
+    fetchStats();
   }, []);
 
   const handleUpdateStatus = async (id, status) => {
@@ -315,10 +333,10 @@ const ReviewManagement = () => {
               <div className="stat-icon gold" style={{ background: 'rgba(255,255,255,0.1)', color: '#fff', border: 'none' }}><Star size={18} /></div>
               <div className="stat-info">
                 <span className="stat-title">Average Rating</span>
-                <h2 className="stat-value gold-text">4.8</h2>
+                <h2 className="stat-value gold-text">{stats.avgRating || '—'}</h2>
                 <div className="stat-bottom" style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                   {[1, 2, 3, 4, 5].map(star => <Star key={star} size={14} fill="#c9a05b" color="#c9a05b" />)}
-                  <span style={{ fontSize: '11px', color: '#9ca3af', marginLeft: '4px' }}>(2.4k Reviews)</span>
+                  <span style={{ fontSize: '11px', color: '#9ca3af', marginLeft: '4px' }}>({stats.totalReviews.toLocaleString()} Reviews)</span>
                 </div>
               </div>
             </div>
@@ -342,9 +360,9 @@ const ReviewManagement = () => {
               <div className="stat-icon gold" style={{ color: '#10b981', background: '#ecfdf5', border: 'none' }}><Award size={18} /></div>
               <div className="stat-info">
                 <span className="stat-title">Verified Reviews</span>
-                <h2 className="stat-value">2,102</h2>
+                <h2 className="stat-value">{stats.verifiedCount.toLocaleString()}</h2>
                 <div className="stat-bottom">
-                  <span className="stat-change positive">↑ 145</span> <span className="stat-change-text">new today</span>
+                  <span className="stat-change-text">Verified purchases</span>
                 </div>
               </div>
             </div>
@@ -368,9 +386,9 @@ const ReviewManagement = () => {
               <div className="stat-icon gold" style={{ color: '#db2777', background: '#fce7f3', border: 'none' }}><Heart size={18} /></div>
               <div className="stat-info">
                 <span className="stat-title">Positive Reviews</span>
-                <h2 className="stat-value">98%</h2>
+                <h2 className="stat-value">{stats.positivePercent}%</h2>
                 <div className="stat-bottom">
-                  <span className="stat-change positive">↑ 2%</span> <span className="stat-change-text">this month</span>
+                  <span className="stat-change-text">Ratings 4★ and above</span>
                 </div>
               </div>
             </div>
@@ -394,9 +412,9 @@ const ReviewManagement = () => {
               <div className="stat-icon gold" style={{ color: '#ea580c', background: '#ffedd5', border: 'none' }}><Shield size={18} /></div>
               <div className="stat-info">
                 <span className="stat-title">Pending Approvals</span>
-                <h2 className="stat-value">145</h2>
+                <h2 className="stat-value">{stats.pendingCount}</h2>
                 <div className="stat-bottom">
-                  <span className="stat-change negative">↓ 12</span> <span className="stat-change-text">needs action</span>
+                  <span className="stat-change-text">Awaiting review</span>
                 </div>
               </div>
             </div>
@@ -470,7 +488,8 @@ const ReviewManagement = () => {
             pagination={{
               pageSize: 5,
               showSizeChanger: false,
-              showTotal: (total, range) => `Showing ${range[0]} to ${range[1]} of 2,450 reviews`,
+              total: stats.totalReviews,
+              showTotal: (total, range) => `Showing ${range[0]} to ${range[1]} of ${total} reviews`,
               itemRender: (current, type, originalElement) => {
                 if (type === 'prev') {
                   return <a style={{ display: 'flex', alignItems: 'center' }}><ChevronLeft size={16} /></a>;
