@@ -22,9 +22,9 @@ export const ProductProvider = ({ children }) => {
       setLoading(true);
       const res = await getProducts();
       if (res.success && res.data && res.data.products) {
-        setProducts(res.data.products);
+        setProducts(res.data.products.filter(p => p.status !== 'Draft' && p.status !== 'Inactive'));
       } else if (res.success && Array.isArray(res.data)) {
-        setProducts(res.data);
+        setProducts(res.data.filter(p => p.status !== 'Draft' && p.status !== 'Inactive'));
       } else {
         setError(res.message || 'Failed to load products');
       }

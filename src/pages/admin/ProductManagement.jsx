@@ -28,7 +28,8 @@ import {
   Copy,
   ChevronLeft,
   ChevronRight,
-  ArrowRight
+  ArrowRight,
+  Archive
 } from 'lucide-react';
 
 
@@ -267,37 +268,50 @@ const ProductManagement = ({ globalSearch = '' }) => {
   
   const currentProducts = currentPage === 1 ? products : [];
   
-  const handleEditClick = (product) => {
-    setEditingProduct(product);
+  const handleEditClick = async (product) => {
+    let fullProduct = product;
+    try {
+      message.loading({ content: 'Fetching product details...', key: 'fetchProduct' });
+      const res = await getProductById(product.id || product._id || product._backendData?._id);
+      message.destroy('fetchProduct');
+      if (res.success && res.data) {
+        fullProduct = { ...product, ...res.data };
+      }
+    } catch (err) {
+      message.destroy('fetchProduct');
+      message.error('Failed to fetch full product details');
+    }
+
+    setEditingProduct(fullProduct);
     setCoverImagePreview(null);
     setFormData({
-      name: product.name || '',
-      sku: product.sku || '',
-      cat: product.cat || '',
-      brand: product.brand || '',
-      shortDesc: product.shortDesc || '',
-      fullDesc: product.fullDesc || '',
-      price: product.oldPrice?.replace(/[^0-9.]/g, '') || '',
-      discount: product.discount?.replace(/[^0-9.]/g, '') || '',
-      salePrice: product.price?.replace(/[^0-9.]/g, '') || '',
-      stock: product.stock ?? '',
-      lowStock: product.lowStock || '10',
-      status: product.status || 'Active',
-      seoTitle: product.seoTitle || '',
-      seoDesc: product.seoDesc || '',
-      seoKeywords: product.seoKeywords || ''
+      name: fullProduct.name || '',
+      sku: fullProduct.sku || '',
+      cat: fullProduct.cat || '',
+      brand: fullProduct.brand || '',
+      shortDesc: fullProduct.shortDesc || '',
+      fullDesc: fullProduct.fullDesc || '',
+      price: fullProduct.oldPrice?.replace(/[^0-9.]/g, '') || '',
+      discount: fullProduct.discount?.replace(/[^0-9.]/g, '') || '',
+      salePrice: fullProduct.price?.replace(/[^0-9.]/g, '') || '',
+      stock: fullProduct.stock ?? '',
+      lowStock: fullProduct.lowStock || '10',
+      status: fullProduct.status || 'Active',
+      seoTitle: fullProduct.seoTitle || '',
+      seoDesc: fullProduct.seoDesc || '',
+      seoKeywords: fullProduct.seoKeywords || ''
     });
-    setSpecs(product.specs || initialSpecs);
-    setSizeGuide(product.sizeGuide || initialSizeGuide);
-    setSelectedSizes(product.sizes || []);
-    setSelectedColors(product.colors || []);
-    setGalleryImages(product.gallery || []);
-    setFaqs(product.faqs || []);
+    setSpecs(fullProduct.specs || initialSpecs);
+    setSizeGuide(fullProduct.sizeGuide || initialSizeGuide);
+    setSelectedSizes(fullProduct.sizes || []);
+    setSelectedColors(fullProduct.colors || []);
+    setGalleryImages(fullProduct.gallery || []);
+    setFaqs(fullProduct.faqs || []);
     
-    setAdminReviewRating(product.adminReview?.rating || 0);
-    setAdminReviewTitle(product.adminReview?.title || '');
-    setAdminReviewText(product.adminReview?.text || '');
-    setAdminReviewPhotos(product.adminReview?.photos || []);
+    setAdminReviewRating(fullProduct.adminReview?.rating || 0);
+    setAdminReviewTitle(fullProduct.adminReview?.title || '');
+    setAdminReviewText(fullProduct.adminReview?.text || '');
+    setAdminReviewPhotos(fullProduct.adminReview?.photos || []);
 
     setIsEditing(true);
     setCurrentStep(1);
@@ -393,6 +407,52 @@ const ProductManagement = ({ globalSearch = '' }) => {
     setIsEditing(false);
     setCurrentStep(1);
     window.scrollTo(0, 0);
+  };
+  
+  const handleToggleStatus = async (product) => {
+    const newStatus = product.status === 'Draft' || product.status === 'Inactive' ? 'Active' : 'Draft';
+    try {
+      const pData = product._backendData || product;
+      
+      const productToSave = {
+        name: pData.name || pData.title,
+        sku: pData.sku,
+        category: pData.category?._id || pData.category,
+        subCategory: pData.subCategory?._id || pData.subCategory,
+        brand: pData.brand?.name || pData.brand,
+        price: pData.price,
+        discount: pData.discount || 0,
+        discountType: pData.discountType || 'Percentage',
+        stock: pData.stock || 0,
+        lowStockAlert: pData.lowStock || 10,
+        status: newStatus,
+        shortDesc: pData.shortDesc || '',
+        fullDesc: pData.description || '',
+        existingImgUrl: pData.images?.[0]?.url || pData.images?.[0],
+        existingCoverImagePublicId: pData.images?.[0]?.public_id,
+        existingImages: pData.images || [],
+        gallery: pData.images?.slice(1)?.map(img => img.url || img) || [],
+        sizes: pData.sizes || [],
+        colors: pData.colors || [],
+        tags: pData.tags || [],
+        specs: pData.specs || [],
+        sizeGuide: pData.sizeGuide || [],
+        homeSection: pData.homeSection || '',
+        isLimitedOffer: pData.isLimitedOffer || false
+      };
+
+      const res = await updateProduct(product.id, productToSave);
+      if (res && res.success) {
+        setProducts(products.map(p => p.id === product.id ? { ...p, status: newStatus } : p));
+        message.success(`Product marked as ${newStatus}`);
+      } else {
+        message.error("Failed to update status");
+      }
+    } catch (err) {
+      console.error("Error toggling product status", err);
+      message.error("Failed to update status");
+    }
+    setActiveDropdown(null);
   };
   
   const handleDeleteProduct = async (id) => {
@@ -580,6 +640,19 @@ const ProductManagement = ({ globalSearch = '' }) => {
                         ),
                       },
                       {
+                        key: 'status_toggle',
+                        onClick: () => handleToggleStatus(p),
+                        label: (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            {p.status === 'Draft' || p.status === 'Inactive' ? (
+                              <><Check size={14} color="#10b981" /> Set as Active</>
+                            ) : (
+                              <><Archive size={14} color="#f59e0b" /> Set as Draft</>
+                            )}
+                          </div>
+                        ),
+                      },
+                      {
                         key: '3',
                         danger: true,
                         onClick: () => handleDeleteProduct(p.id),
@@ -704,6 +777,16 @@ const ProductManagement = ({ globalSearch = '' }) => {
               if (res.success) {
                 await fetchProducts();
                 message.success('Product updated successfully!');
+                
+                const oldStock = Number(editingProduct._backendData?.stock || editingProduct.stock || 0);
+                const newStock = Number(updatedProduct.stock || updatedProduct.countInStock || 0);
+                
+                if (oldStock === 0 && newStock > 0) {
+                  setTimeout(() => {
+                    message.success('Email notification sent to customers waiting for this product!', 5);
+                  }, 500);
+                }
+                
                 setIsEditing(false);
               } else {
                 message.error(res.message || 'Failed to update product');

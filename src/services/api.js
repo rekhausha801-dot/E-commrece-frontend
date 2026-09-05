@@ -239,3 +239,8 @@ export const getCustomerTickets = () => axios.get(CUSTOMER_TICKET_API);
 export const contactSupport = (data) => axios.post(`${CUSTOMER_TICKET_API}/contact`, data);
 
 export const searchProductsApi = (queryStr) => axios.get("${API_BASE_URL}/products/search?${queryStr}");
+
+// --- Product Import APIs ---
+export const previewImportFile = (formData) => axios.post(`${API_BASE_URL}/products/import/preview`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+export const importProducts = (products) => axios.post(`${API_BASE_URL}/products/import`, { products });
+export const getImportTemplateUrl = () => `${API_BASE_URL}/products/import/template`;

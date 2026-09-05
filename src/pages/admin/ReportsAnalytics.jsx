@@ -406,9 +406,9 @@ const ReportsAnalytics = () => {
         </div>
 
         {/* ROW 3: Detailed Metrics Grid */}
-        <div className="ra-grid-3-cards">
+        <div className="premium-metrics-grid">
           {/* Profit & Margin */}
-          <div className="ra-card">
+          <div className="premium-stat-card">
             <div className="ra-card-icon-header">
               <div className="ra-icon-sm gold"><BarChart2 size={16} /></div>
               <h3 className="ra-card-title">Profit & Margin</h3>
@@ -431,7 +431,7 @@ const ReportsAnalytics = () => {
 
 
           {/* Coupon Performance */}
-          <div className="ra-card">
+          <div className="premium-stat-card">
             <div className="ra-card-icon-header">
               <div className="ra-icon-sm gold"><Percent size={16} /></div>
               <h3 className="ra-card-title">Coupon Performance</h3>
@@ -445,7 +445,7 @@ const ReportsAnalytics = () => {
           </div>
 
           {/* Payment Methods */}
-          <div className="ra-card">
+          <div className="premium-stat-card">
             <div className="ra-card-icon-header">
               <div className="ra-icon-sm gold"><CreditCard size={16} /></div>
               <h3 className="ra-card-title">Payment Methods</h3>
@@ -477,8 +477,11 @@ const ReportsAnalytics = () => {
           </div>
 
           {/* Low Stock Overview */}
-          <div className="ra-card">
-            <h3 className="ra-card-title">Low Stock Overview</h3>
+          <div className="premium-stat-card">
+            <div className="ra-card-icon-header">
+              <div className="ra-icon-sm gold"><Package size={16} /></div>
+              <h3 className="ra-card-title">Low Stock Overview</h3>
+            </div>
             <div className="ra-stock-circles">
               <div className="ra-stock-circle">
                 <div className="circle-wrap ring-orange">
@@ -503,8 +506,11 @@ const ReportsAnalytics = () => {
           </div>
 
           {/* Revenue Breakdown */}
-          <div className="ra-card">
-            <h3 className="ra-card-title">Revenue Breakdown</h3>
+          <div className="premium-stat-card">
+            <div className="ra-card-icon-header">
+              <div className="ra-icon-sm gold"><IndianRupee size={16} /></div>
+              <h3 className="ra-card-title">Revenue Breakdown</h3>
+            </div>
             <div className="ra-metric-list" style={{ gap: '14px' }}>
               <div className="ra-metric-item" style={{ paddingBottom: '10px', borderBottom: '1px solid #f3f4f6' }}>
                 <span>Gross Sales</span>
@@ -529,35 +535,40 @@ const ReportsAnalytics = () => {
             </div>
           </div>
 
-          <div className="ra-card" style={{ height: '100%', display: 'flex', flexDirection: 'column', padding: '24px' }}>
-            <h3 className="ra-card-title" style={{ fontSize: '14px', fontWeight: '700', color: '#333', marginBottom: '24px' }}>Customer Overview</h3>
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div className="premium-stat-card" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <div className="ra-card-icon-header">
+              <div className="ra-icon-sm gold"><Users size={16} /></div>
+              <h3 className="ra-card-title">Customer Overview</h3>
+            </div>
+            <div className="ra-metric-list" style={{ marginTop: 'auto', gap: '20px' }}>
               
               {/* New Customers */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1 }}>
-                <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-                  <div style={{ fontSize: '12px', fontWeight: '500', color: '#6b7280', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>New Customers</div>
-                  <div style={{ fontSize: '20px', fontWeight: '700', color: '#111827', margin: '4px 0' }}>{customerOverview.newCustomers || 0}</div>
-                  <div style={{ fontSize: '11px', color: '#888', display: 'flex', alignItems: 'center', gap: '4px', whiteSpace: 'nowrap' }}>
-                    <ArrowUp size={12} color={customerOverview.newCustomersGrowth >= 0 ? "#4caf50" : "#ef4444"} /> 
-                    <span style={{ color: customerOverview.newCustomersGrowth >= 0 ? '#4caf50' : '#ef4444', fontWeight: '600' }}>{Math.abs(customerOverview.newCustomersGrowth || 0).toFixed(1)}%</span> 
-                    <span style={{ color: '#8b8375' }}>vs Apr 2025</span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: '#fdfbf7', borderRadius: '12px', border: '1px solid #f2eadc' }}>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ fontSize: '13px', fontWeight: '600', color: '#52525b' }}>New Customers</div>
+                  <div style={{ fontSize: '24px', fontWeight: '800', color: '#18181b', margin: '4px 0' }}>{customerOverview.newCustomers || 0}</div>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: customerOverview.newCustomersGrowth >= 0 ? '#dcfce7' : '#fee2e2', padding: '4px 8px', borderRadius: '20px' }}>
+                    <ArrowUp size={14} color={customerOverview.newCustomersGrowth >= 0 ? "#16a34a" : "#dc2626"} style={{ transform: customerOverview.newCustomersGrowth >= 0 ? 'none' : 'rotate(180deg)' }} /> 
+                    <span style={{ color: customerOverview.newCustomersGrowth >= 0 ? '#16a34a' : '#dc2626', fontWeight: '700', fontSize: '12px' }}>{Math.abs(customerOverview.newCustomersGrowth || 0).toFixed(1)}%</span> 
                   </div>
+                  <span style={{ color: '#a1a1aa', fontSize: '11px', marginTop: '6px', fontWeight: '500' }}>vs Prev Month</span>
                 </div>
               </div>
               
-              <div style={{ width: '1px', height: '48px', backgroundColor: '#f2eadc', margin: '0 16px' }}></div>
-              
               {/* Returning Customers */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1 }}>
-                <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-                  <div style={{ fontSize: '12px', fontWeight: '500', color: '#6b7280', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>Returning Customers</div>
-                  <div style={{ fontSize: '20px', fontWeight: '700', color: '#111827', margin: '4px 0' }}>{customerOverview.returningCustomers || 0}</div>
-                  <div style={{ fontSize: '11px', color: '#888', display: 'flex', alignItems: 'center', gap: '4px', whiteSpace: 'nowrap' }}>
-                    <ArrowUp size={12} color={customerOverview.returningCustomersGrowth >= 0 ? "#4caf50" : "#ef4444"} /> 
-                    <span style={{ color: customerOverview.returningCustomersGrowth >= 0 ? '#4caf50' : '#ef4444', fontWeight: '600' }}>{Math.abs(customerOverview.returningCustomersGrowth || 0).toFixed(1)}%</span> 
-                    <span style={{ color: '#8b8375' }}>vs Apr 2025</span>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: '#fdfbf7', borderRadius: '12px', border: '1px solid #f2eadc' }}>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ fontSize: '13px', fontWeight: '600', color: '#52525b' }}>Returning Customers</div>
+                  <div style={{ fontSize: '24px', fontWeight: '800', color: '#18181b', margin: '4px 0' }}>{customerOverview.returningCustomers || 0}</div>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', background: customerOverview.returningCustomersGrowth >= 0 ? '#dcfce7' : '#fee2e2', padding: '4px 8px', borderRadius: '20px' }}>
+                    <ArrowUp size={14} color={customerOverview.returningCustomersGrowth >= 0 ? "#16a34a" : "#dc2626"} style={{ transform: customerOverview.returningCustomersGrowth >= 0 ? 'none' : 'rotate(180deg)' }} /> 
+                    <span style={{ color: customerOverview.returningCustomersGrowth >= 0 ? '#16a34a' : '#dc2626', fontWeight: '700', fontSize: '12px' }}>{Math.abs(customerOverview.returningCustomersGrowth || 0).toFixed(1)}%</span> 
                   </div>
+                  <span style={{ color: '#a1a1aa', fontSize: '11px', marginTop: '6px', fontWeight: '500' }}>vs Prev Month</span>
                 </div>
               </div>
               

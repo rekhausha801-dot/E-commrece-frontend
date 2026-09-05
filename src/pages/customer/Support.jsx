@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { contactSupport, getFAQs, getCustomerTickets } from '../../services/api';
-import { message } from 'antd';
+import { message, Select, Input, ConfigProvider } from 'antd';
 import { X } from 'lucide-react';
 
 const Support = () => {
@@ -250,41 +250,43 @@ const Support = () => {
               </button>
             </div>
             
-            <form onSubmit={handleTicketSubmit} className="modal-body">
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#333', marginBottom: '8px' }}>Subject</label>
-                <input type="text" required placeholder="Brief summary of your issue" value={ticketData.subject} onChange={(e) => setTicketData({...ticketData, subject: e.target.value})} style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e5e7eb', outline: 'none' }} />
-              </div>
-              
-              <div style={{ display: 'flex', gap: '16px', marginBottom: '16px' }}>
-                <div style={{ flex: 1 }}>
-                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#333', marginBottom: '8px' }}>Category</label>
-                  <select value={ticketData.category} onChange={(e) => setTicketData({...ticketData, category: e.target.value})} style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e5e7eb', outline: 'none', background: '#fff' }}>
-                    <option value="Technical">Technical Issue</option>
-                    <option value="Account">Account Issue</option>
-                    <option value="Order">Order Issue</option>
-                    <option value="Payment">Payment Issue</option>
-                  </select>
+            <ConfigProvider theme={{ token: { colorPrimary: '#C89953', borderRadius: 8, controlHeight: 40 } }}>
+              <form onSubmit={handleTicketSubmit} className="modal-body">
+                <div style={{ marginBottom: '16px' }}>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#333', marginBottom: '8px' }}>Subject</label>
+                  <Input required placeholder="Brief summary of your issue" value={ticketData.subject} onChange={(e) => setTicketData({...ticketData, subject: e.target.value})} />
                 </div>
-                <div style={{ flex: 1 }}>
-                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#333', marginBottom: '8px' }}>Priority</label>
-                  <select value={ticketData.priority} onChange={(e) => setTicketData({...ticketData, priority: e.target.value})} style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e5e7eb', outline: 'none', background: '#fff' }}>
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                  </select>
+                
+                <div style={{ display: 'flex', gap: '16px', marginBottom: '16px' }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#333', marginBottom: '8px' }}>Category</label>
+                    <Select value={ticketData.category} onChange={(value) => setTicketData({...ticketData, category: value})} style={{ width: '100%' }}>
+                      <Select.Option value="Technical">Technical Issue</Select.Option>
+                      <Select.Option value="Account">Account Issue</Select.Option>
+                      <Select.Option value="Order">Order Issue</Select.Option>
+                      <Select.Option value="Payment">Payment Issue</Select.Option>
+                    </Select>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#333', marginBottom: '8px' }}>Priority</label>
+                    <Select value={ticketData.priority} onChange={(value) => setTicketData({...ticketData, priority: value})} style={{ width: '100%' }}>
+                      <Select.Option value="low">Low</Select.Option>
+                      <Select.Option value="medium">Medium</Select.Option>
+                      <Select.Option value="high">High</Select.Option>
+                    </Select>
+                  </div>
                 </div>
-              </div>
-              
-              <div style={{ marginBottom: '24px' }}>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#333', marginBottom: '8px' }}>Description</label>
-                <textarea required placeholder="Describe your issue in detail..." rows="4" value={ticketData.description} onChange={(e) => setTicketData({...ticketData, description: e.target.value})} style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #e5e7eb', outline: 'none', resize: 'vertical' }}></textarea>
-              </div>
-              
-              <button type="submit" disabled={isSubmitting} className="btn-submit" style={{ width: '100%', padding: '12px', background: '#C89953', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1 }}>
-                {isSubmitting ? 'Submitting...' : 'Submit Ticket'}
-              </button>
-            </form>
+                
+                <div style={{ marginBottom: '24px' }}>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '600', color: '#333', marginBottom: '8px' }}>Description</label>
+                  <Input.TextArea required placeholder="Describe your issue in detail..." rows={4} value={ticketData.description} onChange={(e) => setTicketData({...ticketData, description: e.target.value})} style={{ resize: 'vertical' }} />
+                </div>
+                
+                <button type="submit" disabled={isSubmitting} className="btn-submit" style={{ width: '100%', padding: '12px', background: '#C89953', color: 'white', border: 'none', borderRadius: '8px', fontWeight: '600', cursor: isSubmitting ? 'not-allowed' : 'pointer', opacity: isSubmitting ? 0.7 : 1 }}>
+                  {isSubmitting ? 'Submitting...' : 'Submit Ticket'}
+                </button>
+              </form>
+            </ConfigProvider>
           </div>
         </div>
       )}
