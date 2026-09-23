@@ -7,7 +7,7 @@ import './CustomizeTShirt.css';
 import defaultMainImage from '../assets/images/t-shirt8.png';
 
 import { getPredefinedDesigns } from '../services/customDesignService';
-import Draggable from 'react-draggable';
+import { Rnd } from 'react-rnd';
 export default function CustomizeTShirt() {
   const { state } = useLocation();
   const navigate = useNavigate();
@@ -19,6 +19,7 @@ export default function CustomizeTShirt() {
   const [rgbColor, setRgbColor] = useState({ r: 0, g: 0, b: 0 });
 
   const [activeThumb, setActiveThumb] = useState(0);
+  const [rndState, setRndState] = useState({ x: 60, y: 60, width: 140, height: 140 });
 
   const availableDesigns = (product?.designs && product.designs.length > 0)
     ? product.designs
@@ -41,35 +42,38 @@ export default function CustomizeTShirt() {
 
             {/* Design Overlay */}
             {selectedDesignObj && (
-              <Draggable bounds="parent">
-                <div style={{
-                  position: 'absolute',
-                  top: '50%',
-                  left: '50%',
-                  marginTop: '-70px',
-                  marginLeft: '-70px',
-                  cursor: 'move',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '140px',
-                  height: '140px',
-                  mixBlendMode: 'multiply',
-                  zIndex: 10
-                }}>
+              <div className="printable-area" style={{ position: 'absolute', top: '25%', left: '20%', width: '60%', height: '55%', pointerEvents: 'none' }}>
+                <Rnd
+                  key={selectedDesignObj?.id || 'custom-design-rnd'}
+                  default={{ x: rndState.x, y: rndState.y, width: rndState.width, height: rndState.height }}
+                  enableResizing={{
+                    top: true, right: true, bottom: true, left: true,
+                    topRight: true, bottomRight: true, bottomLeft: true, topLeft: true
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    mixBlendMode: 'multiply',
+                    zIndex: 10,
+                    border: '1px dashed #666',
+                    cursor: 'move',
+                    pointerEvents: 'auto'
+                  }}
+                >
                   {typeof selectedDesignObj.icon === 'string' || selectedDesignObj.iconName ? (
                     selectedDesignObj.icon ? (
                       <img src={selectedDesignObj.icon} alt={selectedDesignObj.name} draggable="false" style={{ width: '100%', height: '100%', objectFit: 'contain', pointerEvents: 'none' }} />
                     ) : (
-                      <ImageIcon size={140} color={selectedDesignColor} strokeWidth={1} style={{ pointerEvents: 'none' }} />
+                      <ImageIcon size="100%" color={selectedDesignColor} strokeWidth={1} style={{ pointerEvents: 'none' }} />
                     )
                   ) : (
                     React.isValidElement(selectedDesignObj.icon)
-                      ? React.cloneElement(selectedDesignObj.icon, { size: 140, color: selectedDesignColor, style: { pointerEvents: 'none' } })
-                      : <ImageIcon size={140} color={selectedDesignColor} strokeWidth={1} style={{ pointerEvents: 'none' }} />
+                      ? React.cloneElement(selectedDesignObj.icon, { size: "100%", color: selectedDesignColor, style: { pointerEvents: 'none', width: '100%', height: '100%' } })
+                      : <ImageIcon size="100%" color={selectedDesignColor} strokeWidth={1} style={{ pointerEvents: 'none' }} />
                   )}
-                </div>
-              </Draggable>
+                </Rnd>
+              </div>
             )}
           </div>
           <div className="customize-thumbnails">
@@ -109,6 +113,9 @@ export default function CustomizeTShirt() {
           <div className="customize-step-content">
             <h2 className="step-title">2. Choose Your Design</h2>
             <p className="step-subtitle">Pick a design that you want to print on your t-shirt.</p>
+            <div className="design-instruction" style={{ padding: '8px 12px', background: '#eef2ff', color: '#4f46e5', borderRadius: '6px', fontSize: '13px', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Maximize size={16} /> <span>You can drag and resize the design directly on the t-shirt to place it anywhere!</span>
+            </div>
 
             <div className="designs-grid">
               {availableDesigns.map((design) => {
