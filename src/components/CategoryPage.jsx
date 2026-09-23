@@ -12,6 +12,7 @@ import { useProducts } from '../context/ProductContext';
 import { useCategories } from '../context/CategoryContext';
 import { handleFlyingCartAnimation } from '../utils/cartAnimation';
 import { FaStar } from 'react-icons/fa';
+import { getActiveBanners, fetchProductsByCategory } from '../services/api';
 
 // Import images
 import bannerImg from '../assets/images/banner.png';
@@ -274,8 +275,6 @@ function Section({ title, children, defaultOpen = true }) {
   );
 }
 
-import { getActiveBanners, fetchProductsByCategory } from '../services/api';
-
 const getImageUrl = (path) => {
   if (!path) return '';
   return path.startsWith('http') ? path : `http://localhost:5000${path}`;
@@ -298,65 +297,67 @@ export default function CategoryPage() {
     let active = true;
     const fetchCatProducts = async () => {
       setLoadingCategoryProducts(true);
-      const slug = (categoryId || '').toLowerCase();
-      let matchedCategory = null;
-      
-      if (categories && categories.length > 0) {
-        if (['suits', 'suit', 'menswear'].includes(slug)) {
-          matchedCategory = categories.find(c => c.name.toLowerCase().includes('suit'));
-        } else if (['shoes', 'shoe', 'footwear', 'sneakers', 'casual-shoes', 'formal-shoes'].includes(slug)) {
-          matchedCategory = categories.find(c => c.name.toLowerCase().includes('shoe') || c.name.toLowerCase().includes('footwear'));
-        } else if (['kurtis', 'kurti', 'womenswear'].includes(slug)) {
-          matchedCategory = categories.find(c => c.name.toLowerCase().includes('kurti'));
-        } else if (['t-shirts', 'shirts', 'customization', 'polo-t-shirts', 'custom-t-shirts', 'women-t-shirts', 'girls-t-shirts'].includes(slug)) {
-          matchedCategory = categories.find(c => {
-            const name = c.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-            return name.includes('customtshirt') || name.includes('tshirt') || name.includes('shirt') || name.includes('custom');
-          });
-        } else {
-          const targetName = slug.replace(/-/g, ' ');
-          matchedCategory = categories.find(c => c.name.toLowerCase() === targetName || c.name.toLowerCase().replace(/[^a-z0-9]/g, '') === targetName.replace(/[^a-z0-9]/g, ''));
-        }
-      }
-      
-      if (matchedCategory) {
-        // Use already loaded and formatted products from ProductContext
-        if (contextProducts && contextProducts.length > 0) {
-          const matched = contextProducts.filter(p => {
-            const catId = p.categoryId || (p.category && p.category._id) || (typeof p.category === 'string' ? p.category : null);
-            const catName = typeof p.category === 'object' ? p.category.name : null;
-            return catId === matchedCategory._id || (catName && catName.toLowerCase() === matchedCategory.name.toLowerCase());
-          });
-          
-          if (matched.length > 0) {
-            if (active) setLocalCategoryProducts(matched);
-            if (active) setLoadingCategoryProducts(false);
-            return;
-          }
-        }
-
-        try {
-          const res = await fetchProductsByCategory(matchedCategory._id);
-          if (active && res.data && res.data.success) {
-            const rawProducts = res.data.data || [];
-            const filteredProducts = rawProducts.filter(p => p.status !== 'Draft' && p.status !== 'Inactive');
-            // Basic formatting for fallback raw products
-            const formattedFallback = filteredProducts.map(p => ({
-              ...p,
-              id: p._id || p.id,
-              title: p.name || p.title,
-              price: `₹${p.price || 0}`,
-              image: p.images?.[0]?.url || p.images?.[0] || p.image,
-              categoryId: matchedCategory._id
-            }));
-            setLocalCategoryProducts(formattedFallback);
+      try {
+        const slug = (categoryId || '').toLowerCase();
+        let matchedCategory = null;
+        
+        if (categories && categories.length > 0) {
+          if (['suits', 'suit', 'menswear'].includes(slug)) {
+            matchedCategory = categories.find(c => c.name.toLowerCase().includes('suit'));
+          } else if (['shoes', 'shoe', 'footwear', 'sneakers', 'casual-shoes', 'formal-shoes'].includes(slug)) {
+            matchedCategory = categories.find(c => c.name.toLowerCase().includes('shoe') || c.name.toLowerCase().includes('footwear'));
+          } else if (['kurtis', 'kurti', 'womenswear'].includes(slug)) {
+            matchedCategory = categories.find(c => c.name.toLowerCase().includes('kurti'));
+          } else if (['t-shirts', 'shirts', 'customization', 'polo-t-shirts', 'custom-t-shirts', 'women-t-shirts', 'girls-t-shirts'].includes(slug)) {
+            matchedCategory = categories.find(c => {
+              const name = c.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+              return name.includes('customtshirt') || name.includes('tshirt') || name.includes('shirt') || name.includes('custom');
+            });
           } else {
-             if (active) setLocalCategoryProducts([]);
+            const targetName = slug.replace(/-/g, ' ');
+            matchedCategory = categories.find(c => c.name.toLowerCase() === targetName || c.name.toLowerCase().replace(/[^a-z0-9]/g, '') === targetName.replace(/[^a-z0-9]/g, ''));
           }
-        } catch (error) {
-          console.error("Failed to fetch products for category:", error);
-          if (active) {
-             setLocalCategoryProducts(prev => (prev !== undefined && prev !== null) ? prev : []);
+        }
+        
+        if (matchedCategory) {
+          // Use already loaded and formatted products from ProductContext
+          if (contextProducts && contextProducts.length > 0) {
+            const matched = contextProducts.filter(p => {
+              const catId = p.categoryId || (p.category && p.category._id) || (typeof p.category === 'string' ? p.category : null);
+              const catName = typeof p.category === 'object' ? p.category.name : null;
+              return catId === matchedCategory._id || (catName && catName.toLowerCase() === matchedCategory.name.toLowerCase());
+            });
+            
+            if (matched.length > 0) {
+              if (active) setLocalCategoryProducts(matched);
+              if (active) setLoadingCategoryProducts(false);
+              return;
+            }
+          }
+
+          try {
+            const res = await fetchProductsByCategory(matchedCategory._id);
+            if (active && res.data && res.data.success) {
+              const rawProducts = res.data.data || [];
+              const filteredProducts = rawProducts.filter(p => p.status !== 'Draft' && p.status !== 'Inactive');
+              // Basic formatting for fallback raw products
+              const formattedFallback = filteredProducts.map(p => ({
+                ...p,
+                id: p._id || p.id,
+                title: p.name || p.title,
+                price: `₹${p.price || 0}`,
+                image: p.images?.[0]?.url || p.images?.[0] || p.image,
+                categoryId: matchedCategory._id
+              }));
+              setLocalCategoryProducts(formattedFallback);
+            } else {
+               if (active) setLocalCategoryProducts([]);
+            }
+          } catch (error) {
+            console.error("Failed to fetch products for category inside try:", error);
+            if (active) {
+               setLocalCategoryProducts(prev => (prev !== undefined && prev !== null) ? prev : []);
+            }
           }
         }
       } catch (error) {
