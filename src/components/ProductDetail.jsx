@@ -1241,14 +1241,27 @@ export default function ProductDetail() {
                       </tr>
                     </thead>
                     <tbody>
-                      {sizes.map(s => (
-                        <tr key={s} style={{ borderBottom: '1px solid #f9f9f9' }}>
-                          <td style={{ padding: '8px', fontWeight: '600' }}>{s}</td>
-                          <td style={{ padding: '8px', color: '#666' }}>Standard fit</td>
-                          <td style={{ padding: '8px', color: '#666' }}>Standard fit</td>
-                          <td style={{ padding: '8px', color: '#666' }}>Standard fit</td>
-                        </tr>
-                      ))}
+                      {sizes.map(s => {
+                        // Helper to get realistic measurements based on common sizes
+                        let bust = 'Standard fit', waist = 'Standard fit', length = 'Standard fit';
+                        switch(s.toUpperCase()) {
+                          case 'XS': bust = '32-33"'; waist = '24-25"'; length = '35"'; break;
+                          case 'S': bust = '34-35"'; waist = '26-27"'; length = '36"'; break;
+                          case 'M': bust = '36-37"'; waist = '28-29"'; length = '37"'; break;
+                          case 'L': bust = '38-39"'; waist = '30-31"'; length = '38"'; break;
+                          case 'XL': bust = '40-41"'; waist = '32-33"'; length = '39"'; break;
+                          case 'XXL': bust = '42-43"'; waist = '34-35"'; length = '40"'; break;
+                          default: break;
+                        }
+                        return (
+                          <tr key={s} style={{ borderBottom: '1px solid #f9f9f9' }}>
+                            <td style={{ padding: '8px', fontWeight: '600' }}>{s}</td>
+                            <td style={{ padding: '8px', color: '#666' }}>{bust}</td>
+                            <td style={{ padding: '8px', color: '#666' }}>{waist}</td>
+                            <td style={{ padding: '8px', color: '#666' }}>{length}</td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>

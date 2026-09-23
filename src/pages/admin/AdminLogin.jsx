@@ -28,9 +28,11 @@ const AdminLogin = () => {
           if (data.user) {
             localStorage.setItem('adminUser', JSON.stringify(data.user));
           }
-          message.success('Admin Login successful!');
-          window.scrollTo(0, 0);
-          navigate('/dashboard');
+          message.success('Admin Login successful!', 1);
+          setTimeout(() => {
+            window.scrollTo(0, 0);
+            navigate('/dashboard');
+          }, 1000);
         } else {
           setErrorMsg(data.message || 'Login failed');
         }

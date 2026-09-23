@@ -1479,3 +1479,25 @@
     gap: 10px;
   }
 }
+
+/* Category Page Static Banner */
+.category-page-banner-container {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+}
+
+.category-page-banner-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .category-page-banner-container {
+    height: 160px; /* Reduces height on mobile to maintain banner aspect ratio */
+  }
+}

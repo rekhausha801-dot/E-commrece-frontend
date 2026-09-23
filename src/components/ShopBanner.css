@@ -81,3 +81,38 @@
   max-height: 100%;
   object-fit: contain;
 }
+
+@media (max-width: 768px) {
+  .shop-banner-wrapper {
+    height: auto;
+    min-height: 400px;
+  }
+  
+  .shop-banner {
+    flex-direction: column-reverse;
+  }
+  
+  .shop-banner-content {
+    padding: 30px 20px;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .shop-title {
+    font-size: 32px;
+    margin: 0 0 20px 0;
+  }
+  
+  .shop-banner-image {
+    padding-top: 20px;
+    height: 250px;
+  }
+  
+  .shop-banner-image img {
+    max-height: 250px;
+    width: 100%;
+    object-fit: cover;
+    object-position: top center;
+  }
+}
+

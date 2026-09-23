@@ -12,6 +12,7 @@ import { useProducts } from '../context/ProductContext';
 import { useCategories } from '../context/CategoryContext';
 import { handleFlyingCartAnimation } from '../utils/cartAnimation';
 import { FaStar } from 'react-icons/fa';
+import { GLOBAL_PRODUCTS } from '../data/mockProducts';
 
 // Import images
 import bannerImg from '../assets/images/banner.png';
@@ -449,11 +450,11 @@ export default function CategoryPage() {
       const titleText = dynamicBanner.title || currentCategory.title;
       
       return (
-        <section className="shop-banner-wrapper" style={{ position: 'relative', width: '100%', height: '400px', background: 'none', marginBottom: '30px' }}>
+        <section className="category-page-banner-container" style={{ marginBottom: '30px' }}>
           <img 
             src={bannerImage} 
             alt={titleText} 
-            style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', top: 0, left: 0, zIndex: 0 }} 
+            className="category-page-banner-img"
           />
         </section>
       );
@@ -462,11 +463,11 @@ export default function CategoryPage() {
     // Fallback static banner
     if (currentCategory.banner) {
       return (
-        <div style={{ position: 'relative', width: '100%', height: '400px', overflow: 'hidden', marginBottom: '30px' }}>
+        <div className="category-page-banner-container" style={{ marginBottom: '30px' }}>
           <img 
             src={currentCategory.banner} 
             alt={currentCategory.title} 
-            style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top center', display: 'block' }} 
+            className="category-page-banner-img"
           />
         </div>
       );
@@ -506,19 +507,65 @@ export default function CategoryPage() {
 
         let isMatch = pCat === mappedBackendCategory || pCat.replace(/[^a-z0-9]/g, '') === mappedBackendCategory.replace(/[^a-z0-9]/g, '');
         
-        // Add lenient matching for 'suits'
-        if (mappedBackendCategory === 'suits' && (pCat === 'suit' || pCat.includes('suit'))) {
-          isMatch = true;
+        const pName = (p.name || p.title || '').toLowerCase();
+        const pType = (p.type || '').toLowerCase();
+
+        // Lenient matching for any category
+        const searchTerms = [mappedBackendCategory];
+        if (mappedBackendCategory.endsWith('s')) searchTerms.push(mappedBackendCategory.slice(0, -1));
+        if (mappedBackendCategory === 'kurti') searchTerms.push('kurtis');
+        
+        for (const term of searchTerms) {
+          // ensure term is long enough to prevent accidental broad matches (like 'men')
+          if (term.length > 2 && (pCat.includes(term) || pName.includes(term) || pType.includes(term))) {
+            isMatch = true;
+            break;
+          }
         }
 
         if (isMatch && mappedBackendCategory === 'suits') {
-          if (p.name && p.name.toLowerCase().includes('shoe')) {
+          if (pName.includes('shoe')) {
             isMatch = false;
           }
         }
         return isMatch;
       });
-      sourceProducts = filtered;
+      
+      if (filtered.length === 0) {
+        // Fallback to GLOBAL_PRODUCTS mock data to prevent empty pages
+        const mockMatches = GLOBAL_PRODUCTS.filter(p => {
+          const pCat = (p.category || '').toLowerCase().trim();
+          const pType = (p.type || '').toLowerCase();
+          const pName = (p.title || '').toLowerCase();
+          
+          let isMatch = false;
+          for (const term of searchTerms) {
+            if (term.length > 2 && (pCat.includes(term) || pName.includes(term) || pType.includes(term))) {
+              isMatch = true;
+              break;
+            }
+          }
+          if (isMatch && mappedBackendCategory === 'suits' && pName.includes('shoe')) isMatch = false;
+          return isMatch;
+        }).map(p => ({
+          _id: p.id,
+          name: p.title,
+          brand: 'Mock Brand',
+          price: parseInt(String(p.price).replace(/[^0-9]/g, '')) || 0,
+          discount: parseInt(String(p.discount || '0').replace(/[^0-9]/g, '')) || 0,
+          discountType: 'Percentage',
+          images: p.images || (p.colors && p.colors.length > 0 ? [{url: p.colors[0].image}] : []),
+          colors: p.colors || [],
+          rating: p.rating,
+          numReviews: p.reviews,
+          category: { name: p.category }
+        }));
+        
+        sourceProducts = mockMatches;
+      } else {
+        sourceProducts = filtered;
+      }
+
     } else {
       // undefined -> still loading categories or fetching
       return [];
@@ -532,6 +579,7 @@ export default function CategoryPage() {
       return {
         id: p._id,
         title: p.name,
+        brand: p.brand || 'No Brand',
         price: `₹${Math.round(price)}`,
         originalPrice: rawDiscount > 0 && rawPrice > 0 ? `₹${rawPrice}` : null,
       rating: p.rating || 4.5,
@@ -1010,6 +1058,7 @@ export default function CategoryPage() {
                 </div>
                 
                 <div className="unified-card-info">
+                  {product.brand && <span className="unified-card-brand" style={{fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', color: '#999', marginBottom: '4px'}}>{product.brand}</span>}
                   <h3 className="unified-card-title">{product.title}</h3>
                   
                   <div className="unified-card-rating">
