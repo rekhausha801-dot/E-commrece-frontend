@@ -189,11 +189,21 @@ export const GLOBAL_PRODUCTS = [
   // MEN - T-SHIRTS
   {
     id: 501, category: 'Men', type: 'T-Shirt', title: 'Classic Polo T-Shirt', fabric: 'Cotton', style: 'Polo',
-    price: 599, originalPrice: 999, rating: 4.5, reviews: 1200,
-    colors: [
-      { name: 'Black', hex: '#1C1C1C', inStock: true, image: mens2Img },
-      { name: 'White', hex: '#FFFFFF', inStock: true, image: mens1Img }
-    ]
+    description: 'A classic polo t-shirt for everyday wear.', price: '₹799', originalPrice: '₹999', discount: '20% OFF',
+    rating: 4.3, reviews: 88, link: '/product/classic-polo-t-shirt',
+    images: [{ url: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=500&q=80' }]
+  },
+  {
+    id: 601, category: 'Men', type: 'Suit', title: 'Premium Navy Blue Suit', fabric: 'Wool Blend', style: 'Slim Fit',
+    description: 'An elegant premium navy blue suit perfect for formal occasions.', price: '₹4999', originalPrice: '₹7999', discount: '37% OFF',
+    rating: 4.8, reviews: 45, link: '/product/premium-navy-blue-suit',
+    images: [{ url: 'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=500&q=80' }]
+  },
+  {
+    id: 701, category: 'Footwear', type: 'Casual Shoes', title: 'White Sneakers', fabric: 'Canvas', style: 'Sneaker',
+    description: 'Comfortable everyday white sneakers.', price: '₹1499', originalPrice: '₹2499', discount: '40% OFF',
+    rating: 4.6, reviews: 230, link: '/product/white-sneakers',
+    images: [{ url: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=500&q=80' }]
   }
 ];
 

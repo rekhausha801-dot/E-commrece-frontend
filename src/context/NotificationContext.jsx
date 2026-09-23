@@ -37,6 +37,7 @@ export const NotificationProvider = ({ children }) => {
           message: n.message,
           type: n.type ? n.type.toLowerCase() : 'system',
           time: new Date(n.createdAt).toLocaleDateString(),
+          createdAt: n.createdAt,
           read: n.isRead,
           link: n.link
         }));
@@ -75,6 +76,7 @@ export const NotificationProvider = ({ children }) => {
     const newNotification = {
       ...notification,
       id: Date.now(),
+      createdAt: new Date().toISOString(),
       read: false,
     };
     
