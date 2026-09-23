@@ -9,6 +9,8 @@ import {
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
 import { useProducts } from '../context/ProductContext';
+import { useCategories } from '../context/CategoryContext';
+import { fetchProductsByCategory } from '../services/api';
 import { handleFlyingCartAnimation } from '../utils/cartAnimation';
 import ShopBanner from './ShopBanner';
 
@@ -139,25 +141,31 @@ export default function Collection({ BannerComponent, title = "Kurtis" }) {
     ));
   };
 
+  const { categories } = useCategories() || {};
   const [productsList, setProductsList] = useState([]);
-
-  const applyFilters = async () => {
-    if (contextProducts) {
-      if (title === "Kurtis") {
-        const collectionItems = contextProducts.filter(p => {
-          const pCat = (p.category?.name || p.category || '').toLowerCase().trim();
-          return pCat === 'kurti';
-        });
-        setProductsList(collectionItems);
-      } else {
-        setProductsList(contextProducts);
-      }
-    }
-  };
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    applyFilters();
-  }, [contextProducts]); // Update when contextProducts change
+    let active = true;
+    const fetchFreshProducts = async () => {
+      setLoading(true);
+      try {
+        const catParam = title === "Kurtis" ? "kurti" : "all";
+        const res = await fetchProductsByCategory(catParam);
+        if (active && res.data && res.data.success) {
+          setProductsList(res.data.data || []);
+        } else if (active && contextProducts) {
+          setProductsList(contextProducts);
+        }
+      } catch (err) {
+        if (active && contextProducts) setProductsList(contextProducts);
+      } finally {
+        if (active) setLoading(false);
+      }
+    };
+    fetchFreshProducts();
+    return () => { active = false; };
+  }, [title, contextProducts]);
 
   const sortedProducts = React.useMemo(() => {
     let filtered = [...productsList];
@@ -313,7 +321,32 @@ export default function Collection({ BannerComponent, title = "Kurtis" }) {
               {/* Category */}
               <Section title="CATEGORY">
                 <div className="filter-list">
-                  {CATEGORIES.map((cat) => {
+                  <button
+                    onClick={() => navigate('/category/all')}
+                    className="filter-list-item"
+                  >
+                    <div className="filter-list-left">
+                      <span className="filter-radio"></span>
+                      <span className="filter-label">All Categories</span>
+                    </div>
+                  </button>
+                  {categories && categories.length > 0 ? categories.map((cat) => {
+                    const slug = cat.name.toLowerCase().replace(/\s+/g, '-');
+                    return (
+                      <button
+                        key={cat._id || cat.name}
+                        onClick={() => navigate(`/category/${slug}`)}
+                        className="filter-list-item"
+                      >
+                        <div className="filter-list-left">
+                          <span className="filter-radio"></span>
+                          <span className="filter-label">
+                            {cat.name.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                          </span>
+                        </div>
+                      </button>
+                    );
+                  }) : CATEGORIES.map((cat) => {
                     const active = selectedCategories.includes(cat.label);
                     return (
                       <button

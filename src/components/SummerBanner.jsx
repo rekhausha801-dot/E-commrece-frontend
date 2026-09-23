@@ -57,7 +57,7 @@ const SummerBanner = () => {
     <section className="summer-banner-wrapper">
       <div className="summer-banner">
 
-        <div className="summer-banner-image" style={{ position: 'absolute', top: 0, right: 0, width: 'calc(70% + 70px)', height: '100%', zIndex: 1, overflow: 'hidden' }}>
+        <div className="summer-banner-image" style={{ overflow: 'hidden' }}>
           {slides.map((slide, index) => (
             <div 
               key={index}
@@ -75,7 +75,7 @@ const SummerBanner = () => {
               {slide.type === 'image' ? (
                 <img src={slide.src} alt={`Summer Collection ${index + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }} />
               ) : (
-                <video src={slide.src + '?v=1'} crossOrigin="anonymous" autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }} />
+                <video src={slide.src} crossOrigin="anonymous" autoPlay loop muted playsInline style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }} />
               )}
             </div>
           ))}

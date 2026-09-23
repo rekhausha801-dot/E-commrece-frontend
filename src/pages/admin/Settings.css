@@ -202,3 +202,19 @@
   border-color: #c08933 !important;
 }
 
+/* Mobile Responsiveness for Settings Page */
+@media (max-width: 768px) {
+  .settings-page-wrapper {
+    padding: 10px !important;
+  }
+  .settings-content {
+    padding: 16px !important;
+  }
+  .settings-inner-card {
+    padding: 16px !important;
+  }
+  .settings-form-row {
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+}

@@ -275,8 +275,6 @@ function Section({ title, children, defaultOpen = true }) {
   );
 }
 
-import { getActiveBanners, fetchProductsByCategory } from '../services/api';
-
 const getImageUrl = (path) => {
   if (!path) return '';
   return path.startsWith('http') ? path : `http://localhost:5000${path}`;
@@ -299,71 +297,79 @@ export default function CategoryPage() {
     let active = true;
     const fetchCatProducts = async () => {
       setLoadingCategoryProducts(true);
-      const slug = (categoryId || '').toLowerCase();
-      let matchedCategory = null;
-      
-      if (categories && categories.length > 0) {
-        if (['suits', 'suit', 'menswear'].includes(slug)) {
-          matchedCategory = categories.find(c => c.name.toLowerCase().includes('suit'));
-        } else if (['shoes', 'shoe', 'footwear', 'sneakers', 'casual-shoes', 'formal-shoes'].includes(slug)) {
-          matchedCategory = categories.find(c => c.name.toLowerCase().includes('shoe') || c.name.toLowerCase().includes('footwear'));
-        } else if (['kurtis', 'kurti', 'womenswear'].includes(slug)) {
-          matchedCategory = categories.find(c => c.name.toLowerCase().includes('kurti'));
-        } else if (['t-shirts', 'shirts', 'customization', 'polo-t-shirts', 'custom-t-shirts', 'women-t-shirts', 'girls-t-shirts'].includes(slug)) {
-          matchedCategory = categories.find(c => {
-            const name = c.name.toLowerCase().replace(/[^a-z0-9]/g, '');
-            return name.includes('customtshirt') || name.includes('tshirt') || name.includes('shirt') || name.includes('custom');
-          });
-        } else {
-          const targetName = slug.replace(/-/g, ' ');
-          matchedCategory = categories.find(c => c.name.toLowerCase() === targetName || c.name.toLowerCase().replace(/[^a-z0-9]/g, '') === targetName.replace(/[^a-z0-9]/g, ''));
-        }
-      }
-      
-      if (matchedCategory) {
-        // Use already loaded and formatted products from ProductContext
-        if (contextProducts && contextProducts.length > 0) {
-          const matched = contextProducts.filter(p => {
-            const catId = p.categoryId || (p.category && p.category._id) || (typeof p.category === 'string' ? p.category : null);
-            const catName = typeof p.category === 'object' ? p.category.name : null;
-            return catId === matchedCategory._id || (catName && catName.toLowerCase() === matchedCategory.name.toLowerCase());
-          });
-          
-          if (matched.length > 0) {
-            if (active) setLocalCategoryProducts(matched);
-            if (active) setLoadingCategoryProducts(false);
-            return;
-          }
-        }
-
-        try {
-          const res = await fetchProductsByCategory(matchedCategory._id);
-          if (active && res.data && res.data.success) {
-            const rawProducts = res.data.data || [];
-            const filteredProducts = rawProducts.filter(p => p.status !== 'Draft' && p.status !== 'Inactive');
-            // Basic formatting for fallback raw products
-            const formattedFallback = filteredProducts.map(p => ({
-              ...p,
-              id: p._id || p.id,
-              title: p.name || p.title,
-              price: `₹${p.price || 0}`,
-              image: p.images?.[0]?.url || p.images?.[0] || p.image,
-              categoryId: matchedCategory._id
-            }));
-            setLocalCategoryProducts(formattedFallback);
+      try {
+        const slug = (categoryId || '').toLowerCase();
+        let matchedCategory = null;
+        
+        if (categories && categories.length > 0) {
+          if (['suits', 'suit', 'menswear'].includes(slug)) {
+            matchedCategory = categories.find(c => c.name.toLowerCase().includes('suit'));
+          } else if (['shoes', 'shoe', 'footwear', 'sneakers', 'casual-shoes', 'formal-shoes'].includes(slug)) {
+            matchedCategory = categories.find(c => c.name.toLowerCase().includes('shoe') || c.name.toLowerCase().includes('footwear'));
+          } else if (['kurtis', 'kurti', 'womenswear'].includes(slug)) {
+            matchedCategory = categories.find(c => c.name.toLowerCase().includes('kurti'));
+          } else if (['t-shirts', 'shirts', 'customization', 'polo-t-shirts', 'custom-t-shirts', 'women-t-shirts', 'girls-t-shirts'].includes(slug)) {
+            matchedCategory = categories.find(c => {
+              const name = c.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+              return name.includes('customtshirt') || name.includes('tshirt') || name.includes('shirt') || name.includes('custom');
+            });
           } else {
-             if (active) setLocalCategoryProducts([]);
-          }
-        } catch (error) {
-          console.error("Failed to fetch products for category:", error);
-          if (active) {
-             setLocalCategoryProducts(prev => (prev !== undefined && prev !== null) ? prev : []);
+            const targetName = slug.replace(/-/g, ' ');
+            matchedCategory = categories.find(c => c.name.toLowerCase() === targetName || c.name.toLowerCase().replace(/[^a-z0-9]/g, '') === targetName.replace(/[^a-z0-9]/g, ''));
           }
         }
-      } else {
-         if (active) setLocalCategoryProducts(null);
+        
+        if (matchedCategory) {
+          // Use already loaded and formatted products from ProductContext
+          if (contextProducts && contextProducts.length > 0) {
+            const matched = contextProducts.filter(p => {
+              const catId = p.categoryId || (p.category && p.category._id) || (typeof p.category === 'string' ? p.category : null);
+              const catName = typeof p.category === 'object' ? p.category.name : null;
+              return catId === matchedCategory._id || (catName && catName.toLowerCase() === matchedCategory.name.toLowerCase());
+            });
+            
+            if (matched.length > 0) {
+              if (active) setLocalCategoryProducts(matched);
+              if (active) setLoadingCategoryProducts(false);
+              return;
+            }
+          }
+
+          try {
+            const res = await fetchProductsByCategory(matchedCategory._id);
+            if (active && res.data && res.data.success) {
+              const rawProducts = res.data.data || [];
+              const filteredProducts = rawProducts.filter(p => p.status !== 'Draft' && p.status !== 'Inactive');
+              // Basic formatting for fallback raw products
+              const formattedFallback = filteredProducts.map(p => ({
+                ...p,
+                id: p._id || p.id,
+                title: p.name || p.title,
+                price: `₹${p.price || 0}`,
+                image: p.images?.[0]?.url || p.images?.[0] || p.image,
+                categoryId: matchedCategory._id
+              }));
+              setLocalCategoryProducts(formattedFallback);
+            } else {
+               if (active) setLocalCategoryProducts([]);
+            }
+          } catch (error) {
+            console.error("Failed to fetch products for category inside try:", error);
+            if (active) {
+               setLocalCategoryProducts(prev => (prev !== undefined && prev !== null) ? prev : []);
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch products for category:", error);
+        if (active) {
+          setLocalCategoryProducts([]);
+        }
+      } finally {
+        if (active) {
+          setLoadingCategoryProducts(false);
+        }
       }
-      if (active) setLoadingCategoryProducts(false);
     };
 
     // If categories are still loading, do nothing yet. 
@@ -591,7 +597,7 @@ export default function CategoryPage() {
       _backendData: p
       };
     });
-  }, [categoryId, contextProducts, currentCategory.title]);
+  }, [categoryId, contextProducts, currentCategory.title, localCategoryProducts]);
   
   const [wishlist, setWishlist] = useState(() => {
     try {
@@ -805,7 +811,39 @@ export default function CategoryPage() {
               {/* Category */}
               <Section title="CATEGORY">
                 <div className="filter-list">
-                  {CATEGORIES.map((cat) => {
+                  <button
+                    onClick={() => navigate('/category/all')}
+                    className={`filter-list-item ${(categoryId === 'all' || !categoryId) ? 'active' : ''}`}
+                    style={{ fontWeight: (categoryId === 'all' || !categoryId) ? 'bold' : 'normal' }}
+                  >
+                    <div className="filter-list-left">
+                      <span className={`filter-radio ${(categoryId === 'all' || !categoryId) ? 'active' : ''}`}>
+                        {(categoryId === 'all' || !categoryId) && <span className="radio-inner"></span>}
+                      </span>
+                      <span className={`filter-label ${(categoryId === 'all' || !categoryId) ? 'active' : ''}`}>All Categories</span>
+                    </div>
+                  </button>
+                  {categories && categories.length > 0 ? categories.map((cat) => {
+                    const slug = cat.name.toLowerCase().replace(/\s+/g, '-');
+                    const isActive = (categoryId || '').toLowerCase() === slug || (categoryId || '') === cat._id;
+                    return (
+                      <button
+                        key={cat._id || cat.name}
+                        onClick={() => navigate(`/category/${slug}`)}
+                        className={`filter-list-item ${isActive ? 'active' : ''}`}
+                        style={{ fontWeight: isActive ? 'bold' : 'normal' }}
+                      >
+                        <div className="filter-list-left">
+                          <span className={`filter-radio ${isActive ? 'active' : ''}`}>
+                            {isActive && <span className="radio-inner"></span>}
+                          </span>
+                          <span className={`filter-label ${isActive ? 'active' : ''}`}>
+                            {cat.name.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                          </span>
+                        </div>
+                      </button>
+                    );
+                  }) : CATEGORIES.map((cat) => {
                     const active = selectedCategories.includes(cat.label);
                     return (
                       <button
@@ -1016,16 +1054,22 @@ export default function CategoryPage() {
           </div>
 
           <motion.div layout className={`unified-products-grid ${isMobileFilterOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
-            {sortedProducts.length === 0 ? (
+            {loadingCategoryProducts ? (
+              <div style={{ padding: '80px 20px', textAlign: 'center', width: '100%', gridColumn: '1 / -1' }}>
+                <div style={{ fontSize: '32px', marginBottom: '12px', color: '#8f7a5b', animation: 'pulse 1.5s infinite' }}>⌛</div>
+                <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#333', marginBottom: '6px' }}>Loading products...</h3>
+                <p style={{ color: '#888', fontSize: '14px' }}>Please wait while we fetch the latest products for this category.</p>
+              </div>
+            ) : sortedProducts.length === 0 ? (
               <div style={{ padding: '60px 20px', textAlign: 'center', width: '100%', gridColumn: '1 / -1' }}>
                 <div style={{ fontSize: '48px', marginBottom: '16px', color: '#e0e0e0' }}>🛍️</div>
-                <h3 style={{ fontSize: '24px', fontWeight: '600', color: '#333', marginBottom: '8px' }}>No {currentCategory.title.toLowerCase()} available</h3>
+                <h3 style={{ fontSize: '24px', fontWeight: '600', color: '#333', marginBottom: '8px' }}>No products available</h3>
                 <p style={{ color: '#666', marginBottom: '24px' }}>We couldn't find any products in this category at the moment. Please check back later or explore other collections.</p>
                 <button 
-                  onClick={() => navigate('/')} 
-                  style={{ padding: '12px 24px', backgroundColor: '#e5c398', color: '#111', fontWeight: '600', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                  onClick={() => navigate('/category/all')} 
+                  style={{ padding: '12px 24px', backgroundColor: '#8f7a5b', color: '#fff', fontWeight: '600', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
                 >
-                  Continue Shopping
+                  View All Products
                 </button>
               </div>
             ) : (

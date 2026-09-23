@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import AddCategoryModal from './AddCategoryModal';
 import { getCategories, deleteCategory, updateCategoryStatus } from '../../services/api';
 import { message } from 'antd';
+import { useCategories } from '../../context/CategoryContext';
 
 import kurthiImg from '../../assets/images/kurthi3.png';
 import topImg from '../../assets/images/top2.jpeg';
@@ -77,6 +78,7 @@ const initialData = [
 
 const CategoryManagement = () => {
   const navigate = useNavigate();
+  const { refreshCategories } = useCategories() || {};
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -90,6 +92,8 @@ const CategoryManagement = () => {
       const catRes = await getCategories().catch(() => null);
 
       const catList = catRes?.data?.data || [];
+
+      if (refreshCategories) refreshCategories();
 
       const mappedCategories = catList.map((item, index) => ({
         ...item,

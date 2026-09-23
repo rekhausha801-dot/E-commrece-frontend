@@ -1178,6 +1178,18 @@
   gap: 16px;
 }
 
+@media (max-width: 1024px) {
+  .quick-actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .quick-actions-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .quick-action-card {
   background: white;
   border: 1px solid #fae6d3;
@@ -1852,7 +1864,7 @@
   }
   .header-actions button {
     flex: 1;
-    min-width: calc(50% - 10px);
+    min-width: calc(50% - 6px); /* Fix for 12px gap */
   }
   .filter-row-container {
     flex-direction: column;
@@ -1877,6 +1889,22 @@
 @media (max-width: 1024px) {
   .product-table {
     min-width: 900px; /* Force table to be wide enough to trigger horizontal scroll */
+  }
+}
+
+@media (max-width: 768px) {
+  .header-actions button {
+    min-width: 100%;
+    flex: 1 1 100%;
+  }
+  
+  .list-view-header {
+    width: 100%;
+    overflow: hidden;
+  }
+  
+  .header-actions {
+    gap: 8px;
   }
 }
 

@@ -263,7 +263,7 @@ const WebsiteSetting = ({ initialTab = 'Security', onProfileUpdate }) => {
               <p>Update your personal information, contact details, and account security.</p>
             </div>
 
-            <div style={{ background: '#fff', border: '1px solid #f3f4f6', borderRadius: '16px', padding: '24px', marginBottom: '32px' }}>
+            <div className="settings-inner-card" style={{ background: '#fff', border: '1px solid #f3f4f6', borderRadius: '16px', padding: '24px', marginBottom: '32px' }}>
               <h3 className="settings-section-title" style={{ marginTop: 0 }}>Personal Information</h3>
               <Form layout="vertical" form={profileForm} onFinish={handleUpdateProfile} autoComplete="off">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '24px', marginBottom: '24px' }}>
@@ -394,7 +394,7 @@ const WebsiteSetting = ({ initialTab = 'Security', onProfileUpdate }) => {
   };
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '24px' }}>
+    <div className="settings-page-wrapper" style={{ maxWidth: '1200px', margin: '0 auto', padding: '24px' }}>
       {/* Main Content */}
       <div className="settings-content" style={{
         width: '100%',
@@ -453,7 +453,7 @@ export const ShippingTab = () => {
   };
 
   return (
-    <div style={{ background: '#fff', border: '1px solid #f3f4f6', borderRadius: '16px', padding: '24px' }}>
+    <div className="settings-inner-card" style={{ background: '#fff', border: '1px solid #f3f4f6', borderRadius: '16px', padding: '24px' }}>
       <div className="settings-header">
         <h2>Shipping Settings</h2>
         <p>Configure shipping methods and rates.</p>

@@ -8,6 +8,7 @@ import {
   Mountain, Feather, Flame, Leaf, Rocket, Compass, Send, Headphones, Palmtree, Flower2, MonitorPlay, Timer
 } from 'lucide-react';
 import { fetchCategories, fetchNextSku } from '../../services/api';
+import imageCompression from 'browser-image-compression';
 
 const CustomSelect = ({ value, onChange, options, placeholder, disabled, showSearch = false, searchPlaceholder = "Search..." }) => {
   const [isOpen, setIsOpen] = useState(false);

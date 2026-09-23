@@ -1,0 +1,33 @@
+/* Base styles handled mostly by inline CSS in the component, these are overrides for responsiveness */
+
+@media (max-width: 768px) {
+  .notification-page-wrapper {
+    padding: 10px !important;
+  }
+  
+  .notification-page-container {
+    padding: 16px !important;
+    border-radius: 16px !important;
+  }
+  
+  .notification-card-item {
+    padding: 16px !important;
+    gap: 12px !important;
+  }
+  
+  .notification-card-item .notif-icon {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  
+  .notification-card-item .notif-icon svg {
+    width: 20px !important;
+    height: 20px !important;
+  }
+  
+  .notif-header-actions {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+}
