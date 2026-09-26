@@ -1081,50 +1081,51 @@
     left: 50%;
     transform: translate(-50%, -50%);
     align-items: center;
-    text-align: center;
+    text-align: center !important;
     max-width: 90%;
     padding: 10px;
     background: rgba(0, 0, 0, 0.4);
     border-radius: 12px;
   }
   .mega-banner-title {
-    font-size: 42px;
-    margin-bottom: 10px;
+    font-size: clamp(28px, 8vw, 42px) !important;
+    line-height: 1.1 !important;
+    margin-bottom: 10px !important;
   }
   .mega-banner-subtitle {
-    font-size: 14px;
-    letter-spacing: 2px;
+    font-size: 14px !important;
+    letter-spacing: 2px !important;
   }
   .mega-banner-desc {
-    font-size: 16px;
-    margin-bottom: 15px;
+    font-size: 16px !important;
+    margin-bottom: 15px !important;
   }
   .mega-banner-discount {
-    font-size: 20px;
-    margin-bottom: 15px;
+    font-size: 20px !important;
+    margin-bottom: 15px !important;
   }
   .mega-banner-discount span {
-    font-size: 24px;
+    font-size: 24px !important;
   }
 }
 
 @media (max-width: 480px) {
   .mega-banner-title {
-    font-size: 32px;
+    font-size: clamp(24px, 10vw, 36px) !important;
   }
   .mega-banner-subtitle {
-    font-size: 12px;
-    margin-bottom: 5px;
+    font-size: 12px !important;
+    margin-bottom: 5px !important;
   }
   .mega-banner-desc {
-    font-size: 14px;
+    font-size: 14px !important;
   }
   .mega-banner-discount {
-    font-size: 18px;
-    margin-bottom: 10px;
+    font-size: 18px !important;
+    margin-bottom: 10px !important;
   }
   .mega-banner-discount span {
-    font-size: 20px;
+    font-size: 20px !important;
   }
 }
 

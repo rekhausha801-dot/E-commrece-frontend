@@ -278,7 +278,7 @@ const Home = () => {
 
                 <button className="unified-explore-btn" onClick={(e) => { e.stopPropagation(); navigate('/collection'); }}>
                   Explore Collection
-                  <span style={{ fontSize: '16px' }}>→</span>
+                  <span className="unified-btn-arrow">→</span>
                 </button>
               </div>
             </motion.div>
@@ -353,7 +353,7 @@ const Home = () => {
 
                 <button className="unified-explore-btn" onClick={(e) => { e.stopPropagation(); navigate('/collection'); }}>
                   Explore Collection
-                  <span style={{ fontSize: '16px' }}>→</span>
+                  <span className="unified-btn-arrow">→</span>
                 </button>
               </div>
             </motion.div>

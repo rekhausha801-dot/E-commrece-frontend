@@ -3619,7 +3619,7 @@ body {
 @media (max-width: 768px) {
   .pdp-main-container {
     grid-template-columns: 1fr !important;
-    gap: 24px !important;
+    gap: 16px !important;
   }
   .pdp-gallery-section {
     flex-direction: column-reverse !important;
@@ -3627,8 +3627,59 @@ body {
   .pdp-thumbnails {
     flex-direction: row !important;
     overflow-x: auto;
+    width: 100% !important;
+    padding-bottom: 8px;
+  }
+  .pdp-thumb {
+    width: 60px !important;
+    height: 80px !important;
+    flex-shrink: 0;
+  }
+  .pdp-main-image-container {
+    width: 100% !important;
+    height: 135vw !important; /* Proper 3:4 fashion aspect ratio */
+    max-height: 75vh !important;
+    flex: none !important;
+  }
+  .pdp-main-image {
+    object-position: top center !important; /* Ensures the head is always visible */
   }
   .pdp-page-wrapper {
     padding: 16px !important;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    width: 100%;
+  }
+  
+
+  /* Reviews Section Mobile Fixes */
+  .pdp-custom-reviews-section {
+    padding: 24px 16px !important;
+    box-sizing: border-box;
+    width: 100%;
+  }
+  .pdp-crs-summary-card {
+    padding: 20px 16px !important;
+    box-sizing: border-box;
+    width: 100%;
+  }
+  .pdp-crs-bars-col {
+    min-width: 100% !important;
+    padding: 16px 0 !important;
+    box-sizing: border-box;
+  }
+  .pdp-crs-bar-row {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .pdp-crs-badges-col {
+    flex-direction: column;
+    gap: 16px !important;
+  }
+  .pdp-crs-cards-container {
+    padding-bottom: 20px;
   }
 }
+
+
+

@@ -893,5 +893,24 @@
 @media (max-width: 900px) {
   .lux-summary-layout {
     grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .spc-content {
+    gap: 12px;
+  }
+  
+  .spc-image-wrap {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .spc-title {
+    font-size: 13px;
+    white-space: normal;
+  }
+  
+  .spc-delivery-banner {
+    font-size: 12px;
   }
 }

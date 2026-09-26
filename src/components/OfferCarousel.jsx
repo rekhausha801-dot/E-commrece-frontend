@@ -171,7 +171,7 @@ const OfferCarousel = () => {
                         {(banner.specialLayout === true || banner.specialLayout === 'true') ? (
                           <>
                             {(banner.line1Text || !banner.line2Text) && (
-                              <h4 style={{ 
+                              <h4 className="mega-banner-subtitle" style={{ 
                                 fontFamily: banner.line1Font || "'Montserrat', sans-serif",
                                 fontSize: banner.line1Size || '16px', 
                                 color: banner.line1Color || '#ffffff', 
@@ -183,7 +183,7 @@ const OfferCarousel = () => {
                                 {banner.line1Text || 'LIMITED TIME OFFER'}
                               </h4>
                             )}
-                            <h2 style={{ 
+                            <h2 className="mega-banner-title" style={{ 
                               fontFamily: banner.line2Font || "'Playfair Display', serif", 
                               fontSize: banner.line2Size || banner.fontSize || '64px', 
                               color: banner.line2Color || '#ffffff', 
@@ -203,7 +203,7 @@ const OfferCarousel = () => {
                               })()}
                             </h2>
                             {(banner.line3Text || banner.description) && (
-                              <p style={{ 
+                              <p className="mega-banner-desc" style={{ 
                                 fontFamily: banner.line3Font || "'Inter', sans-serif",
                                 fontSize: banner.line3Size || '18px', 
                                 color: banner.line3Color || '#ffffff', 
@@ -217,7 +217,7 @@ const OfferCarousel = () => {
                           </>
                         ) : (
                           <>
-                            <h2 style={{ 
+                            <h2 className="mega-banner-title" style={{ 
                               fontFamily: '"Playfair Display", serif', 
                               fontSize: banner.fontSize || '48px', 
                               margin: '0 0 15px 0', 
@@ -228,7 +228,7 @@ const OfferCarousel = () => {
                               {banner.title}
                             </h2>
                             {banner.description && (
-                              <p style={{ fontSize: '18px', lineHeight: '1.4', marginBottom: '20px', fontWeight: '400', fontFamily: 'sans-serif' }}>
+                              <p className="mega-banner-desc" style={{ fontSize: '18px', lineHeight: '1.4', marginBottom: '20px', fontWeight: '400', fontFamily: 'sans-serif' }}>
                                 {banner.description}
                               </p>
                             )}

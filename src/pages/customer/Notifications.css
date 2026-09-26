@@ -70,6 +70,7 @@
   cursor: pointer;
   position: relative;
   white-space: nowrap;
+  flex-shrink: 0;
   transition: all 0.2s;
 }
 
@@ -229,14 +230,30 @@
   background-color: #fcf8f2;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 900px) {
   .notification-card {
     padding: 16px;
+    flex-direction: column;
+    align-items: flex-start;
   }
   
   .notifications-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
+  }
+
+  .notification-actions {
+    align-items: flex-start;
+    flex-direction: row;
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: 12px;
+  }
+  
+  .notifications-tabs {
+    flex-wrap: wrap;
+    gap: 8px;
+    overflow-x: visible;
   }
 }

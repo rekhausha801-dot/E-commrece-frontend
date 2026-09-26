@@ -392,7 +392,7 @@ const Navbar = () => {
 
           <div className="action-icons">
             {/* Search Icon Expanding */}
-            <div className={`search-expand-wrapper desktop-only ${isSearchOpen ? 'open' : ''}`} ref={searchRef}>
+            <div className={`search-expand-wrapper ${isSearchOpen ? 'open' : ''}`} ref={searchRef}>
               <div className="icon-btn search-trigger" onClick={() => setIsSearchOpen(true)}>
                 <div className="icon-badge-wrapper">
                   <Search size={22} />
@@ -487,11 +487,6 @@ const Navbar = () => {
                 )}
               </div>
             </div>
-
-            {/* Mobile Search Icon */}
-            <button className="icon-btn mobile-only">
-              <Search size={22} />
-            </button>
 
             {/* Wishlist Link */}
             <Link to="/wishlist" className="icon-btn action-item desktop-only" style={{ textDecoration: 'none', color: 'inherit' }}>

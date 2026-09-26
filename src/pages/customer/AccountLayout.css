@@ -221,30 +221,43 @@
     flex-direction: column;
     margin: 20px auto;
     padding: 0 16px;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
   }
 
   .account-sidebar {
     width: 100%;
     position: static;
+    padding: 16px 0;
+  }
+
+  .account-sidebar-help {
+    margin: 16px 16px 0;
+    padding: 16px;
+  }
+
+  .account-content {
+    padding: 16px;
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .account-nav-list {
     display: flex;
-    overflow-x: auto;
+    flex-wrap: wrap;
+    gap: 8px;
     padding-bottom: 5px;
-    white-space: nowrap;
-    scrollbar-width: none;
   }
-  
-  .account-nav-list::-webkit-scrollbar {
-    display: none;
+
+  .account-nav-list li {
+    flex-shrink: 0;
   }
 
   .account-nav-item {
     margin: 0 4px;
     padding: 12px 16px;
   }
-
 
   .account-nav-logout {
     border-top: none;

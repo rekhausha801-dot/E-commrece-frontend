@@ -14,6 +14,8 @@
   position: relative;
   overflow: hidden;
   border-bottom: 1px solid #edf1f7;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .faq-breadcrumb {
@@ -164,6 +166,7 @@
   margin: 40px auto;
   width: 100%;
   padding: 0 40px;
+  box-sizing: border-box;
 }
 
 /* --- FAQ Content Area --- */

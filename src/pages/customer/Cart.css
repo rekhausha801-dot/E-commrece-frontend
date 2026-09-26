@@ -792,22 +792,15 @@
     grid-template-columns: 1fr;
   }
   .lux-cart-container {
-    padding: 30px 20px;
-  }
-  .lux-cart-item {
-    flex-direction: column;
-    align-items: center;
-  }
-  .lux-ci-image {
-    width: 100%;
-    max-width: 200px;
-    height: auto;
-    aspect-ratio: 4/5;
+    padding: 30px 16px !important;
   }
   .lux-page-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 15px;
+  }
+  .main-title {
+    font-size: 32px;
   }
   .lux-cart-features-dark {
     flex-direction: column;
@@ -816,6 +809,120 @@
   }
   .feature-divider {
     display: none;
+  }
+  
+  /* Cart Item Fixes for Mobile */
+  .lux-cart-item {
+    flex-direction: row;
+    padding: 16px;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .lux-ci-image {
+    width: 90px;
+    height: 112px;
+    max-width: none;
+    flex-shrink: 0;
+  }
+  .lux-ci-content {
+    width: 100%;
+    min-width: 0; /* allows truncation */
+  }
+  .lux-ci-title-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .lux-ci-title {
+    font-size: 16px;
+    line-height: 1.2;
+    margin-bottom: 4px;
+    white-space: normal;
+    word-break: break-word;
+  }
+  .lux-ci-price-container {
+    margin-left: 0;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .lux-current-price {
+    font-size: 18px;
+  }
+  
+  /* Fix inline styles forcing items on the same row */
+  .lux-ci-variants-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+  
+  .stock-info-left {
+    flex-wrap: wrap !important;
+    white-space: normal !important;
+    gap: 4px;
+    line-height: 1.4;
+  }
+  
+  .lux-ci-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  .lux-ci-actions-left {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .lux-qty-pill {
+    padding: 4px 10px;
+    gap: 12px;
+  }
+  .lux-ci-stock-delivery {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  
+  /* Make sure stepper fits */
+  .lux-stepper-container {
+    transform: scale(0.9);
+    margin-bottom: 5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .lux-cart-item {
+    padding: 12px;
+    gap: 12px;
+  }
+  .lux-ci-image {
+    width: 80px;
+    height: 100px;
+  }
+  .lux-ci-title {
+    font-size: 14px;
+  }
+  .lux-current-price {
+    font-size: 16px;
+  }
+  .lux-stepper-container {
+    padding: 0 10px;
+  }
+  .lux-step-icon {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 14px !important;
+  }
+  .lux-step-label {
+    font-size: 11px !important;
+  }
+  .lux-step-line {
+    margin: 0 5px !important;
+    min-width: 20px !important;
   }
 }
 

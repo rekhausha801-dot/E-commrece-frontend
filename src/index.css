@@ -248,6 +248,17 @@ body {
   cursor: pointer;
 }
 
+@media (max-width: 768px) {
+  .unified-explore-btn,
+  .unified-add-cart-btn {
+    font-size: 11px !important;
+    padding: 6px 4px !important;
+    white-space: nowrap !important;
+    gap: 4px !important;
+  }
+}
+
+
 .color-more {
   font-size: 12px;
   color: #888;
