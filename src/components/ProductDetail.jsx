@@ -4,6 +4,7 @@ import { animate, stagger, inView, scroll, motion, useScroll, useTransform } fro
 import { animateView } from 'motion-dom';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { message, Image } from 'antd';
+import { Rnd } from 'react-rnd';
 import {
   Star, ShoppingCart, ChevronRight, ChevronLeft, ArrowRight, Ruler,
   CheckCircle2, ShieldCheck, RefreshCcw, Heart, Plus, Minus, Check, Eye,
@@ -205,6 +206,7 @@ export default function ProductDetail() {
 
   const [activePosition, setActivePosition] = useState('front');
   const [isUploading, setIsUploading] = useState(false);
+  const [rndState, setRndState] = useState({ x: 60, y: 60, width: 140, height: 140 });
 
 
   useEffect(() => {
@@ -488,8 +490,8 @@ export default function ProductDetail() {
           {product?.category && (
             <>
               <ChevronRight size={12} />
-              <span 
-                style={{ cursor: 'pointer' }} 
+              <span
+                style={{ cursor: 'pointer' }}
                 onClick={() => {
                   const catName = typeof product.category === 'object' ? product.category.name : product.category;
                   if (catName) {
@@ -504,8 +506,8 @@ export default function ProductDetail() {
           {product?.subCategory && (
             <>
               <ChevronRight size={12} />
-              <span 
-                style={{ cursor: 'pointer' }} 
+              <span
+                style={{ cursor: 'pointer' }}
                 onClick={() => {
                   navigate(`/category/${product.subCategory}`);
                 }}
@@ -599,8 +601,8 @@ export default function ProductDetail() {
               <div style={{ display: 'flex', flexDirection: 'column', flex: 1, gap: '16px' }}>
                 <div
                   className="pdp-main-image-container"
-                  onMouseMove={handleMouseMove}
-                  onMouseLeave={handleMouseLeave}
+                  onMouseMove={product?.customizable ? undefined : handleMouseMove}
+                  onMouseLeave={product?.customizable ? undefined : handleMouseLeave}
                 >
                   {product?.discount && (
                     <div className="pdp-discount-badge">{product.discount}</div>
@@ -614,86 +616,96 @@ export default function ProductDetail() {
                   </button>
 
                   <button className="pdp-nav-btn pdp-prev" onClick={prevImage}><ChevronLeft size={20} /></button>
-                  <div style={{ width: '100%', height: '100%', transition: 'transform 0.1s ease-out', ...zoomStyle }}>
+                  <div style={{ width: '100%', height: '100%', transition: 'transform 0.1s ease-out', ...(product?.customizable ? {} : zoomStyle) }}>
                     <img src={displayImages[activeImage]} alt="Main Product" className="pdp-main-image" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                     {product?.customizable && (
-                      <div style={{ position: 'absolute', top: '60%', left: '50%', transform: 'translate(-50%, -50%)', width: '35%', height: '35%', mixBlendMode: 'multiply', pointerEvents: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                        {activeDesign && !activeDesign?.isBaseImage && (
-                          activeDesign.icon ? (
-                            <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-                              {colorizeImage && activeDesignColor !== '#000000' ? (
-                                <div style={{
-                                  width: '100%', height: '100%',
-                                  backgroundColor: activeDesignColor,
-                                  WebkitMaskImage: `url(${activeDesign.icon})`,
-                                  WebkitMaskSize: 'contain',
-                                  WebkitMaskPosition: 'center',
-                                  WebkitMaskRepeat: 'no-repeat',
-                                  maskImage: `url(${activeDesign.icon})`,
-                                  maskSize: 'contain',
-                                  maskPosition: 'center',
-                                  maskRepeat: 'no-repeat'
-                                }} title={activeDesign.name} />
-                              ) : (
-                                <>
-                                  <img src={activeDesign.icon} alt={activeDesign.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                                  {activeDesignColor && activeDesignColor !== '#000000' && (
-                                    <div style={{
-                                      position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-                                      backgroundColor: activeDesignColor,
-                                      mixBlendMode: 'screen',
-                                      pointerEvents: 'none',
-                                      WebkitMaskImage: `url(${activeDesign.icon})`,
-                                      WebkitMaskSize: 'contain',
-                                      WebkitMaskPosition: 'center',
-                                      WebkitMaskRepeat: 'no-repeat',
-                                      maskImage: `url(${activeDesign.icon})`,
-                                      maskSize: 'contain',
-                                      maskPosition: 'center',
-                                      maskRepeat: 'no-repeat'
-                                    }} />
-                                  )}
-                                </>
-                              )}
-                            </div>
-                          ) : (
-                            (() => {
-                              const iconKey = (activeDesign.iconName || activeDesign.name || '').toLowerCase();
-                              let IconComp = null;
-                              if (iconKey.includes('flower')) IconComp = Flower2;
-                              else if (iconKey.includes('mountain')) IconComp = Mountain;
-                              else if (iconKey.includes('feather')) IconComp = Feather;
-                              else if (iconKey.includes('flame')) IconComp = Flame;
-                              else if (iconKey.includes('rocket')) IconComp = Rocket;
-                              else if (iconKey.includes('compass')) IconComp = Compass;
-                              else if (iconKey.includes('send') || iconKey.includes('paper')) IconComp = Send;
-                              else if (iconKey.includes('headphone')) IconComp = Headphones;
-                              else if (iconKey.includes('palm') || iconKey.includes('tree')) IconComp = Palmtree;
+                      <div className="printable-area" style={{ position: 'absolute', top: '25%', left: '20%', width: '60%', height: '55%', pointerEvents: 'none' }}>
+                        <Rnd
+                          key={activeDesign?.id || 'custom-design-rnd'}
+                          default={{ x: rndState.x, y: rndState.y, width: rndState.width, height: rndState.height }}
+                          enableResizing={{
+                            top: true, right: true, bottom: true, left: true,
+                            topRight: true, bottomRight: true, bottomLeft: true, topLeft: true
+                          }}
+                          style={{ mixBlendMode: 'multiply', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '1px dashed #666', cursor: 'move', zIndex: 10, pointerEvents: 'auto' }}
+                        >
+                          {activeDesign && !activeDesign?.isBaseImage && (
+                            activeDesign.icon ? (
+                              <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+                                {colorizeImage && activeDesignColor !== '#000000' ? (
+                                  <div style={{
+                                    width: '100%', height: '100%',
+                                    backgroundColor: activeDesignColor,
+                                    WebkitMaskImage: `url(${activeDesign.icon})`,
+                                    WebkitMaskSize: 'contain',
+                                    WebkitMaskPosition: 'center',
+                                    WebkitMaskRepeat: 'no-repeat',
+                                    maskImage: `url(${activeDesign.icon})`,
+                                    maskSize: 'contain',
+                                    maskPosition: 'center',
+                                    maskRepeat: 'no-repeat'
+                                  }} title={activeDesign.name} />
+                                ) : (
+                                  <>
+                                    <img src={activeDesign.icon} alt={activeDesign.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                                    {activeDesignColor && activeDesignColor !== '#000000' && (
+                                      <div style={{
+                                        position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                                        backgroundColor: activeDesignColor,
+                                        mixBlendMode: 'screen',
+                                        pointerEvents: 'none',
+                                        WebkitMaskImage: `url(${activeDesign.icon})`,
+                                        WebkitMaskSize: 'contain',
+                                        WebkitMaskPosition: 'center',
+                                        WebkitMaskRepeat: 'no-repeat',
+                                        maskImage: `url(${activeDesign.icon})`,
+                                        maskSize: 'contain',
+                                        maskPosition: 'center',
+                                        maskRepeat: 'no-repeat'
+                                      }} />
+                                    )}
+                                  </>
+                                )}
+                              </div>
+                            ) : (
+                              (() => {
+                                const iconKey = (activeDesign.iconName || activeDesign.name || '').toLowerCase();
+                                let IconComp = null;
+                                if (iconKey.includes('flower')) IconComp = Flower2;
+                                else if (iconKey.includes('mountain')) IconComp = Mountain;
+                                else if (iconKey.includes('feather')) IconComp = Feather;
+                                else if (iconKey.includes('flame')) IconComp = Flame;
+                                else if (iconKey.includes('rocket')) IconComp = Rocket;
+                                else if (iconKey.includes('compass')) IconComp = Compass;
+                                else if (iconKey.includes('send') || iconKey.includes('paper')) IconComp = Send;
+                                else if (iconKey.includes('headphone')) IconComp = Headphones;
+                                else if (iconKey.includes('palm') || iconKey.includes('tree')) IconComp = Palmtree;
 
-                              return IconComp ? <IconComp size={140} color={activeDesignColor} strokeWidth={1.5} /> : null;
-                            })()
-                          )
-                        )}
-                        {customText && (
-                          <div
-                            style={{
-                              marginTop: activeDesign ? '6px' : '0px',
-                              fontSize: '13px',
-                              fontWeight: '900',
-                              fontFamily: customTextFont,
-                              color: customTextColor,
-                              textTransform: 'uppercase',
-                              letterSpacing: '1.5px',
-                              textAlign: 'center',
-                              wordBreak: 'break-word',
-                              maxWidth: '100%',
-                              textShadow: customTextColor === '#FFFFFF' || customTextColor === '#ffffff' ? '0 1px 3px rgba(0,0,0,0.8)' : '0 1px 2px rgba(255,255,255,0.6)',
-                              lineHeight: 1.2
-                            }}
-                          >
-                            {customText}
-                          </div>
-                        )}
+                                return IconComp ? <IconComp size={140} color={activeDesignColor} strokeWidth={1.5} /> : null;
+                              })()
+                            )
+                          )}
+                          {customText && (
+                            <div
+                              style={{
+                                marginTop: activeDesign ? '6px' : '0px',
+                                fontSize: '13px',
+                                fontWeight: '900',
+                                fontFamily: customTextFont,
+                                color: customTextColor,
+                                textTransform: 'uppercase',
+                                letterSpacing: '1.5px',
+                                textAlign: 'center',
+                                wordBreak: 'break-word',
+                                maxWidth: '100%',
+                                textShadow: customTextColor === '#FFFFFF' || customTextColor === '#ffffff' ? '0 1px 3px rgba(0,0,0,0.8)' : '0 1px 2px rgba(255,255,255,0.6)',
+                                lineHeight: 1.2
+                              }}
+                            >
+                              {customText}
+                            </div>
+                          )}
+                        </Rnd>
                       </div>
                     )}
                   </div>
@@ -986,43 +998,43 @@ export default function ProductDetail() {
                         onClick={async (e) => {
                           if (activeColor === colorName) return;
 
-                        const pageX = e.clientX;
-                        const pageY = e.clientY;
+                          const pageX = e.clientX;
+                          const pageY = e.clientY;
 
-                        const update = () => {
-                          flushSync(() => {
-                            setActiveColor(color.name);
-                            setActiveImage(0);
-                          });
-                        };
+                          const update = () => {
+                            flushSync(() => {
+                              setActiveColor(color.name);
+                              setActiveImage(0);
+                            });
+                          };
 
-                        if (!document.startViewTransition) {
-                          update();
-                          return;
-                        }
+                          if (!document.startViewTransition) {
+                            update();
+                            return;
+                          }
 
-                        try {
-                          await animateView(update, {
-                            duration: 0.4,
-                            ease: [0.28, 0.02, 0.1, 0.99],
-                          }).new(
-                            {
-                              clipPath: [
-                                `circle(0% at ${pageX}px ${pageY}px)`,
-                                `circle(150% at ${pageX}px ${pageY}px)`,
-                              ],
-                            },
-                            { duration: 0.6, ease: "easeIn" }
-                          );
-                        } catch (err) {
-                          update();
-                        }
-                      }}
-                    >
-                      {activeColor === colorName && <Check size={12} color={colorHex === '#fff' || colorHex === '#ffffff' ? '#000' : '#fff'} strokeWidth={3} />}
-                    </button>
-                  );
-                })}
+                          try {
+                            await animateView(update, {
+                              duration: 0.4,
+                              ease: [0.28, 0.02, 0.1, 0.99],
+                            }).new(
+                              {
+                                clipPath: [
+                                  `circle(0% at ${pageX}px ${pageY}px)`,
+                                  `circle(150% at ${pageX}px ${pageY}px)`,
+                                ],
+                              },
+                              { duration: 0.6, ease: "easeIn" }
+                            );
+                          } catch (err) {
+                            update();
+                          }
+                        }}
+                      >
+                        {activeColor === colorName && <Check size={12} color={colorHex === '#fff' || colorHex === '#ffffff' ? '#000' : '#fff'} strokeWidth={3} />}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -1038,9 +1050,9 @@ export default function ProductDetail() {
                     if (actualStock === undefined) return null;
                     const isLowStock = actualStock > 0 && actualStock <= (product?.lowStockAlert || 5);
                     if (!isLowStock && actualStock > (product?.lowStockAlert || 5)) {
-                        return <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '2px', fontWeight: '600' }}>{actualStock} units available</div>;
+                      return <div style={{ fontSize: '11px', color: '#6b7280', marginTop: '2px', fontWeight: '600' }}>{actualStock} units available</div>;
                     } else if (isLowStock) {
-                        return <div style={{ fontSize: '11px', color: '#e53e3e', marginTop: '2px', fontWeight: '600' }}>Hurry! Only {actualStock} units left</div>;
+                      return <div style={{ fontSize: '11px', color: '#e53e3e', marginTop: '2px', fontWeight: '600' }}>Hurry! Only {actualStock} units left</div>;
                     }
                     return null;
                   })()}

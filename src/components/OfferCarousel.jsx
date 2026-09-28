@@ -122,7 +122,7 @@ const OfferCarousel = () => {
                 <div className="mega-sale-banner-wrapper" style={{ position: 'relative', width: '100%', height: '100%', display: 'block' }}>
                   {banner.type === 'video' ? (
                     <video
-                      src={(banner.image ? getImageUrl(banner.image) : banner.img) + '?v=1'}
+                      src={(banner.image ? getImageUrl(banner.image) : banner.img)}
                       crossOrigin="anonymous"
                       autoPlay
                       loop

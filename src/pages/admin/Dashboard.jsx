@@ -594,11 +594,11 @@ const Dashboard = () => {
 
 
             </div>
-            <div className="new-layout-container" style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '20px', marginBottom: '20px' }}>
+            <div className="new-layout-container dashboard-12-col-grid">
 
 
               {/* Recent Orders (Span 8) */}
-              <div style={{ gridColumn: 'span 8', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <div className="dashboard-col-8">
                 {/* Low Stock Alert Custom Bar Chart */}
                 <div className="premium-glass-card" style={{ backgroundColor: '#fff', padding: '24px', borderRadius: '16px', border: '1px solid #eaeaea', display: 'flex', flexDirection: 'column', boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.24)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
@@ -726,7 +726,7 @@ const Dashboard = () => {
 
               </div>
 
-              <div style={{ gridColumn: 'span 4', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <div className="dashboard-col-4">
                 <div className="premium-glass-card" style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '16px', border: '1px solid #f0f0f0', display: 'flex', flexDirection: 'column', boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.24)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                     <h3 style={{ fontSize: '15px', fontWeight: '700', margin: 0, color: '#333' }}>Top Products</h3>
@@ -849,7 +849,7 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              <div style={{ gridColumn: 'span 12', display: 'grid', gridTemplateColumns: '1fr 1fr 0.7fr', gap: '24px', marginTop: '4px' }}>
+              <div className="dashboard-col-12-bottom">
                 {/* New Arrivals */}
                 <div className="premium-glass-card" style={{ backgroundColor: '#fff', padding: '24px', borderRadius: '16px', border: '1px solid #f0f0f0', display: 'flex', flexDirection: 'column', boxShadow: '0px 3px 8px rgba(0, 0, 0, 0.24)', height: '100%' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>

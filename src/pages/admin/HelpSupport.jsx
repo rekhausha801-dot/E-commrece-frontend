@@ -253,6 +253,11 @@ const HelpSupport = () => {
           .table-container td { padding: 16px 24px; border-bottom: 1px solid #f3f4f6; font-size: 14px; color: #374151; }
           .table-row { transition: background 0.2s; }
           .table-row:hover { background: #f9fafb; }
+          
+          @media (max-width: 768px) {
+            .help-card { padding: 16px !important; }
+            .premium-search-hero { padding: 24px 16px !important; }
+          }
         `}
       </style>
       
@@ -286,7 +291,7 @@ const HelpSupport = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
               
               {/* Premium Search Hero */}
-              <div style={{ padding: '48px 32px', background: 'linear-gradient(135deg, #fffcf8 0%, #fff 100%)', borderRadius: '24px', border: '1px solid #eaddce', textAlign: 'center', position: 'relative', overflow: 'hidden', boxShadow: '0 10px 30px rgba(201,160,91,0.05)' }}>
+              <div className="premium-search-hero" style={{ padding: '48px 32px', background: 'linear-gradient(135deg, #fffcf8 0%, #fff 100%)', borderRadius: '24px', border: '1px solid #eaddce', textAlign: 'center', position: 'relative', overflow: 'hidden', boxShadow: '0 10px 30px rgba(201,160,91,0.05)' }}>
                 <div style={{ position: 'absolute', top: '-50px', right: '-50px', width: '200px', height: '200px', background: 'radial-gradient(circle, rgba(201,160,91,0.08) 0%, rgba(255,255,255,0) 70%)', borderRadius: '50%' }}></div>
                 <div style={{ position: 'absolute', bottom: '-50px', left: '-50px', width: '150px', height: '150px', background: 'radial-gradient(circle, rgba(201,160,91,0.08) 0%, rgba(255,255,255,0) 70%)', borderRadius: '50%' }}></div>
                 

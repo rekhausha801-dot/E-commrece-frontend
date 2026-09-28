@@ -1669,7 +1669,13 @@ body {
 
 @media (max-width: 768px) {
   .pdp-carousel-grid {
-    grid-template-columns: repeat(2, 1fr);
+    flex-wrap: wrap;
+    justify-content: center;
+    overflow-x: hidden;
+  }
+  .pdp-lo-card {
+    flex: 0 0 calc(50% - 10px);
+    min-width: 0;
   }
 
   .pdp-service-highlights {
@@ -3231,7 +3237,9 @@ body {
 .pdp-guarantee-item span {
   font-size: 11px;
   color: #6b7280;
-}/* Custom Reviews Section Redesign */
+}
+
+/* Custom Reviews Section Redesign */
 .pdp-custom-reviews-section {
   margin-top: 60px;
   margin-bottom: 20px;
@@ -3492,7 +3500,7 @@ body {
   max-width: 280px;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
 }
 
 .pdp-crs-card-user {
@@ -3599,6 +3607,7 @@ body {
     align-items: center;
     text-align: center;
   }
+
   .pdp-crs-bars-col {
     border-left: none;
     border-right: none;
@@ -3607,6 +3616,7 @@ body {
     padding: 20px 0;
     width: 100%;
   }
+
   .pdp-crs-badges-col {
     padding: 20px 0;
     justify-content: center;
@@ -3621,9 +3631,11 @@ body {
     grid-template-columns: 1fr !important;
     gap: 16px !important;
   }
+
   .pdp-gallery-section {
     flex-direction: column-reverse !important;
   }
+
   .pdp-thumbnails {
     flex-direction: row !important;
     overflow-x: auto;
@@ -3644,6 +3656,7 @@ body {
   .pdp-main-image {
     object-position: top center !important; /* Ensures the head is always visible */
   }
+
   .pdp-page-wrapper {
     padding: 16px !important;
     overflow-x: hidden;
@@ -3679,7 +3692,11 @@ body {
   .pdp-crs-cards-container {
     padding-bottom: 20px;
   }
+<<<<<<< HEAD
 }
 
 
 
+=======
+}
+>>>>>>> 50187f32b4ce0c7fdfa6737d700ed7d85829ea5d
