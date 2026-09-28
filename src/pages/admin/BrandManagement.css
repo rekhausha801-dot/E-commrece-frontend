@@ -894,3 +894,67 @@
   background: #fcf8f2;
   color: #C89953;
 }
+
+@media (max-width: 768px) {
+  .bm-card-header {
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 16px;
+  }
+  .bm-card-actions {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  .bm-filter-dropdown, .bm-search-bar {
+    flex: 1;
+    min-width: 100%;
+  }
+  .bm-search-bar input {
+    width: 100%;
+  }
+  .bm-table {
+    min-width: 800px;
+  }
+}
+
+@media (max-width: 768px) {
+  .ab-form-row, 
+  .ab-form-row.two-col, 
+  .ab-form-row.two-col-equal, 
+  .ab-form-row.three-col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .ab-images-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .ab-gallery-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .bm-header-title-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .ab-footer-actions {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .ab-footer-actions button {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .ab-btn-back {
+    width: 100%;
+    justify-content: center;
+  }
+}

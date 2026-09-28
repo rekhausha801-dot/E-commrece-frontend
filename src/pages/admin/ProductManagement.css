@@ -1882,29 +1882,71 @@
   .product-management-page, .list-view-container {
     min-width: 0;
     max-width: 100%;
+    overflow: hidden;
   }
 }
 
 
 @media (max-width: 1024px) {
+  .product-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 16px;
+  }
   .product-table {
     min-width: 900px; /* Force table to be wide enough to trigger horizontal scroll */
   }
 }
 
 @media (max-width: 768px) {
-  .header-actions button {
-    min-width: 100%;
-    flex: 1 1 100%;
+  .header-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
   }
-  
+  .header-actions button {
+    width: 100%;
+  }
   .list-view-header {
     width: 100%;
-    overflow: hidden;
-  }
-  
-  .header-actions {
-    gap: 8px;
   }
 }
 
+
+
+@media (max-width: 768px) {
+  .main-grid-area { grid-template-columns: 1fr; }
+  .form-row, .form-row-2, .form-row-3, .form-row-4 { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .pagination-buttons-container {
+    flex-direction: column !important;
+    gap: 16px;
+  }
+  .pagination-buttons-container > div {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  .pagination-buttons-container button {
+    width: 100%;
+    justify-content: center;
+  }
+  .pagination-dots {
+    position: static !important;
+    transform: none !important;
+    margin: 8px 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .card-body {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .spec-table {
+    min-width: 400px;
+  }
+}

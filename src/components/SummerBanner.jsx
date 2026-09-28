@@ -13,7 +13,7 @@ const defaultSlides = [
 const API_BASE_URL = 'http://localhost:5000';
 const getImageUrl = (path) => {
   if (!path) return '';
-  return path.startsWith('http') ? path : `${API_BASE_URL}${path}`;
+  return path.startsWith('http') ? path : path;
 };
 
 const SummerBanner = () => {

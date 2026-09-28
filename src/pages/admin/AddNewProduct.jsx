@@ -1046,7 +1046,7 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
           )}
 
           {/* Pagination Buttons */}
-          <div style={{ gridColumn: '1 / -1', position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 0 24px 0', marginTop: '0' }}>
+          <div className="pagination-buttons-container" style={{ gridColumn: '1 / -1', position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 0 24px 0', marginTop: '0' }}>
             <div>
               {activePage === 2 ? (
                 <button type="button" style={{ border: '1px solid #d1d5db', background: '#fff', color: '#111827', padding: '12px 20px', borderRadius: '6px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => setActivePage(1)} disabled={isSaving}><span style={{ color: '#111827' }}>&larr;</span> Previous Page</button>

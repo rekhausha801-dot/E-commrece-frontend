@@ -500,8 +500,15 @@ const ProductManagement = ({ globalSearch = '' }) => {
   const paginatedProducts = sortedProducts.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
   const handleDuplicate = (product) => {
-    const newProduct = { ...product, id: Date.now(), sku: product.sku + '-COPY', name: product.name + ' (Copy)' };
-    setProducts([newProduct, ...products]);
+    const fullProduct = product._backendData || product;
+    const newProduct = { ...fullProduct, sku: (fullProduct.sku || '') + '-COPY', name: (fullProduct.name || '') + ' (Copy)' };
+    delete newProduct.id;
+    delete newProduct._id;
+    
+    setEditingProduct(newProduct);
+    setIsEditing(true);
+    setCurrentStep(1);
+    window.scrollTo(0, 0);
   };
 
   const handleResetFilters = () => {
@@ -772,8 +779,11 @@ const ProductManagement = ({ globalSearch = '' }) => {
       {isEditing && (
         <AddNewProduct editingProduct={editingProduct} onSave={async (updatedProduct) => {
           try {
-            if (editingProduct) { 
-              const res = await updateProduct(editingProduct.id, updatedProduct);
+            const idToUpdate = editingProduct ? (editingProduct.id || editingProduct._id) : null;
+            const isValidId = idToUpdate && typeof idToUpdate === 'string' && /^[0-9a-fA-F]{24}$/.test(idToUpdate);
+            
+            if (editingProduct && isValidId) { 
+              const res = await updateProduct(idToUpdate, updatedProduct);
               if (res.success) {
                 await fetchProducts();
                 message.success('Product updated successfully!');

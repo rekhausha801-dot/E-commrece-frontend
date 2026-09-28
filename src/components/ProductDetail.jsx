@@ -370,6 +370,7 @@ export default function ProductDetail() {
     const isTshirt = currentTitle.includes('t-shirt') || currentTitle.includes('tshirt') || currentTitle.includes('shirt') || currentTitle.includes('top');
     const isDress = currentTitle.includes('dress');
     const isShoe = currentTitle.includes('shoe') || currentTitle.includes('sneaker') || currentTitle.includes('footwear');
+    const isSuit = currentTitle.includes('suit');
 
     return contextProducts.filter(p => {
       if (p.id === product.id) return false;
@@ -389,10 +390,14 @@ export default function ProductDetail() {
         keywordMatch = pTitle.includes('dress');
       } else if (isShoe) {
         keywordMatch = pTitle.includes('shoe') || pTitle.includes('sneaker') || pTitle.includes('footwear');
+      } else if (isSuit) {
+        keywordMatch = pTitle.includes('suit');
       } else {
         if (pCat === 'uncategorized' && currCat === 'uncategorized') {
           const firstWord = currentTitle.split(' ')[0];
           keywordMatch = firstWord ? pTitle.includes(firstWord) : false;
+        } else {
+          keywordMatch = false;
         }
       }
 

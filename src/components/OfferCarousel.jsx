@@ -52,7 +52,7 @@ const OfferCarousel = () => {
   const API_BASE_URL = 'http://localhost:5000';
   const getImageUrl = (path) => {
     if (!path) return '';
-    return path.startsWith('http') ? path : `http://localhost:5000${path}`;
+    return path.startsWith('http') ? path : path;
   };
 
   const finalCarouselData = dynamicBanners.length > 0 ? dynamicBanners : [

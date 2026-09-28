@@ -131,6 +131,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  flex-wrap: wrap;
 }
 
 .cm-search-box {
@@ -159,6 +160,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
 .cm-filter-dropdown {
@@ -1137,4 +1139,24 @@
   align-items: center;
   gap: 8px;
   cursor: pointer;
+}
+@media (max-width: 768px) {
+  .cm-main-layout {
+    flex-direction: column;
+  }
+  .cm-details-sidebar {
+    width: 100% !important;
+    margin-top: 16px;
+  }
+  .cm-ro-item {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .cm-actions-group {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .cm-btn-action {
+    width: 100%;
+  }
 }

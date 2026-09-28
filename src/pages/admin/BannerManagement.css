@@ -736,3 +736,31 @@
   padding: 0 4px;
   letter-spacing: 2px;
 }
+
+@media (max-width: 768px) {
+  .bam-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+  .bam-filters {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .bam-search-wrapper, .bam-select {
+    flex: 1;
+    min-width: 100%;
+  }
+  .bam-btn-outline {
+    width: 100%;
+    justify-content: center;
+  }
+  .bam-table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .bam-table {
+    min-width: 800px;
+  }
+}

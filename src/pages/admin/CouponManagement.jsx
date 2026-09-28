@@ -739,7 +739,7 @@ const CouponManagement = () => {
                     return false;
                   }}
                 >
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', minWidth: '400px', height: '140px', border: '1px dashed #d9d9d9', borderRadius: '8px', cursor: 'pointer', background: '#fafafa', padding: '10px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', height: '140px', border: '1px dashed #d9d9d9', borderRadius: '8px', cursor: 'pointer', background: '#fafafa', padding: '10px' }}>
                     {imageBase64 ? (
                       <img src={imageBase64} alt="preview" style={{ maxHeight: '120px', maxWidth: '100%', objectFit: 'contain' }} />
                     ) : (

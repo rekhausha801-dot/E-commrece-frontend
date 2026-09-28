@@ -625,140 +625,6 @@
 }
 
 /* Mobile Responsiveness */
-@media (max-width: 992px) {
-
-  .banner-title .mega,
-  .banner-title .sale {
-    font-size: 4rem;
-  }
-
-  .banner-tag-wrapper {
-    transform: translate(50%, -50%) rotate(-4deg) scale(0.6);
-  }
-
-  .trending-now,
-  .trending-modest {
-    font-size: 3.5rem;
-  }
-
-  .handbags-title {
-    font-size: 2.8rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .offer-carousel-container {
-    padding-top: 0;
-  }
-
-  .category-grid {
-    grid-template-columns: 1fr;
-    padding: 1.5rem;
-  }
-
-  .category-bar {
-    gap: 1.2rem;
-    padding: 0.5rem 1rem;
-  }
-
-  .category-bar a {
-    font-size: 0.85rem;
-  }
-
-  .banner-content {
-    left: 50%;
-    width: 90%;
-  }
-
-  .banner-title .mega,
-  .banner-title .sale {
-    font-size: 2.8rem;
-    letter-spacing: 1px;
-  }
-
-  .banner-text {
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
-  }
-
-  .banner-content .shop-now-btn {
-    padding: 0.6rem 1.5rem;
-    font-size: 0.8rem;
-  }
-
-  .split-banner {
-    flex-direction: column;
-    aspect-ratio: auto;
-  }
-
-  .split-image-half,
-  .split-text-half {
-    width: 100%;
-    padding: 0;
-  }
-
-  .split-slide-image {
-    max-height: 250px;
-    object-fit: contain;
-  }
-
-  .banner-content-handbags {
-    align-items: center;
-    text-align: center;
-    padding: 2rem 1rem;
-    width: 100%;
-    max-width: none;
-  }
-
-  .handbags-title {
-    font-size: 2.2rem;
-  }
-
-
-
-  .carousel-control {
-    width: 32px;
-    height: 32px;
-    font-size: 14px;
-  }
-
-  .carousel-control.prev {
-    left: 10px;
-  }
-
-  .carousel-control.next {
-    right: 10px;
-  }
-}
-
-@media (max-width: 576px) {
-
-  .banner-title .mega,
-  .banner-title .sale {
-    font-size: 2rem;
-  }
-
-  .banner-tag-wrapper {
-    transform: translate(50%, -50%) rotate(-4deg) scale(0.35);
-    top: 20%;
-  }
-
-  .trending-section {
-    padding: 3rem 1rem;
-  }
-
-  .trending-now,
-  .trending-modest {
-    font-size: 2.2rem;
-    margin: 0;
-    /* Remove offset on small screens */
-  }
-
-  .trending-watermark {
-    font-size: 15rem;
-  }
-}
-
 /* Offer Bar Styles */
 .offer-bar-container {
   /* width: 100%; */
@@ -937,23 +803,6 @@
   z-index: 1;
 }
 
-@media (max-width: 576px) {
-  .brands-title {
-    font-size: 28px;
-  }
-
-  .brand-card {
-    width: 240px;
-    height: 100px;
-    padding: 12px;
-  }
-
-  .brand-logo-elegant {
-    font-size: 24px;
-    letter-spacing: 1px;
-  }
-}
-
 .wishlist-btn {
   transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease !important;
 }
@@ -1003,18 +852,6 @@
 }
 
 /* OVERRIDES FOR RESPONSIVENESS */
-@media (max-width: 768px) {
-  .hero-section h1, .hero-banner h1, .hero-content h1, .hero-title {
-    font-size: 2rem !important;
-    line-height: 1.2 !important;
-    white-space: normal !important;
-    word-wrap: break-word;
-  }
-  .hero-container {
-    overflow-x: hidden;
-  }
-}
-
 .mega-banner-content {
   position: absolute;
   top: 50%;
@@ -1066,66 +903,18 @@
 }
 
 /* Responsive Styles for Banner Text */
-@media (max-width: 992px) {
-  .mega-banner-content {
-    left: 5%;
-    max-width: 400px;
-  }
-  .mega-banner-title {
-    font-size: 56px;
-  }
-}
+
+
 
 @media (max-width: 768px) {
   .mega-banner-content {
-    left: 50%;
-    transform: translate(-50%, -50%);
-    align-items: center;
-    text-align: center !important;
-    max-width: 90%;
-    padding: 10px;
-    background: rgba(0, 0, 0, 0.4);
-    border-radius: 12px;
-  }
-  .mega-banner-title {
-    font-size: clamp(28px, 8vw, 42px) !important;
-    line-height: 1.1 !important;
-    margin-bottom: 10px !important;
-  }
-  .mega-banner-subtitle {
-    font-size: 14px !important;
-    letter-spacing: 2px !important;
-  }
-  .mega-banner-desc {
-    font-size: 16px !important;
-    margin-bottom: 15px !important;
-  }
-  .mega-banner-discount {
-    font-size: 20px !important;
-    margin-bottom: 15px !important;
-  }
-  .mega-banner-discount span {
-    font-size: 24px !important;
+    top: 50% !important;
+    bottom: auto !important;
+    left: 4% !important;
+    transform: translateY(-50%) !important;
+    width: 90% !important;
+    text-align: left !important;
+    align-items: flex-start !important;
+    background: transparent !important;
   }
 }
-
-@media (max-width: 480px) {
-  .mega-banner-title {
-    font-size: clamp(24px, 10vw, 36px) !important;
-  }
-  .mega-banner-subtitle {
-    font-size: 12px !important;
-    margin-bottom: 5px !important;
-  }
-  .mega-banner-desc {
-    font-size: 14px !important;
-  }
-  .mega-banner-discount {
-    font-size: 18px !important;
-    margin-bottom: 10px !important;
-  }
-  .mega-banner-discount span {
-    font-size: 20px !important;
-  }
-}
-

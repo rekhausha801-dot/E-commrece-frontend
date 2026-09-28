@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Search, ShoppingBag, User, Heart, Menu, Bell, ChevronDown, X, ShoppingCart, Shirt, Footprints, Watch } from 'lucide-react';
+import { Search, ShoppingBag, User, Heart, Menu, Bell, ChevronDown, X, ShoppingCart, Shirt, Footprints, Watch, Tag } from 'lucide-react';
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { useCart } from '../context/CartContext';
 import { useNotification } from '../context/NotificationContext';
@@ -608,6 +608,7 @@ const Navbar = () => {
             <div className="sidebar-divider"></div>
             <li className="sidebar-item"><Link to="/account/orders"><User size={18} /> My Account</Link></li>
             <li className="sidebar-item"><Link to="/wishlist"><Heart size={18} /> Wishlist</Link></li>
+            <li className="sidebar-item"><Link to="/coupons"><Tag size={18} /> Coupons</Link></li>
             <li className="sidebar-item"><Link to="/account/notifications"><Bell size={18} /> Notifications</Link></li>
           </ul>
         </div>

@@ -342,4 +342,8 @@
   .contact-banner-left {
     flex-direction: column;
   }
+
+  .faq-list-card {
+    padding: 15px !important;
+  }
 }
