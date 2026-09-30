@@ -3185,12 +3185,12 @@ body {
 
 .pdp-luxury-btn-cart {
   flex: 1.5;
-  height: 52px;
+  height: 51px;
   border-radius: 12px;
   background: linear-gradient(135deg, #c89953 0%, #a87935 100%);
   border: none;
   color: #fff;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.3px;
   display: flex;
@@ -3210,12 +3210,12 @@ body {
 
 .pdp-luxury-btn-buy {
   flex: 1.5;
-  height: 52px;
+  height: 51px;
   border-radius: 12px;
   background: #111827;
   border: none;
   color: #fff;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.3px;
   display: flex;
