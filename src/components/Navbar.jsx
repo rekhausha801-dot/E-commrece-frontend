@@ -51,7 +51,7 @@ const Navbar = () => {
         setIsLoadingMenus(true);
         const subcatRes = await getSubcategories();
         
-        const categories = sharedCategories.filter(c => c.status === 'Active' || c.status === 'active');
+        const categories = (sharedCategories || []).filter(c => c.status === 'Active' || c.status === 'active');
         const subcategories = (subcatRes.data?.data || subcatRes.data || []).filter(s => s.status === 'Active' || s.status === 'active');
 
         const newMenus = [{ title: "Home", path: "/" }];
@@ -90,7 +90,6 @@ const Navbar = () => {
           let menuCategories = null;
           
           if (catSubs.length > 0) {
-            // Intercept to add T-Shirts before Custom T-Shirts
             const processedItems = [];
             catSubs.forEach(s => {
               if (s.name === 'Custom Tshirts' || s.name.toLowerCase() === 'custom tshirts') {
@@ -101,7 +100,6 @@ const Navbar = () => {
               }
             });
 
-            // Chunk subcategories into groups of 6 items to create multiple columns
             const chunkSize = 6;
             menuCategories = [];
             for (let i = 0; i < processedItems.length; i += chunkSize) {
@@ -117,7 +115,7 @@ const Navbar = () => {
 
           if (catNameLower === 'kurti' || catNameLower === 'kurtis') {
             womenCategory.categories[0].items.push("Kurti");
-            return; // Skip the default push since it's grouped under Women
+            return;
           }
 
           if (catNameLower === 'suits' || catNameLower === 'custom tshirts') {
@@ -132,13 +130,13 @@ const Navbar = () => {
                 womenCategory.categories[0].items.push("T-Shirts", "Custom T-Shirts");
               }
             }
-            return; // Skip the default push since it's grouped under Men/Women
+            return;
           }
 
           if (catNameLower === 'shoes' || catNameLower === 'footwear') {
              menCategory.categories[0].items.push("Shoes");
              womenCategory.categories[0].items.push("Shoes");
-             return; // Skip the default push since it's grouped under both
+             return;
           }
 
           newMenus.push({
@@ -160,6 +158,7 @@ const Navbar = () => {
         setDynamicMenus(newMenus);
       } catch (error) {
         console.error("Failed to load dynamic menus:", error);
+        setDynamicMenus([{ title: "Home", path: "/" }, { title: "Men", path: "/category/menswear" }, { title: "Women", path: "/category/womenswear" }, { title: "Beauty", path: "/category/beauty" }, { title: "Home & Living", path: "/category/home-and-living" }]);
       } finally {
         setIsLoadingMenus(false);
       }
@@ -562,7 +561,7 @@ const Navbar = () => {
             <div className="brand-icon-luxury" style={{ marginRight: '8px', display: 'flex', alignItems: 'center' }}>
               <ShoppingBag size={24} strokeWidth={1.5} color="#C89953" />
             </div>
-            <span className="brand-text-luxury">Relie shop</span>
+            <span className="brand-text-luxury">R</span>
           </Link>
           <button className="close-sidebar" onClick={toggleMobileMenu}>
             <X size={24} />
