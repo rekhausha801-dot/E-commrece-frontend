@@ -460,11 +460,23 @@ export default function CategoryPage() {
       
       return (
         <section className="category-page-banner-container" style={{ marginBottom: '30px' }}>
-          <img 
-            src={bannerImage} 
-            alt={titleText} 
-            className="category-page-banner-img"
-          />
+          {/\.(mp4|webm|ogg)$/i.test(bannerImage) ? (
+            <video
+              src={bannerImage}
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="category-page-banner-img"
+              style={{ width: '100%', display: 'block' }}
+            />
+          ) : (
+            <img 
+              src={bannerImage} 
+              alt={titleText} 
+              className="category-page-banner-img"
+            />
+          )}
         </section>
       );
     }
@@ -965,14 +977,14 @@ export default function CategoryPage() {
 
         {/* Content Area */}
         <div className="collection-content">
-          <div className="pdp-breadcrumbs" style={{ padding: '0 0 20px 0', fontSize: '14px' }}>
-            <span onClick={() => navigate('/')} style={{ color: '#666', cursor: 'pointer' }}>Home</span>
-            <span style={{ margin: '0 8px', color: '#ccc' }}>/</span>
-            <span onClick={() => navigate('/')} style={{ color: '#666', cursor: 'pointer' }}>Category</span>
-            <span style={{ margin: '0 8px', color: '#ccc' }}>/</span>
+          <div className="pdp-breadcrumbs" style={{ padding: '0 0 20px 0', fontSize: '13px', display: 'flex', flexWrap: 'wrap', gap: '6px', scrollbarWidth: 'none' }}>
+            <span onClick={() => navigate('/')} style={{ color: '#666', cursor: 'pointer', whiteSpace: 'nowrap' }}>Home</span>
+            <span style={{ margin: '0 4px', color: '#ccc' }}>/</span>
+            <span onClick={() => navigate('/')} style={{ color: '#666', cursor: 'pointer', whiteSpace: 'nowrap' }}>Category</span>
+            <span style={{ margin: '0 4px', color: '#ccc' }}>/</span>
             <span className="current" style={{ color: '#222', fontWeight: '600' }}>{currentCategory.title}</span>
           </div>
-          <div className="top-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', paddingBottom: '15px', borderBottom: 'none' }}>
+          <div className="top-bar" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', paddingBottom: '15px', borderBottom: 'none' }}>
             <div className="view-modes">
               <button 
                 className="view-btn" 
@@ -1095,8 +1107,11 @@ export default function CategoryPage() {
                 >
                 <div className="unified-card-image-wrap">
                   {product.badge && (
-                    <div className="unified-badge" style={{ background: product.badgeClass === 'badge-new' ? '#1a1d20' : '#c0a07c' }}>{product.badge}</div>
+                    <div className="unified-badge">{product.badge || '20% OFF'}</div>
                   )}
+                  
+
+
                   <button className="unified-wishlist-btn" onClick={(e) => { e.stopPropagation(); handleWishlistToggle(product); }}>
                     <Heart 
                       size={16} 
@@ -1124,16 +1139,16 @@ export default function CategoryPage() {
                   <div className="unified-card-price">
                     <span className="unified-price-new">{product.price}</span>
                     {product.originalPrice && <span className="unified-price-old">{product.originalPrice}</span>}
-                    {product.originalPrice && product.price && (
-                      <span className="unified-price-discount">
-                        {Math.round(((parseInt(product.originalPrice.replace('₹', '')) - parseInt(product.price.replace('₹', ''))) / parseInt(product.originalPrice.replace('₹', ''))) * 100)}% off
-                      </span>
-                    )}
                   </div>
                   
-                  <button className="unified-explore-btn" onClick={(e) => handleCartClick(e, product)}>
-                    <ShoppingBag size={16} />
-                    {addedToCart[product.id] ? "GO TO CART" : "ADD TO CART"}
+                  <button
+                    className="unified-explore-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/product/${product.id}`, { state: { product } });
+                    }}
+                  >
+                    Explore Collection <span className="unified-btn-arrow">→</span>
                   </button>
                   </div>
                 </motion.div>

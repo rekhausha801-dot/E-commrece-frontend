@@ -53,11 +53,23 @@ const ShopBanner = ({ selectedCategories = [] }) => {
   if (dynamicBanner) {
     return (
       <section className="shop-banner-wrapper dynamic-banner" style={{ position: 'relative', width: '100%', height: 'auto', background: 'none', padding: '10px 15px' }}>
-        <img 
-          src={bannerImage} 
-          alt={titleText} 
-          style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'contain', borderRadius: '8px', zIndex: 0 }} 
-        />
+        {/\.(mp4|webm|ogg)$/i.test(bannerImage) ? (
+          <video
+            src={bannerImage}
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="dynamic-banner-img"
+            style={{ width: '100%', display: 'block' }}
+          />
+        ) : (
+          <img 
+            src={bannerImage} 
+            alt={titleText} 
+            className="dynamic-banner-img"
+          />
+        )}
         
         {dynamicBanner.type === 'with_text' && (
           <>

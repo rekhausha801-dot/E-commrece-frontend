@@ -73,6 +73,11 @@ const ProtectedCustomerRoute = ({ children }) => {
 
 const AppContent = () => {
   const location = useLocation();
+  
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   const hideLayout =
     location.pathname.toLowerCase().startsWith('/dashboard') ||
     location.pathname.toLowerCase().startsWith('/admin/login') ||

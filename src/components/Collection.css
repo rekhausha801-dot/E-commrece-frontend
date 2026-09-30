@@ -1250,6 +1250,13 @@
   }
 }
 
+@media (max-width: 768px) {
+  .collection-main {
+    padding: 15px 12px 40px;
+    gap: 12px;
+  }
+}
+
 /* Mobile viewport adjustments for category banner */
 @media (max-width: 480px) {
   .banner-image {
@@ -1266,6 +1273,7 @@
     flex-direction: row !important;
     align-items: center !important;
     justify-content: space-between !important;
+    flex-wrap: wrap;
     gap: 10px;
     width: 100%;
   }
@@ -1280,6 +1288,9 @@
     justify-content: center !important;
     font-size: 12px !important;
     padding: 8px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .products-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -1491,7 +1502,29 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
   }
+  
+  .unified-badge {
+    padding: 2px 5px;
+    font-size: 9px;
+    top: 6px;
+    left: 6px;
+    letter-spacing: 0;
+  }
+  
+  .unified-wishlist-btn {
+    width: 24px;
+    height: 24px;
+    top: 6px;
+    right: 6px;
+  }
+  
+  .unified-wishlist-btn svg {
+    width: 12px !important;
+    height: 12px !important;
+  }
 }
+
+
 
 /* Category Page Static Banner */
 .category-page-banner-container {

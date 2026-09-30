@@ -10,6 +10,7 @@
 }
 
 .my-orders-container {
+  box-sizing: border-box;
   max-width: 1150px;
   margin: 0 auto;
   padding: 40px;
@@ -25,7 +26,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   gap: 16px;
 }
 
@@ -50,10 +51,11 @@
 .mo-header-actions {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 24px;
 }
 
-.mo-search-bar {
+.mo-search-bar { box-sizing: border-box;
   background: #FFF;
   border-radius: 24px;
   padding: 12px 20px;
@@ -302,7 +304,7 @@
   grid-template-columns: 1.5fr 1fr;
   gap: 40px;
   max-height: 70vh;
-  overflow-y: auto;
+  
 }
 
 .mo-pm-main {
@@ -398,8 +400,8 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-  max-height: 650px;
-  overflow-y: auto;
+  
+  
   padding-right: 8px;
 }
 
@@ -435,40 +437,44 @@
   padding: 20px 24px;
   border-bottom: 1px solid #F0E9DF;
   display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
   justify-content: space-between;
   align-items: center;
 }
 
 .mo-ch-left {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 24px;
+  gap: 16px;
 }
 
 .mo-ch-id {
   font-size: 15px;
   font-weight: 700;
   color: #1A1A1A;
-  white-space: nowrap;
+  word-break: break-all;
 }
 
 .mo-ch-date {
   font-size: 14px;
   color: #888;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .mo-ch-right {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 24px;
+  gap: 16px;
 }
 
 .mo-ch-total {
   font-size: 15px;
   font-weight: 600;
   color: #1A1A1A;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .mo-status-pill {
@@ -576,6 +582,10 @@
   color: #1A1A1A;
   margin: 0 0 12px 0;
   font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .mo-meta {
@@ -962,6 +972,11 @@
 @media (max-width: 900px) {
   .mo-content-layout {
     flex-direction: column;
+    align-items: stretch;
+  }
+  .mo-list {
+    width: 100%;
+    box-sizing: border-box;
   }
   .mo-sidebar {
     width: 100%;
@@ -982,20 +997,29 @@
     align-items: flex-start;
     width: 100%;
   }
-  .mo-header-actions {
-    width: 100%;
-    flex-wrap: wrap;
-    justify-content: space-between;
-  }
-  .mo-search-bar {
+  .mo-search-bar { 
+    box-sizing: border-box;
     max-width: 100%;
     width: 100%;
+    flex: 1 1 100%;
+  }
+  
+  .mo-header-actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
   }
   
   .mo-card-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
+  }
+  .mo-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
   }
   
   .mo-ch-left, .mo-ch-right {
@@ -1005,7 +1029,8 @@
     width: 100%;
   }
   
-  .mo-ch-id {
+  .mo-ch-id, .mo-ch-date, .mo-ch-total {
+    white-space: normal;
     word-break: break-all;
   }
 
@@ -1039,7 +1064,12 @@
 
   .mo-product-details {
     flex: 1;
-    min-width: 150px;
+    min-width: 0;
+    width: 100%;
+  }
+  
+  .mo-product-details h4 {
+    font-size: 14px !important;
   }
 
   .mo-card-actions-row {
@@ -1075,3 +1105,57 @@
     justify-content: center;
   }
 }
+/* Trigger update to clear Vite EBUSY */
+/* Another update */
+
+
+
+.mo-mobile-menu-btn {
+  display: none;
+  background: #FFF;
+  border: 1px solid #F0F0F0;
+  border-radius: 12px;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  color: #1A1A1A;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.mo-sidebar-overlay {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .mo-mobile-menu-btn {
+    display: inline-flex;
+  }
+  .mo-sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: -100% !important;
+    width: 280px !important;
+    height: 100vh !important;
+    z-index: 1000 !important;
+    overflow-y: auto !important;
+    transition: left 0.3s ease !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+  }
+  .mo-sidebar.open {
+    left: 0 !important;
+  }
+  .mo-sidebar-overlay.open {
+    display: block !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: rgba(0,0,0,0.5) !important;
+    z-index: 999 !important;
+  }
+}
+

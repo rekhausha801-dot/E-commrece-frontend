@@ -108,11 +108,14 @@ const ShopByOccasion = () => {
           >
             <div className="unified-card-image-wrap">
               <div 
-                className="occasion-top-icon" 
-                style={{ backgroundColor: product.iconBg }}
+                className="unified-badge" 
+                style={{ background: '#c0a07c' }}
               >
-                {product.icon}
+                20% OFF
               </div>
+              
+
+
               <button
                 className="unified-wishlist-btn"
                 onClick={(e) => toggleLike(e, product.id)}
@@ -140,7 +143,6 @@ const ShopByOccasion = () => {
               <div className="unified-card-price">
                 <span className="unified-price-new">{product.price}</span>
                 {product.originalPrice && <span className="unified-price-old">{product.originalPrice}</span>}
-                {product.discount && <span className="unified-price-discount">{product.discount}</span>}
               </div>
 
               <button 
@@ -150,7 +152,7 @@ const ShopByOccasion = () => {
                   navigate(product.link);
                 }}
               >
-                Explore Collection <FaArrowRight style={{ marginLeft: '8px' }} />
+                Explore Collection <span className="unified-btn-arrow">→</span>
               </button>
             </div>
           </motion.div>

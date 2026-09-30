@@ -266,7 +266,7 @@ const WebsiteSetting = ({ initialTab = 'Security', onProfileUpdate }) => {
             <div className="settings-inner-card" style={{ background: '#fff', border: '1px solid #f3f4f6', borderRadius: '16px', padding: '24px', marginBottom: '32px' }}>
               <h3 className="settings-section-title" style={{ marginTop: 0 }}>Personal Information</h3>
               <Form layout="vertical" form={profileForm} onFinish={handleUpdateProfile} autoComplete="off">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '24px', marginBottom: '24px' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '24px', marginBottom: '24px' }}>
                   <img src={profileData?.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(profileData?.fullName || 'Admin')}&background=random`} alt="Admin" style={{ width: '80px', height: '80px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #e5e7eb' }} />
                   <div>
                     <AntUpload
@@ -394,19 +394,21 @@ const WebsiteSetting = ({ initialTab = 'Security', onProfileUpdate }) => {
   };
 
   return (
-    <div className="settings-page-wrapper" style={{ maxWidth: '1200px', margin: '0 auto', padding: '24px' }}>
+    <div className="settings-page-wrapper" style={{ maxWidth: '1200px', width: '100%', minWidth: 0, margin: '0 auto', padding: '24px', boxSizing: 'border-box' }}>
       {/* Main Content */}
       <div className="settings-content" style={{
         width: '100%',
+        minWidth: 0,
         maxWidth: '1000px',
         background: '#fff',
         borderRadius: '16px',
         boxShadow: '0 8px 30px rgba(0,0,0,0.04)',
         border: '1px solid #f3f4f6',
-        padding: '32px'
+        padding: '32px',
+        boxSizing: 'border-box'
       }}>
         {/* Top Tabs */}
-        <div style={{ display: 'flex', gap: '12px', marginBottom: '32px', flexWrap: 'nowrap', overflowX: 'auto', paddingBottom: '4px', whiteSpace: 'nowrap' }}>
+        <div style={{ display: 'flex', gap: '12px', marginBottom: '32px', flexWrap: 'wrap', paddingBottom: '4px' }}>
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id;
             return (

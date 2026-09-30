@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Cards.css';
 import { FiArrowRight, FiWatch, FiChevronLeft, FiChevronRight, FiGrid } from 'react-icons/fi';
@@ -61,13 +61,41 @@ export default function Cards() {
 
   const scroll = (direction) => {
     if (scrollRef.current) {
-      const { scrollLeft } = scrollRef.current;
+      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
       
       const step = scrollRef.current.clientWidth;
-      const scrollTo = direction === 'left' ? scrollLeft - step : scrollLeft + step;
+      let scrollTo = direction === 'left' ? scrollLeft - step : scrollLeft + step;
+      
+      if (direction === 'right' && scrollLeft + clientWidth >= scrollWidth - 10) {
+        scrollTo = 0;
+      } else if (direction === 'left' && scrollLeft <= 0) {
+        scrollTo = scrollWidth;
+      }
+      
       scrollRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
     }
   };
+
+  useEffect(() => {
+    let autoScroll;
+    
+    const checkAndStartScroll = () => {
+      clearInterval(autoScroll);
+      if (window.innerWidth <= 768) {
+        autoScroll = setInterval(() => {
+          scroll('right');
+        }, 3000);
+      }
+    };
+    
+    checkAndStartScroll();
+    window.addEventListener('resize', checkAndStartScroll);
+    
+    return () => {
+      clearInterval(autoScroll);
+      window.removeEventListener('resize', checkAndStartScroll);
+    };
+  }, []);
 
   return (
     <div id="categories" className="collection-section">

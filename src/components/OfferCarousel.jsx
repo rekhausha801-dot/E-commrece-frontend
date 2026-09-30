@@ -55,27 +55,7 @@ const OfferCarousel = () => {
     return path.startsWith('http') ? path : path;
   };
 
-  const finalCarouselData = dynamicBanners.length > 0 ? dynamicBanners : [
-    {
-      img: bannerImageOriginal,
-      type: 'with_text',
-      title: 'Premium Collection',
-      description: 'Discover our exclusive range of luxury wear.',
-      showText: true,
-      textPosition: 'Left',
-      link: '/category/kurti'
-    },
-    {
-      // Using the local fashion video
-      img: heroVideo,
-      type: 'video',
-      title: 'Summer Trends 2026',
-      description: 'Explore the latest arrivals.',
-      showText: true,
-      textPosition: 'Center',
-      link: '/category/kurti'
-    }
-  ];
+  const finalCarouselData = dynamicBanners;
 
   useEffect(() => {
     let interval;
@@ -101,7 +81,7 @@ const OfferCarousel = () => {
         </p>
       </div>
 
-      {showCarousel && (
+      {showCarousel && finalCarouselData.length > 0 && (
         <section
           className="hero-banner-section"
           onMouseEnter={() => setIsPaused(true)}

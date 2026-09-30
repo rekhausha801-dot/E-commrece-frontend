@@ -515,7 +515,7 @@ const Payment = () => {
                   </div>
 
                   {selectedMethod === 'online' && (
-                    <div className="wallet-sub-options" onClick={(e) => e.stopPropagation()} style={{ marginTop: '20px', paddingLeft: '56px' }}>
+                    <div className="wallet-sub-options" onClick={(e) => e.stopPropagation()} style={{ marginTop: '8px', paddingLeft: '12px' }}>
                       <div className="wallet-item">
                         <input type="radio" id="o-upi" name="online_method" checked={onlineMethod === 'upi'} onChange={() => setOnlineMethod('upi')} />
                         <label htmlFor="o-upi">

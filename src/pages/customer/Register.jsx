@@ -242,7 +242,7 @@ const Register = () => {
                   size="large"
                   text="continue_with"
                   shape="pill"
-                  width="360"
+                  width="280"
                 />
               </div>
 

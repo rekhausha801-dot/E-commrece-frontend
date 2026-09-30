@@ -456,7 +456,7 @@
 /* Banner Type Selection */
 .bam-type-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: repeat(4, 1fr);
   gap: 16px;
 }
 .bam-type-card {
@@ -762,5 +762,28 @@
   }
   .bam-table {
     min-width: 800px;
+  }
+  
+  /* Drawer Mobile Fixes */
+  .bam-drawer {
+    width: 100%;
+    max-width: 100vw;
+  }
+  .bam-type-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .bam-row-2 {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .bam-type-card {
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .bam-type-icon {
+    margin-bottom: 0;
   }
 }

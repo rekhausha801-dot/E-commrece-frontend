@@ -75,12 +75,10 @@ const Cart = () => {
                 <span style={{ color: '#4a3f35' }}>My</span> <span style={{ color: 'var(--primary-color)' }}>Cart</span>
               </h1>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '10px' }}>
-              <Leaf size={14} color="var(--primary-color)" />
-              <span style={{ color: 'var(--primary-color)', fontSize: '13px', fontWeight: '600', letterSpacing: '2px', textTransform: 'uppercase' }}>
+            <div style={{ marginTop: '10px' }}>
+              <span className="cart-subtitle">
                 Review your items and proceed to checkout
               </span>
-              <span style={{ width: '40px', height: '1px', background: 'var(--primary-color)' }}></span>
             </div>
           </div>
           <div className="header-right-content">

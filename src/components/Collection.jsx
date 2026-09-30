@@ -463,7 +463,7 @@ export default function Collection({ BannerComponent, title = "Kurtis" }) {
 
         {/* Content Area */}
         <div className="collection-content">
-          <div className="pdp-breadcrumbs" style={{ padding: '0 0 20px 0', fontSize: '14px' }}>
+          <div className="pdp-breadcrumbs" style={{ padding: '0 0 20px 0', fontSize: '13px', display: 'flex', flexWrap: 'nowrap', gap: '6px', overflowX: 'auto', whiteSpace: 'nowrap', scrollbarWidth: 'none' }}>
             <span onClick={() => navigate('/')} style={{ color: '#666', cursor: 'pointer' }}>Home</span>
             <span style={{ margin: '0 8px', color: '#ccc' }}>/</span>
             <span onClick={() => navigate('/category/womenswear')} style={{ color: '#666', cursor: 'pointer' }}>Women</span>
@@ -472,7 +472,7 @@ export default function Collection({ BannerComponent, title = "Kurtis" }) {
             <span style={{ margin: '0 8px', color: '#ccc' }}>/</span>
             <span className="current" style={{ color: '#222', fontWeight: '600' }}>{title}</span>
           </div>
-          <div className="top-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', paddingBottom: '15px', borderBottom: 'none' }}>
+          <div className="top-bar" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', paddingBottom: '15px', borderBottom: 'none' }}>
             <div className="view-modes">
               <button
                 className="view-btn"
@@ -576,8 +576,11 @@ export default function Collection({ BannerComponent, title = "Kurtis" }) {
                 >
                 <div className="unified-card-image-wrap">
                   {product.badge && (
-                    <div className="unified-badge" style={{ background: product.badgeClass === 'badge-new' ? '#1a1d20' : '#c0a07c' }}>{product.badge}</div>
+                    <div className="unified-badge">{product.badge || '20% OFF'}</div>
                   )}
+                  
+
+
                   <button
                     className="unified-wishlist-btn"
                     onClick={(e) => {
@@ -610,19 +613,16 @@ export default function Collection({ BannerComponent, title = "Kurtis" }) {
                   <div className="unified-card-price">
                     <span className="unified-price-new">{product.price}</span>
                     {product.originalPrice && <span className="unified-price-old">{product.originalPrice}</span>}
-                    {product.originalPrice && product.price && (
-                      <span className="unified-price-discount">
-                        {Math.round(((parseInt(product.originalPrice.replace('₹', '')) - parseInt(product.price.replace('₹', ''))) / parseInt(product.originalPrice.replace('₹', ''))) * 100)}% off
-                      </span>
-                    )}
                   </div>
 
                   <button
                     className="unified-explore-btn"
-                    onClick={(e) => handleCartClick(e, product)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/product/${product.id}`, { state: { product } });
+                    }}
                   >
-                    <ShoppingBag size={16} />
-                    {addedToCart[product.id] ? "GO TO CART" : "ADD TO CART"}
+                    Explore Collection <span className="unified-btn-arrow">→</span>
                   </button>
                 </div>
               </motion.div>

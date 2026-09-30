@@ -606,7 +606,8 @@ const Navbar = () => {
               </li>
             ))}
             <div className="sidebar-divider"></div>
-            <li className="sidebar-item"><Link to="/account/orders"><User size={18} /> My Account</Link></li>
+            <li className="sidebar-item"><Link to="/account/profile"><User size={18} /> My Profile</Link></li>
+            <li className="sidebar-item"><Link to="/account/orders"><ShoppingBag size={18} /> My Orders</Link></li>
             <li className="sidebar-item"><Link to="/wishlist"><Heart size={18} /> Wishlist</Link></li>
             <li className="sidebar-item"><Link to="/coupons"><Tag size={18} /> Coupons</Link></li>
             <li className="sidebar-item"><Link to="/account/notifications"><Bell size={18} /> Notifications</Link></li>

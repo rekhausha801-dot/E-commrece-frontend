@@ -8,9 +8,9 @@
 .lux-summary-left {
   display: flex;
   flex-direction: column;
-  max-height: 600px;
-  overflow-y: auto;
-  padding-right: 12px;
+
+
+
 }
 
 .lux-summary-left::-webkit-scrollbar {
@@ -914,3 +914,52 @@
     font-size: 12px;
   }
 }
+
+@media (max-width: 576px) {
+  .summary-address-card {
+    padding: 16px;
+  }
+  .sac-content {
+    position: relative;
+    align-items: flex-start;
+    gap: 0;
+  }
+  .sac-icon-box {
+    display: none;
+  }
+  .sac-details {
+    padding-right: 70px;
+  }
+  .spc-edit-btn {
+    position: absolute;
+    top: -5px;
+    right: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .summary-price-card {
+    padding: 20px 16px;
+  }
+  .sp-title {
+    font-size: 20px;
+  }
+  .sp-header {
+    gap: 8px;
+  }
+  .sp-icon-box {
+    width: 32px;
+    height: 32px;
+  }
+  .sp-icon-box svg {
+    width: 16px;
+    height: 16px;
+  }
+  .price-details-card {
+    padding: 16px;
+  }
+  .price-header-title {
+    font-size: 22px;
+  }
+}
+

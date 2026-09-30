@@ -126,25 +126,9 @@
   flex-direction: column;
   gap: 20px;
   margin-bottom: 30px;
-  max-height: 380px;
-
-  overflow-y: auto;
-  padding-right: 8px;
-
 }
 
-.payment-options-list::-webkit-scrollbar {
-  width: 6px;
-}
 
-.payment-options-list::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.payment-options-list::-webkit-scrollbar-thumb {
-  background-color: #e0d5c1;
-  border-radius: 10px;
-}
 
 .payment-option-card {
   background: #fff;
@@ -280,10 +264,10 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-top: 16px;
-  padding-top: 16px;
+  margin-top: 4px;
+  padding-top: 12px;
   border-top: 1px solid #e8e3dc;
-  padding-left: 74px;
+  padding-left: 12px;
 }
 
 .wallet-item {
@@ -548,5 +532,45 @@
 @media (max-width: 900px) {
   .lux-payment-layout {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .lux-payment-page {
+    padding-top: 10px;
+    padding-bottom: 20px;
+  }
+  .payment-option-card {
+    padding: 16px;
+    gap: 12px;
+  }
+  .payment-title {
+    font-size: 24px;
+  }
+  .po-icon-box {
+    width: 32px;
+    height: 32px;
+  }
+  .po-icon-box svg {
+    width: 16px;
+    height: 16px;
+  }
+  .po-name {
+    font-size: 15px;
+  }
+  .po-name-group {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .left-trust-badges {
+    padding: 16px;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .left-trust-badge+.left-trust-badge {
+    border-left: none;
+    border-top: 1px solid #e8e3dc;
+    padding-left: 0;
+    padding-top: 16px;
   }
 }

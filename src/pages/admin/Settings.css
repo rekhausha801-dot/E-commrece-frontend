@@ -136,11 +136,22 @@
 
 .settings-form-actions {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: 12px;
   margin-top: auto;
   padding-top: 24px;
   border-top: 1px solid #f3f4f6;
+}
+
+@media (max-width: 480px) {
+  .settings-form-actions {
+    justify-content: center;
+  }
+  .settings-btn-save, .settings-btn-cancel {
+    width: 100%;
+    text-align: center;
+  }
 }
 
 .settings-btn-save {

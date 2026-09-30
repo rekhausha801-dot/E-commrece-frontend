@@ -321,3 +321,33 @@
     flex-direction: column;
   }
 }
+
+@media (max-width: 500px) {
+  .mp-info-section {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .mp-top-card, .mp-bottom-card {
+    padding: 16px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .my-profile-header {
+    flex-direction: column-reverse;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+  }
+
+  .mp-input, .mp-textarea {
+    box-sizing: border-box;
+    width: 100%;
+  }
+
+  .mp-phone-input-wrapper {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}

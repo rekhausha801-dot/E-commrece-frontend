@@ -3,7 +3,7 @@ import {
   Search, ChevronDown, CheckCircle, Package, Truck,
   MapPin, Check, XCircle, RotateCcw, Calendar, X,
   ShoppingBag, ChevronRight, Map, RotateCcw as ReturnIcon,
-  CreditCard, HelpCircle, Headphones, MoreVertical
+  CreditCard, HelpCircle, Headphones, MoreVertical, Menu
 } from 'lucide-react';
 import './MyOrders.css';
 
@@ -23,7 +23,8 @@ const MyOrders = () => {
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [expandedOrder, setExpandedOrder] = useState(null);
   const [menuOpenId, setMenuOpenId] = useState(null);
-  const [visibleCount, setVisibleCount] = useState(10);
+  const [visibleCount, setVisibleCount] = useState(4);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Cancellation States
   const [cancelModalVisible, setCancelModalVisible] = useState(false);
@@ -183,7 +184,8 @@ const MyOrders = () => {
         <div className="my-orders-container">
 
           <div className="mo-content-layout">
-            <div className="mo-sidebar">
+            <div className={`mo-sidebar-overlay ${sidebarOpen ? 'open' : ''}`} onClick={() => setSidebarOpen(false)}></div>
+            <div className={`mo-sidebar ${sidebarOpen ? 'open' : ''}`}>
               <div className="mo-filter-section">
                 <h3 className="mo-filter-title">ORDER STATUS</h3>
                 <ul className="mo-filter-list">
@@ -193,6 +195,7 @@ const MyOrders = () => {
                       <span>{status.name}</span>
                       {status.count !== null && <span className="mo-filter-count">{status.count}</span>}
                     </li>
+
                   ))}
                 </ul>
               </div>
@@ -208,6 +211,7 @@ const MyOrders = () => {
                       <span>{time.name}</span>
                       {time.count !== null && <span className="mo-filter-count">{time.count}</span>}
                     </li>
+
                   ))}
                 </ul>
               </div>
@@ -229,7 +233,10 @@ const MyOrders = () => {
             <div className="mo-list">
 
               <div className="mo-top-header">
-                <div className="mo-titles">
+                <div className="mo-titles" style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '10px' }}>
+                  <button className="mo-mobile-menu-btn" onClick={() => setSidebarOpen(true)}>
+                    <Menu size={24} />
+                  </button>
                   <h1 className="mo-title">My Orders</h1>
                 </div>
                 <div className="mo-header-actions">
@@ -262,6 +269,7 @@ const MyOrders = () => {
                             >
                               {option}
                             </div>
+
                           ))}
                         </div>
                       )}
@@ -277,156 +285,157 @@ const MyOrders = () => {
                   <>
                     {filteredOrders.slice(0, visibleCount).map((order, index) => (
                       <div key={index} className="mo-card">
-                      {/* Card Header */}
-                      <div className="mo-card-header">
-                        <div className="mo-ch-left">
-                          <span className="mo-ch-id">Order #{order.id}</span>
-                          <span className="mo-ch-date">Placed on {order.date}</span>
-                        </div>
-                        <div className="mo-ch-right">
-                          <span className="mo-ch-total">Total: ₹{order.total}</span>
-                          <div className={`mo-status-pill ${order.statusColorClass}`} style={order.statusColorHex ? { color: order.statusColorHex, backgroundColor: order.statusBg || '#fef3c7' } : {}}>
-                            {order.status === 'Delivered' && <Check size={14} />}
-                            {order.status === 'Shipped' && <Truck size={14} />}
-                            {order.status === 'Processing' && <RotateCcw size={14} />}
-                            {order.status}
+                        <div className="mo-card-header">
+                          <div className="mo-ch-left">
+                            <span className="mo-ch-id">Order #{order.id}</span>
+                            <span className="mo-ch-date">Placed on {order.date}</span>
                           </div>
-                          <div style={{ position: 'relative' }}>
-                            <MoreVertical
-                              size={20}
-                              className="mo-menu-dots-icon"
-                              onClick={() => setMenuOpenId(menuOpenId === order.id ? null : order.id)}
-                            />
-                            {menuOpenId === order.id && (
-                              <div className="mo-action-dropdown">
-                                <button onClick={() => { setExpandedOrder(order.id); setMenuOpenId(null); }}>
-                                  {expandedOrder === order.id ? 'Hide Details' : 'View Details'}
-                                </button>
-                                <button onClick={() => setMenuOpenId(null)}>Download Invoice</button>
-                                {['Pending', 'Processing'].includes(order.status) && (
-                                  <button className="mo-text-danger" onClick={() => handleCancelClick(order.id)}>Cancel Order</button>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Card Body */}
-                      <div className="mo-card-body" style={{ flexDirection: 'column', gap: '15px' }}>
-                        {order.productList.map((item, i) => (
-                          <div key={i} style={{ display: 'flex', gap: '20px', borderBottom: i < order.productList.length - 1 ? '1px solid #eee' : 'none', paddingBottom: i < order.productList.length - 1 ? '15px' : '0' }}>
-                            <div className="mo-product-img" style={{ position: 'relative', overflow: 'hidden', minWidth: '100px', width: '100px', height: '120px' }}>
-                              <img src={item.image} alt={item.title} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
-                              {item.selectedDesign && item.selectedDesign.icon && (
-                                <div style={{ position: 'absolute', top: '55%', left: '50%', transform: 'translate(-50%, -50%)', width: '35%', height: '35%', mixBlendMode: 'multiply', pointerEvents: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                  {item.colorizeImage && item.selectedDesignColor && item.selectedDesignColor !== '#000000' ? (
-                                    <div style={{
-                                      width: '100%', height: '100%',
-                                      backgroundColor: item.selectedDesignColor,
-                                      WebkitMaskImage: `url(${item.selectedDesign.icon})`,
-                                      WebkitMaskSize: 'contain',
-                                      WebkitMaskPosition: 'center',
-                                      WebkitMaskRepeat: 'no-repeat',
-                                      maskImage: `url(${item.selectedDesign.icon})`,
-                                      maskSize: 'contain',
-                                      maskPosition: 'center',
-                                      maskRepeat: 'no-repeat'
-                                    }} title={item.selectedDesign.name} />
-                                  ) : (
-                                    <>
-                                      <img src={item.selectedDesign.icon} alt={item.selectedDesign.name} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                                      {item.selectedDesignColor && item.selectedDesignColor !== '#000000' && (
-                                        <div style={{
-                                          position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
-                                          backgroundColor: item.selectedDesignColor,
-                                          mixBlendMode: 'screen',
-                                          pointerEvents: 'none',
-                                          WebkitMaskImage: `url(${item.selectedDesign.icon})`,
-                                          WebkitMaskSize: 'contain',
-                                          WebkitMaskPosition: 'center',
-                                          WebkitMaskRepeat: 'no-repeat',
-                                          maskImage: `url(${item.selectedDesign.icon})`,
-                                          maskSize: 'contain',
-                                          maskPosition: 'center',
-                                          maskRepeat: 'no-repeat'
-                                        }} />
-                                      )}
-                                    </>
+                          <div className="mo-ch-right">
+                            <span className="mo-ch-total">Total: ₹{order.total}</span>
+                            <div className={`mo-status-pill ${order.statusColorClass || ''}`} style={order.statusColorHex ? { color: order.statusColorHex, backgroundColor: order.statusBg || '#fef3c7' } : {}}>
+                              {order.status === 'Delivered' && <Check size={14} />}
+                              {order.status === 'Shipped' && <Truck size={14} />}
+                              {order.status === 'Processing' && <RotateCcw size={14} />}
+                              {order.status}
+                            </div>
+                            <div style={{ position: 'relative' }}>
+                              <MoreVertical
+                                size={20}
+                                className="mo-menu-dots-icon"
+                                onClick={() => setMenuOpenId(menuOpenId === order.id ? null : order.id)}
+                              />
+                              {menuOpenId === order.id && (
+                                <div className="mo-action-dropdown">
+                                  <button onClick={() => { setExpandedOrder(order.id); setMenuOpenId(null); }}>
+                                    {expandedOrder === order.id ? 'Hide Details' : 'View Details'}
+                                  </button>
+                                  <button onClick={() => setMenuOpenId(null)}>Download Invoice</button>
+                                  {['Pending', 'Processing'].includes(order.status) && (
+                                    <button className="mo-text-danger" onClick={() => handleCancelClick(order.id)}>Cancel Order</button>
                                   )}
                                 </div>
                               )}
-                              {item.customText && (
-                                <div style={{
-                                  position: 'absolute', top: '40%', left: '50%', transform: 'translate(-50%, -50%)',
-                                  color: item.customTextColor || '#000', fontFamily: item.customTextFont || 'inherit', fontSize: '10px',
-                                  pointerEvents: 'none', whiteSpace: 'nowrap', zIndex: 10
-                                }}>
-                                  {item.customText}
-                                </div>
-                              )}
                             </div>
+                          </div>
+                        </div>
 
-                            <div className="mo-product-details">
-                              <h4 style={{ margin: '0 0 5px 0', fontSize: '16px' }}>{item.title}</h4>
-                              <div className="mo-meta" style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                                <div style={{ color: '#666', fontSize: '13px' }}>
-                                  {item.size && <span>Size: {item.size} &bull; </span>}
-                                  {item.color && <span>Color: {item.color} </span>}
-                                  <span>&bull; Qty: {item.qty}</span>
-                                </div>
-                                {item.customText && (
-                                  <div style={{ fontSize: '12px', color: '#666' }}>
-                                    Custom Text: <span style={{ fontFamily: item.customTextFont, color: item.customTextColor }}>"{item.customText}"</span>
+                        <div className="mo-card-body" style={{ flexDirection: 'column', gap: '15px' }}>
+                          {order.productList.map((item, i) => (
+                            <div key={i} style={{ display: 'flex', flexWrap: 'wrap', borderBottom: i < order.productList.length - 1 ? '1px solid #eee' : 'none', paddingBottom: i < order.productList.length - 1 ? '15px' : '0' }}>
+                              <div className="mo-product-img" style={{ position: 'relative', overflow: 'hidden' }}>
+                                <img src={item.image} alt={item.title} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }} />
+                                {item.selectedDesign && item.selectedDesign.icon && (
+                                  <div style={{ position: 'absolute', top: '55%', left: '50%', transform: 'translate(-50%, -50%)', width: '35%', height: '35%', mixBlendMode: 'multiply', pointerEvents: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    {item.colorizeImage && item.selectedDesignColor && item.selectedDesignColor !== '#000000' ? (
+                                      <div style={{
+                                        width: '100%', height: '100%',
+                                        backgroundColor: item.selectedDesignColor,
+                                        WebkitMaskImage: `url(${item.selectedDesign.icon})`,
+                                        WebkitMaskSize: 'contain',
+                                        WebkitMaskPosition: 'center',
+                                        WebkitMaskRepeat: 'no-repeat',
+                                        maskImage: `url(${item.selectedDesign.icon})`,
+                                        maskSize: 'contain',
+                                        maskPosition: 'center',
+                                        maskRepeat: 'no-repeat'
+                                      }} title={item.selectedDesign.name} />
+                                    ) : (
+                                      <>
+                                        <img src={item.selectedDesign.icon} alt={item.selectedDesign.name} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                                        {item.selectedDesignColor && item.selectedDesignColor !== '#000000' && (
+                                          <div style={{
+                                            position: 'absolute', top: 0, left: 0, width: '100%', height: '100%',
+                                            backgroundColor: item.selectedDesignColor,
+                                            mixBlendMode: 'screen',
+                                            pointerEvents: 'none',
+                                            WebkitMaskImage: `url(${item.selectedDesign.icon})`,
+                                            WebkitMaskSize: 'contain',
+                                            WebkitMaskPosition: 'center',
+                                            WebkitMaskRepeat: 'no-repeat',
+                                            maskImage: `url(${item.selectedDesign.icon})`,
+                                            maskSize: 'contain',
+                                            maskPosition: 'center',
+                                            maskRepeat: 'no-repeat'
+                                          }} />
+                                        )}
+                                      </>
+                                    )}
                                   </div>
                                 )}
-                                {item.selectedDesign && item.selectedDesign.name && (
-                                  <div style={{ fontSize: '12px', color: '#666' }}>
-                                    Design: <span style={{ color: 'var(--primary-color)' }}>{item.selectedDesign.name}</span>
+                                {item.customText && (
+                                  <div style={{
+                                    position: 'absolute', top: '40%', left: '50%', transform: 'translate(-50%, -50%)',
+                                    color: item.customTextColor || '#000', fontFamily: item.customTextFont || 'inherit', fontSize: '10px',
+                                    pointerEvents: 'none', whiteSpace: 'nowrap', zIndex: 10
+                                  }}>
+                                    {item.customText}
                                   </div>
                                 )}
                               </div>
+
+                              <div className="mo-product-details">
+                                <h4 style={{ margin: '0 0 5px 0', fontSize: '16px' }}>{item.title}</h4>
+                                <div className="mo-meta" style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                                  <div style={{ color: '#666', fontSize: '13px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                                      {item.size && <span>Size: {item.size}</span>}
+                                      {item.size && item.color && <span>&bull;</span>}
+                                      {item.color && <span>Color: {item.color}</span>}
+                                    </div>
+                                    <div>Qty: {item.qty}</div>
+                                  </div>
+                                  {item.customText && (
+                                    <div style={{ fontSize: '12px', color: '#666' }}>
+                                      Custom Text: <span style={{ fontFamily: item.customTextFont, color: item.customTextColor }}>"{item.customText}"</span>
+                                    </div>
+                                  )}
+                                  {item.selectedDesign && item.selectedDesign.name && (
+                                    <div style={{ fontSize: '12px', color: '#666' }}>
+                                      Design: <span style={{ color: 'var(--primary-color)' }}>{item.selectedDesign.name}</span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px', paddingTop: '15px', borderTop: '1px dashed #ddd' }}>
+                            <div className="mo-qty-price" style={{ margin: 0 }}>
+                              <span>Total Price: <strong style={{ fontSize: '16px', color: 'var(--primary-color)' }}>₹{order.total}</strong></span>
+                            </div>
+
+                            <div className={`mo-delivery-status ${order.statusColorClass || ''}`} style={order.statusColorHex ? { color: order.statusColorHex, margin: 0 } : { margin: 0 }}>
+                              {order.status === 'Delivered' && <Truck size={14} />}
+                              {order.status === 'Shipped' && <Truck size={14} />}
+                              {order.status === 'Processing' && <RotateCcw size={14} />}
+                              <span>{order.deliveryText}</span>
                             </div>
                           </div>
-                        ))}
 
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px', paddingTop: '15px', borderTop: '1px dashed #ddd' }}>
-                          <div className="mo-qty-price" style={{ margin: 0 }}>
-                            <span>Total Price: <strong style={{ fontSize: '16px', color: 'var(--primary-color)' }}>₹{order.total}</strong></span>
+                          <div className="mo-card-actions-row">
+                            <button
+                              className="mo-btn-action track"
+                              onClick={() => setExpandedOrder(order.id)}
+                            >
+                              View Details
+                            </button>
                           </div>
-
-                          <div className={`mo-delivery-status ${order.statusColorClass}`} style={order.statusColorHex ? { color: order.statusColorHex, margin: 0 } : { margin: 0 }}>
-                            {order.status === 'Delivered' && <Truck size={14} />}
-                            {order.status === 'Shipped' && <Truck size={14} />}
-                            {order.status === 'Processing' && <RotateCcw size={14} />}
-                            <span>{order.deliveryText}</span>
-                          </div>
-                        </div>
-
-                        <div className="mo-card-actions-row">
-                          <button
-                            className="mo-btn-action track"
-                            onClick={() => setExpandedOrder(order.id)}
-                          >
-                            View Details
-                          </button>
                         </div>
                       </div>
-                    </div>
                     ))}
                     
                     {visibleCount < filteredOrders.length && (
-                      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginBottom: '20px' }}>
+                      <div className="mo-load-more-container" style={{ display: 'flex', justifyContent: 'center', marginTop: '20px', marginBottom: '20px' }}>
                         <button 
                           onClick={() => setVisibleCount(prev => prev + 10)}
                           style={{
                             padding: '10px 24px',
-                            backgroundColor: 'var(--primary-color)',
+                            backgroundColor: '#C89953',
                             color: '#fff',
                             border: 'none',
                             borderRadius: '8px',
                             cursor: 'pointer',
-                            fontWeight: '500',
+                            fontWeight: '600',
                             transition: 'all 0.2s ease',
                             boxShadow: '0 2px 5px rgba(0,0,0,0.1)'
                           }}
@@ -525,6 +534,7 @@ const MyOrders = () => {
                             <span className="mo-pm-item-price">₹{item.finalUnitPrice || item.price || item.total || order.total}</span>
                           </div>
                         ))}
+
                       </div>
 
                       <div className="mo-pm-price-summary">

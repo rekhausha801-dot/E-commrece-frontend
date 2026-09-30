@@ -641,7 +641,7 @@ const BannerManagement = () => {
                 <h3 className="bam-section-title">1. Banner Type</h3>
                 <p className="bam-section-subtitle">Choose how you want to create your banner.</p>
                 
-                <div className="bam-type-grid" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+                <div className="bam-type-grid">
                   <div className={`bam-type-card ${bannerType === 'image-text' ? 'active' : ''}`} onClick={() => setBannerType('image-text')} style={{ padding: '16px 12px', minHeight: 'auto' }}>
                     {bannerType === 'image-text' && <CheckCircle2 size={18} className="bam-type-check" />}
                     <div className="bam-type-icon"><Type size={20} /></div>
