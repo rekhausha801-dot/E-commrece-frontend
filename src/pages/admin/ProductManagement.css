@@ -1,4 +1,4 @@
-/* Hide scrollbars globally but keep functionality */
+/* Hide scrollbars globally but keep functionality - Updated */
 ::-webkit-scrollbar {
   display: none;
 }
@@ -220,6 +220,8 @@
   color: #666;
   margin: 0;
 }
+
+.page-dot {
   border-radius: 50%;
   background: #f0f0f0;
   color: #666;
@@ -353,7 +355,7 @@
 .rich-text-editor {
   border: 1px solid #e2e2e2;
   border-radius: 8px;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .editor-toolbar {
@@ -1069,6 +1071,7 @@
   align-items: center;
   gap: 8px;
   transition: all 0.2s;
+  white-space: nowrap;
 }
 
 .btn-solid-brown:hover {
@@ -1089,6 +1092,7 @@
 .pagination-info {
   font-size: 13px;
   color: #666;
+  white-space: nowrap;
 }
 
 .pagination-controls-right {
@@ -1795,10 +1799,12 @@
   display: flex;
   gap: 16px;
   justify-content: space-between;
+  flex-wrap: wrap;
 }
 
 .quick-action-card {
   flex: 1;
+  min-width: 120px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1859,12 +1865,13 @@
     gap: 16px;
   }
   .header-actions {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     width: 100%;
+    overflow-x: auto;
   }
   .header-actions button {
-    flex: 1;
-    min-width: calc(50% - 6px); /* Fix for 12px gap */
+    flex-shrink: 0;
+    white-space: nowrap;
   }
   .filter-row-container {
     flex-direction: column;
@@ -1882,29 +1889,133 @@
   .product-management-page, .list-view-container {
     min-width: 0;
     max-width: 100%;
+    overflow: visible;
   }
 }
 
 
 @media (max-width: 1024px) {
+  .product-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 16px;
+  }
   .product-table {
     min-width: 900px; /* Force table to be wide enough to trigger horizontal scroll */
   }
 }
 
 @media (max-width: 768px) {
-  .header-actions button {
-    min-width: 100%;
-    flex: 1 1 100%;
+  .header-actions {
+    flex-direction: row;
+    width: 100%;
+    gap: 8px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
   }
-  
+  .header-actions button {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .header-title-row {
+    flex-direction: column !important;
+    gap: 12px;
+  }
   .list-view-header {
     width: 100%;
-    overflow: hidden;
   }
-  
-  .header-actions {
-    gap: 8px;
+  /* Add product page padding reduced on mobile */
+  .add-product-page {
+    padding: 16px !important;
   }
 }
 
+
+
+@media (max-width: 768px) {
+  .main-grid-area { grid-template-columns: 1fr; }
+  .form-row, .form-row-2, .form-row-3, .form-row-4 { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  /* Keep carousel nav as a row on mobile */
+  .pagination-buttons-container {
+    flex-direction: row !important;
+    gap: 8px;
+    align-items: center;
+    padding: 12px 0 20px 0 !important;
+  }
+  .pagination-buttons-container > div {
+    width: auto;
+    display: flex;
+    justify-content: center;
+  }
+  .pagination-buttons-container > div:first-child,
+  .pagination-buttons-container > div:last-child {
+    flex: 0 0 auto;
+  }
+  .pagination-buttons-container button {
+    width: auto;
+    justify-content: center;
+    padding: 10px 16px !important;
+    font-size: 12px !important;
+  }
+  /* Dots stay centered */
+  .pagination-dots {
+    position: static !important;
+    transform: none !important;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    gap: 12px !important;
+    margin: 0 !important;
+  }
+  /* Add bottom padding so last card content not hidden */
+  .add-product-page {
+    padding-bottom: 80px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .card-body {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .spec-table {
+    min-width: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  .quick-actions-grid {
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 8px;
+    justify-content: flex-start !important;
+  }
+  
+  .quick-actions-grid::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .quick-action-card {
+    flex: 0 0 120px !important;
+  }
+}
+
+/* Mobile nav button size reduction */
+@media (max-width: 480px) {
+  .form-nav-btn {
+    padding: 8px 10px !important;
+    font-size: 11px !important;
+    gap: 4px !important;
+    white-space: nowrap;
+  }
+  .pagination-dots span {
+    width: 26px !important;
+    height: 26px !important;
+    font-size: 12px !important;
+  }
+}

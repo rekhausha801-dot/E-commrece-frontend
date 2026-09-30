@@ -52,30 +52,10 @@ const OfferCarousel = () => {
   const API_BASE_URL = 'http://localhost:5000';
   const getImageUrl = (path) => {
     if (!path) return '';
-    return path.startsWith('http') ? path : `http://localhost:5000${path}`;
+    return path.startsWith('http') ? path : path;
   };
 
-  const finalCarouselData = dynamicBanners.length > 0 ? dynamicBanners : [
-    {
-      img: bannerImageOriginal,
-      type: 'with_text',
-      title: 'Premium Collection',
-      description: 'Discover our exclusive range of luxury wear.',
-      showText: true,
-      textPosition: 'Left',
-      link: '/category/kurti'
-    },
-    {
-      // Using the local fashion video
-      img: heroVideo,
-      type: 'video',
-      title: 'Summer Trends 2026',
-      description: 'Explore the latest arrivals.',
-      showText: true,
-      textPosition: 'Center',
-      link: '/category/kurti'
-    }
-  ];
+  const finalCarouselData = dynamicBanners;
 
   useEffect(() => {
     let interval;
@@ -101,7 +81,7 @@ const OfferCarousel = () => {
         </p>
       </div>
 
-      {showCarousel && (
+      {showCarousel && finalCarouselData.length > 0 && (
         <section
           className="hero-banner-section"
           onMouseEnter={() => setIsPaused(true)}
@@ -171,7 +151,7 @@ const OfferCarousel = () => {
                         {(banner.specialLayout === true || banner.specialLayout === 'true') ? (
                           <>
                             {(banner.line1Text || !banner.line2Text) && (
-                              <h4 style={{ 
+                              <h4 className="mega-banner-subtitle" style={{ 
                                 fontFamily: banner.line1Font || "'Montserrat', sans-serif",
                                 fontSize: banner.line1Size || '16px', 
                                 color: banner.line1Color || '#ffffff', 
@@ -183,7 +163,7 @@ const OfferCarousel = () => {
                                 {banner.line1Text || 'LIMITED TIME OFFER'}
                               </h4>
                             )}
-                            <h2 style={{ 
+                            <h2 className="mega-banner-title" style={{ 
                               fontFamily: banner.line2Font || "'Playfair Display', serif", 
                               fontSize: banner.line2Size || banner.fontSize || '64px', 
                               color: banner.line2Color || '#ffffff', 
@@ -203,7 +183,7 @@ const OfferCarousel = () => {
                               })()}
                             </h2>
                             {(banner.line3Text || banner.description) && (
-                              <p style={{ 
+                              <p className="mega-banner-desc" style={{ 
                                 fontFamily: banner.line3Font || "'Inter', sans-serif",
                                 fontSize: banner.line3Size || '18px', 
                                 color: banner.line3Color || '#ffffff', 
@@ -217,7 +197,7 @@ const OfferCarousel = () => {
                           </>
                         ) : (
                           <>
-                            <h2 style={{ 
+                            <h2 className="mega-banner-title" style={{ 
                               fontFamily: '"Playfair Display", serif', 
                               fontSize: banner.fontSize || '48px', 
                               margin: '0 0 15px 0', 
@@ -228,7 +208,7 @@ const OfferCarousel = () => {
                               {banner.title}
                             </h2>
                             {banner.description && (
-                              <p style={{ fontSize: '18px', lineHeight: '1.4', marginBottom: '20px', fontWeight: '400', fontFamily: 'sans-serif' }}>
+                              <p className="mega-banner-desc" style={{ fontSize: '18px', lineHeight: '1.4', marginBottom: '20px', fontWeight: '400', fontFamily: 'sans-serif' }}>
                                 {banner.description}
                               </p>
                             )}

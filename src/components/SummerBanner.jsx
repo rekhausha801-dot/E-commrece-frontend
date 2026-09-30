@@ -13,7 +13,7 @@ const defaultSlides = [
 const API_BASE_URL = 'http://localhost:5000';
 const getImageUrl = (path) => {
   if (!path) return '';
-  return path.startsWith('http') ? path : `${API_BASE_URL}${path}`;
+  return path.startsWith('http') ? path : path;
 };
 
 const SummerBanner = () => {
@@ -38,13 +38,13 @@ const SummerBanner = () => {
     fetchBanners();
   }, []);
 
-  const slides = dynamicBanners.length > 0 ? dynamicBanners.map(b => ({
+  const slides = dynamicBanners.map(b => ({
     type: b.type === 'video' ? 'video' : 'image',
     src: b.image ? getImageUrl(b.image) : '',
     title: b.title,
     description: b.description,
     link: b.link
-  })) : defaultSlides;
+  }));
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -52,6 +52,8 @@ const SummerBanner = () => {
     }, 5000);
     return () => clearInterval(timer);
   }, [slides.length]);
+
+  if (slides.length === 0) return null;
 
   return (
     <section className="summer-banner-wrapper">

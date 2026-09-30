@@ -183,22 +183,48 @@
   background-color: #B68645;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .ps-card {
     flex-direction: column;
     align-items: flex-start;
-    padding: 32px 24px;
-    gap: 32px;
+    padding: 24px 16px;
+    gap: 24px;
+    width: 100%;
+    box-sizing: border-box;
   }
   
   .ps-content {
     flex-direction: column;
     align-items: flex-start;
     gap: 24px;
+    width: 100%;
+    box-sizing: border-box;
   }
   
+  .ps-info-section {
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .ps-name-row {
+    flex-wrap: wrap;
+  }
+
+  .ps-contact-item {
+    word-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .ps-contact-item span {
+    flex: 1;
+    min-width: 0;
+  }
+
   .ps-edit-btn {
-    align-self: flex-start;
+    align-self: stretch;
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
   }
   
   .ps-decor {

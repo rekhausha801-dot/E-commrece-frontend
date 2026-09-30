@@ -330,7 +330,7 @@ const NotificationManagement = ({ setActiveTab }) => {
 
                           {/* Extra info & Action Button */}
                           <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginTop: '4px', gap: '12px' }}>
-                            <div style={{ display: 'flex', gap: '12px' }}>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
                               {(notif.meta || (notif.type === 'Orders' ? ['₹1879', '1 Item'] : [])).map((tag, idx) => (
                                 <span key={idx} style={{ 
                                   background: '#FFF', color: '#A67634', border: '1px solid #F0EAD6',

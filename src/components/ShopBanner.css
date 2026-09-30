@@ -116,3 +116,6 @@
   }
 }
 
+
+.dynamic-banner-img { width: 100%; height: auto; display: block; object-fit: contain; border-radius: 8px; z-index: 0; }
+@media (max-width: 768px) { .dynamic-banner-img { min-height: 180px; object-fit: cover; } }

@@ -520,7 +520,7 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
                   <h3>Product Images</h3>
                 </div>
                 <div className="card-body">
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: '32px', marginBottom: '24px' }}>
+                  <div className="admin-image-upload-grid">
                     {/* Cover Image */}
                     <div className="cover-image-upload">
                       <label style={{ fontSize: '12px', fontWeight: '700', marginBottom: '12px', display: 'block', color: '#111827' }}>Cover Image <span className="req" style={{ color: '#dc2626' }}>*</span></label>
@@ -621,7 +621,7 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
                       Home Page Visibility
                     </h4>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', alignItems: 'end' }}>
+                    <div className="admin-2col-grid">
                       <div className="form-group" style={{ margin: 0 }}>
                         <label style={{ fontSize: '12px', fontWeight: '700', marginBottom: '8px', display: 'block', color: '#374151' }}>Select Display Section</label>
                         <CustomSelect
@@ -689,7 +689,7 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
                   <Tag size={20} color="#a66c24" />
                 </div>
                 <div className="card-body">
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '20px' }}>
+                  <div className="admin-3col-grid" style={{ marginBottom: '20px' }}>
                     <div className="form-group">
                       <label style={{ fontSize: '11px', fontWeight: '700', marginBottom: '8px', display: 'block', color: '#111827' }}>Base Price (₹)</label>
                       <input type="text" placeholder="Enter price" value={price} onChange={e => setPrice(e.target.value)} style={{ width: '100%', boxSizing: 'border-box' }} />
@@ -703,7 +703,7 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
                       <input type="text" placeholder="Enter discount" value={discount} onChange={e => setDiscount(e.target.value)} style={{ width: '100%', boxSizing: 'border-box' }} />
                     </div>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '20px' }}>
+                  <div className="admin-3col-grid" style={{ marginBottom: '20px' }}>
                     <div className="form-group">
                       <label style={{ fontSize: '11px', fontWeight: '700', marginBottom: '8px', display: 'block', color: '#111827' }}>Cost Price (₹)</label>
                       <input type="text" placeholder="Enter cost price" value={costPrice} onChange={e => setCostPrice(e.target.value)} style={{ width: '100%', boxSizing: 'border-box' }} />
@@ -717,7 +717,7 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
                       <input type="text" placeholder="Enter alert quantity" value={lowStockAlert} onChange={e => setLowStockAlert(e.target.value)} style={{ width: '100%', boxSizing: 'border-box' }} />
                     </div>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+                  <div className="admin-3col-grid">
                     <div className="form-group">
                       <label style={{ fontSize: '11px', fontWeight: '700', marginBottom: '8px', display: 'block', color: '#111827' }}>Sale Price (₹)</label>
                       <input
@@ -751,7 +751,7 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
                     </div>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginTop: '20px' }}>
+                  <div className="admin-3col-grid" style={{ marginTop: '20px' }}>
                     <div className="form-group">
                       <label style={{ fontSize: '11px', fontWeight: '700', marginBottom: '8px', display: 'block', color: '#111827' }}>Number of Reviews</label>
                       <input type="number" min="0" placeholder="e.g. 18" value={initialReviews} onChange={e => setInitialReviews(e.target.value)} style={{ width: '100%', boxSizing: 'border-box' }} />
@@ -769,7 +769,7 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
                     </div>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginTop: '20px', padding: '16px', background: '#fdfbf7', borderRadius: '8px', border: '1px solid #f9eedc' }}>
+                  <div className="admin-3col-grid" style={{ marginTop: '20px', padding: '16px', background: '#fdfbf7', borderRadius: '8px', border: '1px solid #f9eedc' }}>
                     <div className="form-group" style={{ margin: 0 }}>
                       <label style={{ fontSize: '11px', fontWeight: '700', marginBottom: '8px', display: 'block', color: '#111827' }}>GST Rate</label>
                       <CustomSelect
@@ -822,7 +822,7 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
                 <div className="card-body">
                   <div className="variant-row" style={{ marginBottom: '24px' }}>
                     <label style={{ display: 'block', margin: 0, fontWeight: 700, fontSize: '13px', color: '#111827', marginBottom: '16px' }}>Size</label>
-                    <div className="variant-options" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+                    <div className="variant-options" style={{ display: 'flex', gap: '12px', flexWrap: 'nowrap', alignItems: 'center', overflowX: 'auto', paddingBottom: '4px' }}>
                       {SIZES_LIST.map(size => {
                         const isActive = selectedSizes.includes(size);
                         return (
@@ -1046,12 +1046,12 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
           )}
 
           {/* Pagination Buttons */}
-          <div style={{ gridColumn: '1 / -1', position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 0 24px 0', marginTop: '0' }}>
+          <div className="pagination-buttons-container" style={{ gridColumn: '1 / -1', position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 0 24px 0', marginTop: '0' }}>
             <div>
               {activePage === 2 ? (
-                <button type="button" style={{ border: '1px solid #d1d5db', background: '#fff', color: '#111827', padding: '12px 20px', borderRadius: '6px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => setActivePage(1)} disabled={isSaving}><span style={{ color: '#111827' }}>&larr;</span> Previous Page</button>
+                <button type="button" className="form-nav-btn" style={{ border: '1px solid #d1d5db', background: '#fff', color: '#111827', padding: '12px 20px', borderRadius: '6px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => setActivePage(1)} disabled={isSaving}><span style={{ color: '#111827' }}>&larr;</span> Previous Page</button>
               ) : (
-                <button type="button" style={{ border: '1px solid #d1d5db', background: '#fff', color: '#111827', padding: '12px 20px', borderRadius: '6px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer', margin: 0 }} onClick={onCancel} disabled={isSaving}>Cancel</button>
+                <button type="button" className="form-nav-btn" style={{ border: '1px solid #d1d5db', background: '#fff', color: '#111827', padding: '12px 20px', borderRadius: '6px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer', margin: 0 }} onClick={onCancel} disabled={isSaving}>Cancel</button>
               )}
             </div>
 
@@ -1062,9 +1062,9 @@ const AddNewProduct = ({ editingProduct, onSave, onCancel }) => {
 
             <div>
               {activePage === 1 ? (
-                <button type="button" style={{ background: '#a66c24', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: '6px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => setActivePage(2)} disabled={isSaving}>Next Page <ArrowRight size={16} /></button>
+                <button type="button" className="form-nav-btn" style={{ background: '#a66c24', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: '6px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => setActivePage(2)} disabled={isSaving}>Next Page <ArrowRight size={16} /></button>
               ) : (
-                <button type="button" style={{ background: isSaving ? '#d1d5db' : '#a66c24', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: '6px', fontSize: '13px', fontWeight: 'bold', cursor: isSaving ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={handleSaveClick} disabled={isSaving}>{isSaving ? 'Saving...' : <>Save Product <Save size={16} /></>}</button>
+                <button type="button" className="form-nav-btn" style={{ background: isSaving ? '#d1d5db' : '#a66c24', color: '#fff', border: 'none', padding: '12px 24px', borderRadius: '6px', fontSize: '13px', fontWeight: 'bold', cursor: isSaving ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }} onClick={handleSaveClick} disabled={isSaving}>{isSaving ? 'Saving...' : <>Save Product <Save size={16} /></>}</button>
               )}
             </div>
           </div>

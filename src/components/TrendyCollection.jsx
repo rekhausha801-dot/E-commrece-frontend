@@ -282,6 +282,12 @@ const TrendyCollection = () => {
             style={{ cursor: 'pointer' }}
           >
             <div className="unified-card-image-wrap">
+              <div className="unified-badge">
+                20% OFF
+              </div>
+              
+
+              
               <button
                 className="unified-wishlist-btn"
                 onClick={(e) => toggleLike(e, product.id)}
@@ -290,36 +296,6 @@ const TrendyCollection = () => {
                 {likedIds.includes(product.id) ? <FaHeart color="#ff4d4f" /> : <FaRegHeart color="#555" />}
               </button>
               <img src={product.image || 'https://placehold.co/400x500/eaeaea/8f7a5b?text=No+Image'} alt={product.title} onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/400x500/eaeaea/8f7a5b?text=No+Image"; }} />
-              {(product.stockLimit <= 0 || product.countInStock <= 0) && (
-                <div style={{
-                  position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-                  background: 'rgba(255,255,255,0.6)', zIndex: 3,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center'
-                }}>
-                  <span style={{
-                    background: '#dc2626', color: '#fff', padding: '8px 16px',
-                    fontWeight: 'bold', fontSize: '14px', borderRadius: '4px', letterSpacing: '1px'
-                  }}>SOLD OUT</span>
-                </div>
-              )}
-              {product.timer && (
-                <div className="unified-timer-pill" style={{
-                  position: 'absolute',
-                  bottom: '10px',
-                  left: '10px',
-                  backgroundColor: '#fcecdb',
-                  color: '#d36a44',
-                  padding: '4px 10px',
-                  borderRadius: '20px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-                  zIndex: 2
-                }}>
-                  <CountdownTimer targetDateStr={product.timer} stockLimit={product.stockLimit} />
-                </div>
-              )}
             </div>
 
             <div className="unified-card-info">
@@ -339,14 +315,16 @@ const TrendyCollection = () => {
               <div className="unified-card-price">
                 <span className="unified-price-new">{product.price}</span>
                 {product.originalPrice && <span className="unified-price-old">{product.originalPrice}</span>}
-                {product.discount && <span className="unified-price-discount">{product.discount}</span>}
               </div>
 
               <button
-                className="unified-add-cart-btn"
-                onClick={(e) => handleCartClick(e, product)}
+                className="unified-explore-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`/product/${product.id}`, { state: { product } });
+                }}
               >
-                <FaShoppingBag style={{ marginRight: '8px' }} /> {cartItems.some(item => item.id === product.id) ? "Go to Cart" : "Add to Cart"}
+                Explore Collection <span className="unified-btn-arrow">→</span>
               </button>
             </div>
           </motion.div>

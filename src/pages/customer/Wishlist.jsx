@@ -141,7 +141,7 @@ const Wishlist = () => {
           <h1 className="lux-banner-title">My Wishlist</h1>
           <h2 className="lux-banner-subtitle">Your Favorites, Always Within Reach</h2>
           <p className="lux-banner-desc">Save now. Shop whenever you're ready.</p>
-          <button className="lux-btn-dark" onClick={() => navigate('/collection')}>
+          <button className="lux-btn-dark" style={{ marginTop: '16px', display: 'inline-block', width: 'auto', padding: '10px 24px', fontSize: '14px' }} onClick={() => navigate('/collection')}>
             Continue Shopping <ArrowRight size={14} />
           </button>
         </div>
@@ -160,7 +160,7 @@ const Wishlist = () => {
             </div>
           </div>
           <div className="lux-controls-right">
-            <button className="lux-btn-dark" onClick={() => {
+            <button className="lux-btn-dark" style={{ display: 'inline-block', width: 'auto', padding: '10px 24px', fontSize: '14px' }} onClick={() => {
               if (wishlistItems.length > 0) {
                 wishlistItems.forEach(item => addToCart(item));
                 message.success({
@@ -248,7 +248,7 @@ const Wishlist = () => {
             <Heart size={48} color="#ddd" style={{ marginBottom: '16px' }} />
             <h3 style={{ margin: '0 0 8px 0', fontSize: '20px', color: '#222' }}>Your wishlist is empty</h3>
             <p style={{ color: '#777', margin: '0 0 24px 0' }}>Explore our collection and add your favorite items here.</p>
-            <button className="lux-btn-dark" onClick={() => navigate('/collection')}>Explore Now</button>
+            <button className="lux-btn-dark" style={{ display: 'inline-block', width: 'auto', padding: '10px 24px', fontSize: '14px' }} onClick={() => navigate('/collection')}>Explore Now</button>
           </div>
         ) : (
           <div className={`unified-products-grid ${viewMode === 'list' ? 'list-view' : 'sidebar-closed'}`} style={{ padding: 0, marginBottom: '80px' }}>
@@ -257,63 +257,11 @@ const Wishlist = () => {
                 No items match your search or filter.
               </div>
             ) : displayedItems.map(product => (
-              <motion.div
+              <SimilarProductCard
                 key={product.id}
-                layout
-                initial={{ opacity: 0, scale: 0.8, y: 30 }}
-                whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                viewport={{ once: true, margin: "0px 0px -50px 0px" }}
-                transition={{ type: "spring", damping: 20, stiffness: 300 }}
-                className="unified-product-card"
-                onClick={() => navigate(`/product/${product.id}`, { state: { product } })}
-              >
-                <div className="unified-card-image-wrap">
-                  {product.badge && (
-                    <div className="unified-badge" style={{ background: product.badgeClass === 'badge-new' ? '#1a1d20' : '#c0a07c' }}>{product.badge}</div>
-                  )}
-                  <button
-                    className="unified-wishlist-btn"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleWishlist(product);
-                    }}
-                  >
-                    <Heart
-                      size={16}
-                      fill={isInWishlist(product.id) ? "#ff4d4f" : "none"}
-                      color={isInWishlist(product.id) ? "#ff4d4f" : "#555"}
-                      style={{ transition: 'all 0.3s ease' }}
-                    />
-                  </button>
-                  <img src={product.image || ''} alt={product.title} onError={(e) => { removeFromWishlist(product.id); }} />
-                </div>
-
-                <div className="unified-card-info">
-                  <h3 className="unified-card-title">{product.title}</h3>
-
-                  <div className="unified-card-rating">
-                    <div className="unified-stars">
-                      {[1, 2, 3, 4, 5].map((_, i) => (
-                        <Star key={i} size={14} fill={i < (product.rating || 5) ? "#8f7a5b" : "#e0e0e0"} color={i < (product.rating || 5) ? "#8f7a5b" : "#e0e0e0"} />
-                      ))}
-                    </div>
-                    <span className="unified-reviews">({product.reviews || '2.5k'})</span>
-                  </div>
-
-                  <div className="unified-card-price">
-                    <span className="unified-price-new">{product.price}</span>
-                    {product.originalPrice && <span className="unified-price-old">{product.originalPrice}</span>}
-                  </div>
-
-                  <button
-                    className="unified-explore-btn"
-                    onClick={(e) => handleCartClick(e, product)}
-                  >
-                    <ShoppingBag size={16} />
-                    {addedToCart[product.id] ? "GO TO CART" : "ADD TO CART"}
-                  </button>
-                </div>
-              </motion.div>
+                product={product}
+                onQuickView={(p) => navigate(`/product/${p.id}`, { state: { product: p } })}
+              />
             ))}
           </div>
         )}
@@ -396,7 +344,7 @@ const Wishlist = () => {
             <p>Add it to your cart and enjoy a seamless checkout experience.</p>
           </div>
           <div className="lux-bb-right">
-            <button className="lux-btn-dark" onClick={() => navigate('/collection')}>Continue Shopping</button>
+            <button className="lux-btn-dark" style={{ display: 'inline-block', width: 'auto', padding: '10px 24px', fontSize: '14px', marginTop: '12px' }} onClick={() => navigate('/collection')}>Continue Shopping</button>
             <button className="lux-btn-outline" onClick={() => navigate('/cart')}><ShoppingCart size={14} /> View Cart</button>
           </div>
         </div>

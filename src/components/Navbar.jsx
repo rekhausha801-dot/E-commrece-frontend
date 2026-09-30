@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Search, ShoppingBag, User, Heart, Menu, Bell, ChevronDown, X, ShoppingCart, Shirt, Footprints, Watch } from 'lucide-react';
+import { Search, ShoppingBag, User, Heart, Menu, Bell, ChevronDown, X, ShoppingCart, Shirt, Footprints, Watch, Tag } from 'lucide-react';
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { useCart } from '../context/CartContext';
 import { useNotification } from '../context/NotificationContext';
@@ -392,7 +392,7 @@ const Navbar = () => {
 
           <div className="action-icons">
             {/* Search Icon Expanding */}
-            <div className={`search-expand-wrapper desktop-only ${isSearchOpen ? 'open' : ''}`} ref={searchRef}>
+            <div className={`search-expand-wrapper ${isSearchOpen ? 'open' : ''}`} ref={searchRef}>
               <div className="icon-btn search-trigger" onClick={() => setIsSearchOpen(true)}>
                 <div className="icon-badge-wrapper">
                   <Search size={22} />
@@ -487,11 +487,6 @@ const Navbar = () => {
                 )}
               </div>
             </div>
-
-            {/* Mobile Search Icon */}
-            <button className="icon-btn mobile-only">
-              <Search size={22} />
-            </button>
 
             {/* Wishlist Link */}
             <Link to="/wishlist" className="icon-btn action-item desktop-only" style={{ textDecoration: 'none', color: 'inherit' }}>
@@ -611,8 +606,10 @@ const Navbar = () => {
               </li>
             ))}
             <div className="sidebar-divider"></div>
-            <li className="sidebar-item"><Link to="/account/orders"><User size={18} /> My Account</Link></li>
+            <li className="sidebar-item"><Link to="/account/profile"><User size={18} /> My Profile</Link></li>
+            <li className="sidebar-item"><Link to="/account/orders"><ShoppingBag size={18} /> My Orders</Link></li>
             <li className="sidebar-item"><Link to="/wishlist"><Heart size={18} /> Wishlist</Link></li>
+            <li className="sidebar-item"><Link to="/coupons"><Tag size={18} /> Coupons</Link></li>
             <li className="sidebar-item"><Link to="/account/notifications"><Bell size={18} /> Notifications</Link></li>
           </ul>
         </div>

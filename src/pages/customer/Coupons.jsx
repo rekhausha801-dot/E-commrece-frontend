@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { getOffers, getActiveBanners, checkCouponUsageApi } from '../../services/api';
 import { message, Modal } from 'antd';
 import {
@@ -22,6 +22,27 @@ const Coupons = () => {
   const [activeBanner, setActiveBanner] = useState(null);
   const [loading, setLoading] = useState(true);
   const [couponUsedModalOpen, setCouponUsedModalOpen] = useState(false);
+  const featuresScrollRef = useRef(null);
+
+  // Auto-scroll features section on mobile
+  useEffect(() => {
+    const el = featuresScrollRef.current;
+    if (!el) return;
+    const isMobile = window.innerWidth <= 600;
+    if (!isMobile) return;
+
+    let scrollAmount = 0;
+    const cardWidth = el.scrollWidth / 4;
+    const interval = setInterval(() => {
+      scrollAmount += cardWidth;
+      if (scrollAmount >= el.scrollWidth - el.clientWidth + cardWidth) {
+        scrollAmount = 0;
+      }
+      el.scrollTo({ left: scrollAmount, behavior: 'smooth' });
+    }, 2500);
+
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -133,7 +154,11 @@ const Coupons = () => {
       </Modal>
       {/* Custom Hero Banner Replicating the Image */}
       <div className="nc-hero-container" style={{ position: 'relative', padding: '0', background: 'transparent', boxShadow: 'none', margin: '0 0 24px 0', borderRadius: '0', width: '100%', maxWidth: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <img src={bannerUrl} alt="Coupon Banner" style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'contain', borderRadius: '0', margin: '0', padding: '0' }} onError={(e) => { e.target.onerror = null; e.target.src = couponBanner; console.error("Banner image failed to load, falling back to default"); }} />
+        {bannerUrl && /\.(mp4|webm|ogg)$/i.test(bannerUrl) ? (
+          <video src={bannerUrl} autoPlay muted loop playsInline style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'contain', borderRadius: '0', margin: '0', padding: '0' }} />
+        ) : (
+          <img src={bannerUrl} alt="Coupon Banner" style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'contain', borderRadius: '0', margin: '0', padding: '0' }} onError={(e) => { e.target.onerror = null; e.target.src = couponBanner; console.error("Banner image failed to load, falling back to default"); }} />
+        )}
         {activeBanner && activeBanner.type === 'with_text' && (
           <div style={{
             position: 'absolute',
@@ -262,7 +287,7 @@ const Coupons = () => {
         </div>
 
         {/* Features Section */}
-        <div className="nc-features-section">
+        <div className="nc-features-section" ref={featuresScrollRef}>
           <div className="nc-feature">
             <div className="nc-feature-icon"><Tag size={20} /></div>
             <div className="nc-feature-text">

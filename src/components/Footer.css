@@ -271,10 +271,31 @@
 
 @media (max-width: 768px) {
   .footer-main {
-    flex-direction: column;
-    padding: 0 20px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px 15px;
+    padding: 0 15px;
   }
+  
+  .footer-col-brand {
+    grid-column: 1 / -1;
+  }
+
+  .footer-col {
+    min-width: 0;
+  }
+
+  .footer-col h4 {
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+
+  .footer-col ul li a {
+    font-size: 12px;
+  }
+
   .footer-support-box {
+    grid-column: 1 / -1;
     margin-top: 20px;
   }
 }

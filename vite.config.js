@@ -7,11 +7,15 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
     headers: {
-      "Cross-Origin-Opener-Policy": "unsafe-none",
+      "Cross-Origin-Opener-Policy": "same-origin-allow-popups",
       "Cross-Origin-Embedder-Policy": "unsafe-none"
     },
     proxy: {
       '/api': {
+        target: 'http://localhost:5000',
+        changeOrigin: true
+      },
+      '/uploads': {
         target: 'http://localhost:5000',
         changeOrigin: true
       }

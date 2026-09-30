@@ -1250,6 +1250,13 @@
   }
 }
 
+@media (max-width: 768px) {
+  .collection-main {
+    padding: 15px 12px 40px;
+    gap: 12px;
+  }
+}
+
 /* Mobile viewport adjustments for category banner */
 @media (max-width: 480px) {
   .banner-image {
@@ -1263,11 +1270,28 @@
   }
 
   .top-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 15px;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: wrap;
+    gap: 10px;
+    width: 100%;
   }
-
+  
+  .top-bar .view-modes, .top-bar .sort-container {
+    flex: 1;
+    width: 100%;
+  }
+  
+  .top-bar .view-btn, .top-bar .sort-select {
+    width: 100% !important;
+    justify-content: center !important;
+    font-size: 12px !important;
+    padding: 8px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
   .products-grid {
     grid-template-columns: repeat(2, 1fr);
     /* 2 columns on mobile */
@@ -1323,7 +1347,7 @@
 
 .unified-card-image-wrap {
   position: relative;
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 1 / 1;
   overflow: hidden;
   border-radius: 8px 8px 0 0;
   background: #f9f9f9;
@@ -1436,12 +1460,12 @@
   color: #333;
   border: none;
   border-radius: 6px;
-  padding: 10px;
+  padding: 8px 16px;
   font-size: 0.85rem;
   font-weight: 700;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 8px;
   cursor: pointer;
   transition: background-color 0.2s;
@@ -1478,26 +1502,48 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
   }
+  
+  .unified-badge {
+    padding: 2px 5px;
+    font-size: 9px;
+    top: 6px;
+    left: 6px;
+    letter-spacing: 0;
+  }
+  
+  .unified-wishlist-btn {
+    width: 24px;
+    height: 24px;
+    top: 6px;
+    right: 6px;
+  }
+  
+  .unified-wishlist-btn svg {
+    width: 12px !important;
+    height: 12px !important;
+  }
 }
+
+
 
 /* Category Page Static Banner */
 .category-page-banner-container {
   position: relative;
   width: 100%;
-  height: 400px;
+  height: auto;
   overflow: hidden;
 }
 
 .category-page-banner-img {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
+  object-fit: contain;
   object-position: center;
   display: block;
 }
 
 @media (max-width: 768px) {
   .category-page-banner-container {
-    height: 160px; /* Reduces height on mobile to maintain banner aspect ratio */
+    height: auto; 
   }
 }

@@ -343,13 +343,13 @@
 
 @media (max-width: 600px) {
   .lux-address-layout {
-    padding: 0 16px;
-    margin: 20px auto;
+    padding: 0 12px;
+    margin: 10px auto;
   }
 
   .lux-address-page {
-    padding-top: 20px;
-    padding-bottom: 40px;
+    padding-top: 10px;
+    padding-bottom: 20px;
   }
 
   .lux-address-card {
@@ -377,5 +377,18 @@
   
   .card-top-row {
     margin-bottom: 8px;
+  }
+
+  .lux-address-header-row h2 {
+    font-size: 14px;
+  }
+
+  .lux-address-header-row {
+    gap: 12px;
+  }
+
+  .add-new-btn {
+    font-size: 11px;
+    white-space: nowrap;
   }
 }

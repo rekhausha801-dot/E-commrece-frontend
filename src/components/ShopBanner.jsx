@@ -43,7 +43,7 @@ const ShopBanner = ({ selectedCategories = [] }) => {
 
   const getImageUrl = (path) => {
     if (!path) return '';
-    return path.startsWith('http') ? path : `http://localhost:5000${path}`;
+    return path.startsWith('http') ? path : path;
   };
 
   const titleText = dynamicBanner && dynamicBanner.title ? dynamicBanner.title : "EXCLUSIVE COLLECTION";
@@ -52,12 +52,24 @@ const ShopBanner = ({ selectedCategories = [] }) => {
 
   if (dynamicBanner) {
     return (
-      <section className="shop-banner-wrapper" style={{ position: 'relative', width: '100%', height: '400px', background: 'none' }}>
-        <img 
-          src={bannerImage} 
-          alt={titleText} 
-          style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', top: 0, left: 0, zIndex: 0 }} 
-        />
+      <section className="shop-banner-wrapper dynamic-banner" style={{ position: 'relative', width: '100%', height: 'auto', background: 'none', padding: '10px 15px' }}>
+        {/\.(mp4|webm|ogg)$/i.test(bannerImage) ? (
+          <video
+            src={bannerImage}
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="dynamic-banner-img"
+            style={{ width: '100%', display: 'block' }}
+          />
+        ) : (
+          <img 
+            src={bannerImage} 
+            alt={titleText} 
+            className="dynamic-banner-img"
+          />
+        )}
         
         {dynamicBanner.type === 'with_text' && (
           <>
@@ -81,12 +93,12 @@ const ShopBanner = ({ selectedCategories = [] }) => {
               alignItems: dynamicBanner.textPosition === 'Center' ? 'center' : 'flex-start'
             }}>
               {dynamicBanner.description && (
-                <div style={{ fontSize: '14px', fontWeight: '600', letterSpacing: '2px', marginBottom: '15px', color: '#e0d0b8' }}>
+                <div style={{ fontSize: 'clamp(10px, 3vw, 14px)', fontWeight: '600', letterSpacing: '2px', marginBottom: '15px', color: '#e0d0b8' }}>
                   {dynamicBanner.description}
                 </div>
               )}
               {dynamicBanner.title && (
-                <h2 style={{ fontSize: '48px', fontWeight: '600', lineHeight: '1.2', marginBottom: '25px', whiteSpace: 'pre-line' }}>
+                <h2 style={{ fontSize: 'clamp(20px, 6vw, 48px)', fontWeight: '600', lineHeight: '1.2', marginBottom: '25px', whiteSpace: 'pre-line' }}>
                   {dynamicBanner.title}
                 </h2>
               )}

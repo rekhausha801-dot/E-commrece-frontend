@@ -31,8 +31,8 @@ const ShippingPolicy = () => {
         </div>
       </div>
 
-      <div className="faq-main-container" style={{ padding: '40px 20px', maxWidth: '800px', margin: '0 auto' }}>
-        <div className="faq-list-card" style={{ padding: '30px', backgroundColor: '#fff', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)' }}>
+      <div className="faq-main-container" style={{ padding: '40px 20px', maxWidth: '800px', margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
+        <div className="faq-list-card" style={{ padding: '30px', backgroundColor: '#fff', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', width: '100%', boxSizing: 'border-box' }}>
           <h2 style={{ fontSize: '24px', color: '#111827', marginBottom: '24px', paddingBottom: '12px', borderBottom: '1px solid #e5e7eb' }}>
             Our Shipping Policy
           </h2>

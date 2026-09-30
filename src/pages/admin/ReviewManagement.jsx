@@ -300,7 +300,7 @@ const ReviewManagement = () => {
     <div style={{ padding: '0 8px 32px 8px' }}>
       {/* Header Actions */}
       <div style={{
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        display: 'flex', flexWrap: 'wrap', gap: '16px', justifyContent: 'space-between', alignItems: 'center',
         marginBottom: '12px', padding: '12px 20px', background: '#fff',
         borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
         border: '1px solid #f3f4f6'

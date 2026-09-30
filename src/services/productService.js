@@ -184,8 +184,8 @@ const mapToBackendFormat = (data) => {
   const existingImages = [];
 
   // Cover Image
-  if (data.imgFile instanceof File) {
-    formData.append('coverImage', data.imgFile);
+  if ((data.imgFile instanceof File || data.imgFile instanceof Blob)) {
+    formData.append('coverImage', data.imgFile, data.imgFile.name || 'cover.jpg');
   } else if (data.existingImgUrl) {
     existingImages.push({
       url: data.existingImgUrl,
@@ -197,8 +197,8 @@ const mapToBackendFormat = (data) => {
   // Gallery Images
   if (data.gallery) {
     Object.values(data.gallery).forEach((item) => {
-      if (item instanceof File) {
-        formData.append('galleryImages', item);
+      if ((item instanceof File || item instanceof Blob)) {
+        formData.append('galleryImages', item, item.name || 'gallery.jpg');
       } else if (typeof item === 'string' && item !== '') {
         // Find existing public_id if it exists
         const oldImg = data.existingImages?.find(img => img.url === item);

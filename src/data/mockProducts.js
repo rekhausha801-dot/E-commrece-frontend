@@ -108,6 +108,41 @@ export const GLOBAL_PRODUCTS = [
       { name: 'Gold', hex: '#FFD700', inStock: true, image: kurthi5Img }
     ]
   },
+  {
+    id: 206, category: 'Women', type: 'Kurti', title: 'Blue Denim Kurti', fabric: 'Denim', style: 'Straight',
+    price: 1099, originalPrice: 1599, rating: 4.4, reviews: 215,
+    colors: [
+      { name: 'Indigo Blue', hex: '#4B0082', inStock: true, image: kurtiImg }
+    ]
+  },
+  {
+    id: 207, category: 'Women', type: 'Kurti', title: 'White Chikan Kurti', fabric: 'Cotton', style: 'A-Line',
+    price: 1199, originalPrice: 1799, rating: 4.8, reviews: 540,
+    colors: [
+      { name: 'White', hex: '#FFFFFF', inStock: true, image: kurthi2Img }
+    ]
+  },
+  {
+    id: 208, category: 'Women', type: 'Kurti', title: 'Red Printed Cotton Kurti', fabric: 'Cotton', style: 'Straight',
+    price: 699, originalPrice: 1199, rating: 4.2, reviews: 120,
+    colors: [
+      { name: 'Red', hex: '#FF0000', inStock: true, image: kurthi3Img }
+    ]
+  },
+  {
+    id: 209, category: 'Women', type: 'Kurti', title: 'Yellow Haldi Kurti', fabric: 'Rayon', style: 'Anarkali',
+    price: 1399, originalPrice: 2099, rating: 4.7, reviews: 310,
+    colors: [
+      { name: 'Yellow', hex: '#FFFF00', inStock: true, image: kurthi4Img }
+    ]
+  },
+  {
+    id: 210, category: 'Women', type: 'Kurti', title: 'Green Party Wear Kurti', fabric: 'Silk', style: 'A-Line',
+    price: 2199, originalPrice: 3499, rating: 4.9, reviews: 102,
+    colors: [
+      { name: 'Emerald Green', hex: '#50C878', inStock: true, image: kurthi5Img }
+    ]
+  },
 
   // WOMEN - WESTERN DRESSES
   {

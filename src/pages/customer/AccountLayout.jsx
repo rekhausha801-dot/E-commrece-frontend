@@ -4,7 +4,7 @@ import { useNotification } from '../../context/NotificationContext';
 import { getUserProfile } from '../../services/api';
 import { 
   User, ShoppingBag, MapPin, CreditCard, Ticket, 
-  Bell, Settings, Headphones, LogOut, Heart, RotateCcw, LayoutDashboard
+  Bell, Settings, Headphones, LogOut, Heart, RotateCcw, LayoutDashboard, Menu, X
 } from 'lucide-react';
 import './AccountLayout.css';
 
@@ -21,6 +21,7 @@ const AccountLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [userData, setUserData] = React.useState({ fullName: '', email: '', profileImage: '' });
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const { notifications } = useNotification();
   const unreadCount = notifications.filter(n => !n.read).length;
 
@@ -71,8 +72,15 @@ const AccountLayout = () => {
 
   return (
     <div className="account-layout">
-      
-      <aside className="account-sidebar">
+      <button 
+        className="mobile-account-toggle" 
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+      >
+        {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        <span>Account Menu</span>
+      </button>
+
+      <aside className={`account-sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
        
         <div className="account-sidebar-profile">
           <img src={userData.profileImage || defaultAvatar} alt="User Avatar" className="account-sidebar-avatar" />
@@ -88,6 +96,7 @@ const AccountLayout = () => {
                 <NavLink 
                   to={item.path} 
                   className={({ isActive }) => `account-nav-item ${isActive ? 'active' : ''}`}
+                  onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <Icon size={18} />
                   <span>{item.name}</span>
@@ -121,8 +130,6 @@ const AccountLayout = () => {
           <button className="account-help-btn" onClick={() => navigate('/account/support')}>Contact Support</button>
         </div>
       </aside>
-
-     
       <main className={`account-content ${location.pathname.includes('/support') ? 'no-bg' : ''}`}>
         <Outlet />
       </main>

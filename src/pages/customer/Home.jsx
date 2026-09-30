@@ -213,7 +213,7 @@ const Home = () => {
             >
               <div className="unified-card-image-wrap">
                 {product.badge && (
-                  <div className="unified-badge" style={{ background: '#c0a07c' }}>{product.badge}</div>
+                  <div className="unified-badge">{product.badge}</div>
                 )}
                 {product.timer && (
                   <div style={{
@@ -230,7 +230,11 @@ const Home = () => {
                     alignItems: 'center',
                     gap: '4px',
                     boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-                    zIndex: 2
+                    zIndex: 2,
+                    whiteSpace: 'nowrap',
+                    maxWidth: '90%',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
                   }}>
                     <CountdownTimer targetDateStr={product.timer} stockLimit={product.stockLimit} productId={product.id} onExpire={handleOfferExpire} />
                   </div>
@@ -273,12 +277,12 @@ const Home = () => {
                 <div className="unified-card-price">
                   <span className="unified-price-new">{product.price}</span>
                   <span className="unified-price-old">{product.originalPrice}</span>
-                  {product.discount && <span className="unified-price-discount">{product.discount}</span>}
+
                 </div>
 
                 <button className="unified-explore-btn" onClick={(e) => { e.stopPropagation(); navigate('/collection'); }}>
                   Explore Collection
-                  <span style={{ fontSize: '16px' }}>→</span>
+                  <span className="unified-btn-arrow">→</span>
                 </button>
               </div>
             </motion.div>
@@ -348,12 +352,12 @@ const Home = () => {
                 <div className="unified-card-price">
                   <span className="unified-price-new">{product.price}</span>
                   {product.originalPrice && <span className="unified-price-old">{product.originalPrice}</span>}
-                  {product.discount && <span className="unified-price-discount">{product.discount}</span>}
+
                 </div>
 
                 <button className="unified-explore-btn" onClick={(e) => { e.stopPropagation(); navigate('/collection'); }}>
                   Explore Collection
-                  <span style={{ fontSize: '16px' }}>→</span>
+                  <span className="unified-btn-arrow">→</span>
                 </button>
               </div>
             </motion.div>

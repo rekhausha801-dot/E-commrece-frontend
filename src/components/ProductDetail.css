@@ -46,6 +46,7 @@ body {
   font-size: 12px;
   color: var(--pdp-text-light);
   margin-bottom: 24px;
+  flex-wrap: wrap;
 }
 
 /* Ad Banner */
@@ -1665,17 +1666,38 @@ body {
   .pdp-carousel-grid {
     grid-template-columns: repeat(3, 1fr);
   }
+  
+  .pdp-lo-card {
+    min-width: 0;
+    flex: 0 0 calc(25% - 15px);
+  }
 }
 
 @media (max-width: 768px) {
   .pdp-carousel-grid {
-    grid-template-columns: repeat(2, 1fr);
+    flex-wrap: wrap;
+    justify-content: center;
+    overflow-x: hidden;
+  }
+  .pdp-lo-card {
+    flex: 0 0 calc(50% - 10px);
+    min-width: 0;
   }
 
   .pdp-service-highlights {
-    flex-direction: column;
-    align-items: flex-start;
+    flex-direction: row;
+    align-items: center;
     gap: 20px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .pdp-service-highlights::-webkit-scrollbar {
+    display: none;
+  }
+  .pdp-service-item {
+    flex-shrink: 0;
   }
 
   .pdp-tab-content {
@@ -2832,21 +2854,24 @@ body {
 }
 
 .pdp-price-sub-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
   font-size: 12px;
   color: #6b7280;
   font-weight: 500;
+  line-height: 1.5;
+  margin-top: 4px;
 }
 
 .pdp-price-dot {
   color: #d1d5db;
+  margin: 0 8px;
 }
 
 .pdp-delivery-notice {
   color: #059669;
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 /* Stock Status Bar */
@@ -3060,6 +3085,18 @@ body {
   gap: 10px;
 }
 
+@media (max-width: 768px) {
+  .pdp-luxury-size-grid {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .pdp-luxury-size-grid::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 .pdp-luxury-size-pill {
   min-width: 48px;
   height: 42px;
@@ -3074,6 +3111,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }
@@ -3623,7 +3661,7 @@ body {
 @media (max-width: 768px) {
   .pdp-main-container {
     grid-template-columns: 1fr !important;
-    gap: 24px !important;
+    gap: 16px !important;
   }
 
   .pdp-gallery-section {
@@ -3633,9 +3671,75 @@ body {
   .pdp-thumbnails {
     flex-direction: row !important;
     overflow-x: auto;
+    width: 100% !important;
+    padding-bottom: 8px;
+  }
+  .pdp-thumb {
+    width: 60px !important;
+    height: 80px !important;
+    flex-shrink: 0;
+  }
+  .pdp-main-image-container {
+    width: 100% !important;
+    height: 135vw !important; /* Proper 3:4 fashion aspect ratio */
+    max-height: 75vh !important;
+    flex: none !important;
+  }
+  .pdp-main-image {
+    object-position: top center !important; /* Ensures the head is always visible */
   }
 
   .pdp-page-wrapper {
     padding: 16px !important;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    width: 100%;
+  }
+  
+
+  /* Reviews Section Mobile Fixes */
+  .pdp-custom-reviews-section {
+    padding: 24px 16px !important;
+    box-sizing: border-box;
+    width: 100%;
+  }
+  .pdp-crs-summary-card {
+    padding: 20px 16px !important;
+    box-sizing: border-box;
+    width: 100%;
+  }
+  .pdp-crs-bars-col {
+    min-width: 100% !important;
+    padding: 16px 0 !important;
+    box-sizing: border-box;
+  }
+  .pdp-crs-bar-row {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .pdp-crs-badges-col {
+    flex-direction: row;
+    justify-content: center;
+    gap: 16px !important;
+  }
+  .pdp-crs-cards-container {
+    padding-bottom: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pdp-luxury-btn-cart,
+  .pdp-luxury-btn-buy {
+    font-size: 11px !important;
+    gap: 4px !important;
+    padding: 0 4px !important;
+    white-space: nowrap !important;
+  }
+  
+  .pdp-lo-title {
+    font-size: 26px !important;
+    word-break: break-word;
+    line-height: 1.2;
+    max-width: 100%;
   }
 }

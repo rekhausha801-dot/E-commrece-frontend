@@ -938,23 +938,62 @@
 
 @media (max-width: 768px) {
   .lux-banner-title {
-    font-size: 40px;
+    font-size: 32px;
   }
 
   .lux-controls-card {
     flex-direction: column;
     gap: 20px;
-    align-items: flex-start;
+    align-items: stretch;
+  }
+
+  .lux-controls-right {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .lux-controls-right button {
+    width: 100%;
+    justify-content: center;
   }
 
   .lux-filter-bar {
     flex-direction: column;
-    gap: 20px;
-    align-items: flex-start;
+    gap: 16px;
+    align-items: stretch;
+  }
+  
+  .lux-search-box {
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .lux-filter-center {
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    width: 100%;
+  }
+
+  .lux-filter-item {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .lux-custom-select {
+    flex: 1;
+    margin-left: 12px;
+    min-width: 0;
+  }
+
+  .lux-filter-divider {
+    display: none;
+  }
+
+  .lux-view-toggles {
+    margin-left: auto !important;
+    width: 100%;
+    justify-content: flex-end;
   }
 
   .lux-mini-grid {
@@ -966,12 +1005,80 @@
   }
 
   .lux-features {
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
+    flex-direction: column;
+    padding: 24px 20px;
+    gap: 24px;
+  }
+  
+  .lux-feature-item {
+    flex-direction: row;
+    text-align: left;
+    align-items: center;
+    gap: 16px;
+    padding: 0;
+  }
+
+  .lux-feature-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+  }
+
+  .lux-feature-item h4 {
+    margin-bottom: 4px;
+    font-size: 15px;
+  }
+
+  .lux-feature-item p {
+    margin: 0;
+    font-size: 13px;
+  }
+  
+  .lux-feature-item:not(:last-child)::after, 
+  .lux-feature-item:not(:last-child)::before {
+    display: none;
   }
 
   .lux-bottom-banner {
     flex-direction: column;
     gap: 24px;
     text-align: center;
+    padding: 32px 24px;
+  }
+  
+  .lux-bb-right {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .lux-bb-right button {
+    width: 100%;
+    justify-content: center;
+  }
+}/* User requested smaller image/badge/heart for wishlist on mobile */
+@media (max-width: 768px) {
+  .lux-wishlist-container .unified-products-grid .unified-card-image-wrap {
+    aspect-ratio: 1/1 !important;
+  }
+  .lux-wishlist-container .unified-products-grid .unified-card-image-wrap img {
+    object-fit: cover !important;
+    transform: scale(0.85);
+  }
+  .lux-wishlist-container .unified-products-grid .unified-badge {
+    top: 4px !important;
+    left: 4px !important;
+    padding: 2px 5px !important;
+    font-size: 7px !important;
+  }
+  .lux-wishlist-container .unified-products-grid .unified-wishlist-btn {
+    top: 4px !important;
+    right: 4px !important;
+    width: 20px !important;
+    height: 20px !important;
+  }
+  .lux-wishlist-container .unified-products-grid .unified-wishlist-btn svg {
+    width: 10px !important;
+    height: 10px !important;
   }
 }

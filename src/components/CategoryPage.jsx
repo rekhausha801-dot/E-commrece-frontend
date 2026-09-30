@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { message } from 'antd';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getActiveBanners, fetchProductsByCategory } from '../services/api';
 import './Collection.css';
 import { 
   Filter, Heart, ShoppingBag, Eye, LayoutGrid, Menu, ChevronDown, ChevronUp, X, SlidersHorizontal, Check, Star, ArrowRight, Shirt
@@ -277,7 +278,7 @@ function Section({ title, children, defaultOpen = true }) {
 
 const getImageUrl = (path) => {
   if (!path) return '';
-  return path.startsWith('http') ? path : `http://localhost:5000${path}`;
+  return path.startsWith('http') ? path : path;
 };
 
 export default function CategoryPage() {
@@ -359,6 +360,8 @@ export default function CategoryPage() {
                setLocalCategoryProducts(prev => (prev !== undefined && prev !== null) ? prev : []);
             }
           }
+        } else {
+          if (active) setLocalCategoryProducts(null);
         }
       } catch (error) {
         console.error("Failed to fetch products for category:", error);
@@ -457,11 +460,23 @@ export default function CategoryPage() {
       
       return (
         <section className="category-page-banner-container" style={{ marginBottom: '30px' }}>
-          <img 
-            src={bannerImage} 
-            alt={titleText} 
-            className="category-page-banner-img"
-          />
+          {/\.(mp4|webm|ogg)$/i.test(bannerImage) ? (
+            <video
+              src={bannerImage}
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="category-page-banner-img"
+              style={{ width: '100%', display: 'block' }}
+            />
+          ) : (
+            <img 
+              src={bannerImage} 
+              alt={titleText} 
+              className="category-page-banner-img"
+            />
+          )}
         </section>
       );
     }
@@ -490,25 +505,31 @@ export default function CategoryPage() {
     } else if (localCategoryProducts === null) {
       // Explicit fallback requested
       if (!contextProducts) return [];
+      const slug = (categoryId || '').toLowerCase();
+      let mappedBackendCategory = '';
+      const isTshirtCategory = ['t-shirts', 'shirts', 'customization', 'polo-t-shirts', 'custom-t-shirts', 'women-t-shirts', 'girls-t-shirts'].includes(slug);
       
+      if (['suits', 'suit', 'menswear'].includes(slug)) {
+        mappedBackendCategory = 'suits';
+      } else if (['shoes', 'shoe', 'footwear', 'sneakers', 'casual-shoes', 'formal-shoes'].includes(slug)) {
+        mappedBackendCategory = 'shoes';
+      } else if (['kurtis', 'kurti', 'womenswear'].includes(slug)) {
+        mappedBackendCategory = 'kurti';
+      } else if (!isTshirtCategory) {
+        mappedBackendCategory = slug.replace(/-/g, ' ');
+      }
+
+      const searchTerms = [mappedBackendCategory];
+      if (mappedBackendCategory && mappedBackendCategory.endsWith('s')) searchTerms.push(mappedBackendCategory.slice(0, -1));
+      if (mappedBackendCategory === 'kurti') searchTerms.push('kurtis');
+
       const filtered = contextProducts.filter(p => {
         const pCat = (p.category?.name || p.category || '').toLowerCase().trim();
         if (!pCat || pCat === 'uncategorized') return false;
         
-        const slug = (categoryId || '').toLowerCase();
-        let mappedBackendCategory = '';
-        
-        if (['suits', 'suit', 'menswear'].includes(slug)) {
-          mappedBackendCategory = 'suits';
-        } else if (['shoes', 'shoe', 'footwear', 'sneakers', 'casual-shoes', 'formal-shoes'].includes(slug)) {
-          mappedBackendCategory = 'shoes';
-        } else if (['kurtis', 'kurti', 'womenswear'].includes(slug)) {
-          mappedBackendCategory = 'kurti';
-        } else if (['t-shirts', 'shirts', 'customization', 'polo-t-shirts', 'custom-t-shirts', 'women-t-shirts', 'girls-t-shirts'].includes(slug)) {
+        if (isTshirtCategory) {
           const normPCat = pCat.replace(/[^a-z0-9]/g, '');
           return normPCat.includes('customtshirt') || normPCat.includes('tshirt') || normPCat.includes('shirt') || normPCat.includes('custom');
-        } else {
-          mappedBackendCategory = slug.replace(/-/g, ' ');
         }
 
         let isMatch = pCat === mappedBackendCategory || pCat.replace(/[^a-z0-9]/g, '') === mappedBackendCategory.replace(/[^a-z0-9]/g, '');
@@ -516,13 +537,7 @@ export default function CategoryPage() {
         const pName = (p.name || p.title || '').toLowerCase();
         const pType = (p.type || '').toLowerCase();
 
-        // Lenient matching for any category
-        const searchTerms = [mappedBackendCategory];
-        if (mappedBackendCategory.endsWith('s')) searchTerms.push(mappedBackendCategory.slice(0, -1));
-        if (mappedBackendCategory === 'kurti') searchTerms.push('kurtis');
-        
         for (const term of searchTerms) {
-          // ensure term is long enough to prevent accidental broad matches (like 'men')
           if (term.length > 2 && (pCat.includes(term) || pName.includes(term) || pType.includes(term))) {
             isMatch = true;
             break;
@@ -544,6 +559,11 @@ export default function CategoryPage() {
           const pType = (p.type || '').toLowerCase();
           const pName = (p.title || '').toLowerCase();
           
+          if (isTshirtCategory) {
+            const normPCat = pCat.replace(/[^a-z0-9]/g, '');
+            return normPCat.includes('customtshirt') || normPCat.includes('tshirt') || normPCat.includes('shirt') || normPCat.includes('custom');
+          }
+
           let isMatch = false;
           for (const term of searchTerms) {
             if (term.length > 2 && (pCat.includes(term) || pName.includes(term) || pType.includes(term))) {
@@ -682,14 +702,6 @@ export default function CategoryPage() {
   return (
     <div className="collection-page">
       {renderBanner()}
-
-      <div className="pdp-breadcrumbs" style={{ padding: '20px 5% 0', fontSize: '14px' }}>
-        <span onClick={() => navigate('/')} style={{ color: '#666', cursor: 'pointer' }}>Home</span>
-        <span style={{ margin: '0 8px', color: '#ccc' }}>/</span>
-        <span onClick={() => navigate('/')} style={{ color: '#666', cursor: 'pointer' }}>Category</span>
-        <span style={{ margin: '0 8px', color: '#ccc' }}>/</span>
-        <span className="current" style={{ color: '#222', fontWeight: '600' }}>{currentCategory.title}</span>
-      </div>
 
       <div className="collection-main">
         {/* Sidebar */}
@@ -965,7 +977,14 @@ export default function CategoryPage() {
 
         {/* Content Area */}
         <div className="collection-content">
-          <div className="top-bar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', paddingBottom: '15px', borderBottom: 'none' }}>
+          <div className="pdp-breadcrumbs" style={{ padding: '0 0 20px 0', fontSize: '13px', display: 'flex', flexWrap: 'wrap', gap: '6px', scrollbarWidth: 'none' }}>
+            <span onClick={() => navigate('/')} style={{ color: '#666', cursor: 'pointer', whiteSpace: 'nowrap' }}>Home</span>
+            <span style={{ margin: '0 4px', color: '#ccc' }}>/</span>
+            <span onClick={() => navigate('/')} style={{ color: '#666', cursor: 'pointer', whiteSpace: 'nowrap' }}>Category</span>
+            <span style={{ margin: '0 4px', color: '#ccc' }}>/</span>
+            <span className="current" style={{ color: '#222', fontWeight: '600' }}>{currentCategory.title}</span>
+          </div>
+          <div className="top-bar" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', paddingBottom: '15px', borderBottom: 'none' }}>
             <div className="view-modes">
               <button 
                 className="view-btn" 
@@ -1088,8 +1107,11 @@ export default function CategoryPage() {
                 >
                 <div className="unified-card-image-wrap">
                   {product.badge && (
-                    <div className="unified-badge" style={{ background: product.badgeClass === 'badge-new' ? '#1a1d20' : '#c0a07c' }}>{product.badge}</div>
+                    <div className="unified-badge">{product.badge || '20% OFF'}</div>
                   )}
+                  
+
+
                   <button className="unified-wishlist-btn" onClick={(e) => { e.stopPropagation(); handleWishlistToggle(product); }}>
                     <Heart 
                       size={16} 
@@ -1117,16 +1139,16 @@ export default function CategoryPage() {
                   <div className="unified-card-price">
                     <span className="unified-price-new">{product.price}</span>
                     {product.originalPrice && <span className="unified-price-old">{product.originalPrice}</span>}
-                    {product.originalPrice && product.price && (
-                      <span className="unified-price-discount">
-                        {Math.round(((parseInt(product.originalPrice.replace('₹', '')) - parseInt(product.price.replace('₹', ''))) / parseInt(product.originalPrice.replace('₹', ''))) * 100)}% off
-                      </span>
-                    )}
                   </div>
                   
-                  <button className="unified-explore-btn" onClick={(e) => handleCartClick(e, product)}>
-                    <ShoppingBag size={16} />
-                    {addedToCart[product.id] ? "GO TO CART" : "ADD TO CART"}
+                  <button
+                    className="unified-explore-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/product/${product.id}`, { state: { product } });
+                    }}
+                  >
+                    Explore Collection <span className="unified-btn-arrow">→</span>
                   </button>
                   </div>
                 </motion.div>

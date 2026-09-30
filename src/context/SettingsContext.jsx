@@ -1,9 +1,24 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { getPreferencesApi } from '../services/api';
 
-const SettingsContext = createContext();
+const defaultContext = {
+  settings: {},
+  setSettings: () => {},
+  loading: false,
+  formatCurrency: (amount) => `₹${Number(amount || 0).toLocaleString('en-IN')}`,
+  formatDate: (date) => date ? new Date(date).toLocaleDateString() : '-'
+};
 
-export const useSettings = () => useContext(SettingsContext);
+const SettingsContext = createContext(defaultContext);
+
+export const useSettings = () => {
+  const context = useContext(SettingsContext);
+  if (!context || Object.keys(context).length === 0) {
+    console.warn("useSettings context not found. Using default context fallback.");
+    return defaultContext;
+  }
+  return context;
+};
 
 export const SettingsProvider = ({ children }) => {
   const [settings, setSettings] = useState({

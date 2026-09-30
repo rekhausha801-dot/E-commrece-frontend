@@ -67,25 +67,19 @@ export function SimilarProductCard({ product, onQuickView }) {
     >
       <div className="unified-card-image-wrap">
         {isOutOfStock && <div className="out-of-stock-overlay">Out of Stock</div>}
-        <div className="unified-badge" style={{ background: '#d3b585', opacity: 0.9 }}>
-          {product.badge || 'SIMILAR'}
+        <div className="unified-badge">
+          {product.badge || '20% OFF'}
         </div>
+        
+
+
         <button className="unified-wishlist-btn" onClick={(e) => {
           e.stopPropagation();
           toggleWishlist(product);
         }}>
-          <Heart size={16} fill={isInWishlist(product.id) ? '#ff4d4f' : 'none'} color={isInWishlist(product.id) ? '#ff4d4f' : '#666'} />
+          <Heart size={16} fill={isInWishlist(product.id) ? '#ff4d4f' : 'none'} color={isInWishlist(product.id) ? '#ff4d4f' : '#666'} className="heart-icon-anim" />
         </button>
         <img src={displayImage} alt={product.title} />
-        <button
-          className="pdp-quick-view-btn"
-          onClick={(e) => {
-            e.stopPropagation();
-            onQuickView(product);
-          }}
-        >
-          <Eye size={16} style={{ marginRight: '6px' }} /> Quick View
-        </button>
       </div>
 
       <div className="unified-card-info">
@@ -105,41 +99,18 @@ export function SimilarProductCard({ product, onQuickView }) {
           {product.originalPrice && (
             <span className="unified-price-old">{product.originalPrice.toString().startsWith('₹') ? product.originalPrice : `₹${product.originalPrice}`}</span>
           )}
-          {product.discount && (
-            <span className="unified-price-discount">{product.discount}</span>
-          )}
         </div>
-
-
 
         {isOutOfStock ? (
           <button className="unified-add-cart-btn" style={{ background: '#fce4e4', color: '#d32f2f' }} onClick={(e) => e.stopPropagation()}>
             Notify Me
           </button>
         ) : (
-          <button className="unified-add-cart-btn" onClick={async (e) => {
+          <button className="unified-explore-btn" onClick={(e) => {
             e.stopPropagation();
-            if (isAdded) {
-              navigate('/cart');
-            } else {
-              await handleFlyingCartAnimation(e);
-              const productToAdd = { ...product };
-              if (product?.customizable && activeDesign) {
-                productToAdd.customization = {
-                  designImage: activeDesign.icon,
-                  designName: activeDesign.name,
-                  designType: activeDesign.category === 'Uploaded' ? 'uploaded' : 'predefined',
-                  designPosition: activePosition,
-                  designSize: 'medium',
-                  selectedColor: activeColor,
-                  selectedSize: activeSize
-                };
-              }
-              addToCart(productToAdd);
-              message.success(`${product.title || 'Product'} added to cart!`);
-            }
+            navigate(`/product/${product.id}`, { state: { product } });
           }}>
-            {isAdded ? "Go to Cart" : "Add to Cart"}
+            Explore Collection <span className="unified-btn-arrow">→</span>
           </button>
         )}
       </div>
@@ -225,6 +196,7 @@ export default function ProductDetail() {
   const [reviews, setReviews] = useState([]);
   const fileInputRef = useRef(null);
   const customizerScrollRef = useRef(null);
+  const serviceHighlightsRef = useRef(null);
 
   const [ratingSummary, setRatingSummary] = useState(null);
 
@@ -370,6 +342,7 @@ export default function ProductDetail() {
     const isTshirt = currentTitle.includes('t-shirt') || currentTitle.includes('tshirt') || currentTitle.includes('shirt') || currentTitle.includes('top');
     const isDress = currentTitle.includes('dress');
     const isShoe = currentTitle.includes('shoe') || currentTitle.includes('sneaker') || currentTitle.includes('footwear');
+    const isSuit = currentTitle.includes('suit');
 
     return contextProducts.filter(p => {
       if (p.id === product.id) return false;
@@ -389,10 +362,14 @@ export default function ProductDetail() {
         keywordMatch = pTitle.includes('dress');
       } else if (isShoe) {
         keywordMatch = pTitle.includes('shoe') || pTitle.includes('sneaker') || pTitle.includes('footwear');
+      } else if (isSuit) {
+        keywordMatch = pTitle.includes('suit');
       } else {
         if (pCat === 'uncategorized' && currCat === 'uncategorized') {
           const firstWord = currentTitle.split(' ')[0];
           keywordMatch = firstWord ? pTitle.includes(firstWord) : false;
+        } else {
+          keywordMatch = false;
         }
       }
 
@@ -1176,7 +1153,7 @@ export default function ProductDetail() {
               )}
             </div>
 
-            <div className="pdp-service-highlights" style={{ marginTop: '24px' }}>
+            <div className="pdp-service-highlights" ref={serviceHighlightsRef} style={{ marginTop: '24px' }}>
               <div className="pdp-service-item">
                 <Truck size={20} className="pdp-service-icon" />
                 <div>

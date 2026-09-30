@@ -221,7 +221,7 @@ const HelpSupport = () => {
     <>
       <style>
         {`
-          .premium-help-container { padding: 0 8px 32px 8px; max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+          .premium-help-container { padding: 0 8px 32px 8px; max-width: 100%; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; min-width: 0; }
           .help-card { background: #fff; border-radius: 20px; border: 1px solid rgba(229, 231, 235, 0.5); box-shadow: 0 10px 30px rgba(0,0,0,0.02); overflow: hidden; transition: all 0.3s ease; }
           
           .search-input-wrapper:focus-within { box-shadow: 0 0 0 4px rgba(201, 160, 91, 0.1); border-color: #c9a05b; }
@@ -412,11 +412,11 @@ const HelpSupport = () => {
 
           {/* TAB: SUPPORT TICKETS */}
           {activeTab === 'Support Tickets' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '100%', maxWidth: '100%', minWidth: 0 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
                 <h2 style={{ margin: 0, fontSize: '18px', fontWeight: '700', color: '#111827' }}>Customer Support Tickets</h2>
-                <div style={{ display: 'flex', gap: '12px' }}>
-                  <div style={{ position: 'relative' }}>
+                <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', flex: 1, justifyContent: 'flex-start' }}>
+                  <div style={{ position: 'relative', flex: '1 1 200px' }}>
                     <Search size={16} color="#9ca3af" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
                     <input 
                       type="text" 
@@ -424,15 +424,15 @@ const HelpSupport = () => {
                       className="form-input" 
                       value={ticketSearchTerm}
                       onChange={(e) => setTicketSearchTerm(e.target.value)}
-                      style={{ padding: '8px 16px 8px 36px', width: '250px' }} 
+                      style={{ padding: '8px 16px 8px 36px', width: '100%' }} 
                     />
                   </div>
-                  <button className="premium-btn-outline" onClick={handleExport}><FileText size={16} /> Export</button>
+                  <button className="premium-btn-outline" onClick={handleExport} style={{ flexShrink: 0 }}><FileText size={16} /> Export</button>
                 </div>
               </div>
               
-              <div style={{ border: '1px solid #f3f4f6', borderRadius: '16px', overflow: 'hidden' }}>
-                <table className="table-container">
+              <div style={{ border: '1px solid #f3f4f6', borderRadius: '16px', overflowX: 'auto', WebkitOverflowScrolling: 'touch', width: '100%', maxWidth: '100%' }}>
+                <table className="table-container" style={{ minWidth: '1000px', width: '100%' }}>
                   <thead>
                     <tr>
                       <th>Ticket ID</th>
@@ -480,14 +480,14 @@ const HelpSupport = () => {
 
           {/* TAB: FAQS */}
           {activeTab === 'FAQs' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '100%', maxWidth: '100%', minWidth: 0 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
                 <h2 style={{ margin: '0 0 4px 0', fontSize: '18px', fontWeight: '700', color: '#111827' }}>FAQ Management</h2>
                 <button className="premium-btn" onClick={handleAddFAQ}><FileText size={16} /> Add New FAQ</button>
               </div>
               
-              <div style={{ border: '1px solid #f3f4f6', borderRadius: '16px', overflow: 'hidden' }}>
-                <table className="table-container">
+              <div style={{ border: '1px solid #f3f4f6', borderRadius: '16px', overflowX: 'auto', WebkitOverflowScrolling: 'touch', width: '100%', maxWidth: '100%' }}>
+                <table className="table-container" style={{ minWidth: '800px', width: '100%' }}>
                   <thead>
                     <tr>
                       <th>Order</th>
@@ -538,8 +538,8 @@ const HelpSupport = () => {
           <button className="premium-btn" onClick={handleCreateArticle}><FileText size={16} /> Create New Article</button>
         </div>
         
-        <div style={{ border: '1px solid #f3f4f6', borderRadius: '12px', overflow: 'hidden' }}>
-          <table className="table-container">
+        <div style={{ border: '1px solid #f3f4f6', borderRadius: '12px', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+          <table className="table-container" style={{ minWidth: '800px', width: '100%' }}>
             <thead>
               <tr>
                 <th>Article Title</th>
